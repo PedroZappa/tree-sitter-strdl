@@ -250,6 +250,20 @@
           "occurrence": 0
         }
       ]
+    },
+    {
+      "id": "method-name-replacement",
+      "fixture": "representative",
+      "description": "Replace a method name in the first melody chain, changing lp to hp.",
+      "categories": ["replacement", "member-expression", "method-chain"],
+      "edits": [
+        {
+          "op": "replace",
+          "old": ".lp(1000)",
+          "new": ".hp(1000)",
+          "occurrence": 0
+        }
+      ]
     }
   ]
 }
