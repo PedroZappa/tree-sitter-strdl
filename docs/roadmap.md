@@ -38,7 +38,7 @@ These observations are inputs to Phase 1, not proof that any phase is complete.
 
 ## Immediate next work
 
-Phase 2 is complete and tagged `v1.3.0`. The documented foundation is in `docs/grammar-architecture.md`; the next work is Phase 3 language coverage, beginning with evidence collection from Strudel documentation and examples.
+Phase 2 is complete and tagged `v1.3.0`. Phase 3 evidence collection has started with official documentation in `docs/syntax-evidence.md`; the next work is collecting examples from Strudel source code and runtime.
 
 - [x] Capture the current functional baseline: grammar generation, corpus tests, Node.js binding tests, and query compilation.
 - [x] Verify whether regenerated files under `src/` match the committed artifacts.
@@ -147,7 +147,7 @@ Phase 2 is complete and tagged `v1.3.0`. The documented foundation is in `docs/g
 
 ### Establish evidence
 
-- [ ] Collect syntax examples from official Strudel documentation.
+- [x] Collect syntax examples from official Strudel documentation.
 - [ ] Collect examples from Strudel source code and runtime.
 - [ ] Collect examples from official examples and tutorials.
 - [ ] Record maintained community examples that demonstrate additional syntax.
@@ -497,3 +497,4 @@ For checked items, add a short entry using this format:
 - Phase 2 — Query compilation: `node_modules/.bin/tree-sitter query --quiet --grammar-path . queries/highlights.scm test.strdl` and the equivalent `locals.scm` command completed successfully with CLI 0.27.2.
 - Phase 2 — Representative fixture: `node_modules/.bin/tree-sitter parse test.strdl` produced no `ERROR` or `MISSING` nodes after regeneration.
 - Phase 2 — Version tag: aligned tracked version metadata to `1.3.0` and created annotated tag `v1.3.0` on 2026-11-25; no tag was pushed.
+- Phase 3 — Official documentation evidence: collected 33 syntax examples from Codeberg `uzu/strudel` `website/src/pages/**/*.mdx`, imported package docs, `website/src/examples.mjs`, and `packages/web/README.md` on 2026-11-25; each example is linked to its source in [syntax-evidence.md](syntax-evidence.md). Only user-facing Strudel/JavaScript code was collected; MDX infrastructure and mini-notation internals were excluded.
