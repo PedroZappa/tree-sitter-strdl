@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Compare incremental and fresh parse trees for recorded editing sequences."""
+"""Compare incremental and fresh parse trees at every step of recorded edits."""
 
 import argparse
 import difflib
@@ -14,6 +14,7 @@ REPO_ROOT = Path(__file__).resolve().parent.parent
 TREE_SITTER = REPO_ROOT / "node_modules" / ".bin" / "tree-sitter"
 SEQUENCES_PATH = REPO_ROOT / "test" / "fixtures" / "incremental_sequences.json"
 ANSI = re.compile(r"\x1b\[[0-9;]*[mK]")
+ERROR_NODE = re.compile(r"\b(?:ERROR|MISSING)\b")
 
 
 def matches(text: str, needle: str) -> list[int]:
@@ -27,9 +28,12 @@ def matches(text: str, needle: str) -> list[int]:
         start = position + 1
 
 
-def apply_edits(source: str, edits: list[dict]) -> tuple[str, list[str]]:
+def apply_edits(source: str, edits: list[dict]) -> tuple[list[str], list[list[str]]]:
+    """Return the source and cumulative CLI edits after each successive edit."""
     current = source
-    cli_edits = []
+    cli_edits: list[str] = []
+    sources: list[str] = []
+    cumulative: list[list[str]] = []
     for index, edit in enumerate(edits):
         if edit.get("op", "replace") != "replace":
             raise ValueError(f"edit {index}: unsupported operation {edit.get('op')!r}")
@@ -46,19 +50,22 @@ def apply_edits(source: str, edits: list[dict]) -> tuple[str, list[str]]:
         removed_length = len(old.encode("utf-8"))
         cli_edits.append(f"{byte_position} {removed_length} {new}")
         current = current[:position] + new + current[position + len(old) :]
-    return current, cli_edits
+        sources.append(current)
+        cumulative.append(list(cli_edits))
+    return sources, cumulative
 
 
 def normalize(output: str) -> str:
     lines = []
     for line in output.splitlines():
-        if "\tParse:" in line:
+        if "\tParse:" in line or "\tEdit:" in line:
             continue
         lines.append(ANSI.sub("", line))
     return "\n".join(lines)
 
 
-def run_parse(path: Path, cli_edits: list[str] | None = None) -> tuple[int, str, str]:
+def run_parse(path: Path, cli_edits: list[str] | None = None) -> tuple[str | None, str]:
+    """Return the CST and stderr; parse errors still yield a usable CST."""
     command = [str(TREE_SITTER), "parse", "--cst"]
     for edit in cli_edits or []:
         command.extend(["--edits", edit])
@@ -70,7 +77,14 @@ def run_parse(path: Path, cli_edits: list[str] | None = None) -> tuple[int, str,
         text=True,
         check=False,
     )
-    return result.returncode, normalize(result.stdout), result.stderr
+    tree = normalize(result.stdout)
+    if "source_file" not in tree:
+        return None, result.stderr
+    return tree, result.stderr
+
+
+def tree_has_errors(tree: str) -> bool:
+    return bool(ERROR_NODE.search(tree))
 
 
 def selected_sequences(data: dict, filters: list[str]) -> list[dict]:
@@ -92,32 +106,48 @@ def compare_sequence(
     fixtures: dict[str, str],
     fixture_paths: dict[str, str],
     temp_dir: Path,
-) -> list[str]:
+) -> tuple[list[str], int, int]:
+    """Return (problems, step count, malformed step count)."""
     source = fixtures[sequence["fixture"]]
-    final_source, cli_edits = apply_edits(source, sequence["edits"])
-
+    sources, cumulative_edits = apply_edits(source, sequence["edits"])
     base_path = REPO_ROOT / fixture_paths[sequence["fixture"]]
-    incremental_code, incremental_tree, incremental_stderr = run_parse(base_path, cli_edits)
-    if incremental_code != 0:
-        return [f"incremental parse failed: {incremental_stderr.strip()}"]
 
-    final_path = temp_dir / f"{sequence['id']}.strdl"
-    final_path.write_text(final_source, encoding="utf-8")
-    fresh_code, fresh_tree, fresh_stderr = run_parse(final_path)
-    if fresh_code != 0:
-        return [f"fresh parse failed: {fresh_stderr.strip()}"]
+    problems: list[str] = []
+    malformed_steps = 0
+    for step, (step_source, step_edits) in enumerate(
+        zip(sources, cumulative_edits), start=1
+    ):
+        incremental_tree, incremental_stderr = run_parse(base_path, step_edits)
+        if incremental_tree is None:
+            problems.append(
+                f"step {step}: incremental parse failed: {incremental_stderr.strip()}"
+            )
+            continue
 
-    if incremental_tree == fresh_tree:
-        return []
+        step_path = temp_dir / f"{sequence['id']}-step-{step}.strdl"
+        step_path.write_text(step_source, encoding="utf-8")
+        fresh_tree, fresh_stderr = run_parse(step_path)
+        if fresh_tree is None:
+            problems.append(f"step {step}: fresh parse failed: {fresh_stderr.strip()}")
+            continue
 
-    diff = difflib.unified_diff(
-        fresh_tree.splitlines(),
-        incremental_tree.splitlines(),
-        fromfile="fresh",
-        tofile="incremental",
-        lineterm="",
-    )
-    return ["incremental tree differs from fresh tree", *diff]
+        if tree_has_errors(fresh_tree):
+            malformed_steps += 1
+
+        if incremental_tree == fresh_tree:
+            continue
+
+        diff = difflib.unified_diff(
+            fresh_tree.splitlines(),
+            incremental_tree.splitlines(),
+            fromfile="fresh",
+            tofile="incremental",
+            lineterm="",
+        )
+        problems.append(f"step {step}: incremental tree differs from fresh tree")
+        problems.extend(diff)
+
+    return problems, len(sources), malformed_steps
 
 
 def main() -> int:
@@ -138,20 +168,32 @@ def main() -> int:
     selected = selected_sequences(data, args.filter)
 
     failures = 0
+    total_steps = 0
+    malformed_steps = 0
     with tempfile.TemporaryDirectory(prefix="tree-sitter-strdl-incremental-") as temp:
         temp_dir = Path(temp)
         for sequence in selected:
-            problems = compare_sequence(sequence, fixtures, fixture_paths, temp_dir)
+            problems, steps, malformed = compare_sequence(
+                sequence, fixtures, fixture_paths, temp_dir
+            )
+            total_steps += steps
+            malformed_steps += malformed
+            suffix = f"{steps} steps"
+            if malformed:
+                suffix += f", {malformed} malformed"
             if problems:
                 failures += 1
-                print(f"FAIL {sequence['id']}")
+                print(f"FAIL {sequence['id']} ({suffix})")
                 for problem in problems:
                     print(f"  {problem}")
             else:
-                print(f"PASS {sequence['id']}")
+                print(f"PASS {sequence['id']} ({suffix})")
 
     total = len(selected)
-    print(f"Incremental/fresh comparisons: {total - failures}/{total} passed")
+    print(
+        f"Incremental/fresh comparisons: {total - failures}/{total} sequences, "
+        f"{total_steps} steps, {malformed_steps} malformed steps"
+    )
     return 1 if failures else 0
 
 

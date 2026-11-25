@@ -292,6 +292,46 @@
           "occurrence": 0
         }
       ]
+    },
+    {
+      "id": "object-brace-repair",
+      "fixture": "representative",
+      "description": "Delete and restore the closing brace of the first _pitchwheel object literal.",
+      "categories": ["malformed-state", "repair", "object-literal"],
+      "edits": [
+        {
+          "op": "replace",
+          "old": "circle:1})",
+          "new": "circle:1)",
+          "occurrence": 0
+        },
+        {
+          "op": "replace",
+          "old": "circle:1)",
+          "new": "circle:1})",
+          "occurrence": 0
+        }
+      ]
+    },
+    {
+      "id": "string-quote-repair",
+      "fixture": "compact",
+      "description": "Delete and restore a closing string quote, passing through an unterminated string.",
+      "categories": ["malformed-state", "repair", "string", "compact-fixture"],
+      "edits": [
+        {
+          "op": "replace",
+          "old": "s(\"bd hh sd hh\")",
+          "new": "s(\"bd hh sd hh)",
+          "occurrence": 0
+        },
+        {
+          "op": "replace",
+          "old": "s(\"bd hh sd hh)",
+          "new": "s(\"bd hh sd hh\")",
+          "occurrence": 0
+        }
+      ]
     }
   ]
 }

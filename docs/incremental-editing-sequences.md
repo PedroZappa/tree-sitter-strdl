@@ -41,11 +41,13 @@ Using current-source matches rather than precomputed byte offsets keeps the sequ
 | `method-name-replacement` | representative | replacement, member expression, method chain | Change `lp` to `hp` in the first melody chain. |
 | `nested-call-edit` | representative | nested edit, call, method chain | Edit values inside a nested call used as a `velocity` argument. |
 | `nested-arrow-body-edit` | representative | nested edit, arrow function | Edit an argument inside a `layer` arrow body. |
+| `object-brace-repair` | representative | malformed state, repair, object literal | Delete and restore the closing `}` of an object literal. |
+| `string-quote-repair` | compact | malformed state, repair, string, compact fixture | Delete and restore a closing `"` through an unterminated string. |
 
-These 18 sequences cover insertion, deletion, replacement, nested edits, and temporary malformed states. Deletion coverage spans whole declarations, labeled statements, chain methods, call arguments, and nested object properties. Replacement coverage spans string contents, template contents, binding identifiers, member-expression method names, and numeric literals. Nested-edit coverage spans object literals, nested call arguments, and arrow-function bodies. The malformed states are intermediate inputs; each sequence ends in a complete source.
+These 20 sequences cover insertion, deletion, replacement, nested edits, and temporary malformed states. Deletion coverage spans whole declarations, labeled statements, chain methods, call arguments, and nested object properties. Replacement coverage spans string contents, template contents, binding identifiers, member-expression method names, and numeric literals. Nested-edit coverage spans object literals, nested call arguments, and arrow-function bodies. Malformed-state coverage spans missing call parentheses, missing object braces, and unterminated strings. Each sequence ends in a complete source.
 
 ## Running comparisons
 
-`make test-incremental` replays every sequence and compares each incremental parse tree against a fresh parse of the same final source. Set `INCREMENTAL_FILTER` to a category or sequence ID to run a subset, for example `make test-incremental INCREMENTAL_FILTER=insertion`.
+`make test-incremental` replays every sequence one edit at a time. After each edit it compares the incremental parse tree (all edits through that step applied to the original fixture) against a fresh parse of the source at that step. This checks intermediate states, including malformed ones, rather than only the final source. Set `INCREMENTAL_FILTER` to a category or sequence ID to run a subset, for example `make test-incremental INCREMENTAL_FILTER=malformed-state`.
 
 The detailed equivalence-test procedure is a separate roadmap item.
