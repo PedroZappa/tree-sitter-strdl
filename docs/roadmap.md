@@ -30,13 +30,13 @@ These observations are inputs to Phase 1, not proof that any phase is complete.
 
 ## Immediate next work
 
-The immediate task is to complete the Phase 1 repository audit and record its findings in `docs/repository-assessment.md`.
+Phase 1 is complete. The documented findings are in `docs/repository-assessment.md`; the next work is Phase 2 grammar foundation, beginning with the grammar architecture and public-CST decisions identified as P0 gaps.
 
 - [x] Capture the current functional baseline: grammar generation, corpus tests, Node.js binding tests, and query compilation.
 - [x] Verify whether regenerated files under `src/` match the committed artifacts.
 - [x] Inventory syntax coverage against the required constructs in `AGENTS.md`.
 - [x] Inventory bindings, dependencies, queries, tests, CI, packaging, and licensing.
-- [ ] Write `docs/repository-assessment.md` with findings, risks, prioritized gaps, and the implementation order.
+- [x] Write `docs/repository-assessment.md` with findings, risks, prioritized gaps, and the implementation order.
 - [x] Link the assessment from [docs/README.md](README.md).
 
 ---
@@ -55,10 +55,10 @@ The immediate task is to complete the Phase 1 repository audit and record its fi
 
 ### Understand the current grammar
 
-- [ ] Map every `grammar.js` rule and its role.
-- [ ] Document current named nodes, fields, and public syntax-tree shape.
-- [ ] Record current precedence declarations and associativity choices.
-- [ ] Identify grammar rules that are undocumented, unused, or unexpectedly ambiguous.
+- [x] Map every `grammar.js` rule and its role.
+- [x] Document current named nodes, fields, and public syntax-tree shape.
+- [x] Record current precedence declarations and associativity choices.
+- [x] Identify grammar rules that are undocumented, unused, or unexpectedly ambiguous.
 - [x] Compare implemented syntax with the required coverage list in `AGENTS.md`.
 
 ### Audit bindings and dependencies
@@ -67,7 +67,7 @@ The immediate task is to complete the Phase 1 repository audit and record its fi
 - [x] Record which bindings are maintained, generated, and reachable from package metadata.
 - [x] List direct and development dependencies and their purpose.
 - [x] Verify dependency versions against the supported Tree-sitter CLI and runtime policy.
-- [ ] Identify dependencies that are unnecessary or unmaintained.
+- [x] Identify dependencies that are unnecessary or unmaintained.
 
 ### Investigate licensing
 
@@ -75,14 +75,14 @@ The immediate task is to complete the Phase 1 repository audit and record its fi
 - [x] Compare license declarations in `LICENSE`, `package.json`, `tree-sitter.json`, `Cargo.toml`, `pyproject.toml`, and binding files.
 - [x] Investigate license history and published package metadata.
 - [x] Align project license declarations with AGPL-3.0-only.
-- [ ] Verify licenses of reused grammar code or assets.
-- [ ] Record attribution requirements.
+- [x] Verify licenses of reused grammar code or assets.
+- [x] Record attribution requirements.
 - [x] Escalate licensing uncertainty before substantial code reuse or license changes.
 
 ### Inspect tests, queries, and generated artifacts
 
 - [x] Catalog existing corpus tests and the syntax each one covers.
-- [ ] Determine whether expected trees are explicit and intentional.
+- [x] Determine whether expected trees are explicit and intentional.
 - [x] Compile and execute `queries/highlights.scm` and `queries/locals.scm`.
 - [x] Check query capture names and registration in `tree-sitter.json` and `package.json`.
 - [x] Regenerate parser artifacts and compare them with committed files.
@@ -90,18 +90,18 @@ The immediate task is to complete the Phase 1 repository audit and record its fi
 ### Establish baselines
 
 - [x] Record commands for grammar generation and functional tests.
-- [ ] Establish a fresh-parsing latency baseline.
-- [ ] Establish an incremental-parsing latency baseline.
-- [ ] Establish representative and stress-test fixtures.
-- [ ] Record memory-use and large-document behavior.
+- [x] Establish a fresh-parsing latency baseline.
+- [x] Establish an incremental-parsing latency baseline.
+- [x] Establish representative and stress-test fixtures.
+- [x] Record memory-use and large-document behavior.
 
 ### Phase 1 acceptance criteria
 
 - [x] `docs/repository-assessment.md` exists and links to evidence.
-- [ ] Every significant gap has a priority and recommended phase.
-- [ ] Functional and performance baselines are recorded with reproduction commands.
+- [x] Every significant gap has a priority and recommended phase.
+- [x] Functional and performance baselines are recorded with reproduction commands.
 - [x] Licensing, bindings, generated artifacts, tests, queries, and CI are explicitly assessed.
-- [ ] The implementation order is approved or recorded as provisional.
+- [x] The implementation order is approved or recorded as provisional.
 
 ---
 
@@ -473,3 +473,11 @@ For checked items, add a short entry using this format:
 - Phase 1 — Investigate license history: inspected `git log`, commit diffs, and public npm/crates.io/PyPI metadata for published `1.1.8` artifacts on 2026-11-25; evidence: [docs/repository-assessment.md](repository-assessment.md#history-and-published-artifact-evidence). The AGPL/MIT conflict persists in published artifacts.
 - Phase 1 — Resolve license authority: owner confirmed AGPL-3.0 as authoritative on 2026-11-25; project declarations were aligned to `AGPL-3.0-only`; evidence: [docs/repository-assessment.md](repository-assessment.md#licensing-decision).
 - Phase 1 — Identify obsolete, duplicated, or unowned infrastructure: compared the tracked file list, ignored artifacts, generated-file markers, and build/package configuration on 2026-11-25; evidence: [docs/repository-assessment.md](repository-assessment.md#obsolete-duplicated-and-unowned-infrastructure).
+- Phase 1 — Establish functional and performance baselines: `tree-sitter test` passed 7/7 with CLI 0.26.9; fresh and incremental parse samples were collected via `tree-sitter parse --time --edits` against a shared library built from committed `src/parser.c`; evidence: [docs/repository-assessment.md](repository-assessment.md#performance-baseline).
+- Phase 1 — Establish representative and stress fixtures: used `test.strdl` plus temporary generated large, deep, malformed, x10, and x100 fixtures with recorded generation commands on 2026-11-25; evidence: [docs/repository-assessment.md](repository-assessment.md#fixtures).
+- Phase 1 — Record memory and large-document behavior: measured CLI child peak RSS with `resource.getrusage` for five fixture sizes on 2026-11-25; evidence: [docs/repository-assessment.md](repository-assessment.md#memory-and-large-document-behavior).
+- Phase 1 — Prioritize gaps and record implementation order: recorded priority, risk, recommended phase, and provisional phase order on 2026-11-25; evidence: [docs/repository-assessment.md](repository-assessment.md#prioritized-gaps-risks-and-implementation-order).
+- Phase 1 — Grammar and CST audit: compared every `grammar.js` rule, all 20 named node types and 7 fields in `src/node-types.json`, and parse probes on 2026-11-25; evidence: [docs/repository-assessment.md](repository-assessment.md#grammar-architecture-audit).
+- Phase 1 — Corpus expected-tree review: reviewed all seven expected trees and confirmed they are explicit, pass CLI 0.26.9, omit field names, and do not record wrapper-design rationale on 2026-11-25; evidence: [docs/repository-assessment.md](repository-assessment.md#corpus-expected-tree-review).
+- Phase 1 — Dependency and attribution audit: compared manifests, `package-lock.json`, npm/crates.io/PyPI registry metadata, upstream Tree-sitter v0.27.2 source/templates, and git history on 2026-11-25; evidence: [docs/repository-assessment.md](repository-assessment.md#dependency-and-attribution-audit).
+- Phase 1 — Complete repository assessment: recorded findings, risks, prioritized gaps, and provisional implementation order in `docs/repository-assessment.md` on 2026-11-25; evidence: [docs/repository-assessment.md](repository-assessment.md#prioritized-gaps-risks-and-implementation-order).

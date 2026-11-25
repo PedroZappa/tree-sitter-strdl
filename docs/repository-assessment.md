@@ -1,6 +1,6 @@
 # Repository assessment
 
-This document is being built during Phase 1. It records the verified functional baseline, the ABI 15 upgrade resolution, and the current syntax-coverage inventory; it is not yet a complete repository assessment.
+This document records the completed Phase 1 assessment: functional and performance baselines, grammar and syntax-tree audit, syntax coverage, repository inventory, dependency and attribution findings, prioritized gaps, and the provisional implementation order.
 
 ## Functional baseline
 
@@ -96,6 +96,220 @@ Statuses:
 
 This table compares the implemented grammar against the required list in [AGENTS.md](../AGENTS.md). It is not yet evidence that every supported construct is relevant to real Strudel compositions; that evidence-gathering belongs in Phase 3. No grammar changes were made during this inventory, and the temporary probes should become committed corpus tests when their constructs are prioritized.
 
+## Grammar architecture audit
+
+Captured on 2026-11-25 from `grammar.js`, `src/node-types.json`, and temporary `tree-sitter parse --cst` probes. Grammar source is authoritative; generated files are evidence of the current CST, not independent design documents.
+
+### Rule map
+
+| Rule or helper | Kind | Role | Public named node |
+| --- | --- | --- | --- |
+| `source_file` | Rule | Root; a sequence of statements. | Yes, root |
+| `_statement` | Hidden rule | Structural choice among assignment, declaration, expression, and comment statements. | No |
+| `variable_declaration` | Rule | `var` declarations with one or more declarators. | Yes |
+| `lexical_declaration` | Rule | `let`/`const` declarations with one or more declarators. | Yes |
+| `variable_declarator` | Rule | A declared identifier with an optional initializer. | Yes |
+| `_initializer` | Hidden rule | `=` followed by an expression; supplies the `value` field. | No |
+| `assignment` | Rule | Strudel-style `$:` assignment or `identifier:` label assignment. | Yes |
+| `function_call` | Rule | Direct `identifier(...)` call with optional trailing comma. | Yes |
+| `method_call` | Rule | A `.identifier(...)` segment in a chain. | Yes |
+| `chained_method` | Rule | A base expression followed by one or more method calls. | Yes |
+| `binary_expression` | Rule | Wrapper selecting additive, multiplicative, or base expression. | Yes |
+| `additive_expression` | Rule | Left-associative `+`/`-` binary form. | Yes |
+| `multiplicative_expression` | Rule | Left-associative `*`/`/` binary form. | Yes |
+| `arrow_function` | Rule | Single identifier parameter, `=>`, expression body. | Yes |
+| `expression` | Rule | Wrapper selecting chained, binary, arrow, or base expression. | Yes |
+| `_base_expression` | Hidden rule | Calls, identifiers, literals, objects, arrays, or parenthesized expressions. | No |
+| `object` | Rule | Braced sequence of `pair` nodes. | Yes |
+| `pair` | Rule | `key: value` object property. | Yes |
+| `array` | Rule | Bracketed sequence of expressions. | Yes |
+| `string` | Rule | Opaque double-, single-, or backtick-quoted string. | Yes |
+| `number` | Rule | Integer or decimal numeric literal. | Yes |
+| `identifier` | Rule | JavaScript-like identifier token. | Yes |
+| `comment` | Rule/extra | Line comment; declared both as an extra and as a statement. | Yes |
+| `commaSep` | Helper | Optional comma-separated list. | No |
+| `commaSep1` | Helper | Required comma-separated list. | No |
+| `commaSepTrailing` | Helper | Optional comma-separated list allowing a trailing comma. | No |
+
+There is no external scanner, no alias, no supertype, and no active `conflicts` declaration. The only `conflicts` entry is commented out in `grammar.js`.
+
+### Public syntax-tree shape
+
+`src/node-types.json` contains 43 node types: 20 named and 23 anonymous. Only 7 field names exist, all `multiple: false`; `variable_declarator.value` is the sole optional field. The field API is:
+
+| Named node | Fields | Children / notes |
+| --- | --- | --- |
+| `source_file` | none | Optional repeated `assignment`, `comment`, `expression`, `lexical_declaration`, or `variable_declaration`. |
+| `assignment` | none | `identifier` and/or `expression` children; no field distinguishes the assignment target. |
+| `variable_declaration` | none | One or more `variable_declarator` children. |
+| `lexical_declaration` | `kind` (`let` or `const`, required) | One or more `variable_declarator` children. |
+| `variable_declarator` | `name` (required `identifier`), `value` (optional `expression`) | Direct call/declaration structure. |
+| `expression` | none | Exactly one child from the expression alternatives; `expression` can itself contain `expression` because of anonymous parentheses. |
+| `binary_expression` | none | Exactly one child from additive, multiplicative, or base alternatives. |
+| `additive_expression` | `operator` (`+` or `-`, required) | Two or more `binary_expression` children. |
+| `multiplicative_expression` | `operator` (`*` or `/`, required) | Two or more `binary_expression` children. |
+| `chained_method` | none | A base node followed by one or more `method_call` children. |
+| `function_call` | none | `identifier` followed by zero or more `expression` arguments. |
+| `method_call` | none | `identifier` followed by zero or more `expression` arguments; the leading `.` is anonymous. |
+| `arrow_function` | `parameter` (required `identifier`), `body` (required `expression`) | Expression body only. |
+| `object` | none | Optional repeated `pair`. |
+| `pair` | `key` (required identifier/string/number), `value` (required `expression`) | Object property. |
+| `array` | none | Optional repeated `expression`. |
+| `string`, `number`, `identifier`, `comment` | none | Leaf nodes; string content is opaque. |
+
+The current `expression`, `binary_expression`, and `chained_method` wrappers are structural and carry no Strudel-specific semantics. Their public status is recorded here as observed behavior, not as an approved long-term API contract.
+
+### Precedence and associativity
+
+- `grammar.js` declares the descending precedence levels `member`, `call`, `binary_times`, `binary_plus`, and `arrow_function`. Only `arrow_function` is referenced by a rule; the other four declarations are currently unused. Tree-sitter named precedence levels are comparable to other names in the array, while the numeric `prec` values used elsewhere form a separate scale that should be documented deliberately in Phase 2.
+- `assignment` and `expression` use numeric `prec(2)`. `function_call` and `binary_expression` use numeric `prec(1)`.
+- `chained_method`, `additive_expression`, and `multiplicative_expression` use `prec.left`; `additive_expression` uses numeric level 1 and `multiplicative_expression` uses numeric level 2, so multiplication and division bind tighter. `chained_method` uses the default numeric level. Because it is implemented with `repeat1($.method_call)`, its associativity marker may be unnecessary; this should be verified in Phase 2.
+- No rule uses `prec.right`, and there is no active GLR conflict resolution.
+
+The arithmetic rules are mutually recursive: `binary_expression` selects `additive_expression`, `multiplicative_expression`, or a base expression, while both arithmetic rules contain `binary_expression` operands. A probe of `1 + 2 * 3 - 4` produced nested `binary_expression` wrappers around each operand. This is deterministic, but the extra wrapper layer is not documented as an intentional public API choice. The `operator` field is attached to `additive_expression`/`multiplicative_expression`, not to `binary_expression`.
+
+### Undocumented, unused, or unexpectedly ambiguous rules
+
+- All 23 grammar rules are reachable from `source_file`; no rule is unused. The unused items are precedence names, not rules.
+- Four declared precedence levels (`member`, `call`, `binary_times`, `binary_plus`) and the commented-out conflict entry are dead grammar metadata.
+- `binary_expression` cannot directly contain `chained_method` or `arrow_function`; both appear only under `expression`. Probes of `x.foo() + 1` and `s("a").gain(1) + 2` produced `ERROR` at `+`, while parenthesized forms parsed. This is a surprising grammar limitation rather than an active ambiguity.
+- `comment` is both an `extra` and a member of `_statement`, so the same token type has two structural positions.
+- Parenthesized expressions use an anonymous `seq('(', $.expression, ')')`; there is no named `parenthesized_expression` node, so consumers cannot distinguish grouping from an ordinary expression except through token positions.
+- `expression` and `binary_expression` wrappers add layers that are not explained in project documentation. They may be intentional scaffolding, but they are not currently justified.
+- `assignment` has no field for its target. The `$:` and `identifier:` forms are distinguishable only by token order and child types.
+- Template-literal backticks are represented by the opaque `string` node; no interpolation structure exists.
+
+### Corpus expected-tree review
+
+All seven expected trees are explicit and all seven pass with CLI 0.26.9. They encode the current wrapper hierarchy, including `expression`, `binary_expression`, and `chained_method`, and provide useful snapshots of call, method-chain, object, array, arrow-function, declaration, and arithmetic structure.
+
+The defensible conclusion is that the trees are explicit and intentional as literal CST fixtures, but not demonstrated as a documented public API contract. They do not state why the wrappers are intentional, and their expected sexps omit field names such as `kind`, `name`, `value`, `parameter`, `body`, `key`, and `operator`. They therefore do not provide explicit regression coverage for the field API recorded in `node-types.json`. They also contain no malformed/incomplete cases and no corpus case for `const`, block comments, additive arithmetic, trailing commas, multiple declarators, parenthesized expressions, or several supported-by-probe constructs. Phase 2 should review whether these trees are deliberate API commitments or generated snapshots before treating them as stable contracts.
+
+## Performance baseline
+
+Captured on 2026-11-25. This is a Phase 1 baseline, not a performance budget. Phase 6 should replace the temporary fixtures with committed, reproducible fixtures and a larger sample size.
+
+### Environment
+
+| Component | Version or state |
+| --- | --- |
+| CPU | 12th Gen Intel(R) Core(TM) i9-12900KF, 24 logical CPUs |
+| Memory | 31 GiB total |
+| OS/kernel | Linux 6.12.15-1-omarchy, x86_64 |
+| Compiler | GCC 16.2.1 |
+| Tree-sitter CLI used for benchmarking | 0.26.9, installed at `/usr/bin/tree-sitter` |
+| Node.js/npm | 26.13.1 / 11.20.0 |
+| Local `node_modules/` | absent; pinned CLI 0.27.2 was unavailable for this run |
+
+The benchmark loaded the committed `src/parser.c` directly as a shared library. The parser artifact under test is therefore the committed generated parser, but the CLI runtime is 0.26.9 rather than the pinned development CLI 0.27.2. Times are CLI-reported parse times, excluding process startup except where peak resident-set size (RSS) is reported separately.
+
+### Fixtures
+
+| Fixture | Size | Description |
+| --- | --- | --- |
+| `representative.strdl` | 2,854 bytes | Copy of the tracked `test.strdl` composition. |
+| `large.strdl` | 76,780 bytes | 1,000 generated statements of the form `let pN = s("bd sd [hh hh] bd").gain(0.8).fast(2)` followed by `$:pN.lpf(800).gain(0.9)`. |
+| `deep.strdl` | 614 bytes | 200 nested `s(` calls ending in `note("c3")`. |
+| `malformed.strdl` | 2,430 bytes | One valid `$:s("bd")` statement followed by 400 unclosed `.gain(` fragments. |
+| `large_x10.strdl` | 767,800 bytes | `large.strdl` repeated 10 times. |
+| `large_x100.strdl` | 7,678,000 bytes | `large.strdl` repeated 100 times. |
+
+These fixtures were generated under `/tmp/opencode/ts-strdl-baseline/` and are not committed. They are sufficient for a baseline but not yet a durable benchmark suite.
+
+### Fresh parsing latency
+
+Twenty runs per fixture. P99 from 20 samples is indicative only.
+
+| Fixture | P50 | P95 | P99 | Min | Max | Mean |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| Representative | 0.52 ms | 0.57 ms | 0.59 ms | 0.33 ms | 0.60 ms | 0.50 ms |
+| Large | 9.26 ms | 11.10 ms | 12.37 ms | 8.16 ms | 12.69 ms | 9.35 ms |
+| Deep | 0.18 ms | 0.20 ms | 0.20 ms | 0.11 ms | 0.20 ms | 0.17 ms |
+| Malformed | 2.80 ms | 3.60 ms | 3.62 ms | 2.14 ms | 3.62 ms | 2.84 ms |
+
+Single-run scaling checks were 84.70 ms for `large_x10.strdl` and 852.41 ms for `large_x100.strdl`, approximately 9 KB/ms in both cases.
+
+### Incremental parsing latency
+
+The incremental case inserted `let x = 1` at byte offset 0 of `large.strdl` using the CLI's `--edits` option. The CLI reports an initial parse time and a separate edit/reparse time.
+
+| Measurement | P50 | P95 | P99 | Min | Max | Mean |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| Initial parse, 20 runs | 8.51 ms | 8.88 ms | 9.19 ms | — | — | — |
+| Edit/reparse, 20 runs | 0.59 ms | 0.63 ms | 0.64 ms | 0.57 ms | 0.64 ms | 0.59 ms |
+
+Single-run edit/reparse checks were 6.99 ms for `large_x10.strdl` and 85.22 ms for `large_x100.strdl`. A beginning-of-file insertion is a deliberately demanding edit because it shifts the whole document; these numbers are not evidence that all edit positions are equally expensive.
+
+### Memory and large-document behavior
+
+Peak RSS was measured for the CLI child process with Python's `resource.getrusage(resource.RUSAGE_CHILDREN).ru_maxrss`. This includes CLI process overhead and is not an isolated measurement of parser-library allocations.
+
+| Fixture | Observation |
+| --- | --- |
+| Representative | 12,180–12,292 KiB across 5 runs. |
+| Large | 11,916–12,484 KiB across 5 runs. |
+| Malformed | 12,064–12,460 KiB across 5 runs. |
+| Large x10 | 44,656 KiB, single run. |
+| Large x100 | 391,928 KiB, single run. |
+
+For documents up to 76 KB, CLI process overhead dominated and RSS did not show a consistent fixture-dependent increase. At 0.77 MB and 7.68 MB, RSS increased substantially while parse throughput stayed near 9 KB/ms. No memory budget is established by this baseline.
+
+### Reproduction commands
+
+Generate the temporary fixtures:
+
+```sh
+mkdir -p /tmp/opencode/ts-strdl-baseline
+cp test.strdl /tmp/opencode/ts-strdl-baseline/representative.strdl
+python3 - <<'PY'
+from pathlib import Path
+p = Path('/tmp/opencode/ts-strdl-baseline')
+large = '\n'.join(
+    f'let p{i} = s("bd sd [hh hh] bd").gain(0.8).fast(2)\n'
+    f'$:p{i}.lpf(800).gain(0.9)'
+    for i in range(1000)
+) + '\n'
+(p/'large.strdl').write_text(large)
+(p/'deep.strdl').write_text('s(' + 's(' * 200 + 'note("c3")' + ')' * 200 + ')\n')
+(p/'malformed.strdl').write_text('$:s("bd")' + '.gain(' * 400 + '1' + '\n' * 20)
+(p/'large_x10.strdl').write_text(large * 10)
+(p/'large_x100.strdl').write_text(large * 100)
+PY
+```
+
+Compile the committed parser as a shared library:
+
+```sh
+gcc -shared -fPIC -O2 -Isrc src/parser.c \
+  -o /tmp/opencode/ts-strdl-baseline/libtree-sitter-strdl.so
+```
+
+Parse one fixture:
+
+```sh
+tree-sitter parse --quiet --time \
+  --lib-path /tmp/opencode/ts-strdl-baseline/libtree-sitter-strdl.so \
+  --lang-name strudel /tmp/opencode/ts-strdl-baseline/large.strdl
+```
+
+Measure an edit/reparse:
+
+```sh
+tree-sitter parse --quiet --time \
+  --lib-path /tmp/opencode/ts-strdl-baseline/libtree-sitter-strdl.so \
+  --lang-name strudel /tmp/opencode/ts-strdl-baseline/large.strdl \
+  --edits '0 0 let x = 1'
+```
+
+Measure child-process peak RSS for one parse:
+
+```sh
+python3 -c 'import resource,subprocess,sys; subprocess.run(["tree-sitter","parse","--quiet","--lib-path","/tmp/opencode/ts-strdl-baseline/libtree-sitter-strdl.so","--lang-name","strudel",sys.argv[1]], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL); print(resource.getrusage(resource.RUSAGE_CHILDREN).ru_maxrss)' \
+  /tmp/opencode/ts-strdl-baseline/large.strdl
+```
+
+The percentile results were produced by a temporary Python driver that repeated the parse command 20 times and interpolated percentiles from the sorted samples. That driver is not committed; Phase 6 should replace it with a repository-owned benchmark harness.
+
 ## Repository inventory
 
 This repository is a distributable Tree-sitter grammar package for Strudel. Its current architecture is a hand-maintained grammar, generated parser artifacts, six template-maintained language bindings, two official query files, seven corpus tests, and a tag-triggered multi-ecosystem publish workflow.
@@ -190,6 +404,40 @@ Captured on 2026-11-25 from the tracked file list, `git status --short --ignored
 | `test.strdl` and `test-local.strdl` | Unwired fixtures | Neither file is referenced by test scripts; `test.strdl` is a representative composition and `test-local.strdl` is a manual query probe. | Medium — Phase 6: convert them into automated fixtures or document them as manual-only. |
 | Publish workflow | Unowned external behavior | The only workflow triggers on tag push and uses `tree-sitter/workflows` at the moving `@main` ref. No pull-request validation is defined in this repository. | High — Phase 8: add PR validation and pin reusable workflow refs. |
 
+### Dependency and attribution audit
+
+Captured on 2026-11-25 from tracked manifests, `package-lock.json`, generated headers, git history, npm/crates.io/PyPI registry metadata, and upstream Tree-sitter v0.27.2 source and templates.
+
+#### Dependency necessity and maintenance
+
+| Dependency | Classification | Evidence |
+| --- | --- | --- |
+| `node-addon-api` | Necessary | `binding.gyp` resolves its build targets and `bindings/node/binding.cc` includes `<napi.h>`. npm latest is 8.9.2; upstream repository is active. |
+| `node-gyp-build` | Necessary | The npm `install` script and `bindings/node/index.js` load the native addon through it. Latest npm version is still 4.8.4; repository is not archived but has a slow release cadence. Not demonstrably unmaintained. |
+| `prebuildify` | Unused template residue | No npm script invokes it, no `prebuilds/` directory is tracked, and `*.wasm` is ignored despite being packaged. Latest npm version is 6.0.1; repository is not archived but has a slow release cadence. Not demonstrably unmaintained. |
+| `tree-sitter` (Node.js dev/peer) | Necessary for tests and compatibility declaration | `bindings/node/binding_test.js` requires it; the optional peer dependency documents the ABI-15 runtime floor. npm latest is 0.25.1. |
+| `tree-sitter-cli` | Necessary and intentionally pinned | Required by the playground/WASM scripts and by committed generated artifacts; 0.27.2 is the current npm latest and is documented in [compatibility.md](compatibility.md). |
+| Python `setuptools` and `wheel` | Necessary | Declared as build requirements by `pyproject.toml` and imported by `setup.py`. |
+| Python `tree-sitter~=0.25.0` | Necessary ABI constraint | Used by the binding test; the constraint deliberately excludes later 0.x runtimes such as PyPI 0.27.0. |
+| Rust `tree-sitter-language`, `cc`, and dev `tree-sitter` | Necessary | Used by `lib.rs`, `build.rs`, and the inline load test. Rust test execution remains unverified because `cargo` was unavailable. |
+| Swift `SwiftTreeSitter` | Necessary for the Swift test target only | Declared for tests, not the library product. Upstream is active and BSD-3-Clause; `Package.resolved` is ignored, so resolution is not reproducibly pinned. |
+| Go runtime dependency | Unmanaged/incomplete | `bindings/go/binding_test.go` imports `github.com/tree-sitter/go-tree-sitter`, but no `go.mod` or `go.sum` is tracked. |
+| C | No separate runtime manifest | Uses the generated/vendored headers and compiles `src/parser.c` directly. |
+
+**Conclusion:** no declared dependency is verified as abandoned. `prebuildify` is the only clearly unused declared dependency. `node-gyp-build` and `prebuildify` have slow release cadence but current versions and non-archived repositories.
+
+#### Reused code, attribution, and licensing compatibility
+
+- **Actual reuse — Tree-sitter runtime headers:** `src/tree_sitter/alloc.h`, `src/tree_sitter/array.h`, and `src/tree_sitter/parser.h` are byte-identical to the corresponding Tree-sitter v0.27.2 files. Upstream license is MIT, Copyright (c) 2018 Max Brunsfeld.
+- **Actual reuse — binding and packaging templates:** the Node.js, Go, Python, Rust, and Swift binding sources, both C header copies, several package/build files, and `.gitattributes` are near-verbatim Tree-sitter CLI template output with placeholder substitution. Commit `88496a2` added the binding set under `feat(publishing): generate files before publish`. These templates are covered by the Tree-sitter repository's MIT license.
+- **Actual reuse — small grammar idiom:** `commaSep1(rule)` is identical to the helper in the MIT-licensed `tree-sitter-javascript` grammar. `commaSep` is the same idiom with different formatting.
+- **Convention rather than demonstrated substantial reuse:** rule and field names such as `variable_declaration`, `lexical_declaration`, `variable_declarator`, `pair`, `name`, `kind`, and `key` follow established `tree-sitter-javascript` conventions. The rule bodies are simplified and bespoke, and git history shows incremental local development from the `0746f51` stub through later feature commits. Names and conventions alone do not create an attribution obligation.
+- **Fixtures:** `test.strdl` is attributed locally to Zedro and was introduced by commit `7926433`. No tracked fixture was found to be copied from an external composition. Future fixtures copied from documentation or community compositions require per-source provenance and license checks.
+
+`src/parser.c`, `src/grammar.json`, and `src/node-types.json` are generated from this repository's `grammar.js`; the generated tables contain no separate upstream copyright notice. Record the pinned generator version and keep them synchronized rather than hand-editing them.
+
+MIT components can coexist with the project's AGPL-3.0-only code because MIT permits inclusion in a larger work when notices are retained. The current attribution gap is that no separate third-party notices file or copyright headers were found in binding sources or generated files. A notices file should be added before release to preserve the Tree-sitter MIT notices; this does not change the authoritative project license. No license uncertainty currently blocks retaining the verified components once notices are preserved. Future substantial reuse is blocked until the upstream URL, author, commit/version, and license are recorded.
+
 ### Licensing decision
 
 The owner confirmed on 2026-11-25 that AGPL-3.0 is authoritative. The full [LICENSE](../LICENSE) file remains the AGPL-3.0 text. Project declarations in `package.json`, `package-lock.json`, `tree-sitter.json`, `pyproject.toml`, `Cargo.toml`, and `grammar.js` now use the SPDX identifier `AGPL-3.0-only`. Third-party dependency license fields in `package-lock.json` were not changed.
@@ -207,3 +455,31 @@ Captured on 2026-11-25 from git history and public registry metadata:
 - Earlier releases published before the `LICENSE` change, such as npm/crates.io/PyPI `1.1.7`, declare MIT consistently.
 
 This evidence established the conflict before the owner decision. The decision resolves the repository's license direction; it does not change the metadata of already published artifacts.
+
+## Prioritized gaps, risks, and implementation order
+
+Priority levels below describe implementation order, not a claim that every P1 item is low severity. Evidence is drawn from the sections above and the corresponding roadmap items in [roadmap.md](roadmap.md).
+
+| Priority | Gap | Evidence | Risk if deferred | Recommended phase |
+| --- | --- | --- | --- | --- |
+| P0 | The grammar foundation is undocumented and partly accidental. Four named precedence levels are declared but never applied; arithmetic uses mutually recursive wrapper rules; public nodes and fields have no design record. | `grammar.js` precedence/rule map and public CST audit below; Phase 1 probes. | Downstream tools couple to incidental `expression`/`binary_expression` wrappers; later cleanup becomes a breaking syntax-tree change. | Phase 2 |
+| P0 | Required syntax coverage is incomplete, including ordinary assignment, member access, multiple/rest parameters, destructuring, spread, logical/comparison operators, unary and conditional expressions, optional chaining, nullish coalescing, interpolation, block comments, and import/export. | Syntax coverage inventory above. | Real Strudel compositions fail to parse or lose structure; downstream intelligence sees incorrect trees. | Phase 3, after evidence collection |
+| P0 | Error recovery and incremental/fresh equivalence are not tested automatically; malformed input is slower than valid input. | Repository inventory and performance baseline above. | Editor parsing can degrade or diverge from fresh parses without detection. | Phase 4 |
+| P0 | Query scope and query API are undecided. `highlights.scm` contains API-name-specific semantic captures; `locals.scm` treats call identifiers as definitions; `locals.scm` is packaged but unregistered and unexported. | Queries section above. | Semantic analysis leaks into syntax queries; capture behavior becomes an accidental API. | Phase 5 |
+| P0 | No pull-request validation CI exists; generated-file consistency, corpus tests, query tests, binding tests, compatibility, and performance are not automatically checked. | CI and packaging section above. | Regressions can land unnoticed; release validation relies on manual work. | Phase 6 and Phase 8 |
+| P1 | Benchmark fixtures and the percentile driver are temporary; no committed harness or performance budgets exist. | Performance baseline above. | Baseline cannot be reproduced reliably or compared across machines. | Phase 6 |
+| P1 | Binding and packaging metadata are incomplete: stale `.pc` version, absent Go module metadata, unpinned Swift resolution, unused `prebuildify`, absent prebuild outputs, and no clean-consumer tarball test. | Obsolete infrastructure and bindings sections above. | Consumers receive inconsistent or non-reproducible packages. | Phase 7 |
+| P1 | Published artifacts still declare MIT despite the AGPL-3.0-only repository decision, third-party MIT notices are not preserved in the repository, and the publish workflow uses a moving reusable-workflow ref with tag-triggered publishing. | Dependency/attribution audit, licensing decision, and CI section above. | License metadata remains misleading, upstream notice obligations are not visibly satisfied, and release control is weaker than the project policy requires. | Phase 7 and Phase 8 |
+| P2 | Template residue and duplicated headers remain, and `test.strdl`/`test-local.strdl` are unwired fixtures. | Obsolete infrastructure section above. | Maintenance noise and manual-only validation remain. | Phase 6, Phase 7, or Phase 8 as appropriate |
+
+### Provisional implementation order
+
+1. **Phase 2 — grammar foundation:** document and test node names, fields, precedence, and associativity before changing public CST shapes. Resolve declared-but-unused precedence levels and define the intentional wrapper hierarchy.
+2. **Phase 3 — language coverage:** collect evidence from official Strudel sources first, then implement only verified gaps. Keep mini-notation opaque and add corpus coverage for each change.
+3. **Phase 4 — robustness:** add malformed-input regression tests and an automated incremental-versus-fresh equivalence harness.
+4. **Phase 5 — queries:** decide the official query surface, remove or relocate semantic analysis, then register, export, and test captures against the stable Phase 2/3 CST.
+5. **Phase 6 — validation and performance:** turn the temporary fixtures and driver into a repository-owned harness, add missing test layers, and wire validation into CI.
+6. **Phase 7 — packaging and compatibility:** resolve binding decisions and metadata gaps, then verify clean installation and package contents.
+7. **Phase 8 — documentation and release readiness:** complete consumer/contributor documentation, release notes, controlled publishing, and final validation.
+
+This order is recorded as provisional. It follows the phase dependencies in [AGENTS.md](../AGENTS.md) without starting a later phase before its prerequisites.
