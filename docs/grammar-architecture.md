@@ -140,7 +140,7 @@ Tree-sitter's standard error recovery applies; no custom scanner is used. The gr
 
 Template literals expose only `${...}` substitutions as expression children. All other backtick content is opaque literal text. Tagged templates expose a `tag` expression and an opaque `template_string`.
 
-Phase 4 has begun with dedicated unfinished-call, incomplete-expression, and missing-delimiter cases in `test/corpus/incomplete_calls.txt`, `test/corpus/incomplete_expressions.txt`, and `test/corpus/missing_delimiters.txt`. Remaining incomplete-syntax categories and incremental-parsing regression tests are still pending.
+Phase 4 has begun with dedicated unfinished-call, incomplete-argument-list, incomplete-expression, and missing-delimiter cases in `test/corpus/incomplete_calls.txt`, `test/corpus/incomplete_argument_lists.txt`, `test/corpus/incomplete_expressions.txt`, and `test/corpus/missing_delimiters.txt`. Remaining incomplete-syntax categories and incremental-parsing regression tests are still pending.
 
 ## Verification
 
