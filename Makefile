@@ -4,7 +4,7 @@ endif
 
 LANGUAGE_NAME := tree-sitter-strudel
 HOMEPAGE_URL := https://github.com/pedrozappa/tree-sitter-strdl
-VERSION := 1.2.0
+VERSION := 1.3.0
 
 # repository
 SRC_DIR := src

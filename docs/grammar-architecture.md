@@ -1,6 +1,6 @@
 # Grammar architecture
 
-This document records the grammar foundation established in Phase 2. [grammar.js](../grammar.js) remains the authoritative grammar definition; generated files under `src/` are build artifacts. The node and field names described here are the public syntax-tree API baseline as of version `1.2.0`.
+This document records the grammar foundation established in Phase 2. [grammar.js](../grammar.js) remains the authoritative grammar definition; generated files under `src/` are build artifacts. The node and field names described here are the public syntax-tree API baseline as of version `1.3.0`.
 
 ## Scope
 
