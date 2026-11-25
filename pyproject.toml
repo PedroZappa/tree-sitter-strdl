@@ -15,7 +15,7 @@ classifiers = [
 ]
 authors = [{ name = "Zedro", email = "45104292+PedroZappa@users.noreply.github.com " }]
 requires-python = ">=3.10"
-license.text = "MIT"
+license.text = "AGPL-3.0-only"
 readme = "README.md"
 
 [project.urls]

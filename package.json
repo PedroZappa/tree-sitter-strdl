@@ -3,7 +3,7 @@
   "version": "1.1.8",
   "description": "Parser for Strudel, a Tidal Cycles base live coding tool",
   "repository": "https://github.com/pedrozappa/tree-sitter-strdl",
-  "license": "MIT",
+  "license": "AGPL-3.0-only",
   "author": {
     "name": "Zedro",
     "email": "45104292+PedroZappa@users.noreply.github.com ",

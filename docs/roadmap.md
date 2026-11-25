@@ -35,7 +35,7 @@ The immediate task is to complete the Phase 1 repository audit and record its fi
 - [x] Capture the current functional baseline: grammar generation, corpus tests, Node.js binding tests, and query compilation.
 - [x] Verify whether regenerated files under `src/` match the committed artifacts.
 - [x] Inventory syntax coverage against the required constructs in `AGENTS.md`.
-- [ ] Inventory bindings, dependencies, queries, tests, CI, packaging, and licensing.
+- [x] Inventory bindings, dependencies, queries, tests, CI, packaging, and licensing.
 - [ ] Write `docs/repository-assessment.md` with findings, risks, prioritized gaps, and the implementation order.
 - [x] Link the assessment from [docs/README.md](README.md).
 
@@ -47,11 +47,11 @@ The immediate task is to complete the Phase 1 repository audit and record its fi
 
 ### Inspect the complete repository
 
-- [ ] Record repository purpose, scope, and current architecture.
-- [ ] Inventory tracked files, generated artifacts, bindings, queries, tests, scripts, and CI workflows.
+- [x] Record repository purpose, scope, and current architecture.
+- [x] Inventory tracked files, generated artifacts, bindings, queries, tests, scripts, and CI workflows.
 - [ ] Identify obsolete, duplicated, or unowned infrastructure.
-- [ ] Record which files are authoritative and which are generated.
-- [ ] Establish the current versioning and release model.
+- [x] Record which files are authoritative and which are generated.
+- [x] Establish the current versioning and release model.
 
 ### Understand the current grammar
 
@@ -63,31 +63,33 @@ The immediate task is to complete the Phase 1 repository audit and record its fi
 
 ### Audit bindings and dependencies
 
-- [ ] Test or inspect each existing binding: C, Go, Node.js, Python, Rust, and Swift.
-- [ ] Record which bindings are maintained, generated, and reachable from package metadata.
-- [ ] List direct and development dependencies and their purpose.
-- [ ] Verify dependency versions against the supported Tree-sitter CLI and runtime policy.
+- [x] Test or inspect each existing binding: C, Go, Node.js, Python, Rust, and Swift.
+- [x] Record which bindings are maintained, generated, and reachable from package metadata.
+- [x] List direct and development dependencies and their purpose.
+- [x] Verify dependency versions against the supported Tree-sitter CLI and runtime policy.
 - [ ] Identify dependencies that are unnecessary or unmaintained.
 
 ### Investigate licensing
 
-- [ ] Confirm the authoritative repository license.
-- [ ] Compare license declarations in `LICENSE`, `package.json`, `tree-sitter.json`, `Cargo.toml`, `pyproject.toml`, and binding files.
+- [x] Confirm the authoritative repository license.
+- [x] Compare license declarations in `LICENSE`, `package.json`, `tree-sitter.json`, `Cargo.toml`, `pyproject.toml`, and binding files.
+- [x] Investigate license history and published package metadata.
+- [x] Align project license declarations with AGPL-3.0-only.
 - [ ] Verify licenses of reused grammar code or assets.
 - [ ] Record attribution requirements.
-- [ ] Escalate licensing uncertainty before substantial code reuse or license changes.
+- [x] Escalate licensing uncertainty before substantial code reuse or license changes.
 
 ### Inspect tests, queries, and generated artifacts
 
-- [ ] Catalog existing corpus tests and the syntax each one covers.
+- [x] Catalog existing corpus tests and the syntax each one covers.
 - [ ] Determine whether expected trees are explicit and intentional.
-- [ ] Compile and execute `queries/highlights.scm` and `queries/locals.scm`.
-- [ ] Check query capture names and registration in `tree-sitter.json` and `package.json`.
-- [ ] Regenerate parser artifacts and compare them with committed files.
+- [x] Compile and execute `queries/highlights.scm` and `queries/locals.scm`.
+- [x] Check query capture names and registration in `tree-sitter.json` and `package.json`.
+- [x] Regenerate parser artifacts and compare them with committed files.
 
 ### Establish baselines
 
-- [ ] Record commands for grammar generation and functional tests.
+- [x] Record commands for grammar generation and functional tests.
 - [ ] Establish a fresh-parsing latency baseline.
 - [ ] Establish an incremental-parsing latency baseline.
 - [ ] Establish representative and stress-test fixtures.
@@ -95,10 +97,10 @@ The immediate task is to complete the Phase 1 repository audit and record its fi
 
 ### Phase 1 acceptance criteria
 
-- [ ] `docs/repository-assessment.md` exists and links to evidence.
+- [x] `docs/repository-assessment.md` exists and links to evidence.
 - [ ] Every significant gap has a priority and recommended phase.
 - [ ] Functional and performance baselines are recorded with reproduction commands.
-- [ ] Licensing, bindings, generated artifacts, tests, queries, and CI are explicitly assessed.
+- [x] Licensing, bindings, generated artifacts, tests, queries, and CI are explicitly assessed.
 - [ ] The implementation order is approved or recorded as provisional.
 
 ---
@@ -467,3 +469,6 @@ For checked items, add a short entry using this format:
 - Phase 8 — Compatibility documentation: verified by [compatibility.md](compatibility.md), including the runtime matrix and known limitations.
 - Phase 8 — Regeneration and corpus tests: `node_modules/.bin/tree-sitter generate` was idempotent and `tree-sitter test` passed 7/7 corpus tests with CLI 0.27.2.
 - Phase 1 — Inventory syntax coverage: compared `grammar.js`, `test/corpus/`, `src/node-types.json`, and temporary `tree-sitter parse --json-summary`/`--cst` probes on 2026-11-25; evidence: [docs/repository-assessment.md](repository-assessment.md#syntax-coverage-inventory).
+- Phase 1 — Inventory bindings, dependencies, queries, tests, CI, packaging, and licensing: inspected tracked source, manifests, queries, corpus tests, fixtures, and the single publish workflow on 2026-11-25; evidence: [docs/repository-assessment.md](repository-assessment.md#repository-inventory). The license conflict was unresolved at inventory time and was later decided.
+- Phase 1 — Investigate license history: inspected `git log`, commit diffs, and public npm/crates.io/PyPI metadata for published `1.1.8` artifacts on 2026-11-25; evidence: [docs/repository-assessment.md](repository-assessment.md#history-and-published-artifact-evidence). The AGPL/MIT conflict persists in published artifacts.
+- Phase 1 — Resolve license authority: owner confirmed AGPL-3.0 as authoritative on 2026-11-25; project declarations were aligned to `AGPL-3.0-only`; evidence: [docs/repository-assessment.md](repository-assessment.md#licensing-decision).

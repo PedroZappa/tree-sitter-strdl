@@ -1,7 +1,7 @@
 /**
  * @file Parser for Strudel, a Tidal Cycles base live coding tool
  * @author Zedro <45104292+PedroZappa@users.noreply.github.com >
- * @license MIT
+ * @license AGPL-3.0-only
  */
 
 /// <reference types="tree-sitter-cli/dsl" />
