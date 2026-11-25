@@ -15,7 +15,7 @@ module.exports = grammar({
     $.comment,
   ],
 
-  precedences: $ => [
+  precedences: () => [
     [
       "assignment",
       "ternary",
@@ -349,7 +349,7 @@ module.exports = grammar({
       "]",
     ),
 
-    string: $ => choice(
+    string: () => choice(
       seq('"', repeat(choice(/[^"\\\n]/, /\\./)), '"'),
       seq("'", repeat(choice(/[^'\\\n]/, /\\./)), "'"),
     ),
@@ -366,35 +366,33 @@ module.exports = grammar({
       "}",
     ),
 
-    _template_chars: $ => token(choice(
+    _template_chars: () => token(choice(
       /[^`\\$]+/,
       /\\./,
       "$",
     )),
 
-    number: $ => token(choice(
+    number: () => token(choice(
       /0[xX][0-9a-fA-F]+/,
       /\d*\.\d+/,
       /\d+/,
     )),
 
-    identifier: $ => /[A-Za-z_$][\w$]*/,
+    identifier: () => /[A-Za-z_$][\w$]*/,
 
-    comment: $ => token(choice(
+    comment: () => token(choice(
       seq("//", /(.*)?/),
       /\/\*([^*]|\*+[^*/])*\*+\//,
     )),
   },
 });
 
-function commaSep(rule) {
-  return optional(seq(rule, repeat(seq(",", rule))));
-}
-
+/** @param {RuleOrLiteral} rule */
 function commaSep1(rule) {
   return seq(rule, repeat(seq(",", rule)));
 }
 
+/** @param {RuleOrLiteral} rule */
 function commaSepTrailing(rule) {
   return optional(seq(
     rule,

@@ -1,5 +1,6 @@
 {
   "name": "tree-sitter-strudel",
+  "type": "commonjs",
   "version": "1.3.0",
   "description": "Parser for Strudel, a Tidal Cycles base live coding tool",
   "repository": "https://github.com/pedrozappa/tree-sitter-strdl",
