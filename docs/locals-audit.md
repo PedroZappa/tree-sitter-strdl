@@ -105,3 +105,4 @@ The following object-key roadmap item removed `@local.definition.property` from 
 - Final `make test-query` — verified 23 object key ranges covering identifier, string, number, and computed keys; none received a `local.definition.*` capture.
 - Negative control — restoring `(pair key: (identifier) @local.definition.property)` to a temporary locals query made the object-key check fail with `exit=1`.
 - `make test-query-execution` — verified 22 variable declaration ranges receive `local.definition.var`, 3 arrow parameter ranges receive `local.definition.parameter`, and 30 call identifier ranges receive `local.reference` across the three fixtures.
+- `make test-query-registration` — verified that `locals.scm` is registered in `tree-sitter.json` and `package.json`, included by query-carrying packaging rules, and exported as `LOCALS_QUERY` by the Python and Rust bindings.

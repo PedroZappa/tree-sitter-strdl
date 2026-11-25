@@ -32,7 +32,7 @@ Evidence IDs refer to [syntax evidence](syntax-evidence.md). Only GSB v1 communi
 - [`queries/highlights.scm`](../queries/highlights.scm) — official highlight query.
 - [`queries/locals.scm`](../queries/locals.scm) — official locals query.
 - No `queries/injections.scm` exists.
-- `tree-sitter.json` explicitly registers `queries/highlights.scm`. It does not register an injection query. The `injection-regex` metadata remains valid for host-side injection.
+- `tree-sitter.json` and `package.json` register `queries/highlights.scm` and `queries/locals.scm`. Neither registers an injection query. The `injection-regex` metadata remains valid for host-side injection.
 
 ## Revisit conditions
 
@@ -53,4 +53,5 @@ Until then, creating an empty or speculative `injections.scm` would add an offic
 - Reviewed D05, D09, D20, D33, S07, S11, S12, S15, S16, S17, E10, C01, and C02 in [syntax evidence](syntax-evidence.md) plus the opacity decisions in [syntax coverage matrix](syntax-coverage-matrix.md).
 - Confirmed against the official Tree-sitter documentation that `injection-regex` is a language-name match for potential injection sites, while `injections.scm` selects embedded content within the current grammar.
 - `make test-query` — passed with the unchanged two-query inventory.
+- `make test-query-registration` — confirmed that only highlights and locals are registered and exported; absent injection and tag queries remain unregistered.
 - No query file was created or modified for this evaluation.

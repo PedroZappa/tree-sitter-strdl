@@ -32,12 +32,15 @@ pub const LANGUAGE: LanguageFn = unsafe { LanguageFn::from_raw(tree_sitter_strud
 /// [`node-types.json`]: https://tree-sitter.github.io/tree-sitter/using-parsers/6-static-node-types
 pub const NODE_TYPES: &str = include_str!("../../src/node-types.json");
 
-// NOTE: uncomment these to include any queries that this grammar contains:
+/// The content of the [`highlights.scm`] query.
+///
+/// [`highlights.scm`]: https://tree-sitter.github.io/tree-sitter/3-syntax-highlighting.html
+pub const HIGHLIGHTS_QUERY: &str = include_str!("../../queries/highlights.scm");
 
-// pub const HIGHLIGHTS_QUERY: &str = include_str!("../../queries/highlights.scm");
-// pub const INJECTIONS_QUERY: &str = include_str!("../../queries/injections.scm");
-// pub const LOCALS_QUERY: &str = include_str!("../../queries/locals.scm");
-// pub const TAGS_QUERY: &str = include_str!("../../queries/tags.scm");
+/// The content of the [`locals.scm`] query.
+///
+/// [`locals.scm`]: https://tree-sitter.github.io/tree-sitter/3-syntax-highlighting.html#local-variables
+pub const LOCALS_QUERY: &str = include_str!("../../queries/locals.scm");
 
 #[cfg(test)]
 mod tests {

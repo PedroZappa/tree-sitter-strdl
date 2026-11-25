@@ -164,6 +164,16 @@ A later targeted probe found one latent overlap not present in the original fixt
 
 The two original fixtures still do not contain `?.` or `${`; those tokens are exercised by `test/query/determinism.strdl`. Capture-name meanings and breaking-change history are documented in [highlight captures](highlight-captures.md).
 
+## Registration, packaging, and binding exports
+
+The official query inventory is the set of `.scm` files under `queries/`: `highlights.scm` and `locals.scm`. No `injections.scm` or `tags.scm` exists, and neither is registered or exported. The [Tree-sitter configuration schema](https://tree-sitter.github.io/tree-sitter/assets/schemas/config.schema.json) defines `highlights`, `locals`, `injections`, and `tags` as the query-path registration keys.
+
+Both official queries are registered in `tree-sitter.json` under the matching `highlights` and `locals` keys and in the legacy `tree-sitter` metadata in `package.json`. Packaging rules that carry queries use directory or wildcard inclusion, so both files are covered by npm `files`, Cargo `include`, `setup.py`, `Package.swift`, the Makefile `install` rule, and `scripts/local_install.sh`.
+
+The Python binding exposes `HIGHLIGHTS_QUERY` and `LOCALS_QUERY` through `__getattr__`, `__all__`, and the `.pyi` stub. The Rust binding exposes `HIGHLIGHTS_QUERY` and `LOCALS_QUERY` through `include_str!`. These exports make the existing packaged query files available without inventing injection or tag queries.
+
+`scripts/check_query_registration.py` derives the inventory from `queries/`, checks both registration surfaces and every query-carrying packaging rule, verifies the binding exports, and rejects registration of absent query kinds. It is wired into `make test-query-registration`, which `make test-query` runs.
+
 ## Verification log
 
 - `node_modules/.bin/tree-sitter query queries/highlights.scm test.strdl test-local.strdl` — compiled and executed successfully; all initial patterns reached output.
@@ -174,3 +184,8 @@ The two original fixtures still do not contain `?.` or `${`; those tokens are ex
 - Final `make test-query` — 1,096 captures across 1,096 ranges with zero duplicate captures across `test.strdl`, `test-local.strdl`, and `test/query/determinism.strdl`.
 - `make test-query-compile` — automated the earlier negative controls: both official queries compile, and invalid node type and invalid field name queries are rejected for the expected reasons.
 - `make test-query-execution` — asserted expected highlight captures on nine grammar-derived roles: call identifiers, member-expression callees, declaration names, arrow parameters, identifier object keys, labels, substitution identifiers, strings, and numbers. A wrong expected capture on call identifiers failed with `exit=1`.
+- `make test-query-registration` — verified both official queries in `tree-sitter.json`, `package.json`, all query-carrying packaging rules, and the Python/Rust binding exports; absent injection and tag queries are not registered or exported.
+- Registration negative control — temporarily removing the `locals` registration from `tree-sitter.json` made the checker fail with `exit=1`.
+- Absent-query negative control — temporarily adding an `injections` entry to `package.json` made the checker fail with `exit=1`.
+- `npm pack --dry-run --json` — confirmed that `queries/highlights.scm` and `queries/locals.scm` are both present in the npm package file list.
+- `python3 -m py_compile bindings/python/tree_sitter_strudel/__init__.py` and `cargo fmt --check` — passed. `cargo check --offline` could not resolve `tree-sitter-language` from the local crate cache, so Rust compilation was not verified offline.

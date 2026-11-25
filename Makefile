@@ -97,7 +97,7 @@ D = $(shell tput sgr0 2>/dev/null)
 _SUCCESS = [$(GRN)SUCCESS$(D)]
 _INFO    = [$(BLU)INFO$(D)]
 
-.PHONY: all build generate test test-recovery test-incremental test-query-compile test-query-execution test-query test-node parse playground wasm \
+.PHONY: all build generate test test-recovery test-incremental test-query-compile test-query-execution test-query-registration test-query test-node parse playground wasm \
 	local-install install uninstall clean check-generated verify verify-all ci \
 	docs docs-open help
 
@@ -176,7 +176,12 @@ test-query-execution:	## Assert query captures on representative compositions
 	@python3 scripts/check_query_captures.py $(TS) $(QUERY_DIR)/locals.scm test/query/call_identifiers.scm local.reference "call identifiers" $(QUERY_EXECUTION_FIXTURES)
 	@echo "$(YEL)* $(_SUCCESS) Query execution tests completed$(D)"
 
-test-query: test-query-compile test-query-execution	## Compile, run, and check official queries against the fixtures
+test-query-registration:	## Verify official queries are registered, packaged, and exported
+	@echo "$(YEL)Running query registration checks...$(D)"
+	@python3 scripts/check_query_registration.py
+	@echo "$(YEL)* $(_SUCCESS) Query registration checks completed$(D)"
+
+test-query: test-query-compile test-query-execution test-query-registration	## Compile, run, and check official queries against the fixtures
 	@echo "$(YEL)Running query checks...$(D)"
 	@for query in $(QUERIES); do \
 		$(TS) query --quiet --grammar-path . "$$query" $(FIXTURES) || exit 1; \

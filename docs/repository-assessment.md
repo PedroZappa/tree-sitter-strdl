@@ -368,6 +368,8 @@ ABI-15 compatibility is encoded for Node.js, Python, Rust, and in the local Swif
 - No `injections.scm` or `tags.scm` exists. `tree-sitter.json` declares `"injection-regex": "^strudel$"` without a corresponding injection query. Phase 5 concluded that the missing injection query is intentional; see [injection evaluation](injections-evaluation.md).
 - Both query files compile and execute, but no automated compilation or capture tests exist. Python and Rust query exports are commented out despite queries being copied into packages.
 
+Phase 5 update: both queries are now registered in `tree-sitter.json` and `package.json`, exported by the Python and Rust bindings, and covered by automated compilation, capture, and registration checks. See [query audit](query-audit.md), [highlight captures](highlight-captures.md), [locals audit](locals-audit.md), and [injection evaluation](injections-evaluation.md). The bullets above record the original Phase 1 snapshot.
+
 ### Tests and fixtures
 
 | Corpus file | Coverage |
@@ -402,7 +404,7 @@ Captured on 2026-11-25 from the tracked file list, `git status --short --ignored
 | Node prebuild outputs and `prebuildify` | Unowned packaging configuration | `package.json` packages `prebuilds/**` and `*.wasm` and declares `prebuildify`, but no npm script invokes it, no `prebuilds/` directory is tracked, and `*.wasm` is ignored. | Medium — Phase 7: add generation scripts or remove packaging claims that are not exercised. |
 | Zig template residue | Obsolete template metadata | `tree-sitter.json` disables Zig and no Zig binding files exist, while `.gitattributes` still marks `build.zig` and `build.zig.zon` as generated. | Low — Phase 7/8: remove stale markers unless Zig support is deliberately revived. |
 | Duplicate C headers | Duplicated template output | `bindings/c/tree_sitter/tree-sitter-strudel.h` and `bindings/swift/TreeSitterStrudel/strudel.h` are byte-identical and declare the same C symbol. | Low — document as expected template duplication; consolidate only if a shared header is introduced. |
-| `locals.scm` registration/export gap | Unowned query surface | The query is packaged but not registered in `tree-sitter.json` or `package.json`; Python and Rust query constants remain commented out. | Medium — Phase 5: decide the official query API and register/export it consistently. |
+| `locals.scm` registration/export gap | Unowned query surface | The query is packaged but not registered in `tree-sitter.json` or `package.json`; Python and Rust query constants remain commented out. | Resolved in Phase 5: registered and exported consistently; verified by `make test-query-registration`. |
 | `test.strdl` and `test-local.strdl` | Unwired fixtures | Neither file is referenced by test scripts; `test.strdl` is a representative composition and `test-local.strdl` is a manual query probe. | Medium — Phase 6: convert them into automated fixtures or document them as manual-only. |
 | Publish workflow | Unowned external behavior | The only workflow triggers on tag push and uses `tree-sitter/workflows` at the moving `@main` ref. No pull-request validation is defined in this repository. | High — Phase 8: add PR validation and pin reusable workflow refs. |
 

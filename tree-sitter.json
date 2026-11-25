@@ -12,7 +12,8 @@
       ],
       "injection-regex": "^strudel$",
       "class-name": "TreeSitterStrudel",
-      "highlights": "queries/highlights.scm"
+      "highlights": "queries/highlights.scm",
+      "locals": "queries/locals.scm"
     }
   ],
   "metadata": {
