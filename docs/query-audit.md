@@ -172,3 +172,4 @@ The two original fixtures still do not contain `?.` or `${`; those tokens are ex
 - Duplicate-capture negative control — rejected as expected with `exit=1`.
 - Template-substitution probe — exposed a `variable`/`expression` overlap, prompting the explicit template expression list; `tree-sitter parse test/query/determinism.strdl` now reports no `ERROR` or `MISSING` nodes.
 - Final `make test-query` — 1,096 captures across 1,096 ranges with zero duplicate captures across `test.strdl`, `test-local.strdl`, and `test/query/determinism.strdl`.
+- `make test-query-compile` — automated the earlier negative controls: both official queries compile, and invalid node type and invalid field name queries are rejected for the expected reasons.

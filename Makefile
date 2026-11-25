@@ -96,7 +96,7 @@ D = $(shell tput sgr0 2>/dev/null)
 _SUCCESS = [$(GRN)SUCCESS$(D)]
 _INFO    = [$(BLU)INFO$(D)]
 
-.PHONY: all build generate test test-recovery test-incremental test-query test-node parse playground wasm \
+.PHONY: all build generate test test-recovery test-incremental test-query-compile test-query test-node parse playground wasm \
 	local-install install uninstall clean check-generated verify verify-all ci \
 	docs docs-open help
 
@@ -154,7 +154,12 @@ test-incremental:	## Compare incremental and fresh parses (INCREMENTAL_FILTER=id
 	@python3 scripts/test_incremental.py $(INCREMENTAL_FILTER)
 	@echo "$(YEL)* $(_SUCCESS) Incremental equivalence tests completed$(D)"
 
-test-query:	## Compile, run, and check official queries against the fixtures
+test-query-compile:	## Compile official queries and verify invalid queries are rejected
+	@echo "$(YEL)Running query compilation checks...$(D)"
+	@python3 scripts/check_query_compilation.py $(TS) $(QUERIES)
+	@echo "$(YEL)* $(_SUCCESS) Query compilation checks completed$(D)"
+
+test-query: test-query-compile	## Compile, run, and check official queries against the fixtures
 	@echo "$(YEL)Running query checks...$(D)"
 	@for query in $(QUERIES); do \
 		$(TS) query --quiet --grammar-path . "$$query" $(FIXTURES) || exit 1; \
