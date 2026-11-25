@@ -1,6 +1,6 @@
-# Official Strudel syntax evidence
+# Strudel syntax evidence
 
-This document records syntax examples collected from official Strudel documentation and shipped source/runtime on 2026-11-25. It is the evidence base for the coverage matrix in Phase 3; it does not itself change the grammar.
+This document records syntax examples collected from official Strudel documentation, shipped source/runtime, official examples/tutorials, and maintained community sources on 2026-11-25. It is the evidence base for the coverage matrix in Phase 3; it does not itself change the grammar.
 
 ## Sources and method
 
@@ -117,6 +117,22 @@ This pass covers sources distinct from the documentation pages: the repository's
 | E17 | Identifier member chain as a call argument and as a receiver | `sine.add(saw.slow(4)).range(0,7).segment(8)` | [`examples/minimal-repl/tune.mjs`](https://codeberg.org/uzu/strudel/src/branch/main/examples/minimal-repl/tune.mjs) |
 | E18 | **Inactive:** object spread and logical OR in commented-out fixtures | `const mix = (key) => vol({ ... }[key]||0);` and `{...osc('sawtooth'), ...adsr(0, .1, .4)}` | [`test/testtunes.mjs`](https://codeberg.org/uzu/strudel/src/branch/main/test/testtunes.mjs) — commented-out tunes; do not treat as confirmed support |
 
+## Maintained community examples
+
+This pass adds evidence from community-maintained sources separate from `uzu/strudel`. Repository activity was checked with the GitHub API on 2026-11-25: `Coriou/strasbeat` was pushed 2026-11-17, `edcrub/edcrub.github.io` 2026-10-26, and `calvinw/strudel-llm-docs` 2026-04-27. The GoSuraj GSB post declares a 2026-02-04 publication date. Only user-facing pattern code and documented helper code are quoted; application source, generated JSON, and page infrastructure are excluded. Mini-notation remains opaque string content, and `...` marks omitted text.
+
+| ID | Constructs demonstrated | Example (verbatim excerpt) | Community source |
+| --- | --- | --- | --- |
+| C01 | `export default` of a template-literal composition; the template body is Strudel source | <code>export default &#96;setcpm(110 / 4)</code><br><code>drums: stack(</code><br><code>  ...</code><br><code>&#96;;</code> | [`patterns/01-hello.js`](https://raw.githubusercontent.com/Coriou/strasbeat/main/patterns/01-hello.js) |
+| C02 | `var` declarations and member chains inside an exported template literal | `var chords = chord("<[Fm7 Fm Cm Gm]>".slow(4))`<br>`var start = n("0 1 2 3 4 5 6 7".fast(2)).s("gm_synth_bass_1:3")` | [`patterns/arrange-demo.js`](https://raw.githubusercontent.com/Coriou/strasbeat/main/patterns/arrange-demo.js) |
+| C03 | Bare assignment expression statement, zero-parameter arrow callback, member access | `bpm=60`<br>`.repeatX(2, 2).modulate(o0, () => mouse.x * 0.0005)` | [`strudel/patterns/ambient 251003.txt`](https://raw.githubusercontent.com/edcrub/edcrub.github.io/main/strudel/patterns/ambient%20251003.txt) |
+| C04 | `const` declarations with division, multiplication, and a parenthesized expression | `const cpmVal = 60/4`<br>`const cycleSec = 60 / cpmVal`<br>`const frac = (cycles * cycleSec) / sampLen` | [`strudel/patterns/remember 261019`](https://raw.githubusercontent.com/edcrub/edcrub.github.io/main/strudel/patterns/remember%20261019) |
+| C05 | `try` / `catch` block, call expression, `console.log` | `try {`<br>`  risky_pattern().play()`<br>`} catch(e) {`<br>`  console.log("Pattern error:", e)`<br>`}` | [`docs/advanced_features.md`](https://raw.githubusercontent.com/calvinw/strudel-llm-docs/main/docs/advanced_features.md) |
+| C06 | Named `function` declaration with a default object parameter and an `Object.entries(...).forEach(...)` chain | `function createGsb(doh={}) { // Welcome to the "bakery"`<br>`  ...`<br>`}` | [`Custom Functions with GSB`](https://www.gosuraj.com/blog/post/gsb) — GSB v1 code embedded in the REPL iframe |
+| C07 | Object spread and an array-destructured arrow parameter | `      ...doh,`<br>`  }).forEach(([n, f]) => register('$' + n, f))` | [`Custom Functions with GSB`](https://www.gosuraj.com/blog/post/gsb) — GSB v1 code embedded in the REPL iframe |
+
+C06 and C07 use only the GSB v1 example. The page labels v2–v5 experimental, so those variants are not treated as established syntax.
+
 ## Strudel-specific syntax shape
 
 These forms are written in the REPL but have a JavaScript-compatible surface shape. The grammar should parse the shape and leave meaning to downstream tools:
@@ -129,10 +145,10 @@ These forms are written in the REPL but have a JavaScript-compatible surface sha
 
 ## Observations for the next coverage steps
 
-Syntax **confirmed** across documentation, source/runtime, and official example/tutorial evidence includes: `const`/`let` declarations; expression statements and semicolons; call and nested call expressions; member chains; arrow functions with zero, one, and two parameters, nested callbacks, and block bodies with `return`; arrays and nested arrays; object literals with unquoted and quoted keys, array and object values, and trailing commas; `new` expressions; numeric literals including decimals, hexadecimal, and unary minus; single-, double-, and backtick-quoted strings; line and block comments; parenthesized expressions; binary `+`, `*`, and `/`; comparison `>`; ternary conditional expressions; template interpolation; labeled statements; top-level `await`; named imports and `export const`; tagged template literals; computed member access.
+Syntax **confirmed** across documentation, source/runtime, official example/tutorial, and maintained community evidence includes: `var`/`let`/`const` declarations; expression and assignment statements and semicolons; call and nested call expressions; member chains; arrow functions with zero, one, and two parameters, nested callbacks, array-destructured parameters, and block bodies with `return`; named `function` declarations with a default object parameter; arrays and nested arrays; object literals with unquoted and quoted keys, array and object values, trailing commas, and object spread; `new` expressions; numeric literals including decimals, hexadecimal, and unary minus; single-, double-, and backtick-quoted strings; line and block comments; parenthesized expressions; binary `+`, `*`, and `/`; comparison `>`; ternary conditional expressions; template interpolation; labeled statements; top-level `await`; `try`/`catch`; named imports, `export const`, and `export default`; tagged template literals; computed member access.
 
-Runtime source unwraps `ChainExpression` (the ESTree representation of optional chaining) in S17, so optional-chaining-shaped callees are recognized. Object destructuring and dynamic `import()` appear only in a commented-out test (S18), and object spread and logical OR only in commented-out fixtures (E18); these remain lower-confidence requirements until active examples establish them.
+Runtime source unwraps `ChainExpression` (the ESTree representation of optional chaining) in S17, so optional-chaining-shaped callees are recognized. Object destructuring and dynamic `import()` appear only in a commented-out test (S18), and logical OR only in commented-out fixtures (E18); these remain lower-confidence requirements until active examples establish them. Object spread was also commented out in E18 but is established independently by C07.
 
-Not established by these passes: `var`; rest parameters; nullish coalescing; default imports; `export default`; named `function` declarations. Absence is not evidence that a construct is irrelevant; it identifies what must be checked in maintained community examples before the grammar accepts or excludes it.
+Not established by these passes: rest parameters, nullish coalescing, and default imports. Absence is not evidence that a construct is irrelevant; it identifies what the coverage matrix must classify as missing or intentionally excluded.
 
-The next step is to record maintained community examples, then add all significant requirements to a coverage matrix with these sources.
+The next step is to add all significant requirements to a coverage matrix with these sources.
