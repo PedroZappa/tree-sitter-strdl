@@ -5,7 +5,7 @@ This folder contains project-level planning and developer documentation for `tre
 ## Documents
 
 - [Roadmap](roadmap.md) — phased implementation plan with checkable tasks and acceptance criteria.
-- [Repository assessment](repository-assessment.md) — evolving Phase 1 findings, baseline, ABI 15 upgrade resolution, syntax coverage inventory, repository inventory, and AGPL-3.0 license decision.
+- [Repository assessment](repository-assessment.md) — evolving Phase 1 findings, baseline, ABI 15 upgrade resolution, syntax coverage inventory, repository inventory, cleanup candidates, and AGPL-3.0 license decision.
 - [Compatibility](compatibility.md) — supported CLI, parser ABI, runtime floor, and binding validation matrix.
 
 ## Sources of truth

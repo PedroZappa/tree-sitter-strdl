@@ -174,6 +174,22 @@ All seven expected trees are explicit. `test.strdl` is a larger representative c
 - Version `1.1.8` is aligned across npm, lockfile, tree-sitter metadata, Python, Cargo, CMake, Make, and the existing git tag. The tracked `tree-sitter-strudel.pc` is stale at `1.1.1` with an empty description.
 - No changelog or release notes file exists. Publishing occurs automatically on tag push; no explicit approval environment is visible in the workflow.
 
+### Obsolete, duplicated, and unowned infrastructure
+
+Captured on 2026-11-25 from the tracked file list, `git status --short --ignored`, generated-file markers, and current build/package configuration. These are candidate cleanup or follow-up items, not removals already performed.
+
+| Candidate | Classification | Evidence | Priority and recommended phase |
+| --- | --- | --- | --- |
+| Root `tree-sitter-strudel.pc` | Obsolete/stale generated artifact | Tracked file is generated from `bindings/c/tree-sitter-strudel.pc.in` by `Makefile:61-67`, while CMake writes a fresh copy to its build directory (`CMakeLists.txt:49-56`). The tracked file still declares version `1.1.1` with an empty description, and the Makefile defines no `DESCRIPTION` variable. | High — Phase 7: either stop tracking generated output and ignore it, or define `DESCRIPTION` and regenerate it before release. Removal requires explicit approval. |
+| Go binding metadata | Unowned/incomplete binding | `tree-sitter.json` enables Go and source/test files are tracked, but `go.mod` and `go.sum` are absent even though `.gitattributes` marks them generated. The recorded test passed only in a temporary module, and no Go publish job exists. | High — Phase 7: add module metadata or disable/remove the binding after a compatibility decision. |
+| Swift dependency pin | Unowned reproducibility metadata | `Package.swift` declares `SwiftTreeSitter from: "0.10.0"`. The local `Package.resolved` pins SwiftTreeSitter `0.25.0` and tree-sitter `0.25.10`, but `.gitignore` ignores that file. | Medium — Phase 7: decide whether to commit the pin or enforce the runtime floor in tracked metadata. |
+| Node prebuild outputs and `prebuildify` | Unowned packaging configuration | `package.json` packages `prebuilds/**` and `*.wasm` and declares `prebuildify`, but no npm script invokes it, no `prebuilds/` directory is tracked, and `*.wasm` is ignored. | Medium — Phase 7: add generation scripts or remove packaging claims that are not exercised. |
+| Zig template residue | Obsolete template metadata | `tree-sitter.json` disables Zig and no Zig binding files exist, while `.gitattributes` still marks `build.zig` and `build.zig.zon` as generated. | Low — Phase 7/8: remove stale markers unless Zig support is deliberately revived. |
+| Duplicate C headers | Duplicated template output | `bindings/c/tree_sitter/tree-sitter-strudel.h` and `bindings/swift/TreeSitterStrudel/strudel.h` are byte-identical and declare the same C symbol. | Low — document as expected template duplication; consolidate only if a shared header is introduced. |
+| `locals.scm` registration/export gap | Unowned query surface | The query is packaged but not registered in `tree-sitter.json` or `package.json`; Python and Rust query constants remain commented out. | Medium — Phase 5: decide the official query API and register/export it consistently. |
+| `test.strdl` and `test-local.strdl` | Unwired fixtures | Neither file is referenced by test scripts; `test.strdl` is a representative composition and `test-local.strdl` is a manual query probe. | Medium — Phase 6: convert them into automated fixtures or document them as manual-only. |
+| Publish workflow | Unowned external behavior | The only workflow triggers on tag push and uses `tree-sitter/workflows` at the moving `@main` ref. No pull-request validation is defined in this repository. | High — Phase 8: add PR validation and pin reusable workflow refs. |
+
 ### Licensing decision
 
 The owner confirmed on 2026-11-25 that AGPL-3.0 is authoritative. The full [LICENSE](../LICENSE) file remains the AGPL-3.0 text. Project declarations in `package.json`, `package-lock.json`, `tree-sitter.json`, `pyproject.toml`, `Cargo.toml`, and `grammar.js` now use the SPDX identifier `AGPL-3.0-only`. Third-party dependency license fields in `package-lock.json` were not changed.

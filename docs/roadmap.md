@@ -49,7 +49,7 @@ The immediate task is to complete the Phase 1 repository audit and record its fi
 
 - [x] Record repository purpose, scope, and current architecture.
 - [x] Inventory tracked files, generated artifacts, bindings, queries, tests, scripts, and CI workflows.
-- [ ] Identify obsolete, duplicated, or unowned infrastructure.
+- [x] Identify obsolete, duplicated, or unowned infrastructure.
 - [x] Record which files are authoritative and which are generated.
 - [x] Establish the current versioning and release model.
 
@@ -472,3 +472,4 @@ For checked items, add a short entry using this format:
 - Phase 1 — Inventory bindings, dependencies, queries, tests, CI, packaging, and licensing: inspected tracked source, manifests, queries, corpus tests, fixtures, and the single publish workflow on 2026-11-25; evidence: [docs/repository-assessment.md](repository-assessment.md#repository-inventory). The license conflict was unresolved at inventory time and was later decided.
 - Phase 1 — Investigate license history: inspected `git log`, commit diffs, and public npm/crates.io/PyPI metadata for published `1.1.8` artifacts on 2026-11-25; evidence: [docs/repository-assessment.md](repository-assessment.md#history-and-published-artifact-evidence). The AGPL/MIT conflict persists in published artifacts.
 - Phase 1 — Resolve license authority: owner confirmed AGPL-3.0 as authoritative on 2026-11-25; project declarations were aligned to `AGPL-3.0-only`; evidence: [docs/repository-assessment.md](repository-assessment.md#licensing-decision).
+- Phase 1 — Identify obsolete, duplicated, or unowned infrastructure: compared the tracked file list, ignored artifacts, generated-file markers, and build/package configuration on 2026-11-25; evidence: [docs/repository-assessment.md](repository-assessment.md#obsolete-duplicated-and-unowned-infrastructure).
