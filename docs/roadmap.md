@@ -38,7 +38,7 @@ These observations are inputs to Phase 1, not proof that any phase is complete.
 
 ## Immediate next work
 
-Phase 2 is complete and tagged `v1.3.0`. Phase 3 evidence collection has covered official documentation, runtime source, official examples/tutorials, and maintained community examples in `docs/syntax-evidence.md`; the next work is adding each significant syntax requirement to a coverage matrix with its source.
+Phase 2 is complete and tagged `v1.3.0`. Phase 3 evidence collection and the sourced coverage matrix are complete in `docs/syntax-evidence.md` and `docs/syntax-coverage-matrix.md`; the next work is implementing verified gaps.
 
 - [x] Capture the current functional baseline: grammar generation, corpus tests, Node.js binding tests, and query compilation.
 - [x] Verify whether regenerated files under `src/` match the committed artifacts.
@@ -151,32 +151,32 @@ Phase 2 is complete and tagged `v1.3.0`. Phase 3 evidence collection has covered
 - [x] Collect examples from Strudel source code and runtime.
 - [x] Collect examples from official examples and tutorials.
 - [x] Record maintained community examples that demonstrate additional syntax.
-- [ ] Add each significant syntax requirement to a coverage matrix with its source.
+- [x] Add each significant syntax requirement to a coverage matrix with its source.
 
 ### Audit current coverage
 
-- [ ] Variable declarations: `var`, `let`, and `const`.
-- [ ] Assignments and expression statements.
-- [ ] Function calls and nested calls.
-- [ ] Member expressions and method chains.
-- [ ] Arrow functions and callbacks.
-- [ ] Function parameters, including more than one parameter.
-- [ ] Arrays and objects.
-- [ ] Object properties and shorthand properties.
-- [ ] Destructuring.
-- [ ] Spread and rest syntax.
-- [ ] Arithmetic expressions.
-- [ ] Logical and comparison expressions.
-- [ ] Unary expressions.
-- [ ] Conditional expressions.
-- [ ] Optional chaining.
-- [ ] Nullish coalescing.
-- [ ] Template literals and interpolation.
-- [ ] Single-quoted and double-quoted strings.
-- [ ] Line and block comments.
-- [ ] Parenthesized expressions.
-- [ ] Relevant import and export syntax.
-- [ ] Mini-notation remains opaque JavaScript string content.
+- [x] Variable declarations: `var`, `let`, and `const`.
+- [x] Assignments and expression statements.
+- [x] Function calls and nested calls.
+- [x] Member expressions and method chains.
+- [x] Arrow functions and callbacks.
+- [x] Function parameters, including more than one parameter.
+- [x] Arrays and objects.
+- [x] Object properties and shorthand properties.
+- [x] Destructuring.
+- [x] Spread and rest syntax.
+- [x] Arithmetic expressions.
+- [x] Logical and comparison expressions.
+- [x] Unary expressions.
+- [x] Conditional expressions.
+- [x] Optional chaining.
+- [x] Nullish coalescing.
+- [x] Template literals and interpolation.
+- [x] Single-quoted and double-quoted strings.
+- [x] Line and block comments.
+- [x] Parenthesized expressions.
+- [x] Relevant import and export syntax.
+- [x] Mini-notation remains opaque JavaScript string content.
 
 ### Implement verified gaps
 
@@ -501,3 +501,5 @@ For checked items, add a short entry using this format:
 - Phase 3 — Source/runtime evidence: inspected `packages/transpiler` (`transpiler.mjs`, `index.mjs`, four plug-ins, `test/transpiler.test.mjs`) and `packages/core` (`evaluate.mjs`, `repl.mjs`) from Codeberg `main` on 2026-11-25; recorded 18 S-IDs in [syntax-evidence.md](syntax-evidence.md). Confirms Acorn `ecmaVersion: 2022` with `allowAwaitOutsideFunction: true`, label rewriting, mini/tag plug-ins, and observed ternary/template-interpolation inputs. The commented-out destructuring/`import()` test is marked inactive evidence.
 - Phase 3 — Examples/tutorials evidence: inspected `examples/codemirror-repl/tunes.mjs`, `examples/minimal-repl/tune.mjs`, `test/testtunes.mjs`, `website/src/repl/tunes.mjs`, and tutorial pages `learn/lfo.mdx`, `learn/mondo-notation.mdx`, `recipes/arpeggios.mdx`, `understand/cycles.mdx`, and `workshop/motors.mdx` from Codeberg `main` on 2026-11-25; recorded 18 E-IDs in [syntax-evidence.md](syntax-evidence.md). Adds active evidence for `new` expressions, two-parameter arrows, unary minus, nested object/array literals, and member calls on string literals. Object spread and logical OR occur only in commented-out fixtures (E18).
 - Phase 3 — Community evidence: checked repository activity via the GitHub API and inspected user-facing pattern/helper code from `Coriou/strasbeat`, `edcrub/edcrub.github.io`, and `calvinw/strudel-llm-docs`, plus the dated GoSuraj GSB post, on 2026-11-25; recorded seven C-IDs in [syntax-evidence.md](syntax-evidence.md). Adds active evidence for `var`, assignment statements, `export default`, named `function` declarations with default parameters, array destructuring in arrow parameters, object spread, and `try`/`catch`.
+- Phase 3 — Coverage matrix: recorded M01–M45 with evidence IDs, current status, grammar/corpus audit, next action, intentional exclusions, and deferred constructs in [syntax-coverage-matrix.md](syntax-coverage-matrix.md) on 2026-11-25.
+- Phase 3 — Audit current coverage: inspected `grammar.js`, `src/node-types.json`, and committed corpus tests at `2d9b706`, then parsed 43 temporary probes under `/tmp/opencode/coverage-probes` with `node_modules/.bin/tree-sitter parse` using CLI 0.27.2 on 2026-11-25. Error-free `await`, `new`, `export const`, `export default`, and tagged-template probes were reviewed with `--cst` and classified as structurally missing. No grammar or generated files changed.

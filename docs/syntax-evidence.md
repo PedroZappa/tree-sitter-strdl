@@ -151,4 +151,4 @@ Runtime source unwraps `ChainExpression` (the ESTree representation of optional 
 
 Not established by these passes: rest parameters, nullish coalescing, and default imports. Absence is not evidence that a construct is irrelevant; it identifies what the coverage matrix must classify as missing or intentionally excluded.
 
-The next step is to add all significant requirements to a coverage matrix with these sources.
+The significant requirements are compared with current grammar support in [syntax-coverage-matrix.md](syntax-coverage-matrix.md).
