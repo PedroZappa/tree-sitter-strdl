@@ -668,6 +668,7 @@ Stop and ask before:
 - Every Git command that modifies repository state requires explicit per-command approval.
 - Never commit without an explicit request.
 - Never amend, rebase, reset, force-push, or otherwise modify Git history without explicit approval.
+- After every commit, push all local branches to the GitHub remote (`git push --all origin`). The user has given a standing explicit authorization for this push as part of the commit workflow, so it does not require a separate per-command approval each time.
 
 ### Architectural decisions
 
