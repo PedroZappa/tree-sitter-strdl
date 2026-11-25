@@ -1,0 +1,128 @@
+==================
+valid declarations around missing array bracket
+==================
+const a = {x: 1}
+const b = [1, 2
+const c = 3
+---
+
+(source_file
+  (variable_declaration
+    (variable_declarator
+      (identifier)
+      (object
+        (pair
+          (identifier)
+          (number)))))
+  (variable_declaration
+    (variable_declarator
+      (identifier)
+      (array
+        (number)
+        (number)
+        (MISSING "]"))))
+  (variable_declaration
+    (variable_declarator
+      (identifier)
+      (number))))
+
+==================
+valid declarations around missing object brace
+==================
+const a = 1
+const b = {x: 2
+const c = 3
+---
+
+(source_file
+  (variable_declaration
+    (variable_declarator
+      (identifier)
+      (number)))
+  (variable_declaration
+    (variable_declarator
+      (identifier)
+      (object
+        (pair
+          (identifier)
+          (number))
+        (MISSING "}"))))
+  (variable_declaration
+    (variable_declarator
+      (identifier)
+      (number))))
+
+==================
+valid calls around nested missing array bracket
+==================
+note("c3")
+s("bd", [1, 2)
+note("e3")
+---
+
+(source_file
+  (expression_statement
+    (call_expression
+      (identifier)
+      (arguments
+        (string))))
+  (expression_statement
+    (call_expression
+      (identifier)
+      (arguments
+        (string)
+        (array
+          (number)
+          (number)
+          (MISSING "]")))))
+  (expression_statement
+    (call_expression
+      (identifier)
+      (arguments
+        (string)))))
+
+==================
+valid declarations around localized call error
+==================
+const a = 1
+s("bd",, "hh")
+const b = 2
+---
+
+(source_file
+  (variable_declaration
+    (variable_declarator
+      (identifier)
+      (number)))
+  (expression_statement
+    (call_expression
+      (identifier)
+      (arguments
+        (string)
+        (ERROR)
+        (string))))
+  (variable_declaration
+    (variable_declarator
+      (identifier)
+      (number))))
+
+==================
+valid declarations around incomplete function body
+==================
+const a = 1
+function f()
+const b = 2
+---
+
+(source_file
+  (variable_declaration
+    (variable_declarator
+      (identifier)
+      (number)))
+  (ERROR
+    (identifier)
+    (formal_parameters))
+  (variable_declaration
+    (variable_declarator
+      (identifier)
+      (number))))
