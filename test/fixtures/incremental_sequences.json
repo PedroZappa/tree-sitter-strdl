@@ -264,6 +264,34 @@
           "occurrence": 0
         }
       ]
+    },
+    {
+      "id": "nested-call-edit",
+      "fixture": "representative",
+      "description": "Edit values inside a nested call chain used as a velocity method argument.",
+      "categories": ["nested-edit", "call", "method-chain"],
+      "edits": [
+        {
+          "op": "replace",
+          "old": "rand.range(.7,1).fast(4)",
+          "new": "rand.range(.6,1).fast(2)",
+          "occurrence": 0
+        }
+      ]
+    },
+    {
+      "id": "nested-arrow-body-edit",
+      "fixture": "representative",
+      "description": "Edit a numeric argument inside the first layer arrow function body.",
+      "categories": ["nested-edit", "arrow-function"],
+      "edits": [
+        {
+          "op": "replace",
+          "old": "postgain(2)",
+          "new": "postgain(3)",
+          "occurrence": 0
+        }
+      ]
     }
   ]
 }

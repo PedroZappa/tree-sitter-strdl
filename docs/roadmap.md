@@ -223,7 +223,7 @@ Phase 2 is complete and tagged `v1.3.0`. Phase 3 evidence collection, the source
 - [x] Test insertions.
 - [x] Test deletions.
 - [x] Test replacements.
-- [ ] Test nested edits.
+- [x] Test nested edits.
 - [ ] Test edits through temporarily malformed states.
 - [ ] Compare each incremental result against a fresh parse of the same final source.
 - [ ] Automate the comparison in a repeatable test harness.
@@ -520,4 +520,5 @@ For checked items, add a short entry using this format:
 - Phase 4 — Incremental parsing: added `scripts/test_incremental.py` and `make test-incremental` with `INCREMENTAL_FILTER` support. The harness replays recorded edits with `tree-sitter parse --edits`, writes the final source, and diffs normalized CST output against a fresh parse. Insertion coverage passes 3/3 sequences: method-chain insertion, declaration insertion, and call-statement insertion. The full catalog also passes 13/13. Documented harness usage in `docs/incremental-editing-sequences.md`; no grammar change was required.
 - Phase 4 — Incremental parsing: verified deletion equivalence with `make test-incremental INCREMENTAL_FILTER=deletion`. Added `argument-deletion` and `object-property-deletion` to `test/fixtures/incremental_sequences.json`, bringing deletion coverage to five distinct CST shapes: whole declaration, labeled statement, chain method, call argument, and nested object property. Deletion subset passes 5/5; full catalog passes 15/15. Updated `docs/incremental-editing-sequences.md`; no grammar change was required.
 - Phase 4 — Incremental parsing: verified replacement equivalence with `make test-incremental INCREMENTAL_FILTER=replacement`. Added `method-name-replacement` to `test/fixtures/incremental_sequences.json`, extending replacement coverage to string contents, template contents, binding identifiers, member-expression method names, and numeric literals. Replacement subset passes 5/5; full catalog passes 16/16. Updated `docs/incremental-editing-sequences.md`; no grammar change was required.
+- Phase 4 — Incremental parsing: verified nested-edit equivalence with `make test-incremental INCREMENTAL_FILTER=nested-edit`. Added `nested-call-edit` and `nested-arrow-body-edit` to `test/fixtures/incremental_sequences.json`, extending nested coverage to object literals, nested call arguments, and arrow-function bodies. Nested subset passes 4/4; full catalog passes 18/18. Updated `docs/incremental-editing-sequences.md`; no grammar change was required.
 - Phase 6 — CI validation: added `.github/workflows/ci.yml` for pull requests and pushes to `main`, with SHA-pinned checkout/setup-node actions and a Node.js 22/24 matrix. Added `make ci`, `docs/ci.md`, the CI badge, and documentation links. `make ci` was run locally and passed generated-artifact, corpus, query, Node binding, and C build checks. Incremental, benchmark, formatting/static, and non-Node binding checks remain deferred.

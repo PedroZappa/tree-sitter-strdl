@@ -39,8 +39,10 @@ Using current-source matches rather than precomputed byte offsets keeps the sequ
 | `argument-deletion` | representative | deletion, argument, call | Remove one argument from the `slider` call. |
 | `object-property-deletion` | representative | deletion, nested edit, object literal | Remove one property from the first nested `_pitchwheel` object. |
 | `method-name-replacement` | representative | replacement, member expression, method chain | Change `lp` to `hp` in the first melody chain. |
+| `nested-call-edit` | representative | nested edit, call, method chain | Edit values inside a nested call used as a `velocity` argument. |
+| `nested-arrow-body-edit` | representative | nested edit, arrow function | Edit an argument inside a `layer` arrow body. |
 
-These 16 sequences cover insertion, deletion, replacement, nested edits, and temporary malformed states. Deletion coverage spans whole declarations, labeled statements, chain methods, call arguments, and nested object properties. Replacement coverage spans string contents, template contents, binding identifiers, member-expression method names, and numeric literals. The malformed states are intermediate inputs; each sequence ends in a complete source.
+These 18 sequences cover insertion, deletion, replacement, nested edits, and temporary malformed states. Deletion coverage spans whole declarations, labeled statements, chain methods, call arguments, and nested object properties. Replacement coverage spans string contents, template contents, binding identifiers, member-expression method names, and numeric literals. Nested-edit coverage spans object literals, nested call arguments, and arrow-function bodies. The malformed states are intermediate inputs; each sequence ends in a complete source.
 
 ## Running comparisons
 
