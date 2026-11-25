@@ -75,6 +75,8 @@ Two gaps were found:
 
 No definition pattern matches `call_expression`. Call identifiers such as `setCps`, `slider`, `note`, `stack`, and `s` appear only as `local.reference` from the blanket identifier rule. This satisfies the roadmap check that function call identifiers are not incorrectly treated as definitions, although the blanket reference rule is still broad.
 
+`scripts/check_locals_definitions_absent.py` now enforces this structurally. It uses [`test/query/call_identifiers.scm`](../test/query/call_identifiers.scm) to select every `call_expression` callee identifier, then fails if any selected range also receives a `local.definition.*` capture. No Strudel API names are hardcoded.
+
 ### 5. Object keys are currently definitions
 
 The pattern `(pair key: (identifier) @local.definition.property)` captures object literal keys as definitions. Fixture output shows keys such as `edo`, `hapRadius`, `key`, and `source` receiving both `local.definition.property` and `local.reference`. This is a semantic concern because an object property name does not introduce a lexical local binding. It is left to the next roadmap item for an explicit decision and fix.
@@ -96,3 +98,5 @@ The next roadmap items should address function-call identifiers and object keys.
 - `make test-query` — passed.
 - `node_modules/.bin/tree-sitter parse test/query/determinism.strdl` — no `ERROR` or `MISSING` nodes.
 - Capture output inspection — confirmed call identifiers are reference-only and object keys receive both definition and reference captures.
+- `make test-query` — verified 30 call identifier ranges across the three fixtures; none received a `local.definition.*` capture.
+- Negative control — adding `(call_expression function: (identifier) @local.definition.var)` to a temporary locals query made the check fail with `exit=1`, confirming that the check detects incorrect call definitions.

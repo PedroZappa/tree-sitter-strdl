@@ -160,6 +160,7 @@ test-query:	## Compile, run, and check official queries against the fixtures
 		$(TS) query --quiet --grammar-path . "$$query" $(FIXTURES) || exit 1; \
 	done
 	@python3 scripts/check_query_determinism.py $(TS) $(QUERY_DIR)/highlights.scm $(FIXTURES) $(QUERY_DETERMINISM_FIXTURES)
+	@python3 scripts/check_locals_definitions_absent.py $(TS) $(QUERY_DIR)/locals.scm test/query/call_identifiers.scm "call identifier" $(FIXTURES) $(QUERY_DETERMINISM_FIXTURES)
 	@echo "$(YEL)* $(_SUCCESS) Queries compiled, executed, and deterministic$(D)"
 
 test-node:	## Run Node.js binding tests (requires a matching native ABI)
