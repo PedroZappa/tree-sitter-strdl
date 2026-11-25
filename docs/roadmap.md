@@ -34,7 +34,7 @@ The immediate task is to complete the Phase 1 repository audit and record its fi
 
 - [x] Capture the current functional baseline: grammar generation, corpus tests, Node.js binding tests, and query compilation.
 - [x] Verify whether regenerated files under `src/` match the committed artifacts.
-- [ ] Inventory syntax coverage against the required constructs in `AGENTS.md`.
+- [x] Inventory syntax coverage against the required constructs in `AGENTS.md`.
 - [ ] Inventory bindings, dependencies, queries, tests, CI, packaging, and licensing.
 - [ ] Write `docs/repository-assessment.md` with findings, risks, prioritized gaps, and the implementation order.
 - [x] Link the assessment from [docs/README.md](README.md).
@@ -59,7 +59,7 @@ The immediate task is to complete the Phase 1 repository audit and record its fi
 - [ ] Document current named nodes, fields, and public syntax-tree shape.
 - [ ] Record current precedence declarations and associativity choices.
 - [ ] Identify grammar rules that are undocumented, unused, or unexpectedly ambiguous.
-- [ ] Compare implemented syntax with the required coverage list in `AGENTS.md`.
+- [x] Compare implemented syntax with the required coverage list in `AGENTS.md`.
 
 ### Audit bindings and dependencies
 
@@ -466,3 +466,4 @@ For checked items, add a short entry using this format:
 - Phase 7 and Phase 8 — Node.js binding tests: `npm test` passed after dependency installation with `tree-sitter` 0.25.1 and Node.js 26.8.2.
 - Phase 8 — Compatibility documentation: verified by [compatibility.md](compatibility.md), including the runtime matrix and known limitations.
 - Phase 8 — Regeneration and corpus tests: `node_modules/.bin/tree-sitter generate` was idempotent and `tree-sitter test` passed 7/7 corpus tests with CLI 0.27.2.
+- Phase 1 — Inventory syntax coverage: compared `grammar.js`, `test/corpus/`, `src/node-types.json`, and temporary `tree-sitter parse --json-summary`/`--cst` probes on 2026-11-25; evidence: [docs/repository-assessment.md](repository-assessment.md#syntax-coverage-inventory).

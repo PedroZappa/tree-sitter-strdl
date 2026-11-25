@@ -1,6 +1,6 @@
 # Repository assessment
 
-This document is being built during Phase 1. It currently records the verified functional baseline; it is not yet a complete repository assessment.
+This document is being built during Phase 1. It records the verified functional baseline, the ABI 15 upgrade resolution, and the current syntax-coverage inventory; it is not yet a complete repository assessment.
 
 ## Functional baseline
 
@@ -56,3 +56,42 @@ The repository adopted the newer generator path:
 - Node.js, Python, and Go binding tests passed; the Swift library build passed; Rust and Swift tests remain unverified for environmental reasons.
 
 See [compatibility.md](compatibility.md) for the version matrix and validation details. Query compilation succeeds, but capture behavior still needs explicit tests.
+
+## Syntax coverage inventory
+
+Captured on 2026-11-25 from `grammar.js`, `test/corpus/`, `src/node-types.json`, and temporary parse probes. Probes were parsed with `tree-sitter parse --json-summary` and `--cst` using CLI 0.27.2. They were not committed as fixtures.
+
+Statuses:
+
+- **Supported**: a dedicated grammar rule produces the expected structure.
+- **Partial**: some forms parse, but the required construct is narrowed or lacks dedicated structure.
+- **Missing**: no dedicated grammar support; probes failed or produced unrelated nodes.
+- **Opaque**: content is accepted as string payload with no internal syntax structure.
+
+| Required construct | Status | Grammar evidence | Corpus evidence | Notes |
+| --- | --- | --- | --- | --- |
+| Variable declarations (`var`, `let`, `const`) | Supported | `variable_declaration`, `lexical_declaration`, `variable_declarator` | `variable_var.txt`; `let` in `arrow_funcs.txt`; `const` probe only | All three keywords parse; `const` has no committed corpus case. |
+| Assignments and expressions | Partial | `assignment`, `_initializer`, `expression` | `$:` assignments in `array_literal.txt` and `objects_args.txt` | `$:` and custom `label:` pattern assignments parse. JavaScript-style `x = 1` fails; assignment is only available in declarator initializers. |
+| Function calls and nested calls | Supported | `function_call`, `commaSepTrailing` | `function_call.txt`, `number_args.txt`, `array_literal.txt`, `objects_args.txt` | Direct calls and nested calls parse as nested `function_call` nodes. |
+| Member expressions and method chaining | Partial | `method_call`, `chained_method` | `function_call_chained.txt`, `objects_args.txt`, `arrow_funcs.txt` | Only `.name(...)` method calls are supported. Plain `.foo` fails; `x["foo"]` parses as an identifier followed by an array, not member access. |
+| Arrow functions and callbacks | Partial | `arrow_function` | `arrow_funcs.txt` | Only one identifier parameter and an expression body are supported. |
+| Function parameters | Partial | `arrow_function.parameter` | `arrow_funcs.txt` | Zero, multiple, and rest parameters fail; no function-declaration parameter list exists. |
+| Arrays | Supported | `array` | `array_literal.txt` | Array elements are expressions. |
+| Objects | Supported | `object`, `pair` | `objects_args.txt` | Object literals parse with identifier, string, or number keys. |
+| Object properties and shorthand properties | Partial | `pair` | `objects_args.txt` | `key: value` pairs parse; shorthand `{ foo }` fails. |
+| Destructuring | Missing | None | None | Object and array destructuring probes failed. |
+| Spread and rest syntax | Missing | None | None | `s(...xs)` and `(...xs) => 1` failed. |
+| Arithmetic expressions | Partial | `binary_expression`, `additive_expression`, `multiplicative_expression` | `number_args.txt` covers division; additive probe only | `+`, `-`, `*`, and `/` parse. `%` and `**` failed. |
+| Logical and comparison expressions | Missing | None | None | `a && b` and `a === b` failed. |
+| Unary expressions | Missing | None | None | `-a` and `!a` failed. |
+| Conditional expressions | Missing | None | None | `a ? b : c` failed. |
+| Optional chaining | Missing | None | None | `a?.b` failed. |
+| Nullish coalescing | Missing | None | None | `a ?? b` failed. |
+| Template literals and interpolation | Partial | Backtick branch of `string` | None | Backtick strings parse as opaque `string` nodes; `${name}` is not parsed as an expression. |
+| Single-quoted and double-quoted strings | Supported | `string` | Double quotes in `function_call_chained.txt` and `objects_args.txt`; single-quote probe only | Both quote styles parse. |
+| Comments | Partial | `comment` in `extras` | None | `//` comments parse; `/* ... */` failed. |
+| Parenthesized expressions | Supported | Anonymous `seq('(', $.expression, ')')` in `_base_expression` | None | Probe parsed; parentheses produce no dedicated named node. |
+| Relevant import and export syntax | Missing | None | None | Probe parsed `import x from "y"` as separate identifiers and a string, and `export` as an identifier; no import/export nodes exist. |
+| Mini-notation | Opaque | `string` | `arrow_funcs.txt`, `objects_args.txt` | Mini-notation is ordinary string content with no grammar-specific nodes or semantics. |
+
+This table compares the implemented grammar against the required list in [AGENTS.md](../AGENTS.md). It is not yet evidence that every supported construct is relevant to real Strudel compositions; that evidence-gathering belongs in Phase 3. No grammar changes were made during this inventory, and the temporary probes should become committed corpus tests when their constructs are prioritized.
