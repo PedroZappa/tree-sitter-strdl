@@ -48,7 +48,7 @@ EXTRAS := $(filter-out $(PARSER),$(wildcard $(SRC_DIR)/*.c))
 OBJS := $(patsubst %.c,%.o,$(PARSER) $(EXTRAS))
 QUERIES := $(wildcard $(QUERY_DIR)/*.scm)
 FIXTURES := test.strdl test-local.strdl
-RECOVERY_FILES := $(wildcard $(TEST_DIR)/incomplete_*.txt $(TEST_DIR)/missing_*.txt $(TEST_DIR)/unfinished_*.txt)
+RECOVERY_FILES := $(wildcard $(TEST_DIR)/incomplete_*.txt $(TEST_DIR)/malformed_*.txt $(TEST_DIR)/missing_*.txt $(TEST_DIR)/unfinished_*.txt)
 
 # Test inputs (override on the command line)
 FILTER ?=
