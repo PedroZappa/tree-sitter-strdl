@@ -1,0 +1,227 @@
+{
+  "version": 1,
+  "fixtures": {
+    "representative": "test.strdl",
+    "compact": "test-local.strdl"
+  },
+  "editFormat": {
+    "op": "replace",
+    "old": "exact text in the current source",
+    "new": "replacement text; empty string deletes",
+    "occurrence": "zero-based match index among current-source matches; defaults to 0"
+  },
+  "sequences": [
+    {
+      "id": "method-chain-insertion",
+      "fixture": "representative",
+      "description": "Insert a gain method into the first melody chain while typing a live variation.",
+      "categories": ["insertion", "method-chain"],
+      "edits": [
+        {
+          "op": "replace",
+          "old": "  .postgain(1.5)\n  .color(\"teal\")._pitchwheel({edo:10,hapRadius:3,thickness:3,circle:1})",
+          "new": "  .postgain(1.5)\n  .gain(0.9)\n  .color(\"teal\")._pitchwheel({edo:10,hapRadius:3,thickness:3,circle:1})",
+          "occurrence": 0
+        }
+      ]
+    },
+    {
+      "id": "pattern-string-replacement",
+      "fixture": "representative",
+      "description": "Replace both copies of a mini-notation pattern string with a variant.",
+      "categories": ["replacement", "pattern-string"],
+      "edits": [
+        {
+          "op": "replace",
+          "old": "<[D@3 A@2 ~ D@2] [Cs@2 ~ A@2 ~ Cs@2]>",
+          "new": "<[D@3 A@2 ~ D@2] [Cs@2 E@2 A@2]>",
+          "occurrence": 0
+        },
+        {
+          "op": "replace",
+          "old": "<[D@3 A@2 ~ D@2] [Cs@2 ~ A@2 ~ Cs@2]>",
+          "new": "<[D@3 A@2 ~ D@2] [Cs@2 E@2 A@2]>",
+          "occurrence": 0
+        }
+      ]
+    },
+    {
+      "id": "declaration-deletion",
+      "fixture": "representative",
+      "description": "Remove the unused vox declaration from the arrangement.",
+      "categories": ["deletion", "declaration"],
+      "edits": [
+        {
+          "op": "replace",
+          "old": "let vox =\n  s(\"vocal\").loopAt(42).fast(1.5).gain(1)\n\n",
+          "new": "",
+          "occurrence": 0
+        }
+      ]
+    },
+    {
+      "id": "nested-object-edits",
+      "fixture": "representative",
+      "description": "Change two properties inside the same _pitchwheel object literal.",
+      "categories": ["nested-edit", "object-literal"],
+      "edits": [
+        {
+          "op": "replace",
+          "old": "edo:10",
+          "new": "edo:12",
+          "occurrence": 0
+        },
+        {
+          "op": "replace",
+          "old": "circle:1",
+          "new": "circle:0",
+          "occurrence": 0
+        }
+      ]
+    },
+    {
+      "id": "malformed-call-repair",
+      "fixture": "representative",
+      "description": "Delete and restore the closing parenthesis of setCps, passing through an incomplete call.",
+      "categories": ["malformed-state", "repair", "call"],
+      "edits": [
+        {
+          "op": "replace",
+          "old": "setCps(100/60/4)",
+          "new": "setCps(100/60/4",
+          "occurrence": 0
+        },
+        {
+          "op": "replace",
+          "old": "setCps(100/60/4\n",
+          "new": "setCps(100/60/4)\n",
+          "occurrence": 0
+        }
+      ]
+    },
+    {
+      "id": "declaration-insertion",
+      "fixture": "representative",
+      "description": "Insert a new melody declaration immediately before the drum declaration.",
+      "categories": ["insertion", "declaration"],
+      "edits": [
+        {
+          "op": "replace",
+          "old": "let dr =\n",
+          "new": "let m3 =\n  note(\"c3 e3 g3\").s(\"gm_kalimba:3\")\n\nlet dr =\n",
+          "occurrence": 0
+        }
+      ]
+    },
+    {
+      "id": "arrow-parameter-rename",
+      "fixture": "representative",
+      "description": "Rename both layer callback parameters from x to y.",
+      "categories": ["replacement", "arrow-parameter"],
+      "edits": [
+        {
+          "op": "replace",
+          "old": "x =>",
+          "new": "y =>",
+          "occurrence": 0
+        },
+        {
+          "op": "replace",
+          "old": "x =>",
+          "new": "y =>",
+          "occurrence": 0
+        }
+      ]
+    },
+    {
+      "id": "method-deletion",
+      "fixture": "representative",
+      "description": "Remove a postgain method from the first melody chain.",
+      "categories": ["deletion", "method-chain"],
+      "edits": [
+        {
+          "op": "replace",
+          "old": "  .postgain(1.5)\n  .color(\"teal\")._pitchwheel({edo:10,hapRadius:3,thickness:3,circle:1})",
+          "new": "  .color(\"teal\")._pitchwheel({edo:10,hapRadius:3,thickness:3,circle:1})",
+          "occurrence": 0
+        }
+      ]
+    },
+    {
+      "id": "call-statement-insertion",
+      "fixture": "representative",
+      "description": "Insert a new top-level call statement before the arrange call.",
+      "categories": ["insertion", "call-statement"],
+      "edits": [
+        {
+          "op": "replace",
+          "old": "$:arrange(\n",
+          "new": "s(\"bd sd hh sd\")\n\n$:arrange(\n",
+          "occurrence": 0
+        }
+      ]
+    },
+    {
+      "id": "template-content-edit",
+      "fixture": "representative",
+      "description": "Edit mini-notation content inside an opaque template literal.",
+      "categories": ["replacement", "template-content"],
+      "edits": [
+        {
+          "op": "replace",
+          "old": "~!3",
+          "new": "~!2",
+          "occurrence": 0
+        }
+      ]
+    },
+    {
+      "id": "compact-set-cps",
+      "fixture": "compact",
+      "description": "Change the tempo in the compact composition.",
+      "categories": ["replacement", "compact-fixture"],
+      "edits": [
+        {
+          "op": "replace",
+          "old": "setCps(120/60/4)",
+          "new": "setCps(100/60/4)",
+          "occurrence": 0
+        }
+      ]
+    },
+    {
+      "id": "compact-declaration-deletion",
+      "fixture": "compact",
+      "description": "Remove a labeled declaration from the compact composition.",
+      "categories": ["deletion", "compact-fixture"],
+      "edits": [
+        {
+          "op": "replace",
+          "old": "sample1: sound(\"808\").lpf(400).delay(0.3)\n",
+          "new": "",
+          "occurrence": 0
+        }
+      ]
+    },
+    {
+      "id": "compact-malformed-repair",
+      "fixture": "compact",
+      "description": "Delete and restore a closing parenthesis in the compact composition.",
+      "categories": ["malformed-state", "repair", "compact-fixture"],
+      "edits": [
+        {
+          "op": "replace",
+          "old": "reverb(0.4)",
+          "new": "reverb(0.4",
+          "occurrence": 0
+        },
+        {
+          "op": "replace",
+          "old": "reverb(0.4",
+          "new": "reverb(0.4)",
+          "occurrence": 0
+        }
+      ]
+    }
+  ]
+}
