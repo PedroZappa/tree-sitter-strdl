@@ -62,3 +62,11 @@ build/
 *.wasm
 output.html
 .DS_Store
+
+# Python validation artifacts
+__pycache__/
+*.py[cod]
+*.egg-info/
+
+# Swift package-manager resolution artifact
+Package.resolved

@@ -32,12 +32,12 @@ These observations are inputs to Phase 1, not proof that any phase is complete.
 
 The immediate task is to complete the Phase 1 repository audit and record its findings in `docs/repository-assessment.md`.
 
-- [ ] Capture the current functional baseline: grammar generation, corpus tests, Node.js binding tests, and query compilation.
-- [ ] Verify whether regenerated files under `src/` match the committed artifacts.
+- [x] Capture the current functional baseline: grammar generation, corpus tests, Node.js binding tests, and query compilation.
+- [x] Verify whether regenerated files under `src/` match the committed artifacts.
 - [ ] Inventory syntax coverage against the required constructs in `AGENTS.md`.
 - [ ] Inventory bindings, dependencies, queries, tests, CI, packaging, and licensing.
 - [ ] Write `docs/repository-assessment.md` with findings, risks, prioritized gaps, and the implementation order.
-- [ ] Link the assessment from [docs/README.md](README.md).
+- [x] Link the assessment from [docs/README.md](README.md).
 
 ---
 
@@ -322,7 +322,7 @@ The immediate task is to complete the Phase 1 repository audit and record its fi
 ### Node.js and bindings
 
 - [ ] Verify the Node.js binding build from a clean environment.
-- [ ] Run Node.js binding tests.
+- [x] Run Node.js binding tests.
 - [ ] Verify generated parser files are usable without regeneration.
 - [ ] Audit the C binding.
 - [ ] Audit the Go binding.
@@ -334,9 +334,9 @@ The immediate task is to complete the Phase 1 repository audit and record its fi
 
 ### Compatibility policy
 
-- [ ] Pin development tooling for reproducible builds.
-- [ ] Document the supported Tree-sitter CLI version.
-- [ ] Document the minimum supported runtime version.
+- [x] Pin development tooling for reproducible builds.
+- [x] Document the supported Tree-sitter CLI version.
+- [x] Document the minimum supported runtime version.
 - [ ] Test generated parser compatibility with supported runtimes.
 - [ ] Document package compatibility expectations.
 - [ ] Define the syntax-coverage compatibility policy.
@@ -380,7 +380,7 @@ The immediate task is to complete the Phase 1 repository audit and record its fi
 - [ ] Document testing procedures.
 - [ ] Document benchmarking procedures.
 - [ ] Document contribution workflow.
-- [ ] Add compatibility documentation.
+- [x] Add compatibility documentation.
 - [ ] Verify all documentation matches implemented behavior.
 
 ### CI/CD and release
@@ -396,10 +396,10 @@ The immediate task is to complete the Phase 1 repository audit and record its fi
 
 ### Final validation
 
-- [ ] Regenerate parser artifacts.
-- [ ] Run corpus tests.
+- [x] Regenerate parser artifacts.
+- [x] Run corpus tests.
 - [ ] Run query tests.
-- [ ] Run Node.js binding tests.
+- [x] Run Node.js binding tests.
 - [ ] Run incremental parsing tests.
 - [ ] Run compatibility checks.
 - [ ] Run benchmarks and compare against baseline.
@@ -429,7 +429,27 @@ For each deferred item, record:
 - [ ] Suggested phase or trigger for revisiting.
 - [ ] Link to any related issue or discussion.
 
-No deferred items are currently recorded here.
+### Deferred items
+
+- **Rust ABI-15 binding verification**
+  - Opportunity and expected benefit: confirm the Rust binding loads the generated ABI 15 parser and prevent a silent runtime-floor mismatch.
+  - Reason for deferral: `cargo` is unavailable in the verification environment; the declared dev dependency is already `tree-sitter = "0.25.8"`.
+  - Suggested phase or trigger: Phase 7, when a toolchain with `cargo` is available.
+
+- **Swift XCTest verification**
+  - Opportunity and expected benefit: execute `swift test`, not only `swift build`, to validate the Swift binding against ABI 15.
+  - Reason for deferral: XCTest could not be resolved by the installed command-line tools; dependency resolution selected SwiftTreeSitter 0.25.0 and tree-sitter 0.25.10, and the library build passed.
+  - Suggested phase or trigger: Phase 7, with a Swift toolchain that provides XCTest.
+
+- **Automated generated-artifact consistency check**
+  - Opportunity and expected benefit: prevent unpinned or stale CLI output from entering CI or releases.
+  - Reason for deferral: the current check was performed manually with checksum comparison; no CI workflow infrastructure exists yet.
+  - Suggested phase or trigger: Phase 6.
+
+- **Automated query capture and incremental parsing tests**
+  - Opportunity and expected benefit: verify query semantics and edit equivalence rather than only query compilation and manual regeneration checks.
+  - Reason for deferral: outside the completed compatibility-upgrade scope.
+  - Suggested phase or trigger: Phases 4 and 5.
 
 ## Verification log
 
@@ -439,4 +459,10 @@ For checked items, add a short entry using this format:
 - Phase 1 — item name: verified with `<command>` on YYYY-MM-DD; evidence: <link or commit>.
 ```
 
-Leave this section empty until items are actually completed.
+- Phase 1 — Capture functional baseline: verified with `tree-sitter generate`, `tree-sitter test`, `npm test`, and `tree-sitter query ...` on 2026-11-25; evidence: [docs/repository-assessment.md](repository-assessment.md). The baseline records the original Node.js binding-test failure; the later upgrade run passed.
+- Phase 1 — Regenerated-file investigation: the ABI 15 upgrade intentionally changed generated artifacts from `HEAD`; a second `node_modules/.bin/tree-sitter generate` left `src/parser.c`, `src/grammar.json`, `src/node-types.json`, and `src/tree_sitter/array.h` byte-identical; evidence: [compatibility.md](compatibility.md).
+- Phase 1 — Link assessment: verified by the assessment link in [docs/README.md](README.md) on 2026-11-25.
+- Phase 7 — Pin tooling and document CLI/runtime floor: verified with `package.json`, `package-lock.json`, and [compatibility.md](compatibility.md).
+- Phase 7 and Phase 8 — Node.js binding tests: `npm test` passed after dependency installation with `tree-sitter` 0.25.1 and Node.js 26.8.2.
+- Phase 8 — Compatibility documentation: verified by [compatibility.md](compatibility.md), including the runtime matrix and known limitations.
+- Phase 8 — Regeneration and corpus tests: `node_modules/.bin/tree-sitter generate` was idempotent and `tree-sitter test` passed 7/7 corpus tests with CLI 0.27.2.

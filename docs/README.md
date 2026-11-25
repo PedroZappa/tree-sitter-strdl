@@ -5,6 +5,8 @@ This folder contains project-level planning and developer documentation for `tre
 ## Documents
 
 - [Roadmap](roadmap.md) — phased implementation plan with checkable tasks and acceptance criteria.
+- [Repository assessment](repository-assessment.md) — evolving Phase 1 findings, the verified baseline, and the ABI 15 upgrade resolution.
+- [Compatibility](compatibility.md) — supported CLI, parser ABI, runtime floor, and binding validation matrix.
 
 ## Sources of truth
 
