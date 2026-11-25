@@ -12,6 +12,14 @@ This roadmap turns the phases in [AGENTS.md](../AGENTS.md) into checkable implem
 - Deliberate deferrals belong under **Deferred work**, with a reason and expected benefit.
 - No item is pre-checked here. Existing code may partially implement a phase, but phase completion requires explicit verification.
 
+## Versioning and phase tags
+
+- Release and phase-complete tags use annotated `vMAJOR.MINOR.PATCH` tags, for example `v1.2.0`.
+- Create a phase tag only after the phase acceptance criteria pass and tracked version metadata matches the tag.
+- Work for the following phase uses a `phase/<number>-<slug>` branch created from the phase tag.
+- Legacy tags `1.1.5` and `v1.1.x` are historical exceptions; do not create new non-`vX.Y.Z` tags.
+- Do not push tags from ordinary commits. The publish workflow triggers on tag push, so tag pushes require explicit release authorization.
+
 ## Repository snapshot
 
 Verified by inspecting the repository when this roadmap was created on 2026-11-25:
@@ -30,7 +38,7 @@ These observations are inputs to Phase 1, not proof that any phase is complete.
 
 ## Immediate next work
 
-Phase 1 is complete. The documented findings are in `docs/repository-assessment.md`; the next work is Phase 2 grammar foundation, beginning with the grammar architecture and public-CST decisions identified as P0 gaps.
+Phase 1 is complete and tagged `v1.2.0`. The documented findings are in `docs/repository-assessment.md`; the next work is Phase 2 grammar foundation, beginning with the grammar architecture and public-CST decisions identified as P0 gaps.
 
 - [x] Capture the current functional baseline: grammar generation, corpus tests, Node.js binding tests, and query compilation.
 - [x] Verify whether regenerated files under `src/` match the committed artifacts.
@@ -481,3 +489,4 @@ For checked items, add a short entry using this format:
 - Phase 1 — Corpus expected-tree review: reviewed all seven expected trees and confirmed they are explicit, pass CLI 0.26.9, omit field names, and do not record wrapper-design rationale on 2026-11-25; evidence: [docs/repository-assessment.md](repository-assessment.md#corpus-expected-tree-review).
 - Phase 1 — Dependency and attribution audit: compared manifests, `package-lock.json`, npm/crates.io/PyPI registry metadata, upstream Tree-sitter v0.27.2 source/templates, and git history on 2026-11-25; evidence: [docs/repository-assessment.md](repository-assessment.md#dependency-and-attribution-audit).
 - Phase 1 — Complete repository assessment: recorded findings, risks, prioritized gaps, and provisional implementation order in `docs/repository-assessment.md` on 2026-11-25; evidence: [docs/repository-assessment.md](repository-assessment.md#prioritized-gaps-risks-and-implementation-order).
+- Phase 1 — Version tag: aligned tracked version metadata to `1.2.0`, documented the `vX.Y.Z` phase-tag convention, and replaced the local `phase-1-repository-audit` tag with annotated `v1.2.0` on 2026-11-25; no tag was pushed.
