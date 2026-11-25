@@ -1,0 +1,37 @@
+==================
+unfinished template literal with trailing newline
+==================
+`bd
+
+---
+
+(source_file
+  (expression_statement
+    (template_string
+      (MISSING "`"))))
+
+==================
+unfinished template after completed substitution
+==================
+`bd ${a}
+---
+
+(source_file
+  (expression_statement
+    (template_string
+      (template_substitution
+        (identifier))
+      (MISSING "`"))))
+
+==================
+unfinished tagged template
+==================
+s`bd
+---
+
+(source_file
+  (expression_statement
+    (tagged_template_expression
+      (identifier)
+      (template_string
+        (MISSING "`")))))
