@@ -92,6 +92,31 @@ The examples above show what users write. The evidence below shows what the Stru
 - Mini-notation, kabelsalat bodies, and registered language templates remain opaque literal or template content.
 - S18 is commented out in the upstream test suite; it is recorded only to prevent it from being mistaken for confirmed coverage.
 
+## Official examples and tutorials
+
+This pass covers sources distinct from the documentation pages: the repository's `examples/` integration tunes, the official REPL tune fixtures exercised by `test/tunes.test.mjs`, upstream test tunes in `test/testtunes.mjs`, and tutorial pages not sampled in the first pass. All were fetched from Codeberg `main` on 2026-11-25. `...` marks omitted text; no other characters were changed.
+
+| ID | Constructs demonstrated | Example (verbatim excerpt) | Official source |
+| --- | --- | --- | --- |
+| E01 | Member call on identifier, division in argument, arrow callback | `.fmap(v => Math.pow(2,v/22))` | [`examples/codemirror-repl/tunes.mjs`](https://codeberg.org/uzu/strudel/src/branch/main/examples/codemirror-repl/tunes.mjs) |
+| E02 | Object literal with quoted property names, nested arrays, three arguments | `addVoicings('hip', { m11: ['2M 3m 4P 7m'], '^7#11': ['3M 4A 5P 7M'] }, ['C4', 'C6'])` | [`examples/codemirror-repl/tunes.mjs`](https://codeberg.org/uzu/strudel/src/branch/main/examples/codemirror-repl/tunes.mjs) |
+| E03 | Nested arrow callbacks, two-parameter arrow, arithmetic `+` and `*` | `.when("<0@7 1>",x=>x.echoWith(3, .0625, (x,i) => x.speed(1+i*.24)))` | [`examples/codemirror-repl/tunes.mjs`](https://codeberg.org/uzu/strudel/src/branch/main/examples/codemirror-repl/tunes.mjs) |
+| E04 | `const` declarations with arrow-function values, semicolons, multiline chains | `const keys = x => x.s('sawtooth').cutoff(1200).gain(.5)`<br>`  .attack(0).decay(.16).sustain(.3).release(.1);` | [`website/src/repl/tunes.mjs`](https://codeberg.org/uzu/strudel/src/branch/main/website/src/repl/tunes.mjs) |
+| E05 | `new` expressions, nested object literal, chained member calls | `"c1*2".tone(new MembraneSynth().toDestination())`<br>`.set({envelope:{decay:0.06,sustain:0}}).chain(new Gain(0.5),getDestination())` | [`test/testtunes.mjs`](https://codeberg.org/uzu/strudel/src/branch/main/test/testtunes.mjs) |
+| E06 | Nested arrays of calls and identifiers as call arguments | `timeCat([3, c3], [1, stack(eb3, g3, seq(c4, d4).slow(2))])` | [`test/testtunes.mjs`](https://codeberg.org/uzu/strudel/src/branch/main/test/testtunes.mjs) |
+| E07 | Two-parameter arrow with multiline body and division | `(x,i)=>x`<br>`  .add(n(i*7))`<br>`  .gain(1/(i+1))`<br>`  ...` | [`website/src/repl/tunes.mjs`](https://codeberg.org/uzu/strudel/src/branch/main/website/src/repl/tunes.mjs) |
+| E08 | `Math.pow` and two-parameter arrow with multiplication | `(x,n)=>x.transpose(n*12).gain(Math.pow(.4,n))` | [`website/src/repl/tunes.mjs`](https://codeberg.org/uzu/strudel/src/branch/main/website/src/repl/tunes.mjs) |
+| E09 | Object literal with array values and trailing comma; semicolon-terminated call | `samples({`<br>`bd: ['bd/BT0AADA.wav','bd/BT0AAD0.wav', ...],`<br>`}, 'github:tidalcycles/dirt-samples');` | [`website/src/repl/tunes.mjs`](https://codeberg.org/uzu/strudel/src/branch/main/website/src/repl/tunes.mjs) |
+| E10 | `await` combined with a tagged template literal | `` await loadCsound`...` `` | [`website/src/repl/tunes.mjs`](https://codeberg.org/uzu/strudel/src/branch/main/website/src/repl/tunes.mjs) |
+| E11 | Object-literal arguments with unquoted keys and single-quoted values | `.lfo({control:'lpf'})` and `._spectrum({height: 300, width: 800})` | [`website/src/pages/learn/lfo.mdx`](https://codeberg.org/uzu/strudel/src/branch/main/website/src/pages/learn/lfo.mdx) |
+| E12 | Nested calls as multiple arguments, inline line comment | `s("saw").FX(`<br>`  distort(3),`<br>`  gain(0.3), // this has the fx index 1`<br>`  lpf(400)`<br>`).lfo({s: 16, dr:2, c:"gain", fxi: 1})` | [`website/src/pages/learn/lfo.mdx`](https://codeberg.org/uzu/strudel/src/branch/main/website/src/pages/learn/lfo.mdx) |
+| E13 | Member call on a string literal inside a nested call | `s(seq("bd", "hh", "bd", "cp".delay(.6))).bank('tr909')` | [`website/src/pages/learn/mondo-notation.mdx`](https://codeberg.org/uzu/strudel/src/branch/main/website/src/pages/learn/mondo-notation.mdx) |
+| E14 | Member call on a string literal with division argument | `"<c a f e>".off(1/8, add(7))` | [`website/src/pages/recipes/arpeggios.mdx`](https://codeberg.org/uzu/strudel/src/branch/main/website/src/pages/recipes/arpeggios.mdx) |
+| E15 | Labeled statement, unary minus, semicolon | `$: move(sine.range(-30, 30).segment(16)).motor("0").slow(2).robot('x');` | [`website/src/pages/workshop/motors.mdx`](https://codeberg.org/uzu/strudel/src/branch/main/website/src/pages/workshop/motors.mdx) |
+| E16 | Multiple statements, division in a call argument | `setcpm(110/4)`<br>`s("bd sd bd rim, hh*8")` | [`website/src/pages/understand/cycles.mdx`](https://codeberg.org/uzu/strudel/src/branch/main/website/src/pages/understand/cycles.mdx) |
+| E17 | Identifier member chain as a call argument and as a receiver | `sine.add(saw.slow(4)).range(0,7).segment(8)` | [`examples/minimal-repl/tune.mjs`](https://codeberg.org/uzu/strudel/src/branch/main/examples/minimal-repl/tune.mjs) |
+| E18 | **Inactive:** object spread and logical OR in commented-out fixtures | `const mix = (key) => vol({ ... }[key]||0);` and `{...osc('sawtooth'), ...adsr(0, .1, .4)}` | [`test/testtunes.mjs`](https://codeberg.org/uzu/strudel/src/branch/main/test/testtunes.mjs) — commented-out tunes; do not treat as confirmed support |
+
 ## Strudel-specific syntax shape
 
 These forms are written in the REPL but have a JavaScript-compatible surface shape. The grammar should parse the shape and leave meaning to downstream tools:
@@ -104,10 +129,10 @@ These forms are written in the REPL but have a JavaScript-compatible surface sha
 
 ## Observations for the next coverage steps
 
-Syntax **confirmed** across documentation and source/runtime evidence includes: `const`/`let` declarations; expression statements and semicolons; call and nested call expressions; member chains; arrow functions with zero, one, and multiple nested callbacks; block bodies with `return`; arrays; object literals including nested and quoted-key objects; numeric literals including decimals and hexadecimal; single-, double-, and backtick-quoted strings; line and block comments; parenthesized expressions; binary `+`, `*`, and `/`; comparison `>`; ternary conditional expressions; template interpolation; labeled statements; top-level `await`; named imports and `export const`; tagged template literals.
+Syntax **confirmed** across documentation, source/runtime, and official example/tutorial evidence includes: `const`/`let` declarations; expression statements and semicolons; call and nested call expressions; member chains; arrow functions with zero, one, and two parameters, nested callbacks, and block bodies with `return`; arrays and nested arrays; object literals with unquoted and quoted keys, array and object values, and trailing commas; `new` expressions; numeric literals including decimals, hexadecimal, and unary minus; single-, double-, and backtick-quoted strings; line and block comments; parenthesized expressions; binary `+`, `*`, and `/`; comparison `>`; ternary conditional expressions; template interpolation; labeled statements; top-level `await`; named imports and `export const`; tagged template literals; computed member access.
 
-Runtime source unwraps `ChainExpression` (the ESTree representation of optional chaining) in S17, so optional-chaining-shaped callees are recognized. Object destructuring and dynamic `import()` appear only in a commented-out test (S18), so they remain lower-confidence requirements until active examples establish them.
+Runtime source unwraps `ChainExpression` (the ESTree representation of optional chaining) in S17, so optional-chaining-shaped callees are recognized. Object destructuring and dynamic `import()` appear only in a commented-out test (S18), and object spread and logical OR only in commented-out fixtures (E18); these remain lower-confidence requirements until active examples establish them.
 
-Not established by either pass: `var`; spread/rest; nullish coalescing; default imports; `export default`; named `function` declarations. Absence is not evidence that a construct is irrelevant; it identifies what must be checked in official examples, tutorials, and community compositions before the grammar accepts or excludes it.
+Not established by these passes: `var`; rest parameters; nullish coalescing; default imports; `export default`; named `function` declarations. Absence is not evidence that a construct is irrelevant; it identifies what must be checked in maintained community examples before the grammar accepts or excludes it.
 
-The next step is to collect examples from official examples and tutorials, then maintained community examples, before recording all significant requirements in a coverage matrix with these sources.
+The next step is to record maintained community examples, then add all significant requirements to a coverage matrix with these sources.
