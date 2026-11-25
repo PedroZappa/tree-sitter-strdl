@@ -823,22 +823,6 @@
     [
       {
         "type": "STRING",
-        "value": "member"
-      },
-      {
-        "type": "STRING",
-        "value": "call"
-      },
-      {
-        "type": "STRING",
-        "value": "binary_times"
-      },
-      {
-        "type": "STRING",
-        "value": "binary_plus"
-      },
-      {
-        "type": "STRING",
         "value": "arrow_function"
       }
     ]

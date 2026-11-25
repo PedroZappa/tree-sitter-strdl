@@ -17,17 +17,9 @@ module.exports = grammar({
 
   precedences: $ => [
     [
-      'member',
-      'call',
-      'binary_times',
-      'binary_plus',
       'arrow_function',
     ],
   ],
-
-  // conflicts: $ => [
-  //   [$._base_expression, $.arrow_function],  // Handle potential conflicts
-  // ],
 
   rules: {
     source_file: $ => repeat($._statement), // Root Rule

@@ -6,6 +6,7 @@ This folder contains project-level planning and developer documentation for `tre
 
 - [Roadmap](roadmap.md) — phased implementation plan with checkable tasks and acceptance criteria.
 - [Repository assessment](repository-assessment.md) — completed Phase 1 findings, grammar/CST audit, functional and performance baselines, ABI 15 upgrade resolution, syntax coverage inventory, repository inventory, cleanup candidates, prioritized gaps, and AGPL-3.0 license decision.
+- [Grammar architecture](grammar-architecture.md) — naming conventions, public syntax-tree API, expression hierarchy, precedence, and conflict policy.
 - [Compatibility](compatibility.md) — supported CLI, parser ABI, runtime floor, and binding validation matrix.
 
 ## Sources of truth

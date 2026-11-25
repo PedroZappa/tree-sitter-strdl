@@ -1,0 +1,50 @@
+==================
+var declaration with multiple declarators
+==================
+
+var a = 1, b;
+
+---
+
+(source_file
+  (variable_declaration
+    (variable_declarator
+      name: (identifier)
+      value: (expression
+        (number)))
+    (variable_declarator
+      name: (identifier))))
+
+==================
+let declaration
+==================
+
+let c = 2;
+
+---
+
+(source_file
+  (lexical_declaration
+    (variable_declarator
+      name: (identifier)
+      value: (expression
+        (number)))))
+
+==================
+const declaration with multiple declarators
+==================
+
+const d = 3, e = 4;
+
+---
+
+(source_file
+  (lexical_declaration
+    (variable_declarator
+      name: (identifier)
+      value: (expression
+        (number)))
+    (variable_declarator
+      name: (identifier)
+      value: (expression
+        (number)))))

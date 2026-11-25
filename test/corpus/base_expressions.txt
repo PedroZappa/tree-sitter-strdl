@@ -1,0 +1,50 @@
+==================
+base expression forms
+==================
+
+s("bd sd")
+note('c3 e3')
+stack(`bd`, 10, 0.5, [1, 2], {edo: 10}, tempo)
+setCpm(.5)
+
+---
+
+(source_file
+  (expression
+    (function_call
+      (identifier)
+      (expression
+        (string))))
+  (expression
+    (function_call
+      (identifier)
+      (expression
+        (string))))
+  (expression
+    (function_call
+      (identifier)
+      (expression
+        (string))
+      (expression
+        (number))
+      (expression
+        (number))
+      (expression
+        (array
+          (expression
+            (number))
+          (expression
+            (number))))
+      (expression
+        (object
+          (pair
+            key: (identifier)
+            value: (expression
+              (number)))))
+      (expression
+        (identifier))))
+  (expression
+    (function_call
+      (identifier)
+      (expression
+        (number)))))

@@ -38,7 +38,7 @@ These observations are inputs to Phase 1, not proof that any phase is complete.
 
 ## Immediate next work
 
-Phase 1 is complete and tagged `v1.2.0`. The documented findings are in `docs/repository-assessment.md`; the next work is Phase 2 grammar foundation, beginning with the grammar architecture and public-CST decisions identified as P0 gaps.
+Phase 2 is complete pending release tagging. The documented foundation is in `docs/grammar-architecture.md`; the next work is Phase 3 language coverage, beginning with evidence collection from Strudel documentation and examples.
 
 - [x] Capture the current functional baseline: grammar generation, corpus tests, Node.js binding tests, and query compilation.
 - [x] Verify whether regenerated files under `src/` match the committed artifacts.
@@ -117,27 +117,27 @@ Phase 1 is complete and tagged `v1.2.0`. The documented findings are in `docs/re
 
 **Deliverable:** a stable, intentional grammar foundation.
 
-- [ ] Define node naming conventions in a grammar architecture document.
-- [ ] Define field naming conventions for important structural relationships.
-- [ ] Document which nodes are part of the public syntax-tree API.
-- [ ] Establish the core statement and expression hierarchy.
-- [ ] Establish composable base-expression rules.
-- [ ] Document every precedence declaration.
-- [ ] Document every intentional conflict and why it is necessary.
-- [ ] Remove unjustified precedence rules and conflicts where verification shows they are unnecessary.
-- [ ] Add corpus tests for foundational rules and precedence decisions.
-- [ ] Regenerate `src/parser.c`, `src/grammar.json`, and `src/node-types.json`.
-- [ ] Review every `node-types.json` change as a syntax-tree API change.
-- [ ] Run corpus tests and query compilation after regeneration.
-- [ ] Record syntax-tree changes in documentation.
+- [x] Define node naming conventions in a grammar architecture document.
+- [x] Define field naming conventions for important structural relationships.
+- [x] Document which nodes are part of the public syntax-tree API.
+- [x] Establish the core statement and expression hierarchy.
+- [x] Establish composable base-expression rules.
+- [x] Document every precedence declaration.
+- [x] Document every intentional conflict and why it is necessary.
+- [x] Remove unjustified precedence rules and conflicts where verification shows they are unnecessary.
+- [x] Add corpus tests for foundational rules and precedence decisions.
+- [x] Regenerate `src/parser.c`, `src/grammar.json`, and `src/node-types.json`.
+- [x] Review every `node-types.json` change as a syntax-tree API change.
+- [x] Run corpus tests and query compilation after regeneration.
+- [x] Record syntax-tree changes in documentation.
 
 ### Phase 2 acceptance criteria
 
-- [ ] Foundational rules are deliberate, documented, and tested.
-- [ ] Generated artifacts are synchronized with `grammar.js`.
-- [ ] Public node and field names are documented.
-- [ ] No unexplained conflicts or precedence declarations remain.
-- [ ] Existing valid compositions still parse correctly.
+- [x] Foundational rules are deliberate, documented, and tested.
+- [x] Generated artifacts are synchronized with `grammar.js`.
+- [x] Public node and field names are documented.
+- [x] No unexplained conflicts or precedence declarations remain.
+- [x] Existing valid compositions still parse correctly.
 
 ---
 
@@ -490,3 +490,9 @@ For checked items, add a short entry using this format:
 - Phase 1 — Dependency and attribution audit: compared manifests, `package-lock.json`, npm/crates.io/PyPI registry metadata, upstream Tree-sitter v0.27.2 source/templates, and git history on 2026-11-25; evidence: [docs/repository-assessment.md](repository-assessment.md#dependency-and-attribution-audit).
 - Phase 1 — Complete repository assessment: recorded findings, risks, prioritized gaps, and provisional implementation order in `docs/repository-assessment.md` on 2026-11-25; evidence: [docs/repository-assessment.md](repository-assessment.md#prioritized-gaps-risks-and-implementation-order).
 - Phase 1 — Version tag: aligned tracked version metadata to `1.2.0`, documented the `vX.Y.Z` phase-tag convention, and replaced the local `phase-1-repository-audit` tag with annotated `v1.2.0` on 2026-11-25; no tag was pushed.
+- Phase 2 — Grammar architecture: documented naming rules, the public node/field API, statement and expression hierarchy, every active precedence declaration, and the no-conflict policy on 2026-11-25; evidence: [grammar-architecture.md](grammar-architecture.md).
+- Phase 2 — Dead metadata removal: removed unreferenced named precedence levels `member`, `call`, `binary_times`, and `binary_plus` and the commented-out conflict entry from `grammar.js`; the retained `arrow_function` level remains active.
+- Phase 2 — Generated artifact review: `node_modules/.bin/tree-sitter generate` with CLI 0.27.2 left `src/node-types.json` unchanged, removed only stale precedence metadata from `src/grammar.json`, and updated only version metadata in `src/parser.c`; no public syntax-tree API change was introduced.
+- Phase 2 — Corpus tests: added `declarations.txt`, `base_expressions.txt`, and `precedence.txt`; `node_modules/.bin/tree-sitter test --json-summary` passed 17/17 cases with CLI 0.27.2, including all seven original cases.
+- Phase 2 — Query compilation: `node_modules/.bin/tree-sitter query --quiet --grammar-path . queries/highlights.scm test.strdl` and the equivalent `locals.scm` command completed successfully with CLI 0.27.2.
+- Phase 2 — Representative fixture: `node_modules/.bin/tree-sitter parse test.strdl` produced no `ERROR` or `MISSING` nodes after regeneration.
