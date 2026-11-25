@@ -1,0 +1,146 @@
+==================
+multiplication binds tighter than addition
+==================
+
+setCps(1 + 2 * 3)
+
+---
+
+(source_file
+  (expression
+    (function_call
+      (identifier)
+      (expression
+        (binary_expression
+          (additive_expression
+            (binary_expression
+              (number))
+            (binary_expression
+              (multiplicative_expression
+                (binary_expression
+                  (number))
+                (binary_expression
+                  (number))))))))))
+
+==================
+addition is left associative
+==================
+
+setCps(1 + 2 + 3)
+
+---
+
+(source_file
+  (expression
+    (function_call
+      (identifier)
+      (expression
+        (binary_expression
+          (additive_expression
+            (binary_expression
+              (additive_expression
+                (binary_expression
+                  (number))
+                (binary_expression
+                  (number))))
+            (binary_expression
+              (number))))))))
+
+==================
+multiplication and division are left associative
+==================
+
+setCps(1 * 2 / 3)
+
+---
+
+(source_file
+  (expression
+    (function_call
+      (identifier)
+      (expression
+        (binary_expression
+          (multiplicative_expression
+            (binary_expression
+              (multiplicative_expression
+                (binary_expression
+                  (number))
+                (binary_expression
+                  (number))))
+            (binary_expression
+              (number))))))))
+
+==================
+parenthesized expression
+==================
+
+setCps((1 + 2) * 3)
+
+---
+
+(source_file
+  (expression
+    (function_call
+      (identifier)
+      (expression
+        (binary_expression
+          (multiplicative_expression
+            (binary_expression
+              (expression
+                (binary_expression
+                  (additive_expression
+                    (binary_expression
+                      (number))
+                    (binary_expression
+                      (number))))))
+            (binary_expression
+              (number))))))))
+
+==================
+parenthesized chain as binary operand
+==================
+
+setCps((s("bd").gain(1)) + 2)
+
+---
+
+(source_file
+  (expression
+    (function_call
+      (identifier)
+      (expression
+        (binary_expression
+          (additive_expression
+            (binary_expression
+              (expression
+                (chained_method
+                  (function_call
+                    (identifier)
+                    (expression
+                      (string)))
+                  (method_call
+                    (identifier)
+                    (expression
+                      (number))))))
+            (binary_expression
+              (number))))))))
+
+==================
+arrow function body precedence
+==================
+
+x => x + 1
+
+---
+
+(source_file
+  (expression
+    (arrow_function
+      parameter: (identifier)
+      body: (expression
+        (binary_expression
+          (additive_expression
+            (binary_expression
+              (identifier))
+            (binary_expression
+              (number))))))))

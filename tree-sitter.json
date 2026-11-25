@@ -16,7 +16,7 @@
     }
   ],
   "metadata": {
-    "version": "1.1.8",
+    "version": "1.3.0",
     "license": "AGPL-3.0-only",
     "description": "Parser for Strudel, a Tidal Cycles based live coding tool",
     "authors": [
