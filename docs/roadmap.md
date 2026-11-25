@@ -225,8 +225,8 @@ Phase 2 is complete and tagged `v1.3.0`. Phase 3 evidence collection, the source
 - [x] Test replacements.
 - [x] Test nested edits.
 - [x] Test edits through temporarily malformed states.
-- [ ] Compare each incremental result against a fresh parse of the same final source.
-- [ ] Automate the comparison in a repeatable test harness.
+- [x] Compare each incremental result against a fresh parse of the same final source.
+- [x] Automate the comparison in a repeatable test harness.
 - [ ] Document the equivalence test procedure.
 
 ### Phase 4 acceptance criteria
@@ -522,4 +522,5 @@ For checked items, add a short entry using this format:
 - Phase 4 — Incremental parsing: verified replacement equivalence with `make test-incremental INCREMENTAL_FILTER=replacement`. Added `method-name-replacement` to `test/fixtures/incremental_sequences.json`, extending replacement coverage to string contents, template contents, binding identifiers, member-expression method names, and numeric literals. Replacement subset passes 5/5; full catalog passes 16/16. Updated `docs/incremental-editing-sequences.md`; no grammar change was required.
 - Phase 4 — Incremental parsing: verified nested-edit equivalence with `make test-incremental INCREMENTAL_FILTER=nested-edit`. Added `nested-call-edit` and `nested-arrow-body-edit` to `test/fixtures/incremental_sequences.json`, extending nested coverage to object literals, nested call arguments, and arrow-function bodies. Nested subset passes 4/4; full catalog passes 18/18. Updated `docs/incremental-editing-sequences.md`; no grammar change was required.
 - Phase 4 — Incremental parsing: extended `scripts/test_incremental.py` to compare incremental and fresh trees after every edit, not only the final state. The CLI exits nonzero on malformed parses but still emits a CST, so the harness now detects genuine failures by the presence of a `source_file` node and strips `Parse:`/`Edit:` timing lines. Added `object-brace-repair` and `string-quote-repair`, bringing malformed-state coverage to missing call parentheses, missing object braces, and unterminated strings. Malformed subset passes 4/4 sequences with 4 malformed steps; full catalog passes 20/20 sequences and 27/27 steps. Updated `docs/incremental-editing-sequences.md`; no grammar change was required.
+- Phase 4 — Incremental parsing: made final-source equivalence an explicit harness result. `scripts/test_incremental.py` now tracks the last step of each sequence separately and reports `Final-source comparisons: 20/20 passed`. This confirms that every incremental result for the completed source is byte-for-byte equivalent to a fresh parse of the same final source, and that the comparison is automated through the repeatable `make test-incremental` target with optional `INCREMENTAL_FILTER` subsets. No grammar change was required.
 - Phase 6 — CI validation: added `.github/workflows/ci.yml` for pull requests and pushes to `main`, with SHA-pinned checkout/setup-node actions and a Node.js 22/24 matrix. Added `make ci`, `docs/ci.md`, the CI badge, and documentation links. `make ci` was run locally and passed generated-artifact, corpus, query, Node binding, and C build checks. Incremental, benchmark, formatting/static, and non-Node binding checks remain deferred.

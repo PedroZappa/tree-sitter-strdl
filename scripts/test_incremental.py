@@ -106,14 +106,16 @@ def compare_sequence(
     fixtures: dict[str, str],
     fixture_paths: dict[str, str],
     temp_dir: Path,
-) -> tuple[list[str], int, int]:
-    """Return (problems, step count, malformed step count)."""
+) -> tuple[list[str], int, int, bool]:
+    """Return (problems, step count, malformed step count, final source matched)."""
     source = fixtures[sequence["fixture"]]
     sources, cumulative_edits = apply_edits(source, sequence["edits"])
     base_path = REPO_ROOT / fixture_paths[sequence["fixture"]]
 
     problems: list[str] = []
     malformed_steps = 0
+    final_step = len(sources)
+    final_matched = False
     for step, (step_source, step_edits) in enumerate(
         zip(sources, cumulative_edits), start=1
     ):
@@ -135,6 +137,8 @@ def compare_sequence(
             malformed_steps += 1
 
         if incremental_tree == fresh_tree:
+            if step == final_step:
+                final_matched = True
             continue
 
         diff = difflib.unified_diff(
@@ -147,7 +151,7 @@ def compare_sequence(
         problems.append(f"step {step}: incremental tree differs from fresh tree")
         problems.extend(diff)
 
-    return problems, len(sources), malformed_steps
+    return problems, len(sources), malformed_steps, final_matched
 
 
 def main() -> int:
@@ -170,14 +174,17 @@ def main() -> int:
     failures = 0
     total_steps = 0
     malformed_steps = 0
+    final_passed = 0
     with tempfile.TemporaryDirectory(prefix="tree-sitter-strdl-incremental-") as temp:
         temp_dir = Path(temp)
         for sequence in selected:
-            problems, steps, malformed = compare_sequence(
+            problems, steps, malformed, final_matched = compare_sequence(
                 sequence, fixtures, fixture_paths, temp_dir
             )
             total_steps += steps
             malformed_steps += malformed
+            if final_matched:
+                final_passed += 1
             suffix = f"{steps} steps"
             if malformed:
                 suffix += f", {malformed} malformed"
@@ -194,6 +201,7 @@ def main() -> int:
         f"Incremental/fresh comparisons: {total - failures}/{total} sequences, "
         f"{total_steps} steps, {malformed_steps} malformed steps"
     )
+    print(f"Final-source comparisons: {final_passed}/{total} passed")
     return 1 if failures else 0
 
 
