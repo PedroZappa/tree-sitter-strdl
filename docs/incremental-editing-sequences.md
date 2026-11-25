@@ -36,8 +36,10 @@ Using current-source matches rather than precomputed byte offsets keeps the sequ
 | `compact-set-cps` | compact | replacement, compact fixture | Change the tempo in the compact composition. |
 | `compact-declaration-deletion` | compact | deletion, compact fixture | Remove a labeled declaration. |
 | `compact-malformed-repair` | compact | malformed state, repair, compact fixture | Delete and restore a closing `)`. |
+| `argument-deletion` | representative | deletion, argument, call | Remove one argument from the `slider` call. |
+| `object-property-deletion` | representative | deletion, nested edit, object literal | Remove one property from the first nested `_pitchwheel` object. |
 
-These sequences cover insertion, deletion, replacement, nested edits, and temporary malformed states. The malformed states are intermediate inputs; each sequence ends in a complete source.
+These 15 sequences cover insertion, deletion, replacement, nested edits, and temporary malformed states. Deletion coverage spans whole declarations, labeled statements, chain methods, call arguments, and nested object properties. The malformed states are intermediate inputs; each sequence ends in a complete source.
 
 ## Running comparisons
 

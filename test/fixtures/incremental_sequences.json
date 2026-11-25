@@ -222,6 +222,34 @@
           "occurrence": 0
         }
       ]
+    },
+    {
+      "id": "argument-deletion",
+      "fixture": "representative",
+      "description": "Remove one argument from the slider call, leaving a valid two-argument call.",
+      "categories": ["deletion", "argument", "call"],
+      "edits": [
+        {
+          "op": "replace",
+          "old": "slider(5,5,12)",
+          "new": "slider(5,12)",
+          "occurrence": 0
+        }
+      ]
+    },
+    {
+      "id": "object-property-deletion",
+      "fixture": "representative",
+      "description": "Remove one property from the first nested _pitchwheel object literal.",
+      "categories": ["deletion", "nested-edit", "object-literal"],
+      "edits": [
+        {
+          "op": "replace",
+          "old": "hapRadius:3,",
+          "new": "",
+          "occurrence": 0
+        }
+      ]
     }
   ]
 }
