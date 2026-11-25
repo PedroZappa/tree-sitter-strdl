@@ -140,7 +140,7 @@ Tree-sitter's standard error recovery applies; no custom scanner is used. The gr
 
 Template literals expose only `${...}` substitutions as expression children. All other backtick content is opaque literal text. Tagged templates expose a `tag` expression and an opaque `template_string`.
 
-Phase 4 has begun with dedicated unfinished-call, incomplete-argument-list, incomplete-arrow-function, incomplete-expression, and missing-delimiter cases in `test/corpus/incomplete_calls.txt`, `test/corpus/incomplete_argument_lists.txt`, `test/corpus/incomplete_arrow_functions.txt`, `test/corpus/incomplete_expressions.txt`, and `test/corpus/missing_delimiters.txt`. Remaining incomplete-syntax categories and incremental-parsing regression tests are still pending.
+Phase 4 has begun with dedicated unfinished-call, incomplete-argument-list, incomplete-arrow-function, incomplete-declaration, incomplete-expression, and missing-delimiter cases in `test/corpus/incomplete_calls.txt`, `test/corpus/incomplete_argument_lists.txt`, `test/corpus/incomplete_arrow_functions.txt`, `test/corpus/incomplete_declarations.txt`, `test/corpus/incomplete_expressions.txt`, and `test/corpus/missing_delimiters.txt`. Variable declarations with a missing initializer preserve the declaration kind and binding name but leave the trailing `=` in a localized `ERROR`; `function f()` and `import { x } from` still collapse to a root `ERROR` and are not recorded as expected-good recovery. Remaining incomplete-syntax categories and incremental-parsing regression tests are still pending.
 
 ## Verification
 

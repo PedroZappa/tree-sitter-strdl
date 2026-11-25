@@ -1,0 +1,87 @@
+==================
+missing const initializer
+==================
+const x =
+---
+
+(source_file
+  (variable_declaration
+    (variable_declarator
+      (identifier)))
+  (ERROR))
+
+==================
+missing let initializer
+==================
+let x =
+---
+
+(source_file
+  (variable_declaration
+    (variable_declarator
+      (identifier)))
+  (ERROR))
+
+==================
+missing var initializer
+==================
+var x =
+---
+
+(source_file
+  (variable_declaration
+    (variable_declarator
+      (identifier)))
+  (ERROR))
+
+==================
+missing initializer after destructured binding
+==================
+const [a, b] =
+---
+
+(source_file
+  (variable_declaration
+    (variable_declarator
+      (array_pattern
+        (identifier)
+        (identifier))))
+  (ERROR))
+
+==================
+incomplete second declarator initializer
+==================
+const x = 1, y =
+---
+
+(source_file
+  (variable_declaration
+    (variable_declarator
+      (identifier)
+      (number))
+    (variable_declarator
+      (identifier)))
+  (ERROR))
+
+==================
+trailing comma in declaration
+==================
+const x = 1,
+---
+
+(source_file
+  (variable_declaration
+    (variable_declarator
+      (identifier)
+      (number)))
+  (ERROR))
+
+==================
+missing export default value
+==================
+export default
+---
+
+(source_file
+  (export_declaration
+    (MISSING number)))
