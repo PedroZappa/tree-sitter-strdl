@@ -14,6 +14,7 @@ This folder contains project-level planning and developer documentation for `tre
 - [Incremental editing sequences](incremental-editing-sequences.md) — fixtures, edit format, and recorded editing sequences for incremental-parsing equivalence tests.
 - [Incremental equivalence test procedure](incremental-equivalence-procedure.md) — how the harness replays edits, compares trees, handles malformed steps, and reports results.
 - [Query audit](query-audit.md) — Phase 5 structural audit of `highlights.scm` against the current node and field API, with fixture evidence and follow-up findings.
+- [Highlight captures](highlight-captures.md) — authoritative reference for every `highlights.scm` capture name, its syntactic meaning, and query API stability notes.
 
 ## Sources of truth
 

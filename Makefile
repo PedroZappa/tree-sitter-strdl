@@ -48,6 +48,7 @@ EXTRAS := $(filter-out $(PARSER),$(wildcard $(SRC_DIR)/*.c))
 OBJS := $(patsubst %.c,%.o,$(PARSER) $(EXTRAS))
 QUERIES := $(wildcard $(QUERY_DIR)/*.scm)
 FIXTURES := test.strdl test-local.strdl
+QUERY_DETERMINISM_FIXTURES := test/query/determinism.strdl
 RECOVERY_FILES := $(wildcard $(TEST_DIR)/incomplete_*.txt $(TEST_DIR)/malformed_*.txt $(TEST_DIR)/missing_*.txt $(TEST_DIR)/noncascading_*.txt $(TEST_DIR)/recovery_*.txt $(TEST_DIR)/unfinished_*.txt $(TEST_DIR)/valid_*.txt)
 
 # Test inputs (override on the command line)
@@ -158,7 +159,7 @@ test-query:	## Compile, run, and check official queries against the fixtures
 	@for query in $(QUERIES); do \
 		$(TS) query --quiet --grammar-path . "$$query" $(FIXTURES) || exit 1; \
 	done
-	@python3 scripts/check_query_determinism.py $(TS) $(QUERY_DIR)/highlights.scm $(FIXTURES)
+	@python3 scripts/check_query_determinism.py $(TS) $(QUERY_DIR)/highlights.scm $(FIXTURES) $(QUERY_DETERMINISM_FIXTURES)
 	@echo "$(YEL)* $(_SUCCESS) Queries compiled, executed, and deterministic$(D)"
 
 test-node:	## Run Node.js binding tests (requires a matching native ABI)

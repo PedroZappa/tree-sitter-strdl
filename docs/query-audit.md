@@ -137,7 +137,7 @@ A source range must receive at most one capture. Nested captures on different no
 
 Before the specificity changes, executing `highlights.scm` against `test.strdl` and `test-local.strdl` produced 1,099 capture events over 917 ranges, with 164 ranges receiving multiple captures. The dominant overlap was `property` plus `variable` (122 ranges); API-name aliases also overlapped `function.call` and `variable`.
 
-After the changes, `make test-query` reports 901 captures across 901 ranges, with zero duplicate ranges. Final fixture capture counts are:
+After the changes, the two original fixtures produce 901 captures across 901 ranges, with zero duplicate ranges. Final capture counts for those two fixtures are:
 
 | Capture | Matches |
 | --- | ---: |
@@ -158,13 +158,17 @@ After the changes, `make test-query` reports 901 captures across 901 ranges, wit
 
 A temporary negative-control query containing `(identifier) @variable` and `(identifier) @function.call` was rejected by the determinism checker, confirming that the check detects duplicate captures.
 
+A later targeted probe found one latent overlap not present in the original fixtures: a bare identifier inside `${...}` matched both `@variable` and the wildcard `@expression` template pattern. The wildcard was replaced with an explicit list of template substitution expression types that do not already have a dedicated capture. `test/query/determinism.strdl` now exercises optional chaining, template interpolation, calls, members, objects, imports, parameter defaults, and control flow. The checker reports 1,096 captures across 1,096 ranges with zero duplicates across all three determinism fixtures.
+
 ### Limitations
 
-The committed fixtures do not contain `?.` or `${`, so those new punctuation patterns compiled but were not exercised. Capture-name meanings and breaking-change history still need a dedicated query document.
+The two original fixtures still do not contain `?.` or `${`; those tokens are exercised by `test/query/determinism.strdl`. Capture-name meanings and breaking-change history are documented in [highlight captures](highlight-captures.md).
 
 ## Verification log
 
 - `node_modules/.bin/tree-sitter query queries/highlights.scm test.strdl test-local.strdl` — compiled and executed successfully; all initial patterns reached output.
 - Negative controls for unknown node type and unknown field name — both failed as expected, confirming that successful compilation validates names.
-- `make test-query` — passed after the specificity changes, including the new duplicate-capture check: 901 captures across 901 ranges.
+- `make test-query` — passed after the specificity changes, including the new duplicate-capture check: 901 captures across 901 ranges for the two original fixtures.
 - Duplicate-capture negative control — rejected as expected with `exit=1`.
+- Template-substitution probe — exposed a `variable`/`expression` overlap, prompting the explicit template expression list; `tree-sitter parse test/query/determinism.strdl` now reports no `ERROR` or `MISSING` nodes.
+- Final `make test-query` — 1,096 captures across 1,096 ranges with zero duplicate captures across `test.strdl`, `test-local.strdl`, and `test/query/determinism.strdl`.

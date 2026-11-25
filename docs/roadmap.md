@@ -244,7 +244,7 @@ Phase 2 is complete and tagged `v1.3.0`. Phase 3 evidence collection, the source
 
 - [x] Audit `highlights.scm` against the current public syntax tree.
 - [x] Verify that highlight patterns are specific and deterministic.
-- [ ] Document every highlight capture name and intended meaning.
+- [x] Document every highlight capture name and intended meaning.
 - [x] Decide whether API-name-specific highlights are compatible with project scope.
 - [x] Remove or relocate semantic analysis that does not belong in syntax queries.
 - [ ] Audit `locals.scm` scopes, definitions, and references.
@@ -254,7 +254,7 @@ Phase 2 is complete and tagged `v1.3.0`. Phase 3 evidence collection, the source
 - [ ] Add only justified injections; do not create an empty or speculative query file.
 - [ ] Add query compilation tests.
 - [ ] Add query execution tests against representative compositions.
-- [ ] Keep capture names stable and document breaking changes.
+- [x] Keep capture names stable and document breaking changes.
 - [ ] Register official queries in `tree-sitter.json`, `package.json`, and packaging rules.
 - [ ] Add query documentation under `docs/`.
 
@@ -528,3 +528,4 @@ For checked items, add a short entry using this format:
 - Phase 6 — CI validation: added `.github/workflows/ci.yml` for pull requests and pushes to `main`, with SHA-pinned checkout/setup-node actions and a Node.js 22/24 matrix. Added `make ci`, `docs/ci.md`, the CI badge, and documentation links. `make ci` was run locally and passed generated-artifact, corpus, query, Node binding, and C build checks. Incremental, benchmark, formatting/static, and non-Node binding checks remain deferred.
 - Phase 5 — Query audit: audited all 40 `highlights.scm` patterns against `src/node-types.json` and `grammar.js`. All referenced named nodes, fields, and tokens exist; `tree-sitter query` and `make test-query` compiled and executed successfully, while negative controls confirmed compilation rejects invalid node and field names. Recorded fixture capture counts and follow-up findings in `docs/query-audit.md`: overlapping generic captures, broad parameter-container captures, hardcoded Strudel API-name groups, missing `?.` and template-delimiter punctuation coverage, and uneven fixture coverage. No grammar or query change was required for this audit item.
 - Phase 5 — Query specificity: removed the generic identifier fallback, all hardcoded Strudel API-name groups, and broad parameter/container captures. `highlights.scm` now uses contextual identifier patterns and direct constructor captures. Added `scripts/check_query_determinism.py` to `make test-query`; it failed a duplicate-capture negative control and passed the committed query with 901 captures across 901 ranges and no duplicate ranges. Updated `docs/query-audit.md` with the scope decision, before/after evidence, and limitations. Remaining work includes capture documentation and fixtures that exercise `?.` and `${`.
+- Phase 5 — Capture documentation: added `docs/highlight-captures.md` documenting all 16 current highlight captures, their exact syntactic contexts, determinism rules, scope boundaries, and removed capture names as breaking changes. Linked it from `README.md` and `docs/README.md`, and updated `docs/ci.md`. A targeted probe exposed a latent `${identifier}` overlap between `@variable` and `@expression`; replaced the wildcard template expression pattern with an explicit non-overlapping type list and added `test/query/determinism.strdl` to the determinism check. `tree-sitter parse` reports no errors, and `make test-query` reports 1,096 captures across 1,096 ranges with zero duplicates.

@@ -201,7 +201,23 @@
 (binary_expression) @expression
 (unary_expression) @expression
 (conditional_expression) @expression
+
+; Template substitution expressions without a dedicated literal, identifier,
+; or expression capture.
 (template_substitution
-  expression: (_) @expression)
+  expression: [
+    (array)
+    (arrow_function)
+    (assignment_expression)
+    (await_expression)
+    (call_expression)
+    (member_expression)
+    (new_expression)
+    (object)
+    (parenthesized_expression)
+    (subscript_expression)
+    (tagged_template_expression)
+    (template_string)
+  ] @expression)
 
 ; Constructors are captured through `new_expression` above.

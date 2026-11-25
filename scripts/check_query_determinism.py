@@ -50,8 +50,8 @@ def main(argv: list[str]) -> int:
     for raw_line in result.stdout.splitlines():
         line = ANSI_RE.sub("", raw_line)
         stripped = line.strip()
-        if stripped in fixture_names:
-            current_file = stripped
+        if stripped in fixture_names or Path(stripped).name in fixture_names:
+            current_file = Path(stripped).name
             continue
 
         match = CAPTURE_RE.search(line)

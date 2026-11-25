@@ -121,6 +121,7 @@ Official queries live in `queries/`:
 - [Syntax coverage matrix](docs/syntax-coverage-matrix.md)
 - [Compatibility](docs/compatibility.md)
 - [CI](docs/ci.md)
+- [Highlight captures](docs/highlight-captures.md)
 - [Development roadmap](docs/roadmap.md)
 - [Documentation index](docs/README.md)
 
