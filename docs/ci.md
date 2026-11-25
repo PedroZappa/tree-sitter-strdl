@@ -1,6 +1,6 @@
 # Continuous integration
 
-GitHub Actions validates the grammar in [`.github/workflows/ci.yml`](../.github/workflows/ci.yml). The workflow runs for pull requests and pushes to `main`; tag pushes are handled by the separate [publish workflow](../.github/workflows/publish.yml).
+GitHub Actions validates the grammar in [`.github/workflows/ci.yml`](../.github/workflows/ci.yml). The workflow runs for pull requests and pushes to `main`; tag pushes are handled by the separate [publish workflow](../.github/workflows/publish.yml). See the [test strategy](test-strategy.md) for the full test-layer index and extension procedures.
 
 ## Triggers and jobs
 

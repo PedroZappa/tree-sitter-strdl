@@ -123,6 +123,7 @@ See [query documentation](docs/queries.md) for the official inventory, capture c
 - [Syntax coverage matrix](docs/syntax-coverage-matrix.md)
 - [Compatibility](docs/compatibility.md)
 - [CI](docs/ci.md)
+- [Test strategy](docs/test-strategy.md)
 - [Queries](docs/queries.md)
 - [Highlight captures](docs/highlight-captures.md)
 - [Locals captures](docs/locals-captures.md)
