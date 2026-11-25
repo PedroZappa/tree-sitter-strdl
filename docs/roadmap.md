@@ -206,7 +206,7 @@ Phase 2 is complete and tagged `v1.3.0`. Phase 3 evidence collection, the source
 ### Error recovery
 
 - [x] Test unfinished function calls.
-- [ ] Test incomplete expressions.
+- [x] Test incomplete expressions.
 - [ ] Test missing delimiters.
 - [ ] Test incomplete argument lists.
 - [ ] Test partially typed arrow functions.
@@ -509,3 +509,4 @@ For checked items, add a short entry using this format:
 - Phase 3 — Evidence discipline: logical operators and nullish coalescing were briefly added with the binary-expression family, then removed because E18 is inactive and no active evidence exists. Final matrix rows M23 and M27 remain **Missing**.
 - Phase 3 — Documentation: updated [README.md](../README.md), [grammar-architecture.md](grammar-architecture.md), [syntax-coverage-matrix.md](syntax-coverage-matrix.md), [compatibility.md](compatibility.md), and the historical notice in [repository-assessment.md](repository-assessment.md). `git diff --check` passed before the change was staged.
 - Phase 4 — Error recovery: added `test/corpus/incomplete_calls.txt` with five permanent unfinished-call cases covering a missing `)`, a completed string argument, method-chain calls, in-progress arguments, and declaration values. `node_modules/.bin/tree-sitter test` passes 47/47 cases with CLI 0.27.2; each new case localizes the error as `MISSING ")"` and preserves the surrounding call, member, and declaration structure.
+- Phase 4 — Error recovery: added `test/corpus/incomplete_expressions.txt` with five permanent cases covering missing binary/comparison operands, a missing ternary alternative, a nested incomplete operator, and a missing member property. Each case preserves the expression node and synthesizes a `MISSING` terminal. A bare `!` at EOF was probed but collapses to a root `ERROR`, so it was not recorded as expected-good recovery. `node_modules/.bin/tree-sitter test` passes 52/52 cases with CLI 0.27.2. `make test-recovery` runs both recovery corpus files and passes 10/10 cases.

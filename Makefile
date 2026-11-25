@@ -48,6 +48,7 @@ EXTRAS := $(filter-out $(PARSER),$(wildcard $(SRC_DIR)/*.c))
 OBJS := $(patsubst %.c,%.o,$(PARSER) $(EXTRAS))
 QUERIES := $(wildcard $(QUERY_DIR)/*.scm)
 FIXTURES := test.strdl test-local.strdl
+RECOVERY_FILES := $(wildcard $(TEST_DIR)/incomplete_*.txt $(TEST_DIR)/unfinished_*.txt)
 
 # Test inputs (override on the command line)
 FILTER ?=
@@ -93,7 +94,7 @@ D = $(shell tput sgr0 2>/dev/null)
 _SUCCESS = [$(GRN)SUCCESS$(D)]
 _INFO    = [$(BLU)INFO$(D)]
 
-.PHONY: all build generate test test-query test-node parse playground wasm \
+.PHONY: all build generate test test-recovery test-query test-node parse playground wasm \
 	local-install install uninstall clean check-generated verify verify-all \
 	docs docs-open help
 
@@ -138,6 +139,13 @@ test:	## Run corpus tests (FILTER=regex restricts case names)
 	@echo "$(YEL)Running corpus tests...$(D)"
 	@$(TS) test $(if $(FILTER),-i "$(FILTER)",)
 	@echo "$(YEL)* $(_SUCCESS) Corpus tests completed$(D)"
+
+test-recovery:	## Run error-recovery corpus cases
+	@echo "$(YEL)Running recovery corpus tests...$(D)"
+	@for file in $(RECOVERY_FILES); do \
+		$(TS) test --file-name "$$(basename "$$file")" || exit 1; \
+	done
+	@echo "$(YEL)* $(_SUCCESS) Recovery corpus tests completed$(D)"
 
 test-query:	## Compile and run official queries against the fixtures
 	@echo "$(YEL)Running query checks...$(D)"
