@@ -172,7 +172,7 @@ Both official queries are registered in `tree-sitter.json` under the matching `h
 
 The Python binding exposes `HIGHLIGHTS_QUERY` and `LOCALS_QUERY` through `__getattr__`, `__all__`, and the `.pyi` stub. The Rust binding exposes `HIGHLIGHTS_QUERY` and `LOCALS_QUERY` through `include_str!`. These exports make the existing packaged query files available without inventing injection or tag queries.
 
-`scripts/check_query_registration.py` derives the inventory from `queries/`, checks both registration surfaces and every query-carrying packaging rule, verifies the binding exports, and rejects registration of absent query kinds. It is wired into `make test-query-registration`, which `make test-query` runs.
+`scripts/check_query_registration.py` derives the inventory from `queries/`, checks both registration surfaces and every query-carrying packaging rule, verifies the binding exports, and rejects registration of absent query kinds. It is wired into `make test-query-registration`, which `make test-query` runs. See [Queries](queries.md) for the user-facing query documentation.
 
 ## Verification log
 

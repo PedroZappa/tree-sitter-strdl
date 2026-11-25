@@ -2,7 +2,7 @@
 
 This document records the Phase 5 audit of [`queries/locals.scm`](../queries/locals.scm) against the public syntax-tree API in [`src/node-types.json`](../src/node-types.json) and the syntax defined by [`grammar.js`](../grammar.js). It owns the roadmap item “Audit `locals.scm` scopes, definitions, and references.”
 
-The audit covers structural validity, scope coverage, definition patterns, and reference patterns. Query changes are intentionally deferred to the following roadmap items and to the deferred-work notes in [roadmap.md](roadmap.md).
+The audit covers structural validity, scope coverage, definition patterns, and reference patterns. [Locals captures](locals-captures.md) is the authoritative public capture reference; this document records the audit evidence behind it. Query changes are intentionally deferred to the following roadmap items and to the deferred-work notes in [roadmap.md](roadmap.md).
 
 ## Method
 

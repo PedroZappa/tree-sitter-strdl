@@ -2,7 +2,7 @@
 
 This document is the authoritative reference for capture names emitted by [`queries/highlights.scm`](../queries/highlights.scm). It owns the Phase 5 roadmap item “Document every highlight capture name and intended meaning.”
 
-The capture set describes syntactic roles in the public concrete syntax tree. It does not identify Strudel API functions or infer runtime meaning. Mini-notation remains ordinary string content and is captured only through the surrounding JavaScript syntax.
+The capture set describes syntactic roles in the public concrete syntax tree. It does not identify Strudel API functions or infer runtime meaning. Mini-notation remains ordinary string content and is captured only through the surrounding JavaScript syntax. See [Queries](queries.md) for the full official query inventory.
 
 ## Capture names
 

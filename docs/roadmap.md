@@ -256,14 +256,14 @@ Phase 2 is complete and tagged `v1.3.0`. Phase 3 evidence collection, the source
 - [x] Add query execution tests against representative compositions.
 - [x] Keep capture names stable and document breaking changes.
 - [x] Register official queries in `tree-sitter.json`, `package.json`, and packaging rules.
-- [ ] Add query documentation under `docs/`.
+- [x] Add query documentation under `docs/`.
 
 ### Phase 5 acceptance criteria
 
-- [ ] Every official query compiles and executes against representative fixtures.
-- [ ] Capture names and meanings are documented.
-- [ ] Query behavior matches the public syntax-tree API.
-- [ ] Queries avoid editor-specific assumptions and semantic-analysis responsibilities.
+- [x] Every official query compiles and executes against representative fixtures.
+- [x] Capture names and meanings are documented.
+- [x] Query behavior matches the public syntax-tree API.
+- [x] Queries avoid editor-specific assumptions and semantic-analysis responsibilities.
 - [x] Packaged queries are present in published package contents.
 
 ---
@@ -386,7 +386,7 @@ See [CI](ci.md) for the workflow, commands, and remaining gaps.
 - [ ] Document public fields.
 - [ ] Document precedence and intentional conflicts.
 - [ ] Document error recovery considerations.
-- [ ] Add query documentation with capture names and conventions.
+- [x] Add query documentation with capture names and conventions.
 - [ ] Add development environment documentation.
 - [ ] Document build and generation procedures.
 - [ ] Document testing procedures.
@@ -542,3 +542,4 @@ For checked items, add a short entry using this format:
 - Phase 5 — Query compilation tests: added `scripts/check_query_compilation.py` and the `make test-query-compile` target. The checker compiles every official query without source paths and requires negative controls with an invalid node type and invalid field name to fail for the expected reasons. Both official queries compiled; both negative controls were rejected. A temporary invalid query made the checker fail with `exit=1`. `make test-query` now runs the compilation target before execution and semantic checks.
 - Phase 5 — Query execution tests: added `scripts/check_query_captures.py`, the `make test-query-execution` target, and grammar-derived probe queries under `test/query/`. The check asserts that every probe-selected range in `test.strdl`, `test-local.strdl`, and `test/query/determinism.strdl` receives the expected capture. Verified nine highlight roles and three locals roles; an incorrect expected capture on call identifiers failed with `exit=1`. `make test-query` now runs compilation, execution assertions, and the existing semantic checks.
 - Phase 5 — Query registration: registered `locals.scm` in `tree-sitter.json` and the legacy `package.json` metadata alongside `highlights.scm`; no injection or tag query was registered. Exposed `HIGHLIGHTS_QUERY` and `LOCALS_QUERY` from the Python and Rust bindings. Added `scripts/check_query_registration.py` and `make test-query-registration` to verify registration, query-carrying packaging rules, and binding exports. Removing the `locals` registration in a negative control failed with `exit=1`; `npm pack --dry-run --json` listed both query files. `cargo fmt --check` passed, while `cargo check --offline` could not resolve `tree-sitter-language` from the local crate cache.
+- Phase 5 — Query documentation: added `docs/queries.md` as the official query-surface entry point and `docs/locals-captures.md` as the authoritative locals capture API reference. Linked both from `README.md` and `docs/README.md`, and cross-linked the existing highlight, locals, query audit, and injection documents. Local Markdown links resolve, `make docs` lists the new documents, and all Phase 5 acceptance criteria are now evidenced.
