@@ -140,7 +140,7 @@ Tree-sitter's standard error recovery applies; no custom scanner is used. The gr
 
 Template literals expose only `${...}` substitutions as expression children. All other backtick content is opaque literal text. Tagged templates expose a `tag` expression and an opaque `template_string`.
 
-Phase 4 will add dedicated incomplete-syntax and incremental-parsing regression tests. Until then, the current corpus covers complete syntax forms only.
+Phase 4 has begun with dedicated unfinished-call cases in `test/corpus/incomplete_calls.txt`. Remaining incomplete-syntax categories and incremental-parsing regression tests are still pending.
 
 ## Verification
 

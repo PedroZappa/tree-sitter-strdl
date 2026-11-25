@@ -205,7 +205,7 @@ Phase 2 is complete and tagged `v1.3.0`. Phase 3 evidence collection, the source
 
 ### Error recovery
 
-- [ ] Test unfinished function calls.
+- [x] Test unfinished function calls.
 - [ ] Test incomplete expressions.
 - [ ] Test missing delimiters.
 - [ ] Test incomplete argument lists.
@@ -508,3 +508,4 @@ For checked items, add a short entry using this format:
 - Phase 3 — Probe and fixture validation: all 43 temporary probes were reparsed after regeneration. Named imports were fixed to consume `from`; expected remaining errors are object destructuring, spread arguments, shorthand properties, logical operators, and nullish coalescing. `node_modules/.bin/tree-sitter parse test.strdl test-local.strdl` completed without `ERROR` or `MISSING` nodes.
 - Phase 3 — Evidence discipline: logical operators and nullish coalescing were briefly added with the binary-expression family, then removed because E18 is inactive and no active evidence exists. Final matrix rows M23 and M27 remain **Missing**.
 - Phase 3 — Documentation: updated [README.md](../README.md), [grammar-architecture.md](grammar-architecture.md), [syntax-coverage-matrix.md](syntax-coverage-matrix.md), [compatibility.md](compatibility.md), and the historical notice in [repository-assessment.md](repository-assessment.md). `git diff --check` passed before the change was staged.
+- Phase 4 — Error recovery: added `test/corpus/incomplete_calls.txt` with five permanent unfinished-call cases covering a missing `)`, a completed string argument, method-chain calls, in-progress arguments, and declaration values. `node_modules/.bin/tree-sitter test` passes 47/47 cases with CLI 0.27.2; each new case localizes the error as `MISSING ")"` and preserves the surrounding call, member, and declaration structure.
