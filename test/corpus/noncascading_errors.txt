@@ -1,0 +1,149 @@
+==================
+extra token between call arguments stays local
+==================
+const a = 1
+s("bd" @ "hh")
+const b = 2
+---
+
+(source_file
+  (variable_declaration
+    (variable_declarator
+      (identifier)
+      (number)))
+  (expression_statement
+    (call_expression
+      (identifier)
+      (arguments
+        (ERROR
+          (string)
+          (UNEXPECTED '@'))
+        (string))))
+  (variable_declaration
+    (variable_declarator
+      (identifier)
+      (number))))
+
+==================
+missing comma between object pairs stays local
+==================
+const a = 1
+const x = {a: 1 b: 2}
+const b = 2
+---
+
+(source_file
+  (variable_declaration
+    (variable_declarator
+      (identifier)
+      (number)))
+  (variable_declaration
+    (variable_declarator
+      (identifier)
+      (object
+        (pair
+          (identifier)
+          (ERROR
+            (number)
+            (identifier))
+          (number)))))
+  (variable_declaration
+    (variable_declarator
+      (identifier)
+      (number))))
+
+==================
+missing object value stays local
+==================
+const a = 1
+const x = {a: , b: 2}
+const b = 2
+---
+
+(source_file
+  (variable_declaration
+    (variable_declarator
+      (identifier)
+      (number)))
+  (variable_declaration
+    (variable_declarator
+      (identifier)
+      (object
+        (pair
+          (identifier)
+          (MISSING number))
+        (pair
+          (identifier)
+          (number)))))
+  (variable_declaration
+    (variable_declarator
+      (identifier)
+      (number))))
+
+==================
+missing comma between array elements stays local
+==================
+const a = 1
+const x = [1 2]
+const b = 2
+---
+
+(source_file
+  (variable_declaration
+    (variable_declarator
+      (identifier)
+      (number)))
+  (variable_declaration
+    (variable_declarator
+      (identifier)
+      (array
+        (number)
+        (ERROR
+          (number)))))
+  (variable_declaration
+    (variable_declarator
+      (identifier)
+      (number))))
+
+==================
+invalid initializer stays local
+==================
+const a = 1
+const x = @
+const b = 2
+---
+
+(source_file
+  (variable_declaration
+    (variable_declarator
+      (identifier)
+      (number)))
+  (variable_declaration
+    (variable_declarator
+      (identifier)))
+  (ERROR
+    (UNEXPECTED '@'))
+  (variable_declaration
+    (variable_declarator
+      (identifier)
+      (number))))
+
+==================
+stray token statement stays local
+==================
+const a = 1
+@
+const b = 2
+---
+
+(source_file
+  (variable_declaration
+    (variable_declarator
+      (identifier)
+      (number)))
+  (ERROR
+    (UNEXPECTED '@'))
+  (variable_declaration
+    (variable_declarator
+      (identifier)
+      (number))))
