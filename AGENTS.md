@@ -651,6 +651,14 @@ The agent may independently:
 - Investigate and fix bugs.
 - Improve performance.
 
+### Makefile maintenance
+
+The `Makefile` is the canonical entry point for developer and agent workflows in this repository.
+
+When working on the project, the agent must update the `Makefile` with any rules or recipes that would be useful to work with the project. If a new workflow, command, or tool is introduced or discovered, add a corresponding target so it is available through `make`, and keep the help listings and `.PHONY` declarations consistent.
+
+Generated parser artifacts and `grammar.js` remain the source of truth for the grammar; Makefile rules are convenience wrappers and must not duplicate or replace parser generation logic.
+
 ### Mandatory approval requirements
 
 Stop and ask before:
