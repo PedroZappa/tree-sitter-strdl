@@ -37,9 +37,9 @@ make ci
 
 ## Not yet covered
 
-The following checks are required by the project roadmap but need dedicated harnesses before they can be wired into CI:
+The following checks are required by the project roadmap but are not yet part of `make ci`:
 
-- incremental-versus-fresh parse equivalence (Phase 4);
+- incremental-versus-fresh parse equivalence (Phase 4) — a local harness now exists as `make test-incremental`; see the [equivalence test procedure](incremental-equivalence-procedure.md);
 - benchmark fixtures, baselines, and performance-regression reporting (Phase 6);
 - non-Node binding builds and package-content checks (Phase 7);
 - formatting and static checks beyond generated-artifact consistency (no formatter is configured yet).

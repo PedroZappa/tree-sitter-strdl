@@ -50,4 +50,4 @@ These 20 sequences cover insertion, deletion, replacement, nested edits, and tem
 
 `make test-incremental` replays every sequence one edit at a time. After each edit it compares the incremental parse tree (all edits through that step applied to the original fixture) against a fresh parse of the source at that step. This checks intermediate states, including malformed ones, rather than only the final source. The summary reports both all step comparisons and the final-source comparison separately, so final-state equivalence is explicit. Set `INCREMENTAL_FILTER` to a category or sequence ID to run a subset, for example `make test-incremental INCREMENTAL_FILTER=malformed-state`.
 
-The detailed equivalence-test procedure is a separate roadmap item.
+See [incremental equivalence test procedure](incremental-equivalence-procedure.md) for the full comparison procedure, pass/fail rules, output format, and limitations.

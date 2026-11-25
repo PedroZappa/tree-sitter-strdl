@@ -12,6 +12,7 @@ This folder contains project-level planning and developer documentation for `tre
 - [Compatibility](compatibility.md) — supported CLI, parser ABI, runtime floor, and binding validation matrix.
 - [CI](ci.md) — GitHub Actions triggers, validation commands, pinned tooling, local reproduction, and deferred checks.
 - [Incremental editing sequences](incremental-editing-sequences.md) — fixtures, edit format, and recorded editing sequences for incremental-parsing equivalence tests.
+- [Incremental equivalence test procedure](incremental-equivalence-procedure.md) — how the harness replays edits, compares trees, handles malformed steps, and reports results.
 
 ## Sources of truth
 
