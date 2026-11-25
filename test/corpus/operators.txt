@@ -1,0 +1,39 @@
+==================
+comparison expression
+==================
+a > b
+---
+
+(source_file
+  (expression_statement
+    (binary_expression
+      (identifier)
+      (identifier))))
+
+==================
+unary expressions
+==================
+-a
+!ready
+---
+
+(source_file
+  (expression_statement
+    (unary_expression
+      (identifier)))
+  (expression_statement
+    (unary_expression
+      (identifier))))
+
+==================
+conditional expression
+==================
+a ? b : c
+---
+
+(source_file
+  (expression_statement
+    (conditional_expression
+      (identifier)
+      (identifier)
+      (identifier))))

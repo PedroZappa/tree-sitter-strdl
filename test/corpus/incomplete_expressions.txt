@@ -1,0 +1,62 @@
+==================
+incomplete binary right operand
+==================
+1 +
+---
+
+(source_file
+  (expression_statement
+    (binary_expression
+      (number)
+      (MISSING number))))
+
+==================
+incomplete comparison right operand
+==================
+a ==
+---
+
+(source_file
+  (expression_statement
+    (binary_expression
+      (identifier)
+      (MISSING number))))
+
+==================
+incomplete ternary alternative
+==================
+a ? b :
+---
+
+(source_file
+  (expression_statement
+    (conditional_expression
+      (identifier)
+      (identifier)
+      (MISSING number))))
+
+==================
+incomplete nested operator operand
+==================
+a + b *
+---
+
+(source_file
+  (expression_statement
+    (binary_expression
+      (binary_expression
+        (identifier)
+        (identifier))
+      (MISSING number))))
+
+==================
+incomplete member property
+==================
+a.
+---
+
+(source_file
+  (expression_statement
+    (member_expression
+      (identifier)
+      (MISSING identifier))))

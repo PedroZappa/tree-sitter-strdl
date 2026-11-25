@@ -7,11 +7,8 @@ setcpm(30)
 ---
 
 (source_file
-	(expression
-		(function_call
-			(identifier)
-			(expression
-				(number))
-		)
-	)
-)
+  (expression_statement
+    (call_expression
+      (identifier)
+      (arguments
+        (number)))))

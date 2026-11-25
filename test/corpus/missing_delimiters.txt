@@ -1,0 +1,70 @@
+==================
+missing array closing bracket
+==================
+[1, 2
+---
+
+(source_file
+  (expression_statement
+    (array
+      (number)
+      (number)
+      (MISSING "]"))))
+
+==================
+missing parenthesized expression closing parenthesis
+==================
+(1 + 2
+---
+
+(source_file
+  (expression_statement
+    (parenthesized_expression
+      (binary_expression
+        (number)
+        (number))
+      (MISSING ")"))))
+
+==================
+missing computed member closing bracket
+==================
+a[0
+---
+
+(source_file
+  (expression_statement
+    (subscript_expression
+      (identifier)
+      (number)
+      (MISSING "]"))))
+
+==================
+missing object closing brace in declaration
+==================
+const x = {a: 1
+---
+
+(source_file
+  (variable_declaration
+    (variable_declarator
+      (identifier)
+      (object
+        (pair
+          (identifier)
+          (number))
+        (MISSING "}")))))
+
+==================
+missing block closing brace
+==================
+function f() { return 1
+---
+
+(source_file
+  (function_declaration
+    (identifier)
+    (formal_parameters)
+    (block
+      (return_statement
+        (number))
+      (MISSING "}"))))

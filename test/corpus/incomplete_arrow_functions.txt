@@ -1,0 +1,80 @@
+==================
+missing body after single parameter
+==================
+x =>
+---
+
+(source_file
+  (expression_statement
+    (arrow_function
+      (identifier)
+      (MISSING number))))
+
+==================
+missing body after parenthesized parameter
+==================
+(x) =>
+---
+
+(source_file
+  (expression_statement
+    (arrow_function
+      (formal_parameters
+        (identifier))
+      (MISSING number))))
+
+==================
+missing body after empty parameter list
+==================
+() =>
+---
+
+(source_file
+  (expression_statement
+    (arrow_function
+      (formal_parameters)
+      (MISSING number))))
+
+==================
+missing body after destructured parameter
+==================
+([a, b]) =>
+---
+
+(source_file
+  (expression_statement
+    (arrow_function
+      (formal_parameters
+        (array_pattern
+          (identifier)
+          (identifier)))
+      (MISSING number))))
+
+==================
+incomplete expression body
+==================
+x => x +
+---
+
+(source_file
+  (expression_statement
+    (arrow_function
+      (identifier)
+      (binary_expression
+        (identifier)
+        (MISSING number)))))
+
+==================
+missing block closing brace
+==================
+x => { return 1
+---
+
+(source_file
+  (expression_statement
+    (arrow_function
+      (identifier)
+      (block
+        (return_statement
+          (number))
+        (MISSING "}")))))

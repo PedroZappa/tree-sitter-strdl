@@ -1,0 +1,91 @@
+==================
+trailing comma with missing closing parenthesis
+==================
+s("bd",
+---
+
+(source_file
+  (expression_statement
+    (call_expression
+      (identifier)
+      (arguments
+        (string)
+        (MISSING ")")))))
+
+==================
+trailing comma after multiple arguments
+==================
+s("bd", 1,
+---
+
+(source_file
+  (expression_statement
+    (call_expression
+      (identifier)
+      (arguments
+        (string)
+        (number)
+        (MISSING ")")))))
+
+==================
+nested call with incomplete argument list
+==================
+s("bd", note("c3",
+---
+
+(source_file
+  (expression_statement
+    (call_expression
+      (identifier)
+      (arguments
+        (string)
+        (call_expression
+          (identifier)
+          (arguments
+            (string)
+            (MISSING ")")))
+        (MISSING ")")))))
+
+==================
+leading comma in argument list
+==================
+s(, "bd")
+---
+
+(source_file
+  (expression_statement
+    (call_expression
+      (identifier)
+      (arguments
+        (ERROR)
+        (string)))))
+
+==================
+doubled comma in argument list
+==================
+s("bd",, "hh")
+---
+
+(source_file
+  (expression_statement
+    (call_expression
+      (identifier)
+      (arguments
+        (string)
+        (ERROR)
+        (string)))))
+
+==================
+missing comma between arguments
+==================
+s("bd" "hh")
+---
+
+(source_file
+  (expression_statement
+    (call_expression
+      (identifier)
+      (arguments
+        (ERROR
+          (string))
+        (string)))))

@@ -38,7 +38,7 @@ These observations are inputs to Phase 1, not proof that any phase is complete.
 
 ## Immediate next work
 
-Phase 2 is complete and tagged `v1.3.0`. The documented foundation is in `docs/grammar-architecture.md`; the next work is Phase 3 language coverage, beginning with evidence collection from Strudel documentation and examples.
+Phase 2 is complete and tagged `v1.3.0`. Phase 3 evidence collection, the sourced coverage matrix, and the evidence-driven structured refactor are complete. Phase 4 is complete and tagged `v1.4.0`; the next work is Phase 5 queries.
 
 - [x] Capture the current functional baseline: grammar generation, corpus tests, Node.js binding tests, and query compilation.
 - [x] Verify whether regenerated files under `src/` match the committed artifacts.
@@ -147,55 +147,55 @@ Phase 2 is complete and tagged `v1.3.0`. The documented foundation is in `docs/g
 
 ### Establish evidence
 
-- [ ] Collect syntax examples from official Strudel documentation.
-- [ ] Collect examples from Strudel source code and runtime.
-- [ ] Collect examples from official examples and tutorials.
-- [ ] Record maintained community examples that demonstrate additional syntax.
-- [ ] Add each significant syntax requirement to a coverage matrix with its source.
+- [x] Collect syntax examples from official Strudel documentation.
+- [x] Collect examples from Strudel source code and runtime.
+- [x] Collect examples from official examples and tutorials.
+- [x] Record maintained community examples that demonstrate additional syntax.
+- [x] Add each significant syntax requirement to a coverage matrix with its source.
 
 ### Audit current coverage
 
-- [ ] Variable declarations: `var`, `let`, and `const`.
-- [ ] Assignments and expression statements.
-- [ ] Function calls and nested calls.
-- [ ] Member expressions and method chains.
-- [ ] Arrow functions and callbacks.
-- [ ] Function parameters, including more than one parameter.
-- [ ] Arrays and objects.
-- [ ] Object properties and shorthand properties.
-- [ ] Destructuring.
-- [ ] Spread and rest syntax.
-- [ ] Arithmetic expressions.
-- [ ] Logical and comparison expressions.
-- [ ] Unary expressions.
-- [ ] Conditional expressions.
-- [ ] Optional chaining.
-- [ ] Nullish coalescing.
-- [ ] Template literals and interpolation.
-- [ ] Single-quoted and double-quoted strings.
-- [ ] Line and block comments.
-- [ ] Parenthesized expressions.
-- [ ] Relevant import and export syntax.
-- [ ] Mini-notation remains opaque JavaScript string content.
+- [x] Variable declarations: `var`, `let`, and `const`.
+- [x] Assignments and expression statements.
+- [x] Function calls and nested calls.
+- [x] Member expressions and method chains.
+- [x] Arrow functions and callbacks.
+- [x] Function parameters, including more than one parameter.
+- [x] Arrays and objects.
+- [x] Object properties and shorthand properties.
+- [x] Destructuring.
+- [x] Spread and rest syntax.
+- [x] Arithmetic expressions.
+- [x] Logical and comparison expressions.
+- [x] Unary expressions.
+- [x] Conditional expressions.
+- [x] Optional chaining.
+- [x] Nullish coalescing.
+- [x] Template literals and interpolation.
+- [x] Single-quoted and double-quoted strings.
+- [x] Line and block comments.
+- [x] Parenthesized expressions.
+- [x] Relevant import and export syntax.
+- [x] Mini-notation remains opaque JavaScript string content.
 
 ### Implement verified gaps
 
-- [ ] Implement only constructs supported by collected evidence.
-- [ ] Keep Strudel API function names out of grammar rules.
-- [ ] Preserve composable JavaScript-like expression rules.
-- [ ] Add corpus tests for every newly supported construct.
-- [ ] Add representative real-world Strudel fixtures.
-- [ ] Add regression tests for bugs discovered during implementation.
-- [ ] Regenerate and review generated artifacts.
-- [ ] Update the supported-syntax documentation.
+- [x] Implement only constructs supported by collected evidence.
+- [x] Keep Strudel API function names out of grammar rules.
+- [x] Preserve composable JavaScript-like expression rules.
+- [x] Add corpus tests for every newly supported construct.
+- [x] Add representative real-world Strudel fixtures.
+- [x] Add regression tests for bugs discovered during implementation.
+- [x] Regenerate and review generated artifacts.
+- [x] Update the supported-syntax documentation.
 
 ### Phase 3 acceptance criteria
 
-- [ ] The coverage matrix records implemented, missing, and intentionally excluded constructs.
-- [ ] Every implemented gap has an evidence source and corpus coverage.
-- [ ] Real-world fixtures parse without unexpected errors.
-- [ ] Mini-notation has no grammar-specific nodes or semantics.
-- [ ] Generated artifacts remain synchronized.
+- [x] The coverage matrix records implemented, missing, and intentionally excluded constructs.
+- [x] Every implemented gap has an evidence source and corpus coverage.
+- [x] Real-world fixtures parse without unexpected errors.
+- [x] Mini-notation has no grammar-specific nodes or semantics.
+- [x] Generated artifacts remain synchronized.
 
 ---
 
@@ -205,36 +205,36 @@ Phase 2 is complete and tagged `v1.3.0`. The documented foundation is in `docs/g
 
 ### Error recovery
 
-- [ ] Test unfinished function calls.
-- [ ] Test incomplete expressions.
-- [ ] Test missing delimiters.
-- [ ] Test incomplete argument lists.
-- [ ] Test partially typed arrow functions.
-- [ ] Test incomplete declarations.
-- [ ] Test unfinished strings and templates where recoverable.
-- [ ] Test malformed nested structures.
-- [ ] Verify that valid syntax outside error regions remains usable.
-- [ ] Verify that errors do not cascade unnecessarily.
-- [ ] Add permanent regression tests for each discovered recovery bug.
+- [x] Test unfinished function calls.
+- [x] Test incomplete expressions.
+- [x] Test missing delimiters.
+- [x] Test incomplete argument lists.
+- [x] Test partially typed arrow functions.
+- [x] Test incomplete declarations.
+- [x] Test unfinished strings and templates where recoverable.
+- [x] Test malformed nested structures.
+- [x] Verify that valid syntax outside error regions remains usable.
+- [x] Verify that errors do not cascade unnecessarily.
+- [x] Add permanent regression tests for each discovered recovery bug.
 
 ### Incremental parsing
 
-- [ ] Define realistic editing sequences using representative Strudel compositions.
-- [ ] Test insertions.
-- [ ] Test deletions.
-- [ ] Test replacements.
-- [ ] Test nested edits.
-- [ ] Test edits through temporarily malformed states.
-- [ ] Compare each incremental result against a fresh parse of the same final source.
-- [ ] Automate the comparison in a repeatable test harness.
-- [ ] Document the equivalence test procedure.
+- [x] Define realistic editing sequences using representative Strudel compositions.
+- [x] Test insertions.
+- [x] Test deletions.
+- [x] Test replacements.
+- [x] Test nested edits.
+- [x] Test edits through temporarily malformed states.
+- [x] Compare each incremental result against a fresh parse of the same final source.
+- [x] Automate the comparison in a repeatable test harness.
+- [x] Document the equivalence test procedure.
 
 ### Phase 4 acceptance criteria
 
-- [ ] Incomplete and malformed inputs retain useful syntax-tree information.
-- [ ] Valid-code correctness is not weakened to improve malformed-input recovery.
-- [ ] Incremental and fresh parses are equivalent for all recorded editing sequences.
-- [ ] Recovery regressions have permanent corpus tests.
+- [x] Incomplete and malformed inputs retain useful syntax-tree information.
+- [x] Valid-code correctness is not weakened to improve malformed-input recovery.
+- [x] Incremental and fresh parses are equivalent for all recorded editing sequences.
+- [x] Recovery regressions have permanent corpus tests.
 
 ---
 
@@ -305,19 +305,21 @@ Phase 2 is complete and tagged `v1.3.0`. The documented foundation is in `docs/g
 
 ### CI validation
 
-- [ ] Run grammar generation in CI.
-- [ ] Check generated-file consistency in CI.
-- [ ] Run corpus tests in CI.
-- [ ] Run query tests in CI.
-- [ ] Run Node.js binding tests in CI.
+- [x] Run grammar generation in CI.
+- [x] Check generated-file consistency in CI.
+- [x] Run corpus tests in CI.
+- [x] Run query tests in CI.
+- [x] Run Node.js binding tests in CI.
 - [ ] Run incremental parsing tests in CI.
 - [ ] Run formatting and static checks in CI.
-- [ ] Run compatibility checks in CI.
+- [x] Run compatibility checks in CI (Node.js 22 and 24 matrix).
 - [ ] Run performance checks with hardware-variance-aware reporting.
+
+See [CI](ci.md) for the workflow, commands, and remaining gaps.
 
 ### Phase 6 acceptance criteria
 
-- [ ] Test layers and commands are documented.
+- [x] Test layers and commands are documented.
 - [ ] All required test layers run automatically.
 - [ ] Baselines are reproducible and committed.
 - [ ] Performance budgets, if any, are based on measured baselines.
@@ -451,11 +453,6 @@ For each deferred item, record:
   - Reason for deferral: XCTest could not be resolved by the installed command-line tools; dependency resolution selected SwiftTreeSitter 0.25.0 and tree-sitter 0.25.10, and the library build passed.
   - Suggested phase or trigger: Phase 7, with a Swift toolchain that provides XCTest.
 
-- **Automated generated-artifact consistency check**
-  - Opportunity and expected benefit: prevent unpinned or stale CLI output from entering CI or releases.
-  - Reason for deferral: the current check was performed manually with checksum comparison; no CI workflow infrastructure exists yet.
-  - Suggested phase or trigger: Phase 6.
-
 - **Automated query capture and incremental parsing tests**
   - Opportunity and expected benefit: verify query semantics and edit equivalence rather than only query compilation and manual regeneration checks.
   - Reason for deferral: outside the completed compatibility-upgrade scope.
@@ -497,3 +494,35 @@ For checked items, add a short entry using this format:
 - Phase 2 — Query compilation: `node_modules/.bin/tree-sitter query --quiet --grammar-path . queries/highlights.scm test.strdl` and the equivalent `locals.scm` command completed successfully with CLI 0.27.2.
 - Phase 2 — Representative fixture: `node_modules/.bin/tree-sitter parse test.strdl` produced no `ERROR` or `MISSING` nodes after regeneration.
 - Phase 2 — Version tag: aligned tracked version metadata to `1.3.0` and created annotated tag `v1.3.0` on 2026-11-25; no tag was pushed.
+- Phase 3 — Official documentation evidence: collected 33 syntax examples from Codeberg `uzu/strudel` `website/src/pages/**/*.mdx`, imported package docs, `website/src/examples.mjs`, and `packages/web/README.md` on 2026-11-25; each example is linked to its source in [syntax-evidence.md](syntax-evidence.md). Only user-facing Strudel/JavaScript code was collected; MDX infrastructure and mini-notation internals were excluded.
+- Phase 3 — Source/runtime evidence: inspected `packages/transpiler` (`transpiler.mjs`, `index.mjs`, four plug-ins, `test/transpiler.test.mjs`) and `packages/core` (`evaluate.mjs`, `repl.mjs`) from Codeberg `main` on 2026-11-25; recorded 18 S-IDs in [syntax-evidence.md](syntax-evidence.md). Confirms Acorn `ecmaVersion: 2022` with `allowAwaitOutsideFunction: true`, label rewriting, mini/tag plug-ins, and observed ternary/template-interpolation inputs. The commented-out destructuring/`import()` test is marked inactive evidence.
+- Phase 3 — Examples/tutorials evidence: inspected `examples/codemirror-repl/tunes.mjs`, `examples/minimal-repl/tune.mjs`, `test/testtunes.mjs`, `website/src/repl/tunes.mjs`, and tutorial pages `learn/lfo.mdx`, `learn/mondo-notation.mdx`, `recipes/arpeggios.mdx`, `understand/cycles.mdx`, and `workshop/motors.mdx` from Codeberg `main` on 2026-11-25; recorded 18 E-IDs in [syntax-evidence.md](syntax-evidence.md). Adds active evidence for `new` expressions, two-parameter arrows, unary minus, nested object/array literals, and member calls on string literals. Object spread and logical OR occur only in commented-out fixtures (E18).
+- Phase 3 — Community evidence: checked repository activity via the GitHub API and inspected user-facing pattern/helper code from `Coriou/strasbeat`, `edcrub/edcrub.github.io`, and `calvinw/strudel-llm-docs`, plus the dated GoSuraj GSB post, on 2026-11-25; recorded seven C-IDs in [syntax-evidence.md](syntax-evidence.md). Adds active evidence for `var`, assignment statements, `export default`, named `function` declarations with default parameters, array destructuring in arrow parameters, object spread, and `try`/`catch`.
+- Phase 3 — Coverage matrix: recorded M01–M45 with evidence IDs, current status, grammar/corpus audit, next action, intentional exclusions, and deferred constructs in [syntax-coverage-matrix.md](syntax-coverage-matrix.md) on 2026-11-25.
+- Phase 3 — Audit current coverage: inspected `grammar.js`, `src/node-types.json`, and committed corpus tests at `2d9b706`, then parsed 43 temporary probes under `/tmp/opencode/coverage-probes` with `node_modules/.bin/tree-sitter parse` using CLI 0.27.2 on 2026-11-25. Error-free `await`, `new`, `export const`, `export default`, and tagged-template probes were reviewed with `--cst` and classified as structurally missing. No grammar or generated files changed.
+- Phase 3 — Structured grammar refactor: replaced wrapper-heavy expression/statement rules with composable JavaScript-like rules, added named fields, explicit parenthesized/interpolation nodes, and seven justified GLR conflicts on 2026-11-25. Regenerated with `node_modules/.bin/tree-sitter generate` using CLI 0.27.2. `src/node-types.json` changed from 20 named nodes/7 fields to 40 named nodes/31 fields; the public CST change is documented in [grammar-architecture.md](grammar-architecture.md).
+- Phase 3 — Corpus and query validation: `node_modules/.bin/tree-sitter test --update` rewrote all prior expected trees and added 28 cases; three unsupported logical/nullish operator cases were then removed, leaving 25 net new cases. A final `node_modules/.bin/tree-sitter test` passed 42/42 cases with CLI 0.27.2. The same command compiled and executed `queries/highlights.scm` and `queries/locals.scm` successfully after both were rewritten for the new CST.
+- Phase 3 — Probe and fixture validation: all 43 temporary probes were reparsed after regeneration. Named imports were fixed to consume `from`; expected remaining errors are object destructuring, spread arguments, shorthand properties, logical operators, and nullish coalescing. `node_modules/.bin/tree-sitter parse test.strdl test-local.strdl` completed without `ERROR` or `MISSING` nodes.
+- Phase 3 — Evidence discipline: logical operators and nullish coalescing were briefly added with the binary-expression family, then removed because E18 is inactive and no active evidence exists. Final matrix rows M23 and M27 remain **Missing**.
+- Phase 3 — Documentation: updated [README.md](../README.md), [grammar-architecture.md](grammar-architecture.md), [syntax-coverage-matrix.md](syntax-coverage-matrix.md), [compatibility.md](compatibility.md), and the historical notice in [repository-assessment.md](repository-assessment.md). `git diff --check` passed before the change was staged.
+- Phase 4 — Error recovery: added `test/corpus/incomplete_calls.txt` with five permanent unfinished-call cases covering a missing `)`, a completed string argument, method-chain calls, in-progress arguments, and declaration values. `node_modules/.bin/tree-sitter test` passes 47/47 cases with CLI 0.27.2; each new case localizes the error as `MISSING ")"` and preserves the surrounding call, member, and declaration structure.
+- Phase 4 — Error recovery: added `test/corpus/incomplete_expressions.txt` with five permanent cases covering missing binary/comparison operands, a missing ternary alternative, a nested incomplete operator, and a missing member property. Each case preserves the expression node and synthesizes a `MISSING` terminal. A bare `!` at EOF was probed but collapses to a root `ERROR`, so it was not recorded as expected-good recovery. `node_modules/.bin/tree-sitter test` passes 52/52 cases with CLI 0.27.2. `make test-recovery` runs both recovery corpus files and passes 10/10 cases.
+- Phase 4 — Error recovery: added `test/corpus/missing_delimiters.txt` with five permanent cases covering missing `]`, `)`, and `}` delimiters while preserving arrays, parenthesized expressions, computed access, object literals, and blocks. Object recovery is tested in declaration context because bare `{a: 1` is a labeled block in statement position; `f({a: 1` collapses to `ERROR` because both `}` and `)` are missing and was not recorded as expected-good recovery. Extended `make test-recovery` to include `missing_*.txt`. `node_modules/.bin/tree-sitter test` passes 57/57 cases with CLI 0.27.2; `make test-recovery` passes 15/15 cases.
+- Phase 4 — Error recovery: added `test/corpus/incomplete_argument_lists.txt` with six permanent cases covering trailing commas, a trailing comma after multiple arguments, a nested incomplete call, a leading comma, a doubled comma, and a missing comma. Partial lists synthesize `MISSING ")"`, while malformed separators produce localized `ERROR` nodes and preserve the surrounding arguments and call. The nested case records both missing closing parentheses without collapsing the surrounding call. `node_modules/.bin/tree-sitter test` passes 63/63 cases with CLI 0.27.2; `make test-recovery` passes 21/21 cases.
+- Phase 4 — Error recovery: added `test/corpus/incomplete_arrow_functions.txt` with six permanent cases covering missing bodies after single, parenthesized, empty, and destructured parameter lists, an incomplete expression body, and a missing block brace. Each case preserves the `arrow_function` node and synthesizes a localized `MISSING number` or `MISSING "}"`. `node_modules/.bin/tree-sitter test` passes 69/69 cases with CLI 0.27.2; `make test-recovery` passes 27/27 cases.
+- Phase 4 — Error recovery: added `test/corpus/incomplete_declarations.txt` with seven permanent cases covering missing `const`/`let`/`var` initializers, a missing initializer after an array binding, an incomplete second declarator, a trailing declarator comma, and a missing `export default` value. Variable declarations preserve the declaration kind and binding name while leaving the trailing `=` in a localized `ERROR`; `export default` synthesizes `MISSING number`. `function f()` and `import { x } from` were probed but collapse to a root `ERROR`, so they were not recorded as expected-good recovery. `node_modules/.bin/tree-sitter test` passes 76/76 cases with CLI 0.27.2; `make test-recovery` passes 34/34 cases.
+- Phase 4 — Error recovery: added `test/corpus/unfinished_templates.txt` with three permanent recoverable cases: an untagged template with a trailing newline, a template after a completed `${...}` substitution, and a tagged template. Each preserves the template or tagged-template node and synthesizes a missing closing backtick; the plain template case requires a trailing newline in the corpus input. Unclosed quoted strings and an unfinished `${...}` expression collapse to a root `ERROR` and were not recorded as expected-good recovery. `node_modules/.bin/tree-sitter test` passes 79/79 cases with CLI 0.27.2; `make test-recovery` passes 37/37 cases.
+- Phase 4 — Error recovery: added `test/corpus/malformed_nested_structures.txt` with seven permanent cases covering a missing array bracket inside a closed call, a missing array bracket inside an object, an incomplete arrow body inside a call, nested calls with two missing parentheses, a nested call with a missing object brace, a doubled comma inside a nested array, and a doubled comma inside a nested object. Each preserves the outer call, declaration, object, array, or arrow node and localizes the inner error. An array of objects with both closing delimiters missing was probed but collapses to a root `ERROR`; the nested-call case requires a trailing newline in the corpus input. Extended `make test-recovery` to include `malformed_*.txt`. `node_modules/.bin/tree-sitter test` passes 86/86 cases with CLI 0.27.2; `make test-recovery` passes 44/44 cases.
+- Phase 4 — Error recovery: added `test/corpus/valid_syntax_around_errors.txt` with five permanent cases placing a localized error between valid declarations or calls. Missing array/object brackets, a nested array bracket inside a call, a doubled comma, and a missing function body each keep the surrounding statements as separate syntax nodes. Probes showed that an unfinished call, a missing initializer, and an incomplete arrow body swallow following statements; those cascading forms were documented as limitations. Extended `make test-recovery` to include `valid_*.txt`. `node_modules/.bin/tree-sitter test` passes 91/91 cases with CLI 0.27.2; `make test-recovery` passes 49/49 cases.
+- Phase 4 — Error recovery: added `test/corpus/noncascading_errors.txt` with six permanent cases where one malformed token stays local while surrounding declarations and calls still parse. Covered an unexpected token between call arguments, a missing comma between object pairs, a missing object value, a missing comma between array elements, an invalid initializer, and a stray statement token. A probe confirmed that an unclosed quoted string consumes the rest of the file; unfinished calls, missing initializers, and incomplete arrow bodies were already recorded as cascading limitations. Extended `make test-recovery` to include `noncascading_*.txt`. `node_modules/.bin/tree-sitter test` passes 97/97 cases with CLI 0.27.2; `make test-recovery` passes 55/55 cases.
+- Phase 4 — Error recovery: added `test/corpus/recovery_limitations.txt` with fifteen permanent known-limitation regressions covering bare `!`, missing function bodies, imports without sources, unterminated quoted strings, untagged templates at exact EOF, unfinished template substitutions, missing object and call delimiters, nested missing delimiters, nested calls at EOF, and incomplete constructs that consume the next declaration keyword. These trees document current weak recovery and are not expected-good recovery. Refined the earlier cascade description: unfinished calls, missing initializers, and incomplete arrows consume the following declaration keyword, while an unclosed string consumes the rest of the file. Extended `make test-recovery` to include `recovery_*.txt`. `node_modules/.bin/tree-sitter test` passes 112/112 cases with CLI 0.27.2; `make test-recovery` passes 70/70 cases.
+- Phase 4 — Incremental parsing: defined 13 editing sequences in `test/fixtures/incremental_sequences.json` using `test.strdl` and `test-local.strdl`. Sequences cover insertion, deletion, replacement, nested edits, and temporary malformed states; each edit is a current-source replacement with an occurrence index. Documented the catalog in `docs/incremental-editing-sequences.md` and linked it from `docs/README.md`. Validated that all edits apply and all 13 final sources parse cleanly with `tree-sitter parse --quiet`; both repair sequences produce a `MISSING ")"` intermediate state. Equivalence harness and procedure documentation remain pending.
+- Phase 4 — Incremental parsing: added `scripts/test_incremental.py` and `make test-incremental` with `INCREMENTAL_FILTER` support. The harness replays recorded edits with `tree-sitter parse --edits`, writes the final source, and diffs normalized CST output against a fresh parse. Insertion coverage passes 3/3 sequences: method-chain insertion, declaration insertion, and call-statement insertion. The full catalog also passes 13/13. Documented harness usage in `docs/incremental-editing-sequences.md`; no grammar change was required.
+- Phase 4 — Incremental parsing: verified deletion equivalence with `make test-incremental INCREMENTAL_FILTER=deletion`. Added `argument-deletion` and `object-property-deletion` to `test/fixtures/incremental_sequences.json`, bringing deletion coverage to five distinct CST shapes: whole declaration, labeled statement, chain method, call argument, and nested object property. Deletion subset passes 5/5; full catalog passes 15/15. Updated `docs/incremental-editing-sequences.md`; no grammar change was required.
+- Phase 4 — Incremental parsing: verified replacement equivalence with `make test-incremental INCREMENTAL_FILTER=replacement`. Added `method-name-replacement` to `test/fixtures/incremental_sequences.json`, extending replacement coverage to string contents, template contents, binding identifiers, member-expression method names, and numeric literals. Replacement subset passes 5/5; full catalog passes 16/16. Updated `docs/incremental-editing-sequences.md`; no grammar change was required.
+- Phase 4 — Incremental parsing: verified nested-edit equivalence with `make test-incremental INCREMENTAL_FILTER=nested-edit`. Added `nested-call-edit` and `nested-arrow-body-edit` to `test/fixtures/incremental_sequences.json`, extending nested coverage to object literals, nested call arguments, and arrow-function bodies. Nested subset passes 4/4; full catalog passes 18/18. Updated `docs/incremental-editing-sequences.md`; no grammar change was required.
+- Phase 4 — Incremental parsing: extended `scripts/test_incremental.py` to compare incremental and fresh trees after every edit, not only the final state. The CLI exits nonzero on malformed parses but still emits a CST, so the harness now detects genuine failures by the presence of a `source_file` node and strips `Parse:`/`Edit:` timing lines. Added `object-brace-repair` and `string-quote-repair`, bringing malformed-state coverage to missing call parentheses, missing object braces, and unterminated strings. Malformed subset passes 4/4 sequences with 4 malformed steps; full catalog passes 20/20 sequences and 27/27 steps. Updated `docs/incremental-editing-sequences.md`; no grammar change was required.
+- Phase 4 — Incremental parsing: made final-source equivalence an explicit harness result. `scripts/test_incremental.py` now tracks the last step of each sequence separately and reports `Final-source comparisons: 20/20 passed`. This confirms that every incremental result for the completed source is byte-for-byte equivalent to a fresh parse of the same final source, and that the comparison is automated through the repeatable `make test-incremental` target with optional `INCREMENTAL_FILTER` subsets. No grammar change was required.
+- Phase 4 — Incremental parsing: added `docs/incremental-equivalence-procedure.md`, documenting the guarantee under test, authoritative inputs, edit model, step-by-step comparison procedure, CLI parse-error handling, pass/fail rules, output format, current coverage, how to add sequences, and scope limitations. Linked it from the docs index, the sequence catalog, grammar architecture, and CI notes. The incremental-parsing checklist is now complete; no grammar change was required.
+- Phase 4 — Closeout: checked all four acceptance criteria after verifying 70 recovery corpus cases across eleven files, 112/112 total corpus cases, `make verify` success with synchronized generated artifacts, no `grammar.js` change during the phase, and incremental/fresh equivalence across 20 sequences, 27 steps, and 20/20 final-source comparisons. Bumped tracked version metadata from 1.3.0 to 1.4.0 and regenerated `src/parser.c` so its embedded language minor version matches. Created local annotated tag `v1.4.0`; the tag was not pushed. Phase 5 work starts from this tag.
+- Phase 6 — CI validation: added `.github/workflows/ci.yml` for pull requests and pushes to `main`, with SHA-pinned checkout/setup-node actions and a Node.js 22/24 matrix. Added `make ci`, `docs/ci.md`, the CI badge, and documentation links. `make ci` was run locally and passed generated-artifact, corpus, query, Node binding, and C build checks. Incremental, benchmark, formatting/static, and non-Node binding checks remain deferred.

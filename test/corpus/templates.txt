@@ -1,0 +1,24 @@
+==================
+template interpolation
+==================
+`x${y}`
+---
+
+(source_file
+  (expression_statement
+    (template_string
+      (template_substitution
+        (identifier)))))
+
+==================
+tagged template
+==================
+await loadCsound`instr CoolSynth`
+---
+
+(source_file
+  (expression_statement
+    (tagged_template_expression
+      (await_expression
+        (identifier))
+      (template_string))))

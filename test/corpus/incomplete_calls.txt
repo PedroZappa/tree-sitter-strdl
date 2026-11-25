@@ -1,0 +1,78 @@
+==================
+unfinished call with no arguments
+==================
+s(
+---
+
+(source_file
+  (expression_statement
+    (call_expression
+      (identifier)
+      (arguments
+        (MISSING ")")))))
+
+==================
+unfinished call with completed string argument
+==================
+s("bd"
+---
+
+(source_file
+  (expression_statement
+    (call_expression
+      (identifier)
+      (arguments
+        (string)
+        (MISSING ")")))))
+
+==================
+unfinished chained call
+==================
+s("bd").gain(
+---
+
+(source_file
+  (expression_statement
+    (call_expression
+      (member_expression
+        (call_expression
+          (identifier)
+          (arguments
+            (string)))
+        (identifier))
+      (arguments
+        (MISSING ")")))))
+
+==================
+unfinished chained call argument
+==================
+s("bd").gain(0.5
+---
+
+(source_file
+  (expression_statement
+    (call_expression
+      (member_expression
+        (call_expression
+          (identifier)
+          (arguments
+            (string)))
+        (identifier))
+      (arguments
+        (number)
+        (MISSING ")")))))
+
+==================
+unfinished call as declaration value
+==================
+const x = s(
+---
+
+(source_file
+  (variable_declaration
+    (variable_declarator
+      (identifier)
+      (call_expression
+        (identifier)
+        (arguments
+          (MISSING ")"))))))

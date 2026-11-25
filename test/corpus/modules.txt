@@ -1,0 +1,60 @@
+==================
+named import
+==================
+import { x } from 'y'
+---
+
+(source_file
+  (import_declaration
+    (named_imports
+      (import_specifier
+        (identifier)))
+    (string)))
+
+==================
+export const declaration
+==================
+export const x = 1
+---
+
+(source_file
+  (export_declaration
+    (variable_declaration
+      (variable_declarator
+        (identifier)
+        (number)))))
+
+==================
+export default expression
+==================
+export default `x`
+---
+
+(source_file
+  (export_declaration
+    (template_string)))
+
+==================
+top-level await
+==================
+await initHydra()
+---
+
+(source_file
+  (expression_statement
+    (await_expression
+      (call_expression
+        (identifier)
+        (arguments)))))
+
+==================
+new expression
+==================
+new Foo()
+---
+
+(source_file
+  (expression_statement
+    (new_expression
+      (identifier)
+      (arguments))))

@@ -9,29 +9,16 @@ $:arrange(
 ----
 
 (source_file
-	(assignment
-		(expression
-			(function_call
-				(identifier)
-				(expression
-					(array
-						(expression
-							(number)
-						)
-						(expression
-							(function_call 
-								(identifier)
-								(expression
-									(identifier)
-								)
-								(expression
-									(identifier)
-								)
-							)
-						)
-					)
-				)
-			)
-		)
-	)
-)
+  (labeled_statement
+    (identifier)
+    (expression_statement
+      (call_expression
+        (identifier)
+        (arguments
+          (array
+            (number)
+            (call_expression
+              (identifier)
+              (arguments
+                (identifier)
+                (identifier)))))))))

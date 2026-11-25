@@ -1,0 +1,191 @@
+==================
+known limitation: bare unary operator
+==================
+!
+---
+
+(source_file
+  (ERROR))
+
+==================
+known limitation: function without body
+==================
+function f()
+---
+
+(source_file
+  (ERROR
+    (identifier)
+    (formal_parameters)))
+
+==================
+known limitation: import without source
+==================
+import { x } from
+---
+
+(source_file
+  (ERROR
+    (named_imports
+      (import_specifier
+        (identifier)))))
+
+==================
+known limitation: unterminated double-quoted string
+==================
+"bd
+---
+
+(source_file
+  (ERROR))
+
+==================
+known limitation: unterminated single-quoted string
+==================
+'bd
+---
+
+(source_file
+  (ERROR))
+
+==================
+known limitation: unterminated string in call
+==================
+s("bd
+---
+
+(source_file
+  (expression_statement
+    (identifier))
+  (ERROR))
+
+==================
+known limitation: untagged template at EOF
+==================
+`bd
+---
+
+(source_file
+  (ERROR))
+
+==================
+known limitation: unfinished template substitution
+==================
+`bd ${a +
+---
+
+(source_file
+  (ERROR
+    (identifier)))
+
+==================
+known limitation: object and call delimiters missing
+==================
+f({a: 1
+---
+
+(source_file
+  (expression_statement
+    (identifier))
+  (ERROR
+    (pair
+      (identifier)
+      (number))))
+
+==================
+known limitation: nested object delimiters missing
+==================
+[{a: 1}, {b: 2
+---
+
+(ERROR
+  (object
+    (pair
+      (identifier)
+      (number)))
+  (pair
+    (identifier)
+    (number)))
+
+==================
+known limitation: nested call delimiters missing at EOF
+==================
+s("bd", note("c3"
+---
+
+(ERROR
+  (identifier)
+  (string)
+  (identifier)
+  (string))
+
+==================
+known limitation: unfinished call consumes next declaration keyword
+==================
+s("bd",
+const b = 2
+---
+
+(source_file
+  (expression_statement
+    (call_expression
+      (identifier)
+      (arguments
+        (string)
+        (identifier)
+        (MISSING ")"))))
+  (expression_statement
+    (assignment_expression
+      (identifier)
+      (number))))
+
+==================
+known limitation: missing initializer consumes next declaration keyword
+==================
+const b =
+const c = 3
+---
+
+(source_file
+  (variable_declaration
+    (variable_declarator
+      (identifier)
+      (identifier)))
+  (expression_statement
+    (assignment_expression
+      (identifier)
+      (number))))
+
+==================
+known limitation: incomplete arrow consumes next declaration keyword
+==================
+x =>
+let y = 2
+---
+
+(source_file
+  (expression_statement
+    (arrow_function
+      (identifier)
+      (identifier)))
+  (expression_statement
+    (assignment_expression
+      (identifier)
+      (number))))
+
+==================
+known limitation: unclosed string consumes rest of file
+==================
+const a = 1
+s("bd)
+const b = 2
+---
+
+(source_file
+  (variable_declaration
+    (variable_declarator
+      (identifier)
+      (number)))
+  (expression_statement
+    (identifier))
+  (ERROR))

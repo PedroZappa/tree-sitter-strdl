@@ -1,0 +1,130 @@
+==================
+missing array bracket inside closed call
+==================
+s("bd", [1, 2)
+---
+
+(source_file
+  (expression_statement
+    (call_expression
+      (identifier)
+      (arguments
+        (string)
+        (array
+          (number)
+          (number)
+          (MISSING "]"))))))
+
+==================
+missing array bracket inside object
+==================
+const x = {a: [1, 2
+---
+
+(source_file
+  (variable_declaration
+    (variable_declarator
+      (identifier)
+      (object
+        (pair
+          (identifier)
+          (array
+            (number)
+            (number)
+            (MISSING "]")))
+        (MISSING "}")))))
+
+==================
+incomplete arrow body inside call
+==================
+s("bd", x => x +
+---
+
+(source_file
+  (expression_statement
+    (call_expression
+      (identifier)
+      (arguments
+        (string)
+        (arrow_function
+          (identifier)
+          (binary_expression
+            (identifier)
+            (MISSING number)))
+        (MISSING ")")))))
+
+==================
+nested call with missing parentheses
+==================
+s("bd", note("c3"
+
+---
+
+(source_file
+  (expression_statement
+    (call_expression
+      (identifier)
+      (arguments
+        (string)
+        (call_expression
+          (identifier)
+          (arguments
+            (string)
+            (MISSING ")")))
+        (MISSING ")")))))
+
+==================
+missing call and object delimiters
+==================
+const x = {a: s("bd",
+---
+
+(source_file
+  (variable_declaration
+    (variable_declarator
+      (identifier)
+      (object
+        (pair
+          (identifier)
+          (call_expression
+            (identifier)
+            (arguments
+              (string)
+              (MISSING ")"))))
+        (MISSING "}")))))
+
+==================
+doubled comma inside nested array
+==================
+s("bd", [1,, 2])
+---
+
+(source_file
+  (expression_statement
+    (call_expression
+      (identifier)
+      (arguments
+        (string)
+        (array
+          (number)
+          (ERROR)
+          (number))))))
+
+==================
+doubled comma inside nested object
+==================
+const x = {a: 1,, b: 2}
+---
+
+(source_file
+  (variable_declaration
+    (variable_declarator
+      (identifier)
+      (object
+        (pair
+          (identifier)
+          (number))
+        (ERROR)
+        (pair
+          (identifier)
+          (number))))))

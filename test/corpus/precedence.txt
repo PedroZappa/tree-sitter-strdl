@@ -7,20 +7,15 @@ setCps(1 + 2 * 3)
 ---
 
 (source_file
-  (expression
-    (function_call
+  (expression_statement
+    (call_expression
       (identifier)
-      (expression
+      (arguments
         (binary_expression
-          (additive_expression
-            (binary_expression
-              (number))
-            (binary_expression
-              (multiplicative_expression
-                (binary_expression
-                  (number))
-                (binary_expression
-                  (number))))))))))
+          (binary_expression
+            (number)
+            (number))
+          (number))))))
 
 ==================
 addition is left associative
@@ -31,20 +26,15 @@ setCps(1 + 2 + 3)
 ---
 
 (source_file
-  (expression
-    (function_call
+  (expression_statement
+    (call_expression
       (identifier)
-      (expression
+      (arguments
         (binary_expression
-          (additive_expression
-            (binary_expression
-              (additive_expression
-                (binary_expression
-                  (number))
-                (binary_expression
-                  (number))))
-            (binary_expression
-              (number))))))))
+          (binary_expression
+            (number)
+            (number))
+          (number))))))
 
 ==================
 multiplication and division are left associative
@@ -55,20 +45,15 @@ setCps(1 * 2 / 3)
 ---
 
 (source_file
-  (expression
-    (function_call
+  (expression_statement
+    (call_expression
       (identifier)
-      (expression
+      (arguments
         (binary_expression
-          (multiplicative_expression
-            (binary_expression
-              (multiplicative_expression
-                (binary_expression
-                  (number))
-                (binary_expression
-                  (number))))
-            (binary_expression
-              (number))))))))
+          (binary_expression
+            (number)
+            (number))
+          (number))))))
 
 ==================
 parenthesized expression
@@ -79,22 +64,16 @@ setCps((1 + 2) * 3)
 ---
 
 (source_file
-  (expression
-    (function_call
+  (expression_statement
+    (call_expression
       (identifier)
-      (expression
+      (arguments
         (binary_expression
-          (multiplicative_expression
+          (parenthesized_expression
             (binary_expression
-              (expression
-                (binary_expression
-                  (additive_expression
-                    (binary_expression
-                      (number))
-                    (binary_expression
-                      (number))))))
-            (binary_expression
-              (number))))))))
+              (number)
+              (number)))
+          (number))))))
 
 ==================
 parenthesized chain as binary operand
@@ -105,25 +84,22 @@ setCps((s("bd").gain(1)) + 2)
 ---
 
 (source_file
-  (expression
-    (function_call
+  (expression_statement
+    (call_expression
       (identifier)
-      (expression
+      (arguments
         (binary_expression
-          (additive_expression
-            (binary_expression
-              (expression
-                (chained_method
-                  (function_call
-                    (identifier)
-                    (expression
-                      (string)))
-                  (method_call
-                    (identifier)
-                    (expression
-                      (number))))))
-            (binary_expression
-              (number))))))))
+          (parenthesized_expression
+            (call_expression
+              (member_expression
+                (call_expression
+                  (identifier)
+                  (arguments
+                    (string)))
+                (identifier))
+              (arguments
+                (number))))
+          (number))))))
 
 ==================
 arrow function body precedence
@@ -134,13 +110,9 @@ x => x + 1
 ---
 
 (source_file
-  (expression
+  (expression_statement
     (arrow_function
-      parameter: (identifier)
-      body: (expression
-        (binary_expression
-          (additive_expression
-            (binary_expression
-              (identifier))
-            (binary_expression
-              (number))))))))
+      parameters: (identifier)
+      body: (binary_expression
+        left: (identifier)
+        right: (number)))))

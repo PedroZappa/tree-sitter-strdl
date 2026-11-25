@@ -2,177 +2,167 @@
 ;  Strudel syntax-highlighting rules
 ; ---------------------------------------------------------------------------
 ;  CAPTURE NAMING
-;  1.  Specific > generic – put the most specific patterns first.
-;  2.  Use the standard highlight names recognised by tree-sitter-highlight[10].
+;  1. Specific patterns precede generic patterns.
+;  2. Capture names follow tree-sitter-highlight conventions.
 ; ---------------------------------------------------------------------------
 
-; ──────────────────────────────────────────────────────────────────────────
 ; Keywords
-; ──────────────────────────────────────────────────────────────────────────
-(identifier)  @variable
-
 [
-  "$:"           ; default assignment prefix
-  "var"          ; variable declaration
+  "var"
   "let"
   "const"
+  "function"
+  "return"
+  "try"
+  "catch"
+  "import"
+  "export"
+  "default"
+  "from"
+  "as"
+  "new"
+  "await"
 ] @keyword
 
-; ──────────────────────────────────────────────────────────────────────────
-; Punctuation & Delimiters
-; ──────────────────────────────────────────────────────────────────────────
+; Punctuation
 [
   "."
   ","
   ":"
   ";"
+  "?"
 ] @punctuation.delimiter
 
-; Brackets
 [
   "("
   ")"
-] @punctuation.bracket
-
-[
   "["
   "]"
-] @punctuation.bracket
-
-[
   "{"
   "}"
 ] @punctuation.bracket
 
-; ──────────────────────────────────────────────────────────────────────────
-; Arithmetic Operators (Binary Expressions)
-; ──────────────────────────────────────────────────────────────────────────
-; Capture arithmetic operators from binary expressions
-(additive_expression
-  operator: _ @operator)
+; Operators
+[
+  "="
+  "=>"
+  "..."
+  "!"
+  "<"
+  ">"
+  "<="
+  ">="
+  "=="
+  "==="
+  "!="
+  "!=="
+  "+"
+  "-"
+  "*"
+  "/"
+] @operator
 
-(multiplicative_expression
-  operator: _ @operator)
-
-; Alternative approach - directly capture operator literals
-"+"              @operator
-"-"              @operator
-"*"              @operator
-"/"              @operator
-
-; ──────────────────────────────────────────────────────────────────────────
 ; Literals
-; ──────────────────────────────────────────────────────────────────────────
-(string)         @string
-(number)         @number
-(comment)        @comment
+(string) @string
+(number) @number
+(comment) @comment
 
-; ──────────────────────────────────────────────────────────────────────────
-; Identifiers (Functions & Vars)
-; ──────────────────────────────────────────────────────────────────────────
-; 1. Function call identifiers
-(function_call
-  (identifier)   @function.call)
-
-; 2. Method call identifiers (after the dot)
-(method_call
-  (identifier)   @function.method)
-
-; 3. Variable declarations: names on the LHS
+; Declarations and bindings
 (variable_declarator
   name: (identifier) @variable)
 
-; 4. Special Strudel function calls
-; Core control functions
-(function_call
-  (identifier) @function.control
-  (#any-of? @function.control "setCps" "setCpm" "setTempo" "setBpm"))
+(function_declaration
+  name: (identifier) @function.declaration)
 
-; Audio functions (samples and sounds)
-(function_call
-  (identifier) @function.audio
-  (#any-of? @function.audio "samples" "sound" "s" "note" "n" "freq"))
+(import_specifier
+  name: (identifier) @variable)
 
-; Pattern generation functions
-(function_call
-  (identifier) @function.pattern
-  (#any-of? @function.pattern "scale" "chord" "pattern" "seq" "sequence" "stack"
-    "layer" "cat" "append" "add" "mul" "div" "sub" "fast" "slow" "speed" "iter"
-    "every" "sometimes" "rarely" "often" "jux" "juxBy" "rev" "palindrome" "shuffle")
-  )
+[
+  (formal_parameters)
+  (array_pattern)
+  (assignment_pattern)
+] @variable.parameter
 
-; Effects functions (filters and audio effects)
-(function_call
-  (identifier) @function.effect
-  (#any-of? @function.effect "lpf" "hpf" "bpf" "lpq" "hpq" "bpq" "cutoff" "resonance"
-    "filter" "reverb" "rev" "delay" "room" "size" "echo" "phaser" "crush" "coarse"
-    "distort" "dist" "vowel" "pan" "gain" "velocity" "attack" "decay" "sustain"
-    "release" "adsr")
-  )
+(formal_parameters
+  parameter: (identifier) @variable.parameter)
 
-; Amplitude and envelope functions
-(function_call
-  (identifier) @function.envelope
-  (#any-of? @function.envelope "att" "dec" "sus" "rel" "penv" "lpenv" "hpenv" 
-    "bpenv" "tremolo" "am" "compressor"))
+(array_pattern
+  element: (identifier) @variable.parameter)
 
-; Time manipulation functions
-(function_call
-  (identifier) @function.time
-  (#any-of? @function.time "fast" "slow" "hurry" "linger" "trunc" "mask" "struct" 
-    "euclidean" "swing" "late" "early")
-  )
-
-; Utility and special functions
-(function_call
-  (identifier) @function.utility
-  (#any-of? @function.utility "silence" "rest" "_" "choose" "choose" "chooseInWith" 
-    "range" "run" "scan" "sine" "cosine" "saw" "square" "rand" "perlin")
-  )
-
-; MIDI and control functions
-(function_call
-  (identifier) @function.midi
-  (#any-of? @function.midi "midi" "ccv" "ccn" "bend" "program" "bank" "ch" 
-    "channel" "polyTouch" "polyAftertouch")
-  )
-
-; Sample manipulation functions
-(function_call
-  (identifier) @function.sample
-  (#any-of? @function.sample "begin" "end" "loop" "chop" "striate" "slice" 
-    "splice" "speed" "unit" "coarse")
-  )
-
-; 5. All remaining identifiers default to variable
-(identifier)     @variable
-
-; ──────────────────────────────────────────────────────────────────────────
-; Expressions & Chains
-; ──────────────────────────────────────────────────────────────────────────
-; Highlight the leading identifier of a chained method sequence
-(chained_method
-  (_
-    .
-    (identifier) @function.method))
+(assignment_pattern
+  left: (identifier) @variable.parameter)
 
 (arrow_function
-  parameter: (identifier) @variable.parameter
-  body: (expression))
+  parameters: (identifier) @variable.parameter)
 
-; ──────────────────────────────────────────────────────────────────────────
-; Variable Declarations & Assignments
-; ──────────────────────────────────────────────────────────────────────────
+(labeled_statement
+  label: (identifier) @label)
 
-; Variable declarations: names on the LHS
-(variable_declarator
-  name: (identifier) @variable)
+; Calls and member access
+(call_expression
+  function: (identifier) @function.call)
 
-; Assignment expressions
-(assignment
-  (identifier) @variable)
+(call_expression
+  function: (member_expression
+    property: (identifier)) @function.method)
 
-; Object property keys
+(member_expression
+  property: (identifier) @property)
+
+(subscript_expression
+  index: (_) @property)
+
+; Strudel API names are semantic aliases for editor convenience only.
+(call_expression
+  function: (identifier) @function.control
+  (#any-of? @function.control "setCps" "setCpm" "setTempo" "setBpm"))
+
+(call_expression
+  function: (identifier) @function.audio
+  (#any-of? @function.audio "samples" "sound" "s" "note" "n" "freq"))
+
+(call_expression
+  function: (identifier) @function.pattern
+  (#any-of? @function.pattern "scale" "chord" "pattern" "seq" "sequence" "stack"
+    "layer" "cat" "append" "add" "mul" "div" "sub" "fast" "slow" "speed" "iter"
+    "every" "sometimes" "rarely" "often" "jux" "juxBy" "rev" "palindrome" "shuffle"))
+
+(call_expression
+  function: (identifier) @function.effect
+  (#any-of? @function.effect "lpf" "hpf" "bpf" "lpq" "hpq" "bpq" "cutoff" "resonance"
+    "filter" "reverb" "delay" "room" "size" "echo" "phaser" "crush" "coarse"
+    "distort" "dist" "vowel" "pan" "gain" "velocity" "attack" "decay" "sustain"
+    "release" "adsr"))
+
+(call_expression
+  function: (identifier) @function.envelope
+  (#any-of? @function.envelope "att" "dec" "sus" "rel" "penv" "lpenv" "hpenv"
+    "bpenv" "tremolo" "am" "compressor"))
+
+(call_expression
+  function: (identifier) @function.time
+  (#any-of? @function.time "fast" "slow" "hurry" "linger" "trunc" "mask" "struct"
+    "euclidean" "swing" "late" "early"))
+
+(call_expression
+  function: (identifier) @function.utility
+  (#any-of? @function.utility "silence" "rest" "_" "choose" "chooseInWith"
+    "range" "run" "scan" "sine" "cosine" "saw" "square" "rand" "perlin"))
+
+(call_expression
+  function: (identifier) @function.midi
+  (#any-of? @function.midi "midi" "ccv" "ccn" "bend" "program" "bank" "ch"
+    "channel" "polyTouch" "polyAftertouch"))
+
+(call_expression
+  function: (identifier) @function.sample
+  (#any-of? @function.sample "begin" "end" "loop" "chop" "striate" "slice"
+    "splice" "speed" "unit" "coarse"))
+
+; Assignments and properties
+(assignment_expression
+  left: (identifier) @variable)
+
 (pair
   key: (identifier) @property)
 
@@ -182,23 +172,16 @@
 (pair
   key: (number) @property)
 
-; ──────────────────────────────────────────────────────────────────────────
-; Expression Context Highlighting
-; ──────────────────────────────────────────────────────────────────────────
-
-; Highlight binary expressions for structural context
+; Expression context
 (binary_expression) @expression
+(unary_expression) @expression
+(conditional_expression) @expression
+(template_substitution
+  expression: (_) @expression)
 
-; Specific highlighting for arithmetic expressions
-(additive_expression) @expression.arithmetic
-(multiplicative_expression) @expression.arithmetic
-
-; ──────────────────────────────────────────────────────────────────────────
-; Object and Array Literals
-; ──────────────────────────────────────────────────────────────────────────
-
-; Object literals
+; Containers
 (object) @constructor
-
-; Array literals
 (array) @constructor
+
+; Generic identifier fallback
+(identifier) @variable

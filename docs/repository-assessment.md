@@ -59,6 +59,8 @@ See [compatibility.md](compatibility.md) for the version matrix and validation d
 
 ## Syntax coverage inventory
 
+> **Historical baseline:** this section records the Phase 1 inventory at commit `c4bae53`. Phase 3 replaced the wrapper-heavy grammar with a structured JavaScript-like refactor; current status is recorded in [syntax-coverage-matrix.md](syntax-coverage-matrix.md) and [grammar-architecture.md](grammar-architecture.md).
+
 Captured on 2026-11-25 from `grammar.js`, `test/corpus/`, `src/node-types.json`, and temporary parse probes. Probes were parsed with `tree-sitter parse --json-summary` and `--cst` using CLI 0.27.2. They were not committed as fixtures.
 
 Statuses:

@@ -8,26 +8,18 @@ s("hh*8").gain(.5)
 ---
 
 (source_file
-	(expression
-		(chained_method
-			(function_call
-				(identifier)
-				(expression
-					(string)
-				)
-			)
-			(method_call
-				(identifier)
-					(expression
-					(number)
-				)
-			)
-			(method_call
-				(identifier)
-				(expression
-					(number)
-				)
-			)
-		)
-	)
-)
+  (expression_statement
+    (call_expression
+      (member_expression
+        (call_expression
+          (member_expression
+            (call_expression
+              (identifier)
+              (arguments
+                (string)))
+            (identifier))
+          (arguments
+            (number)))
+        (identifier))
+      (arguments
+        (number)))))

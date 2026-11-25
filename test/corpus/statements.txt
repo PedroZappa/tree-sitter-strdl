@@ -1,0 +1,43 @@
+==================
+try catch statement
+==================
+try { a() } catch(e) { b(e) }
+---
+
+(source_file
+  (try_statement
+    (block
+      (expression_statement
+        (call_expression
+          (identifier)
+          (arguments))))
+    (identifier)
+    (block
+      (expression_statement
+        (call_expression
+          (identifier)
+          (arguments
+            (identifier)))))))
+
+==================
+line and block comments
+==================
+// line
+/* block */
+---
+
+(source_file
+  (comment)
+  (comment))
+
+==================
+hexadecimal number
+==================
+let id = 0x43;
+---
+
+(source_file
+  (variable_declaration
+    (variable_declarator
+      (identifier)
+      (number))))

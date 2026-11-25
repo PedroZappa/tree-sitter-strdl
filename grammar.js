@@ -1,6 +1,6 @@
 /**
  * @file Parser for Strudel, a Tidal Cycles base live coding tool
- * @author Zedro <45104292+PedroZappa@users.noreply.github.com >
+ * @author Zedro <45104292@PedroZappa@users.noreply.github.com >
  * @license AGPL-3.0-only
  */
 
@@ -11,190 +11,392 @@ module.exports = grammar({
   name: "strudel",
 
   extras: $ => [
-    /[\s\n]/,         // whitespace
-    $.comment,        // enable comments
+    /[\s\n]/,
+    $.comment,
   ],
 
-  precedences: $ => [
+  precedences: () => [
     [
-      'arrow_function',
+      "assignment",
+      "ternary",
+      "comparison",
+      "additive",
+      "multiplicative",
+      "unary",
+      "new",
+      "call",
+      "member",
     ],
   ],
 
+  // JavaScript reuses identifiers and delimiters across labels, property
+  // names, binding patterns, and expressions. These GLR conflicts preserve
+  // context-sensitive interpretations without duplicating grammar rules.
+  conflicts: $ => [
+    [$.labeled_statement, $._property_name],
+    [$._binding_pattern, $._primary_expression],
+    [$._binding_pattern, $._assignment_target],
+    [$._expression, $._unary_expression],
+    [$._new_constructor, $._primary_expression],
+    [$._expression, $._new_constructor],
+    [$.array_pattern, $.array],
+  ],
+
   rules: {
-    source_file: $ => repeat($._statement), // Root Rule
+    source_file: $ => repeat($._statement),
 
-    _statement: $ => choice(  // Hidden Rule, for structural organization
-      $.assignment,
+    /* Statements */
+
+    _statement: $ => choice(
+      $._declaration,
+      $.labeled_statement,
+      $.return_statement,
+      $.try_statement,
+      $.expression_statement,
+      $.block,
+    ),
+
+    _declaration: $ => choice(
       $.variable_declaration,
-      $.lexical_declaration,
-      $.expression,
-      $.comment
+      $.function_declaration,
+      $.import_declaration,
+      $.export_declaration,
     ),
 
-    /* 1. Variables */
-    // Variable delcaration with 'var'
+    expression_statement: $ => prec.right(-1, seq($._expression, optional(";"))),
+
+    labeled_statement: $ => seq(
+      field("label", $.identifier),
+      ":",
+      field("body", $._statement),
+    ),
+
+    block: $ => prec(1, seq("{", repeat($._statement), "}")),
+
+    return_statement: $ => choice(
+      prec.right(-1, seq("return", field("value", $._expression), optional(";"))),
+      seq("return", ";"),
+    ),
+
+    try_statement: $ => seq(
+      "try",
+      field("body", $.block),
+      seq(
+        "catch",
+        optional(seq("(", field("parameter", $._binding_pattern), ")")),
+        field("handler", $.block),
+      ),
+    ),
+
+    /* Declarations */
+
     variable_declaration: $ => seq(
-      'var',
-      commaSep1($.variable_declarator),
-      optional(';')
+      field("kind", choice("var", "let", "const")),
+      commaSep1(field("declarator", $.variable_declarator)),
+      optional(";"),
     ),
 
-    // Variable declaration with 'let' or 'const'
-    lexical_declaration: $ => seq(
-      field('kind', choice('let', 'const')),
-      commaSep1($.variable_declarator),
-      optional(';')
-    ),
-
-    // Variable declarator - handles the name = value part
-    variable_declarator: $ => seq(
-      field('name', $.identifier),
-      optional($._initializer),
-    ),
-
-    /* Initializer for variable assignments */
-    _initializer: $ => seq(
-      '=',
-      field('value', $.expression)
-    ),
-
-    /* 2. Accept *any* expression (including chains) */
-    assignment: $ => prec(2, choice(
-      seq('$:', $.expression), // Default Identifier 
-      seq($.identifier, ':', $.expression), // Custom Identifies
+    variable_declarator: $ => prec.right(-1, seq(
+      field("name", $._binding_pattern),
+      optional(seq("=", field("value", $._expression))),
     )),
 
-    /* 3. Simple Function Calls */
-    function_call: $ => prec(1, seq(
+    function_declaration: $ => seq(
+      "function",
+      field("name", $.identifier),
+      field("parameters", $.formal_parameters),
+      field("body", $.block),
+    ),
+
+    formal_parameters: $ => seq(
+      "(",
+      commaSepTrailing(field("parameter", $._parameter)),
+      ")",
+    ),
+
+    import_declaration: $ => seq(
+      "import",
+      field("specifiers", $.named_imports),
+      "from",
+      field("source", $.string),
+      optional(";"),
+    ),
+
+    named_imports: $ => seq(
+      "{",
+      commaSepTrailing($.import_specifier),
+      "}",
+    ),
+
+    import_specifier: $ => seq(
+      field("name", $.identifier),
+      optional(seq("as", field("alias", $.identifier))),
+    ),
+
+    export_declaration: $ => choice(
+      seq("export", field("declaration", $._declaration)),
+      prec.right(-1, seq("export", "default", field("value", $._expression), optional(";"))),
+    ),
+
+    /* Binding patterns */
+
+    _binding_pattern: $ => choice(
       $.identifier,
-      '(',
-      commaSepTrailing($.expression),
-      ')'
-    )),
-
-    /* 4. Method Calls */
-    method_call: $ => seq(
-      '.',
-      $.identifier,
-      '(',
-      commaSepTrailing($.expression),
-      ')'
+      $.array_pattern,
     ),
 
-    /* 5. Chain of one or more method-calls */
-    chained_method: $ => prec.left(seq(
-      $._base_expression,
-      repeat1($.method_call)
-    )),
+    _parameter: $ => choice(
+      $._binding_pattern,
+      $.assignment_pattern,
+    ),
 
-    /* 6. Binary Expressions for Arithmetic Operations */
-    binary_expression: $ => prec(1, choice(
-      $.additive_expression,
-      $.multiplicative_expression,
-      $._base_expression
-    )),
-    // Addition and Subtraction (lowest precedence)
-    additive_expression: $ => prec.left(1, seq(
-      $.binary_expression,
-      field('operator', choice('+', '-')),
-      $.binary_expression
-    )),
-    // Multiplication and Division (higher precedence)
-    multiplicative_expression: $ => prec.left(2, seq(
-      $.binary_expression,
-      field('operator', choice('*', '/')),
-      $.binary_expression
-    )),
+    array_pattern: $ => seq(
+      "[",
+      commaSepTrailing(field("element", $._binding_pattern)),
+      "]",
+    ),
 
-    /* 7. Arrow Function (Lambda) Support */
-    arrow_function: $ => prec('arrow_function', seq(
-      field('parameter', $.identifier),  // Single parameter
-      '=>',
-      field('body', $.expression)
-    )),
+    assignment_pattern: $ => seq(
+      field("left", $._binding_pattern),
+      "=",
+      field("right", $._expression),
+    ),
 
-    /* 8. Full Expression Hierarchy */
-    expression: $ => prec(2, choice(  // Higher precedence
-      $.chained_method,
+    /* Expressions */
+
+    _expression: $ => choice(
+      $.assignment_expression,
+      $.conditional_expression,
       $.binary_expression,
+      $.unary_expression,
+      $.await_expression,
+      $.new_expression,
       $.arrow_function,
-      $._base_expression,
+      $.tagged_template_expression,
+      $.call_expression,
+      $.member_expression,
+      $.subscript_expression,
+      $._primary_expression,
+    ),
+
+    assignment_expression: $ => prec.right("assignment", seq(
+      field("left", $._assignment_target),
+      "=",
+      field("right", $._expression),
     )),
 
-    /* 9. What can start a chain */
-    _base_expression: $ => choice(
-      $.function_call,
+    _assignment_target: $ => choice(
+      $.identifier,
+      $.member_expression,
+      $.subscript_expression,
+    ),
+
+    conditional_expression: $ => prec.right("ternary", seq(
+      field("condition", $._expression),
+      "?",
+      field("consequence", $._expression),
+      ":",
+      field("alternative", $._expression),
+    )),
+
+    binary_expression: $ => choice(
+      prec.left("comparison", seq(
+        field("left", $._expression),
+        field("operator", choice("<", ">", "<=", ">=", "==", "===", "!=", "!==")),
+        field("right", $._expression),
+      )),
+      prec.left("additive", seq(
+        field("left", $._expression),
+        field("operator", choice("+", "-")),
+        field("right", $._expression),
+      )),
+      prec.left("multiplicative", seq(
+        field("left", $._expression),
+        field("operator", choice("*", "/")),
+        field("right", $._expression),
+      )),
+    ),
+
+    unary_expression: $ => prec("unary", seq(
+      field("operator", choice("!", "-")),
+      field("argument", $._unary_expression),
+    )),
+
+    await_expression: $ => prec("unary", seq(
+      "await",
+      field("argument", $._unary_expression),
+    )),
+
+    _unary_expression: $ => choice(
+      $.unary_expression,
+      $.await_expression,
+      $.call_expression,
+      $.member_expression,
+      $.subscript_expression,
+      $._primary_expression,
+    ),
+
+    new_expression: $ => prec.right("new", seq(
+      "new",
+      field("constructor", $._new_constructor),
+      optional(field("arguments", $.arguments)),
+    )),
+
+    _new_constructor: $ => choice(
+      $.identifier,
+      $.member_expression,
+      $.subscript_expression,
+      $.new_expression,
+    ),
+
+    arrow_function: $ => seq(
+      field("parameters", $._arrow_parameters),
+      "=>",
+      field("body", $._arrow_body),
+    ),
+
+    _arrow_parameters: $ => choice(
+      $.identifier,
+      $.formal_parameters,
+      $.array_pattern,
+    ),
+
+    _arrow_body: $ => prec.right(-1, choice(
+      $._expression,
+      $.block,
+    )),
+
+    call_expression: $ => prec("call", seq(
+      field("function", $._expression),
+      field("arguments", $.arguments),
+    )),
+
+    arguments: $ => seq(
+      "(",
+      commaSepTrailing(field("argument", $._expression)),
+      ")",
+    ),
+
+    member_expression: $ => prec("member", seq(
+      field("object", $._expression),
+      choice(".", "?."),
+      field("property", $.identifier),
+    )),
+
+    subscript_expression: $ => prec("member", seq(
+      field("object", $._expression),
+      choice("[", seq("?.", "[")),
+      field("index", $._expression),
+      "]",
+    )),
+
+    _primary_expression: $ => choice(
       $.identifier,
       $.string,
       $.number,
+      $.template_string,
       $.object,
       $.array,
-      seq('(', $.expression, ')') // Parenthesized expressions
+      $.parenthesized_expression,
     ),
 
-    /* 10. Object Literal Support */
+    parenthesized_expression: $ => seq(
+      "(",
+      field("expression", $._expression),
+      ")",
+    ),
+
+    tagged_template_expression: $ => prec("call", seq(
+      field("tag", $._expression),
+      field("template", $.template_string),
+    )),
+
+    /* Values and containers */
+
     object: $ => seq(
-      '{',
-      commaSep($.pair),
-      '}'
+      "{",
+      commaSepTrailing(choice($.pair, $.spread_element)),
+      "}",
     ),
 
     pair: $ => seq(
-      field('key', choice(
-        $.identifier,    // For keys like {edo: 10}
-        $.string,        // For keys like {"key": value}
-        $.number         // For keys like {1: value}
-      )),
-      ':',
-      field('value', $.expression)
+      field("key", $._property_name),
+      ":",
+      field("value", $._expression),
     ),
 
-    /* 11. Array Literal Support */
+    _property_name: $ => choice(
+      $.identifier,
+      $.string,
+      $.number,
+      $.computed_property_name,
+    ),
+
+    computed_property_name: $ => seq(
+      "[",
+      field("expression", $._expression),
+      "]",
+    ),
+
+    spread_element: $ => seq(
+      "...",
+      field("value", $._expression),
+    ),
+
     array: $ => seq(
-      '[',
-      commaSep($.expression),
-      ']',
+      "[",
+      commaSepTrailing(field("element", $._expression)),
+      "]",
     ),
 
-    /* 12. Terminal Rules */
-    string: $ => choice(
-      seq(
-        '"',
-        repeat(choice(/[^"\\\n]/, /\\./)),
-        '"'
-      ),
-      seq(
-        "'",
-        repeat(choice(/[^'\\\n]/, /\\./)),
-        "'"
-      ),
-      seq(
-        '`',
-        repeat(choice(/[^`\\\n]/, /\\./)),
-        '`'
-      )
+    string: () => choice(
+      seq('"', repeat(choice(/[^"\\\n]/, /\\./)), '"'),
+      seq("'", repeat(choice(/[^'\\\n]/, /\\./)), "'"),
     ),
-    number: $ => /\d*\.\d+|\d+/,   // “.5”, “3.14”, “10”
-    identifier: $ => /[a-zA-Z_]\w*/,
-    comment: $ => token(seq('//', /(.*)?/)),
-  }
+
+    template_string: $ => seq(
+      "`",
+      repeat(choice($._template_chars, $.template_substitution)),
+      "`",
+    ),
+
+    template_substitution: $ => seq(
+      "${",
+      field("expression", $._expression),
+      "}",
+    ),
+
+    _template_chars: () => token(choice(
+      /[^`\\$]+/,
+      /\\./,
+      "$",
+    )),
+
+    number: () => token(choice(
+      /0[xX][0-9a-fA-F]+/,
+      /\d*\.\d+/,
+      /\d+/,
+    )),
+
+    identifier: () => /[A-Za-z_$][\w$]*/,
+
+    comment: () => token(choice(
+      seq("//", /(.*)?/),
+      /\/\*([^*]|\*+[^*/])*\*+\//,
+    )),
+  },
 });
 
-// Helper for comma-separated lists
-function commaSep(rule) {
-  return optional(seq(rule, repeat(seq(',', rule))));
-}
-// Helper for comma-separated lists (at least one)
+/** @param {RuleOrLiteral} rule */
 function commaSep1(rule) {
-  return seq(rule, repeat(seq(',', rule)));
+  return seq(rule, repeat(seq(",", rule)));
 }
 
-// Helper for comma-separated lists that ALLOW a trailing comma
+/** @param {RuleOrLiteral} rule */
 function commaSepTrailing(rule) {
   return optional(seq(
     rule,
-    repeat(seq(',', rule)),
-    optional(',')          // trailing comma
+    repeat(seq(",", rule)),
+    optional(","),
   ));
 }

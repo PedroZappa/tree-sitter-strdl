@@ -10,41 +10,33 @@ setCpm(.5)
 ---
 
 (source_file
-  (expression
-    (function_call
-      (identifier)
-      (expression
-        (string))))
-  (expression
-    (function_call
-      (identifier)
-      (expression
-        (string))))
-  (expression
-    (function_call
-      (identifier)
-      (expression
-        (string))
-      (expression
-        (number))
-      (expression
-        (number))
-      (expression
-        (array
-          (expression
-            (number))
-          (expression
-            (number))))
-      (expression
-        (object
+  (expression_statement
+    (call_expression
+      function: (identifier)
+      arguments: (arguments
+        argument: (string))))
+  (expression_statement
+    (call_expression
+      function: (identifier)
+      arguments: (arguments
+        argument: (string))))
+  (expression_statement
+    (call_expression
+      function: (identifier)
+      arguments: (arguments
+        argument: (template_string)
+        argument: (number)
+        argument: (number)
+        argument: (array
+          element: (number)
+          element: (number))
+        argument: (object
           (pair
             key: (identifier)
-            value: (expression
-              (number)))))
-      (expression
-        (identifier))))
-  (expression
-    (function_call
-      (identifier)
-      (expression
-        (number)))))
+            value: (number)))
+        argument: (identifier))))
+  (expression_statement
+    (call_expression
+      function: (identifier)
+      arguments: (arguments
+        argument: (number)))))

@@ -35,26 +35,26 @@ tree-sitter generate
 | Swift | `SwiftTreeSitter` `from: "0.10.0"` | Resolved SwiftTreeSitter 0.25.0 and tree-sitter 0.25.10 | `swift build` passed; `swift test` blocked by missing XCTest |
 | C | No Tree-sitter runtime dependency declared | Not separately built | ABI validation covered by CLI tests |
 
+GitHub Actions validates the Node.js binding on Node.js 22 and 24 for pull requests and pushes to `main`; see [CI](ci.md).
+
 `~=0.25.0` is used for Python because plain `~=0.25` permits any 0.x release up to 1.0.
 
 ## Validation performed
 
 On 2026-11-25:
 
-- `tree-sitter generate` succeeded with CLI 0.27.2.
-- A second regeneration with `node_modules/.bin/tree-sitter generate` produced byte-identical `src/parser.c`, `src/grammar.json`, `src/node-types.json`, and `src/tree_sitter/array.h`.
-- `tree-sitter test` passed all 7 corpus tests.
-- `npm test` passed after installing npm dependencies.
-- `tree-sitter query --quiet queries/highlights.scm test-local.strdl` succeeded.
-- `tree-sitter query --quiet queries/locals.scm test-local.strdl` succeeded.
-- Python binding test passed in an isolated virtual environment.
-- Go binding test passed in a temporary module using `go-tree-sitter` v0.25.0.
-- Swift library build passed.
+- `tree-sitter generate` succeeded with CLI 0.27.2 before and after the Phase 3 structured refactor.
+- A second regeneration before the refactor produced byte-identical `src/parser.c`, `src/grammar.json`, `src/node-types.json`, and `src/tree_sitter/array.h`.
+- `tree-sitter test` passed all 42 current corpus cases with CLI 0.27.2.
+- `tree-sitter test` also compiled and executed both official query files successfully.
+- `tree-sitter parse test.strdl test-local.strdl` completed without `ERROR` or `MISSING` nodes after the refactor.
+- `npm test` passed earlier with `tree-sitter` 0.25.1 and Node.js 26.8.2. A later run in this environment could not load the native binding because no build for Node.js 26.13.1 ABI 147 was present; this is an environment/build artifact limitation, not a parser validation failure.
 
 Query commands emitted a parser-directory warning but compiled and executed successfully.
 
 ## Known limitations
 
+- A post-refactor `npm test` run could not load the native binding because no Node.js ABI 147 build was available in this environment. Earlier Node binding validation passed with Node.js 26.8.2.
 - Rust tests were not run because `cargo` is unavailable in this environment.
 - Swift tests were not run successfully because XCTest could not be resolved by the installed command-line tools.
 - `npm install` emitted script-allowlist warnings, but the pinned local CLI was executable and was used for the final regeneration check.

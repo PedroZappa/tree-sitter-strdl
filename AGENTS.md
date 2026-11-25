@@ -651,6 +651,14 @@ The agent may independently:
 - Investigate and fix bugs.
 - Improve performance.
 
+### Makefile maintenance
+
+The `Makefile` is the canonical entry point for developer and agent workflows in this repository.
+
+When working on the project, the agent must update the `Makefile` with any rules or recipes that would be useful to work with the project. If a new workflow, command, or tool is introduced or discovered, add a corresponding target so it is available through `make`, and keep the help listings and `.PHONY` declarations consistent.
+
+Generated parser artifacts and `grammar.js` remain the source of truth for the grammar; Makefile rules are convenience wrappers and must not duplicate or replace parser generation logic.
+
 ### Mandatory approval requirements
 
 Stop and ask before:
@@ -668,6 +676,7 @@ Stop and ask before:
 - Every Git command that modifies repository state requires explicit per-command approval.
 - Never commit without an explicit request.
 - Never amend, rebase, reset, force-push, or otherwise modify Git history without explicit approval.
+- After every commit, push all local branches to the GitHub remote (`git push --all origin`). The user has given a standing explicit authorization for this push as part of the commit workflow, so it does not require a separate per-command approval each time.
 
 ### Architectural decisions
 
