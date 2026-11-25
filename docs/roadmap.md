@@ -247,7 +247,7 @@ Phase 2 is complete and tagged `v1.3.0`. Phase 3 evidence collection, the source
 - [x] Document every highlight capture name and intended meaning.
 - [x] Decide whether API-name-specific highlights are compatible with project scope.
 - [x] Remove or relocate semantic analysis that does not belong in syntax queries.
-- [ ] Audit `locals.scm` scopes, definitions, and references.
+- [x] Audit `locals.scm` scopes, definitions, and references.
 - [ ] Verify that function call identifiers are not incorrectly treated as definitions.
 - [ ] Verify that object keys are not incorrectly treated as variable definitions.
 - [ ] Evaluate whether `injections.scm` is justified by actual requirements.
@@ -458,6 +458,12 @@ For each deferred item, record:
   - Reason for deferral: outside the completed compatibility-upgrade scope.
   - Suggested phase or trigger: Phases 4 and 5.
 
+- **Remaining `locals.scm` semantic follow-ups**
+  - Opportunity and expected benefit: capture import aliases, nested array-pattern bindings, and catch/function scopes correctly, and narrow the blanket reference rule so references represent actual identifier reads.
+  - Reason for deferral: the current audit item is diagnostic; the immediately following roadmap items cover call identifiers and object keys first.
+  - Suggested phase or trigger: later Phase 5 locals work, after the call-identifier and object-key decisions.
+  - Related evidence: [locals audit](locals-audit.md).
+
 ## Verification log
 
 For checked items, add a short entry using this format:
@@ -529,3 +535,4 @@ For checked items, add a short entry using this format:
 - Phase 5 — Query audit: audited all 40 `highlights.scm` patterns against `src/node-types.json` and `grammar.js`. All referenced named nodes, fields, and tokens exist; `tree-sitter query` and `make test-query` compiled and executed successfully, while negative controls confirmed compilation rejects invalid node and field names. Recorded fixture capture counts and follow-up findings in `docs/query-audit.md`: overlapping generic captures, broad parameter-container captures, hardcoded Strudel API-name groups, missing `?.` and template-delimiter punctuation coverage, and uneven fixture coverage. No grammar or query change was required for this audit item.
 - Phase 5 — Query specificity: removed the generic identifier fallback, all hardcoded Strudel API-name groups, and broad parameter/container captures. `highlights.scm` now uses contextual identifier patterns and direct constructor captures. Added `scripts/check_query_determinism.py` to `make test-query`; it failed a duplicate-capture negative control and passed the committed query with 901 captures across 901 ranges and no duplicate ranges. Updated `docs/query-audit.md` with the scope decision, before/after evidence, and limitations. Remaining work includes capture documentation and fixtures that exercise `?.` and `${`.
 - Phase 5 — Capture documentation: added `docs/highlight-captures.md` documenting all 16 current highlight captures, their exact syntactic contexts, determinism rules, scope boundaries, and removed capture names as breaking changes. Linked it from `README.md` and `docs/README.md`, and updated `docs/ci.md`. A targeted probe exposed a latent `${identifier}` overlap between `@variable` and `@expression`; replaced the wildcard template expression pattern with an explicit non-overlapping type list and added `test/query/determinism.strdl` to the determinism check. `tree-sitter parse` reports no errors, and `make test-query` reports 1,096 captures across 1,096 ranges with zero duplicates.
+- Phase 5 — Locals audit: audited all 12 `locals.scm` patterns against `src/node-types.json` and executed the query against `test.strdl`, `test-local.strdl`, and `test/query/determinism.strdl`. Confirmed that all referenced node types and fields are valid, call identifiers are reference-only, and object keys are emitted as `@local.definition.property` plus `@local.reference`. Recorded import-alias, nested array-pattern, catch-scope, function-name-scope, and blanket-reference findings in `docs/locals-audit.md` and deferred the non-immediate follow-ups. No query change was made for the audit item.

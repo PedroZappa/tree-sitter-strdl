@@ -122,6 +122,7 @@ Official queries live in `queries/`:
 - [Compatibility](docs/compatibility.md)
 - [CI](docs/ci.md)
 - [Highlight captures](docs/highlight-captures.md)
+- [Locals audit](docs/locals-audit.md)
 - [Development roadmap](docs/roadmap.md)
 - [Documentation index](docs/README.md)
 
