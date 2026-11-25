@@ -2,7 +2,7 @@
 
 This document records the Phase 5 audit of `queries/highlights.scm` against the public syntax-tree API exposed by [src/node-types.json](../src/node-types.json) and defined by [grammar.js](../grammar.js). It owns the evidence for the roadmap item “Audit `highlights.scm` against the current public syntax tree.”
 
-The audit covers structural validity only. Capture precision, capture-name semantics, API-name-specific highlighting, and semantic-analysis boundaries are separate roadmap items.
+The initial audit covered structural validity only. The follow-up section below records the capture-specificity changes made for the next roadmap item. Capture-name semantics and documentation remain separate roadmap items.
 
 ## Method
 
@@ -112,8 +112,59 @@ Follow-up work is tracked by the remaining Phase 5 roadmap items:
 - capture documentation: stable meanings for every capture;
 - query tests: compilation and execution coverage against representative fixtures.
 
+## Specificity and determinism follow-up
+
+### Scope decision
+
+Hardcoded Strudel API names were removed from `highlights.scm`. They are semantic aliases layered on ordinary JavaScript syntax, so they do not belong in this syntax grammar's official query surface. The query now assigns captures by syntactic context only.
+
+### Query changes
+
+- Removed the generic `(identifier) @variable` fallback. Every identifier capture now comes from a contextual parent pattern.
+- Removed all `@function.control`, `@function.audio`, `@function.pattern`, `@function.effect`, `@function.envelope`, `@function.time`, `@function.utility`, `@function.midi`, and `@function.sample` groups that matched hardcoded API names.
+- Replaced broad `(formal_parameters)`, `(array_pattern)`, and `(assignment_pattern)` captures with patterns for their individual bindings.
+- Added contextual identifier patterns for declaration values, aliases, assignment defaults, arrow bodies, catch parameters, call tags, member objects, subscript objects and indices, assignment values, object values, computed keys, operands, arguments, spread values, parenthesized expressions, conditional branches, template substitutions, return values, export values, and bare expression statements.
+- Replaced broad `(object) @constructor` and `(array) @constructor` captures with a direct `new_expression` constructor capture.
+- Added `?.` and `${` punctuation patterns. The closing `}` of a template substitution remains part of the grammar's template token structure and is not separately captured.
+
+### Determinism rule
+
+A source range must receive at most one capture. Nested captures on different nodes remain valid because they describe different syntax nodes, but the same node must not be claimed by both a specific and a generic pattern.
+
+`scripts/check_query_determinism.py` parses `tree-sitter query` output and fails when a file/range pair has more than one capture. It is wired into `make test-query`, so the existing CI and local verification gates enforce determinism.
+
+### Before and after evidence
+
+Before the specificity changes, executing `highlights.scm` against `test.strdl` and `test-local.strdl` produced 1,099 capture events over 917 ranges, with 164 ranges receiving multiple captures. The dominant overlap was `property` plus `variable` (122 ranges); API-name aliases also overlapped `function.call` and `variable`.
+
+After the changes, `make test-query` reports 901 captures across 901 ranges, with zero duplicate ranges. Final fixture capture counts are:
+
+| Capture | Matches |
+| --- | ---: |
+| `punctuation.bracket` | 294 |
+| `punctuation.delimiter` | 185 |
+| `property` | 122 |
+| `number` | 91 |
+| `string` | 50 |
+| `variable` | 47 |
+| `function.method` | 45 |
+| `function.call` | 27 |
+| `operator` | 16 |
+| `keyword` | 10 |
+| `comment` | 5 |
+| `expression` | 4 |
+| `label` | 3 |
+| `variable.parameter` | 2 |
+
+A temporary negative-control query containing `(identifier) @variable` and `(identifier) @function.call` was rejected by the determinism checker, confirming that the check detects duplicate captures.
+
+### Limitations
+
+The committed fixtures do not contain `?.` or `${`, so those new punctuation patterns compiled but were not exercised. Capture-name meanings and breaking-change history still need a dedicated query document.
+
 ## Verification log
 
-- `node_modules/.bin/tree-sitter query queries/highlights.scm test.strdl test-local.strdl` — compiled and executed successfully; 40 patterns reached output.
-- `make test-query` — passed.
+- `node_modules/.bin/tree-sitter query queries/highlights.scm test.strdl test-local.strdl` — compiled and executed successfully; all initial patterns reached output.
 - Negative controls for unknown node type and unknown field name — both failed as expected, confirming that successful compilation validates names.
+- `make test-query` — passed after the specificity changes, including the new duplicate-capture check: 901 captures across 901 ranges.
+- Duplicate-capture negative control — rejected as expected with `exit=1`.

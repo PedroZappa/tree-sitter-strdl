@@ -153,12 +153,13 @@ test-incremental:	## Compare incremental and fresh parses (INCREMENTAL_FILTER=id
 	@python3 scripts/test_incremental.py $(INCREMENTAL_FILTER)
 	@echo "$(YEL)* $(_SUCCESS) Incremental equivalence tests completed$(D)"
 
-test-query:	## Compile and run official queries against the fixtures
+test-query:	## Compile, run, and check official queries against the fixtures
 	@echo "$(YEL)Running query checks...$(D)"
 	@for query in $(QUERIES); do \
 		$(TS) query --quiet --grammar-path . "$$query" $(FIXTURES) || exit 1; \
 	done
-	@echo "$(YEL)* $(_SUCCESS) Queries compiled and executed$(D)"
+	@python3 scripts/check_query_determinism.py $(TS) $(QUERY_DIR)/highlights.scm $(FIXTURES)
+	@echo "$(YEL)* $(_SUCCESS) Queries compiled, executed, and deterministic$(D)"
 
 test-node:	## Run Node.js binding tests (requires a matching native ABI)
 	@echo "$(YEL)Running Node.js binding tests...$(D)"
