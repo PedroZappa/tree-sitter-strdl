@@ -38,7 +38,7 @@ These observations are inputs to Phase 1, not proof that any phase is complete.
 
 ## Immediate next work
 
-Phase 2 is complete and tagged `v1.3.0`. Phase 3 evidence collection has started with official documentation in `docs/syntax-evidence.md`; the next work is collecting examples from Strudel source code and runtime.
+Phase 2 is complete and tagged `v1.3.0`. Phase 3 evidence collection has covered official documentation and runtime source in `docs/syntax-evidence.md`; the next work is collecting examples from official examples and tutorials.
 
 - [x] Capture the current functional baseline: grammar generation, corpus tests, Node.js binding tests, and query compilation.
 - [x] Verify whether regenerated files under `src/` match the committed artifacts.
@@ -148,7 +148,7 @@ Phase 2 is complete and tagged `v1.3.0`. Phase 3 evidence collection has started
 ### Establish evidence
 
 - [x] Collect syntax examples from official Strudel documentation.
-- [ ] Collect examples from Strudel source code and runtime.
+- [x] Collect examples from Strudel source code and runtime.
 - [ ] Collect examples from official examples and tutorials.
 - [ ] Record maintained community examples that demonstrate additional syntax.
 - [ ] Add each significant syntax requirement to a coverage matrix with its source.
@@ -498,3 +498,4 @@ For checked items, add a short entry using this format:
 - Phase 2 — Representative fixture: `node_modules/.bin/tree-sitter parse test.strdl` produced no `ERROR` or `MISSING` nodes after regeneration.
 - Phase 2 — Version tag: aligned tracked version metadata to `1.3.0` and created annotated tag `v1.3.0` on 2026-11-25; no tag was pushed.
 - Phase 3 — Official documentation evidence: collected 33 syntax examples from Codeberg `uzu/strudel` `website/src/pages/**/*.mdx`, imported package docs, `website/src/examples.mjs`, and `packages/web/README.md` on 2026-11-25; each example is linked to its source in [syntax-evidence.md](syntax-evidence.md). Only user-facing Strudel/JavaScript code was collected; MDX infrastructure and mini-notation internals were excluded.
+- Phase 3 — Source/runtime evidence: inspected `packages/transpiler` (`transpiler.mjs`, `index.mjs`, four plug-ins, `test/transpiler.test.mjs`) and `packages/core` (`evaluate.mjs`, `repl.mjs`) from Codeberg `main` on 2026-11-25; recorded 18 S-IDs in [syntax-evidence.md](syntax-evidence.md). Confirms Acorn `ecmaVersion: 2022` with `allowAwaitOutsideFunction: true`, label rewriting, mini/tag plug-ins, and observed ternary/template-interpolation inputs. The commented-out destructuring/`import()` test is marked inactive evidence.

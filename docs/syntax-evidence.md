@@ -1,6 +1,6 @@
 # Official Strudel syntax evidence
 
-This document records syntax examples collected from official Strudel documentation on 2026-11-25. It is the evidence base for the coverage matrix in Phase 3; it does not itself change the grammar.
+This document records syntax examples collected from official Strudel documentation and shipped source/runtime on 2026-11-25. It is the evidence base for the coverage matrix in Phase 3; it does not itself change the grammar.
 
 ## Sources and method
 
@@ -53,19 +53,61 @@ MDX front matter, Astro imports, component props, and prose are documentation in
 | D32 | `export const` declaration, array of template literals, `let` declaration, single-parameter arrow callback | `export const examples = [`<br>``  `// "coastline" @by eddyflux ...`, ``<br>`];`<br>`let chords = chord("<Bbm9 Fm9>/4").dict('ireal')`<br>`.superimpose(x=>x.add(note(12)).delay(.5).bpf(1000))` | [`website/src/examples.mjs`](https://codeberg.org/uzu/strudel/src/branch/main/website/src/examples.mjs) · [rendered demos](https://strudel.cc/workshop/getting-started/) |
 | D33 | Tagged template literal with non-JavaScript body (Csound DSL) | ``await loadCsound` ... instr CoolSynth ... ` `` | [`learn/csound.mdx`](https://codeberg.org/uzu/strudel/src/branch/main/website/src/pages/learn/csound.mdx) · [rendered](https://strudel.cc/learn/csound/) |
 
+## Source and runtime evidence
+
+The examples above show what users write. The evidence below shows what the Strudel runtime actually accepts and transforms. It comes from shipped source and tests in `packages/transpiler` and `packages/core`, fetched from Codeberg `main` on 2026-11-25. These are facts about the runtime contract; they do not imply that the grammar reproduces Strudel semantics.
+
+### Parser and evaluation contract
+
+| ID | Evidence (verbatim excerpt) | Significance | Source |
+| --- | --- | --- | --- |
+| S01 | `parse(input, { ecmaVersion: 2022, allowAwaitOutsideFunction: true, locations: true, onComment: comments })` | User code is parsed by Acorn at ECMAScript 2022, with top-level `await` explicitly allowed. This is the strongest primary-source bound on the target syntax level. | [`packages/transpiler/transpiler.mjs`](https://codeberg.org/uzu/strudel/src/branch/main/packages/transpiler/transpiler.mjs) |
+| S02 | `// converts label expressions to p calls: "x: y" to "y.p('x')"` with `isLabelStatement(node) { return node.type === 'LabeledStatement'; }` | Labeled statements are user syntax that the runtime rewrites; they are not merely editable decoration. | [`packages/transpiler/transpiler.mjs`](https://codeberg.org/uzu/strudel/src/branch/main/packages/transpiler/transpiler.mjs) |
+| S03 | `` str = `{${str}}` ``, `` `(async ()=>${str})()` ``, and `"use strict";return (${str})` | User code is evaluated as a block inside a strict async function. Declarations, assignments, and `await` are legitimate top-level forms. | [`packages/core/evaluate.mjs`](https://codeberg.org/uzu/strudel/src/branch/main/packages/core/evaluate.mjs) |
+| S04 | `const nonInlineWidgets = ['punchcard', 'spiral', 'scope', 'pitchwheel', 'spectrum', 'pianoroll', 'wordfall']` | Visualizer calls are recognized by method name on a member expression. | [`packages/transpiler/transpiler.mjs`](https://codeberg.org/uzu/strudel/src/branch/main/packages/transpiler/transpiler.mjs) |
+| S05 | `sliderWithID(id, value, min?, max?)`; `node.arguments[1]?.value`, `node.arguments[2]?.value`, `node.arguments[3]?.value` | A `slider(...)` call with one to four arguments is a recognized syntax shape. | [`packages/transpiler/plugin-widgets.mjs`](https://codeberg.org/uzu/strudel/src/branch/main/packages/transpiler/plugin-widgets.mjs) |
+
+### Inputs exercised by runtime tests and plug-ins
+
+| ID | Constructs demonstrated | Example (verbatim input) | Source |
+| --- | --- | --- | --- |
+| S06 | Double-quoted mini strings, multiple call arguments | `stack("c3","bd sd")` | [`packages/transpiler/test/transpiler.test.mjs`](https://codeberg.org/uzu/strudel/src/branch/main/packages/transpiler/test/transpiler.test.mjs) |
+| S07 | Backtick mini string; tagged template left intact | `` `c3` `` and `` xxx`c3` `` | [`packages/transpiler/test/transpiler.test.mjs`](https://codeberg.org/uzu/strudel/src/branch/main/packages/transpiler/test/transpiler.test.mjs) |
+| S08 | Top-level `await`; implicit `await` for bare `samples(...)` | `await samples('xxx');` and `samples('xxx');` | [`packages/transpiler/test/transpiler.test.mjs`](https://codeberg.org/uzu/strudel/src/branch/main/packages/transpiler/test/transpiler.test.mjs) |
+| S09 | Binary `+` in a call argument; zero-parameter arrow with block body and `return` | `K(1+2)` and `K(() => { return 1 + 2 })` | [`packages/transpiler/test/transpiler.test.mjs`](https://codeberg.org/uzu/strudel/src/branch/main/packages/transpiler/test/transpiler.test.mjs) |
+| S10 | Nested call, string literal, member call chain as call argument | `K(S("bd".fast(4)))` | [`packages/transpiler/test/transpiler.test.mjs`](https://codeberg.org/uzu/strudel/src/branch/main/packages/transpiler/test/transpiler.test.mjs) |
+| S11 | `const` declarations, comparison, ternary conditional, template interpolation, block-comment directive, line comment, mini string | `/* mini-off */`<br>`const randPrefix = Math.random() > 0.5 ? "b" : "s";`<br>``const drumPat = `${randPrefix}d`;``<br>`// mini-on`<br>`s(drumPat).lpf("5000 10000") // make sure mini still runs;` | [`packages/transpiler/test/transpiler.test.mjs`](https://codeberg.org/uzu/strudel/src/branch/main/packages/transpiler/test/transpiler.test.mjs) |
+| S12 | Comment directives controlling mini-notation regions | `/* mini-off */` and `// mini-on` | [`packages/transpiler/transpiler.mjs`](https://codeberg.org/uzu/strudel/src/branch/main/packages/transpiler/transpiler.mjs), [`packages/transpiler/test/transpiler.test.mjs`](https://codeberg.org/uzu/strudel/src/branch/main/packages/transpiler/test/transpiler.test.mjs) |
+| S13 | Labeled statements, arrow callbacks, nested calls, multiple labeled patterns | `$: sound("bd - cp sd")`<br>`$: sound("hh*8")`<br>`all(fast("<2 3>"))`<br>`all(x => x.pianoroll())`<br>`each(fast("<2 3>"))` | [`packages/core/repl.mjs`](https://codeberg.org/uzu/strudel/src/branch/main/packages/core/repl.mjs) |
+| S14 | Solo label and mute-label convention | `S$: s("bd!4")`; labels starting or ending with `_` are muted by `Pattern.prototype.p` | [`packages/core/repl.mjs`](https://codeberg.org/uzu/strudel/src/branch/main/packages/core/repl.mjs) |
+| S15 | Tagged template wrapping an entire program | `` mondolang`${code}` `` | [`packages/core/repl.mjs`](https://codeberg.org/uzu/strudel/src/branch/main/packages/core/repl.mjs) |
+| S16 | Registered language tag templates | `` tidal`...` `` and `` mondo`...` `` | [`packages/transpiler/plugin-mini.mjs`](https://codeberg.org/uzu/strudel/src/branch/main/packages/transpiler/plugin-mini.mjs), [`packages/transpiler/transpiler.mjs`](https://codeberg.org/uzu/strudel/src/branch/main/packages/transpiler/transpiler.mjs) |
+| S17 | `K(...)` and `S(...)` call shapes, including member callees; unwraps `ChainExpression` (the ESTree wrapper for optional chaining) | `K(...)`, `.K(...)`, `S(...)`, `.S(...)` | [`packages/transpiler/plugin-kabelsalat.mjs`](https://codeberg.org/uzu/strudel/src/branch/main/packages/transpiler/plugin-kabelsalat.mjs) |
+| S18 | Variable declarations with property destructuring and dynamic `import()` in a **commented-out** test | `const { default: foo } = await import('https://bar.com/foo.js');` | [`packages/transpiler/test/transpiler.test.mjs`](https://codeberg.org/uzu/strudel/src/branch/main/packages/transpiler/test/transpiler.test.mjs) — inactive evidence; do not treat as confirmed support |
+
+### Interpretation limits
+
+- The transpiler emits JavaScript AST nodes such as `m(...)`, `await`, and `ReturnStatement`; generated output is **not** user-authored Strudel syntax and is not a grammar requirement.
+- `K(...)`, `S(...)`, `slider(...)`, `all(...)`, and label capture are runtime conventions layered on ordinary JavaScript syntax. The grammar must expose the ordinary JavaScript structure and must not encode those meanings.
+- Mini-notation, kabelsalat bodies, and registered language templates remain opaque literal or template content.
+- S18 is commented out in the upstream test suite; it is recorded only to prevent it from being mistaken for confirmed coverage.
+
 ## Strudel-specific syntax shape
 
 These forms are written in the REPL but have a JavaScript-compatible surface shape. The grammar should parse the shape and leave meaning to downstream tools:
 
-- `$:` and `_$:` are labels followed by an expression, as in D07 and D25.
-- Top-level `await` appears in D21 and D33.
-- Double-quoted strings are mini-notation in the REPL; single-quoted strings are ordinary strings (D05). This is a semantic distinction, not a grammar rule.
-- Backtick strings carry multiline mini-notation (D09) or an embedded Csound DSL body (D33). Both remain opaque template-literal content to this grammar.
+- `$:`, `_$:`, and `S$:` are labels followed by an expression (D07, D25, S13, S14). The runtime rewrites every labeled statement to `.p('label')` (S02).
+- Top-level `await` appears in D21, D33, and S08, and is explicitly enabled by the runtime parser (S01).
+- Double-quoted strings are mini-notation in the REPL; single-quoted strings are ordinary strings (D05, S06). This is a semantic distinction, not a grammar rule.
+- Backtick strings carry multiline mini-notation (D09), template interpolation (S11), or a tagged DSL body (D33, S15, S16). Template content remains opaque to this grammar; `${...}` itself is ordinary JavaScript expression syntax.
+- Comment directives `/* mini-off */` and `// mini-on` delimit regions where the runtime does not treat double-quoted or backtick strings as mini-notation (S12). These are still comments to the grammar.
 
 ## Observations for the next coverage steps
 
-Syntax **found** in official documentation includes: `const`/`let` declarations; expression statements and semicolons; call and nested call expressions; member chains; arrow functions with zero, one, and multiple nested callbacks; arrays; object literals including nested and quoted-key objects; numeric literals including decimals and hexadecimal; single-, double-, and backtick-quoted strings; line and block comments; parenthesized expressions; binary division and multiplication; labeled statements; top-level `await`; named imports and `export const`; template literals.
+Syntax **confirmed** across documentation and source/runtime evidence includes: `const`/`let` declarations; expression statements and semicolons; call and nested call expressions; member chains; arrow functions with zero, one, and multiple nested callbacks; block bodies with `return`; arrays; object literals including nested and quoted-key objects; numeric literals including decimals and hexadecimal; single-, double-, and backtick-quoted strings; line and block comments; parenthesized expressions; binary `+`, `*`, and `/`; comparison `>`; ternary conditional expressions; template interpolation; labeled statements; top-level `await`; named imports and `export const`; tagged template literals.
 
-Not established by this documentation pass: `var`; destructuring; spread/rest; ternary conditional expressions; optional chaining; nullish coalescing; template interpolation (`${...}`); default imports; `export default`; named `function` declarations. Absence here is not evidence that a construct is irrelevant; it identifies what must be checked in source code, official examples, and community compositions before the grammar accepts or excludes it.
+Runtime source unwraps `ChainExpression` (the ESTree representation of optional chaining) in S17, so optional-chaining-shaped callees are recognized. Object destructuring and dynamic `import()` appear only in a commented-out test (S18), so they remain lower-confidence requirements until active examples establish them.
 
-The next step is to collect examples from Strudel source code and runtime, then record all significant requirements in a coverage matrix with these sources.
+Not established by either pass: `var`; spread/rest; nullish coalescing; default imports; `export default`; named `function` declarations. Absence is not evidence that a construct is irrelevant; it identifies what must be checked in official examples, tutorials, and community compositions before the grammar accepts or excludes it.
+
+The next step is to collect examples from official examples and tutorials, then maintained community examples, before recording all significant requirements in a coverage matrix with these sources.
