@@ -18,7 +18,7 @@ Each matrix job installs the locked dependencies with `npm ci`, then runs `make 
 
 1. `make check-generated` — regenerates with the pinned Tree-sitter CLI and checks that committed parser artifacts are unchanged.
 2. `make test` — runs all corpus cases, including incomplete-call, incomplete-argument-list, incomplete-expression, and missing-delimiter cases.
-3. `make test-query` — runs `make test-query-compile` to compile every query in `queries/` and reject negative controls with invalid node and field names, executes each query against the committed fixtures, checks that `highlights.scm` emits no duplicate captures for the same source range, and verifies that call identifiers and object keys selected by grammar-derived probe queries receive no locals definition capture.
+3. `make test-query` — runs `make test-query-compile` to compile every query in `queries/` and reject negative controls with invalid node and field names, then runs `make test-query-execution` to assert expected captures on grammar-derived roles in the representative fixtures. It also executes each official query against the committed fixtures, checks that `highlights.scm` emits no duplicate captures for the same source range, and verifies that call identifiers and object keys selected by probe queries receive no locals definition capture.
 4. `make test-node` — runs the Node.js binding tests with the tree-sitter runtime resolved from `package-lock.json`.
 5. `make build` — builds the static and shared C libraries and the pkg-config metadata.
 

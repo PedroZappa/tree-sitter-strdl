@@ -104,3 +104,4 @@ The following object-key roadmap item removed `@local.definition.property` from 
 - Negative control — adding `(call_expression function: (identifier) @local.definition.var)` to a temporary locals query made the check fail with `exit=1`, confirming that the check detects incorrect call definitions.
 - Final `make test-query` — verified 23 object key ranges covering identifier, string, number, and computed keys; none received a `local.definition.*` capture.
 - Negative control — restoring `(pair key: (identifier) @local.definition.property)` to a temporary locals query made the object-key check fail with `exit=1`.
+- `make test-query-execution` — verified 22 variable declaration ranges receive `local.definition.var`, 3 arrow parameter ranges receive `local.definition.parameter`, and 30 call identifier ranges receive `local.reference` across the three fixtures.
