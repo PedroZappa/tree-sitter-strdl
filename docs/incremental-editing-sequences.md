@@ -37,4 +37,10 @@ Using current-source matches rather than precomputed byte offsets keeps the sequ
 | `compact-declaration-deletion` | compact | deletion, compact fixture | Remove a labeled declaration. |
 | `compact-malformed-repair` | compact | malformed state, repair, compact fixture | Delete and restore a closing `)`. |
 
-These sequences cover insertion, deletion, replacement, nested edits, and temporary malformed states. The malformed states are intermediate inputs; each sequence ends in a complete source. Equivalence-test automation and the documented comparison procedure are separate roadmap items.
+These sequences cover insertion, deletion, replacement, nested edits, and temporary malformed states. The malformed states are intermediate inputs; each sequence ends in a complete source.
+
+## Running comparisons
+
+`make test-incremental` replays every sequence and compares each incremental parse tree against a fresh parse of the same final source. Set `INCREMENTAL_FILTER` to a category or sequence ID to run a subset, for example `make test-incremental INCREMENTAL_FILTER=insertion`.
+
+The detailed equivalence-test procedure is a separate roadmap item.

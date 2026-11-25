@@ -52,6 +52,7 @@ RECOVERY_FILES := $(wildcard $(TEST_DIR)/incomplete_*.txt $(TEST_DIR)/malformed_
 
 # Test inputs (override on the command line)
 FILTER ?=
+INCREMENTAL_FILTER ?=
 FILES ?= $(FIXTURES)
 PARSE_FLAGS ?=
 
@@ -94,7 +95,7 @@ D = $(shell tput sgr0 2>/dev/null)
 _SUCCESS = [$(GRN)SUCCESS$(D)]
 _INFO    = [$(BLU)INFO$(D)]
 
-.PHONY: all build generate test test-recovery test-query test-node parse playground wasm \
+.PHONY: all build generate test test-recovery test-incremental test-query test-node parse playground wasm \
 	local-install install uninstall clean check-generated verify verify-all ci \
 	docs docs-open help
 
@@ -146,6 +147,11 @@ test-recovery:	## Run error-recovery corpus cases
 		$(TS) test --file-name "$$(basename "$$file")" || exit 1; \
 	done
 	@echo "$(YEL)* $(_SUCCESS) Recovery corpus tests completed$(D)"
+
+test-incremental:	## Compare incremental and fresh parses (INCREMENTAL_FILTER=id/category)
+	@echo "$(YEL)Running incremental equivalence tests...$(D)"
+	@python3 scripts/test_incremental.py $(INCREMENTAL_FILTER)
+	@echo "$(YEL)* $(_SUCCESS) Incremental equivalence tests completed$(D)"
 
 test-query:	## Compile and run official queries against the fixtures
 	@echo "$(YEL)Running query checks...$(D)"
