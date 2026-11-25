@@ -242,7 +242,7 @@ Phase 2 is complete and tagged `v1.3.0`. Phase 3 evidence collection, the source
 
 **Deliverable:** complete official query infrastructure.
 
-- [ ] Audit `highlights.scm` against the current public syntax tree.
+- [x] Audit `highlights.scm` against the current public syntax tree.
 - [ ] Verify that highlight patterns are specific and deterministic.
 - [ ] Document every highlight capture name and intended meaning.
 - [ ] Decide whether API-name-specific highlights are compatible with project scope.
@@ -526,3 +526,4 @@ For checked items, add a short entry using this format:
 - Phase 4 — Incremental parsing: added `docs/incremental-equivalence-procedure.md`, documenting the guarantee under test, authoritative inputs, edit model, step-by-step comparison procedure, CLI parse-error handling, pass/fail rules, output format, current coverage, how to add sequences, and scope limitations. Linked it from the docs index, the sequence catalog, grammar architecture, and CI notes. The incremental-parsing checklist is now complete; no grammar change was required.
 - Phase 4 — Closeout: checked all four acceptance criteria after verifying 70 recovery corpus cases across eleven files, 112/112 total corpus cases, `make verify` success with synchronized generated artifacts, no `grammar.js` change during the phase, and incremental/fresh equivalence across 20 sequences, 27 steps, and 20/20 final-source comparisons. Bumped tracked version metadata from 1.3.0 to 1.4.0 and regenerated `src/parser.c` so its embedded language minor version matches. Created local annotated tag `v1.4.0`; the tag was not pushed. Phase 5 work starts from this tag.
 - Phase 6 — CI validation: added `.github/workflows/ci.yml` for pull requests and pushes to `main`, with SHA-pinned checkout/setup-node actions and a Node.js 22/24 matrix. Added `make ci`, `docs/ci.md`, the CI badge, and documentation links. `make ci` was run locally and passed generated-artifact, corpus, query, Node binding, and C build checks. Incremental, benchmark, formatting/static, and non-Node binding checks remain deferred.
+- Phase 5 — Query audit: audited all 40 `highlights.scm` patterns against `src/node-types.json` and `grammar.js`. All referenced named nodes, fields, and tokens exist; `tree-sitter query` and `make test-query` compiled and executed successfully, while negative controls confirmed compilation rejects invalid node and field names. Recorded fixture capture counts and follow-up findings in `docs/query-audit.md`: overlapping generic captures, broad parameter-container captures, hardcoded Strudel API-name groups, missing `?.` and template-delimiter punctuation coverage, and uneven fixture coverage. No grammar or query change was required for this audit item.
