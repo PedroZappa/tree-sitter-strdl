@@ -1,0 +1,442 @@
+# Implementation roadmap
+
+This roadmap turns the phases in [AGENTS.md](../AGENTS.md) into checkable implementation steps.
+
+## Status rules
+
+- `- [ ]` means the item has not been verified as complete.
+- `- [x]` means the item is complete and has evidence in a commit, issue, pull request, test output, or linked document.
+- Check an item only after its acceptance criteria are met.
+- Update this file in the same change that completes an item.
+- Record verification notes beneath completed phases when useful.
+- Deliberate deferrals belong under **Deferred work**, with a reason and expected benefit.
+- No item is pre-checked here. Existing code may partially implement a phase, but phase completion requires explicit verification.
+
+## Repository snapshot
+
+Verified by inspecting the repository when this roadmap was created on 2026-11-25:
+
+- `grammar.js` defines declarations, assignments, calls, chained methods, binary arithmetic, single-parameter arrow functions, object and array literals, strings, numbers, identifiers, line comments, and parenthesized expressions.
+- Generated parser artifacts exist under `src/`, including `parser.c`, `grammar.json`, and `node-types.json`.
+- `test/corpus/` contains seven corpus files.
+- `queries/highlights.scm` and `queries/locals.scm` exist.
+- Bindings exist for C, Go, Node.js, Python, Rust, and Swift.
+- `package.json` defines Node.js tests, playground startup, and local installation scripts.
+- `.github/workflows/` currently contains only `publish.yml`.
+- No benchmark infrastructure, formal performance baseline, repository assessment, compatibility policy, or phase status document was found.
+- `README.md` primarily documents Neovim installation; it does not yet document supported syntax, compatibility, parser API, or query captures.
+
+These observations are inputs to Phase 1, not proof that any phase is complete.
+
+## Immediate next work
+
+The immediate task is to complete the Phase 1 repository audit and record its findings in `docs/repository-assessment.md`.
+
+- [ ] Capture the current functional baseline: grammar generation, corpus tests, Node.js binding tests, and query compilation.
+- [ ] Verify whether regenerated files under `src/` match the committed artifacts.
+- [ ] Inventory syntax coverage against the required constructs in `AGENTS.md`.
+- [ ] Inventory bindings, dependencies, queries, tests, CI, packaging, and licensing.
+- [ ] Write `docs/repository-assessment.md` with findings, risks, prioritized gaps, and the implementation order.
+- [ ] Link the assessment from [docs/README.md](README.md).
+
+---
+
+## Phase 1 — Repository audit
+
+**Deliverable:** a documented repository assessment and implementation plan.
+
+### Inspect the complete repository
+
+- [ ] Record repository purpose, scope, and current architecture.
+- [ ] Inventory tracked files, generated artifacts, bindings, queries, tests, scripts, and CI workflows.
+- [ ] Identify obsolete, duplicated, or unowned infrastructure.
+- [ ] Record which files are authoritative and which are generated.
+- [ ] Establish the current versioning and release model.
+
+### Understand the current grammar
+
+- [ ] Map every `grammar.js` rule and its role.
+- [ ] Document current named nodes, fields, and public syntax-tree shape.
+- [ ] Record current precedence declarations and associativity choices.
+- [ ] Identify grammar rules that are undocumented, unused, or unexpectedly ambiguous.
+- [ ] Compare implemented syntax with the required coverage list in `AGENTS.md`.
+
+### Audit bindings and dependencies
+
+- [ ] Test or inspect each existing binding: C, Go, Node.js, Python, Rust, and Swift.
+- [ ] Record which bindings are maintained, generated, and reachable from package metadata.
+- [ ] List direct and development dependencies and their purpose.
+- [ ] Verify dependency versions against the supported Tree-sitter CLI and runtime policy.
+- [ ] Identify dependencies that are unnecessary or unmaintained.
+
+### Investigate licensing
+
+- [ ] Confirm the authoritative repository license.
+- [ ] Compare license declarations in `LICENSE`, `package.json`, `tree-sitter.json`, `Cargo.toml`, `pyproject.toml`, and binding files.
+- [ ] Verify licenses of reused grammar code or assets.
+- [ ] Record attribution requirements.
+- [ ] Escalate licensing uncertainty before substantial code reuse or license changes.
+
+### Inspect tests, queries, and generated artifacts
+
+- [ ] Catalog existing corpus tests and the syntax each one covers.
+- [ ] Determine whether expected trees are explicit and intentional.
+- [ ] Compile and execute `queries/highlights.scm` and `queries/locals.scm`.
+- [ ] Check query capture names and registration in `tree-sitter.json` and `package.json`.
+- [ ] Regenerate parser artifacts and compare them with committed files.
+
+### Establish baselines
+
+- [ ] Record commands for grammar generation and functional tests.
+- [ ] Establish a fresh-parsing latency baseline.
+- [ ] Establish an incremental-parsing latency baseline.
+- [ ] Establish representative and stress-test fixtures.
+- [ ] Record memory-use and large-document behavior.
+
+### Phase 1 acceptance criteria
+
+- [ ] `docs/repository-assessment.md` exists and links to evidence.
+- [ ] Every significant gap has a priority and recommended phase.
+- [ ] Functional and performance baselines are recorded with reproduction commands.
+- [ ] Licensing, bindings, generated artifacts, tests, queries, and CI are explicitly assessed.
+- [ ] The implementation order is approved or recorded as provisional.
+
+---
+
+## Phase 2 — Grammar foundation
+
+**Deliverable:** a stable, intentional grammar foundation.
+
+- [ ] Define node naming conventions in a grammar architecture document.
+- [ ] Define field naming conventions for important structural relationships.
+- [ ] Document which nodes are part of the public syntax-tree API.
+- [ ] Establish the core statement and expression hierarchy.
+- [ ] Establish composable base-expression rules.
+- [ ] Document every precedence declaration.
+- [ ] Document every intentional conflict and why it is necessary.
+- [ ] Remove unjustified precedence rules and conflicts where verification shows they are unnecessary.
+- [ ] Add corpus tests for foundational rules and precedence decisions.
+- [ ] Regenerate `src/parser.c`, `src/grammar.json`, and `src/node-types.json`.
+- [ ] Review every `node-types.json` change as a syntax-tree API change.
+- [ ] Run corpus tests and query compilation after regeneration.
+- [ ] Record syntax-tree changes in documentation.
+
+### Phase 2 acceptance criteria
+
+- [ ] Foundational rules are deliberate, documented, and tested.
+- [ ] Generated artifacts are synchronized with `grammar.js`.
+- [ ] Public node and field names are documented.
+- [ ] No unexplained conflicts or precedence declarations remain.
+- [ ] Existing valid compositions still parse correctly.
+
+---
+
+## Phase 3 — Language coverage
+
+**Deliverable:** comprehensive, evidence-based support for syntax used in real Strudel compositions.
+
+### Establish evidence
+
+- [ ] Collect syntax examples from official Strudel documentation.
+- [ ] Collect examples from Strudel source code and runtime.
+- [ ] Collect examples from official examples and tutorials.
+- [ ] Record maintained community examples that demonstrate additional syntax.
+- [ ] Add each significant syntax requirement to a coverage matrix with its source.
+
+### Audit current coverage
+
+- [ ] Variable declarations: `var`, `let`, and `const`.
+- [ ] Assignments and expression statements.
+- [ ] Function calls and nested calls.
+- [ ] Member expressions and method chains.
+- [ ] Arrow functions and callbacks.
+- [ ] Function parameters, including more than one parameter.
+- [ ] Arrays and objects.
+- [ ] Object properties and shorthand properties.
+- [ ] Destructuring.
+- [ ] Spread and rest syntax.
+- [ ] Arithmetic expressions.
+- [ ] Logical and comparison expressions.
+- [ ] Unary expressions.
+- [ ] Conditional expressions.
+- [ ] Optional chaining.
+- [ ] Nullish coalescing.
+- [ ] Template literals and interpolation.
+- [ ] Single-quoted and double-quoted strings.
+- [ ] Line and block comments.
+- [ ] Parenthesized expressions.
+- [ ] Relevant import and export syntax.
+- [ ] Mini-notation remains opaque JavaScript string content.
+
+### Implement verified gaps
+
+- [ ] Implement only constructs supported by collected evidence.
+- [ ] Keep Strudel API function names out of grammar rules.
+- [ ] Preserve composable JavaScript-like expression rules.
+- [ ] Add corpus tests for every newly supported construct.
+- [ ] Add representative real-world Strudel fixtures.
+- [ ] Add regression tests for bugs discovered during implementation.
+- [ ] Regenerate and review generated artifacts.
+- [ ] Update the supported-syntax documentation.
+
+### Phase 3 acceptance criteria
+
+- [ ] The coverage matrix records implemented, missing, and intentionally excluded constructs.
+- [ ] Every implemented gap has an evidence source and corpus coverage.
+- [ ] Real-world fixtures parse without unexpected errors.
+- [ ] Mini-notation has no grammar-specific nodes or semantics.
+- [ ] Generated artifacts remain synchronized.
+
+---
+
+## Phase 4 — Error recovery and incremental parsing
+
+**Deliverable:** robust editor-facing parser behavior.
+
+### Error recovery
+
+- [ ] Test unfinished function calls.
+- [ ] Test incomplete expressions.
+- [ ] Test missing delimiters.
+- [ ] Test incomplete argument lists.
+- [ ] Test partially typed arrow functions.
+- [ ] Test incomplete declarations.
+- [ ] Test unfinished strings and templates where recoverable.
+- [ ] Test malformed nested structures.
+- [ ] Verify that valid syntax outside error regions remains usable.
+- [ ] Verify that errors do not cascade unnecessarily.
+- [ ] Add permanent regression tests for each discovered recovery bug.
+
+### Incremental parsing
+
+- [ ] Define realistic editing sequences using representative Strudel compositions.
+- [ ] Test insertions.
+- [ ] Test deletions.
+- [ ] Test replacements.
+- [ ] Test nested edits.
+- [ ] Test edits through temporarily malformed states.
+- [ ] Compare each incremental result against a fresh parse of the same final source.
+- [ ] Automate the comparison in a repeatable test harness.
+- [ ] Document the equivalence test procedure.
+
+### Phase 4 acceptance criteria
+
+- [ ] Incomplete and malformed inputs retain useful syntax-tree information.
+- [ ] Valid-code correctness is not weakened to improve malformed-input recovery.
+- [ ] Incremental and fresh parses are equivalent for all recorded editing sequences.
+- [ ] Recovery regressions have permanent corpus tests.
+
+---
+
+## Phase 5 — Queries
+
+**Deliverable:** complete official query infrastructure.
+
+- [ ] Audit `highlights.scm` against the current public syntax tree.
+- [ ] Verify that highlight patterns are specific and deterministic.
+- [ ] Document every highlight capture name and intended meaning.
+- [ ] Decide whether API-name-specific highlights are compatible with project scope.
+- [ ] Remove or relocate semantic analysis that does not belong in syntax queries.
+- [ ] Audit `locals.scm` scopes, definitions, and references.
+- [ ] Verify that function call identifiers are not incorrectly treated as definitions.
+- [ ] Verify that object keys are not incorrectly treated as variable definitions.
+- [ ] Evaluate whether `injections.scm` is justified by actual requirements.
+- [ ] Add only justified injections; do not create an empty or speculative query file.
+- [ ] Add query compilation tests.
+- [ ] Add query execution tests against representative compositions.
+- [ ] Keep capture names stable and document breaking changes.
+- [ ] Register official queries in `tree-sitter.json`, `package.json`, and packaging rules.
+- [ ] Add query documentation under `docs/`.
+
+### Phase 5 acceptance criteria
+
+- [ ] Every official query compiles and executes against representative fixtures.
+- [ ] Capture names and meanings are documented.
+- [ ] Query behavior matches the public syntax-tree API.
+- [ ] Queries avoid editor-specific assumptions and semantic-analysis responsibilities.
+- [ ] Packaged queries are present in published package contents.
+
+---
+
+## Phase 6 — Testing and performance
+
+**Deliverable:** measurable correctness and performance standards.
+
+### Multi-layer testing
+
+- [ ] Create a documented test strategy index.
+- [ ] Expand corpus tests for valid syntax.
+- [ ] Expand corpus tests for malformed and incomplete code.
+- [ ] Add tests for every supported modern JavaScript construct.
+- [ ] Add tests for nested expressions and method chains.
+- [ ] Add query tests for compilation and captures.
+- [ ] Add incremental parsing tests.
+- [ ] Add Node.js binding tests.
+- [ ] Add generated-artifact consistency checks.
+- [ ] Add package integrity checks.
+- [ ] Ensure every discovered bug produces a regression test.
+
+### Performance infrastructure
+
+- [ ] Create reproducible benchmarking fixtures.
+- [ ] Use representative Strudel compositions.
+- [ ] Use synthetic large documents.
+- [ ] Use deeply nested expressions.
+- [ ] Use pathological input for stress testing.
+- [ ] Add fresh-parsing latency measurement.
+- [ ] Add incremental-parsing latency measurement.
+- [ ] Add memory-consumption measurement.
+- [ ] Record P50, P95, and P99 separately for fresh and incremental parsing.
+- [ ] Record benchmark hardware and software environment.
+- [ ] Store baseline results in the repository.
+- [ ] Investigate regressions rather than ignoring them.
+- [ ] Establish performance budgets only after realistic baselines exist.
+- [ ] Distinguish correctness failures from performance warnings.
+
+### CI validation
+
+- [ ] Run grammar generation in CI.
+- [ ] Check generated-file consistency in CI.
+- [ ] Run corpus tests in CI.
+- [ ] Run query tests in CI.
+- [ ] Run Node.js binding tests in CI.
+- [ ] Run incremental parsing tests in CI.
+- [ ] Run formatting and static checks in CI.
+- [ ] Run compatibility checks in CI.
+- [ ] Run performance checks with hardware-variance-aware reporting.
+
+### Phase 6 acceptance criteria
+
+- [ ] Test layers and commands are documented.
+- [ ] All required test layers run automatically.
+- [ ] Baselines are reproducible and committed.
+- [ ] Performance budgets, if any, are based on measured baselines.
+- [ ] No known correctness regression remains untracked.
+
+---
+
+## Phase 7 — Packaging and compatibility
+
+**Deliverable:** an independently distributable grammar package.
+
+### Node.js and bindings
+
+- [ ] Verify the Node.js binding build from a clean environment.
+- [ ] Run Node.js binding tests.
+- [ ] Verify generated parser files are usable without regeneration.
+- [ ] Audit the C binding.
+- [ ] Audit the Go binding.
+- [ ] Audit the Python binding.
+- [ ] Audit the Rust binding.
+- [ ] Audit the Swift binding.
+- [ ] Decide which non-Node bindings are retained or deprecated, with rationale.
+- [ ] Do not remove an existing integration without evaluating consequences.
+
+### Compatibility policy
+
+- [ ] Pin development tooling for reproducible builds.
+- [ ] Document the supported Tree-sitter CLI version.
+- [ ] Document the minimum supported runtime version.
+- [ ] Test generated parser compatibility with supported runtimes.
+- [ ] Document package compatibility expectations.
+- [ ] Define the syntax-coverage compatibility policy.
+- [ ] Define the breaking-change policy for node names, field names, and queries.
+
+### Package integrity
+
+- [ ] Verify `package.json` files include grammar, generated sources, bindings, queries, and metadata.
+- [ ] Verify `tree-sitter.json` metadata matches package metadata.
+- [ ] Verify version numbers are aligned.
+- [ ] Verify the package can be installed from a tarball.
+- [ ] Verify the installed package can parse a representative composition.
+- [ ] Verify published contents with `npm pack --dry-run`.
+- [ ] Verify no build artifacts are accidentally required or omitted.
+
+### Phase 7 acceptance criteria
+
+- [ ] A clean consumer can install and use the package without regenerating the parser.
+- [ ] Supported tooling and runtime versions are documented and tested.
+- [ ] Package contents are validated.
+- [ ] Binding decisions are documented.
+- [ ] Breaking-change policy is published.
+
+---
+
+## Phase 8 — Documentation and release readiness
+
+**Deliverable:** independently maintainable and releasable grammar.
+
+### Documentation
+
+- [ ] Expand `README.md` with purpose, scope, installation, usage, supported syntax, and limitations.
+- [ ] Add grammar architecture documentation.
+- [ ] Document important node types.
+- [ ] Document public fields.
+- [ ] Document precedence and intentional conflicts.
+- [ ] Document error recovery considerations.
+- [ ] Add query documentation with capture names and conventions.
+- [ ] Add development environment documentation.
+- [ ] Document build and generation procedures.
+- [ ] Document testing procedures.
+- [ ] Document benchmarking procedures.
+- [ ] Document contribution workflow.
+- [ ] Add compatibility documentation.
+- [ ] Verify all documentation matches implemented behavior.
+
+### CI/CD and release
+
+- [ ] Ensure all pull-request and push validation checks from `AGENTS.md` run in CI.
+- [ ] Ensure generated files are checked before release.
+- [ ] Validate package contents before publishing.
+- [ ] Maintain release notes and a changelog.
+- [ ] Use versioned releases.
+- [ ] Keep publishing controlled by explicit release authorization.
+- [ ] Verify that ordinary commits cannot publish packages.
+- [ ] Perform a release-readiness review.
+
+### Final validation
+
+- [ ] Regenerate parser artifacts.
+- [ ] Run corpus tests.
+- [ ] Run query tests.
+- [ ] Run Node.js binding tests.
+- [ ] Run incremental parsing tests.
+- [ ] Run compatibility checks.
+- [ ] Run benchmarks and compare against baseline.
+- [ ] Review licensing and attribution.
+- [ ] Review package contents.
+- [ ] Review documentation consistency.
+- [ ] Record any unresolved limitations.
+
+### Phase 8 acceptance criteria
+
+- [ ] Documentation covers consumers, contributors, and maintainers.
+- [ ] CI validates generation, correctness, queries, bindings, compatibility, and performance as specified.
+- [ ] Release process is versioned, controlled, and documented.
+- [ ] Final validation has no unresolved correctness failures.
+- [ ] Known limitations are documented honestly.
+
+---
+
+## Deferred work
+
+Use this section for worthwhile improvements that are intentionally postponed.
+
+For each deferred item, record:
+
+- [ ] Opportunity and expected benefit.
+- [ ] Reason for deferral.
+- [ ] Suggested phase or trigger for revisiting.
+- [ ] Link to any related issue or discussion.
+
+No deferred items are currently recorded here.
+
+## Verification log
+
+For checked items, add a short entry using this format:
+
+```markdown
+- Phase 1 — item name: verified with `<command>` on YYYY-MM-DD; evidence: <link or commit>.
+```
+
+Leave this section empty until items are actually completed.
