@@ -113,6 +113,8 @@ Official queries live in `queries/`:
 - `highlights.scm` — syntax highlighting
 - `locals.scm` — scopes, definitions, and references
 
+See [query documentation](docs/queries.md) for the official inventory, capture conventions, registration, usage, and stability policy. There is no `injections.scm`: no current construct justifies reparsing part of a Strudel source file with another language. See the [injection evaluation](docs/injections-evaluation.md) for the evidence and decision.
+
 ## Documentation
 
 - [Repository assessment](docs/repository-assessment.md)
@@ -121,6 +123,11 @@ Official queries live in `queries/`:
 - [Syntax coverage matrix](docs/syntax-coverage-matrix.md)
 - [Compatibility](docs/compatibility.md)
 - [CI](docs/ci.md)
+- [Queries](docs/queries.md)
+- [Highlight captures](docs/highlight-captures.md)
+- [Locals captures](docs/locals-captures.md)
+- [Locals audit](docs/locals-audit.md)
+- [Injection evaluation](docs/injections-evaluation.md)
 - [Development roadmap](docs/roadmap.md)
 - [Documentation index](docs/README.md)
 

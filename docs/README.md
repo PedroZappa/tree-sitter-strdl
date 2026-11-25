@@ -13,6 +13,12 @@ This folder contains project-level planning and developer documentation for `tre
 - [CI](ci.md) — GitHub Actions triggers, validation commands, pinned tooling, local reproduction, and deferred checks.
 - [Incremental editing sequences](incremental-editing-sequences.md) — fixtures, edit format, and recorded editing sequences for incremental-parsing equivalence tests.
 - [Incremental equivalence test procedure](incremental-equivalence-procedure.md) — how the harness replays edits, compares trees, handles malformed steps, and reports results.
+- [Queries](queries.md) — official query inventory, capture conventions, registration, execution, and stability policy.
+- [Query audit](query-audit.md) — Phase 5 structural audit of `highlights.scm` against the current node and field API, with fixture evidence, follow-up findings, and registration evidence.
+- [Highlight captures](highlight-captures.md) — authoritative reference for every `highlights.scm` capture name, its syntactic meaning, and query API stability notes.
+- [Locals captures](locals-captures.md) — authoritative reference for every `locals.scm` capture name, scope and definition behavior, and known limitations.
+- [Locals audit](locals-audit.md) — Phase 5 audit of `locals.scm` scopes, definitions, references, and semantic gaps.
+- [Injection evaluation](injections-evaluation.md) — Phase 5 decision on whether `injections.scm` is justified by actual syntax requirements.
 
 ## Sources of truth
 

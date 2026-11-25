@@ -1,0 +1,33 @@
+import { name as alias } from "module";
+
+const source = 1;
+let other = 2;
+const [first, second] = values;
+
+function make(value = source) {
+  return value;
+}
+
+const arrow = value => value.a?.b[source];
+const chained = make(source).add(1).mul(2);
+const computed = object[key];
+const literals = {
+  key: source,
+  "text": 1,
+  2: "two",
+  [source]: value
+};
+const template = `value ${source} ${source + 1} ${"fixed"} ${make(source)}`;
+const tagged = note`bd sd`;
+const created = new Class(source);
+const spread = { source: source, ...values };
+const conditional = source ? first : second;
+const awaited = await make(source);
+
+try {
+  make(source);
+} catch (error) {
+  source = error;
+}
+
+export default source;

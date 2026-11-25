@@ -38,8 +38,5 @@
 (try_statement
   parameter: (identifier) @local.definition.parameter)
 
-(pair
-  key: (identifier) @local.definition.property)
-
 ; References
 (identifier) @local.reference

@@ -38,7 +38,7 @@ These observations are inputs to Phase 1, not proof that any phase is complete.
 
 ## Immediate next work
 
-Phase 2 is complete and tagged `v1.3.0`. Phase 3 evidence collection, the sourced coverage matrix, and the evidence-driven structured refactor are complete. Phase 4 is complete and tagged `v1.4.0`; the next work is Phase 5 queries.
+Phase 2 is complete and tagged `v1.3.0`. Phase 3 evidence collection, the sourced coverage matrix, and the evidence-driven structured refactor are complete. Phase 4 is complete and tagged `v1.4.0`. Phase 5 is complete and tagged `v1.5.0`; the next work is Phase 6 testing and performance.
 
 - [x] Capture the current functional baseline: grammar generation, corpus tests, Node.js binding tests, and query compilation.
 - [x] Verify whether regenerated files under `src/` match the committed artifacts.
@@ -242,29 +242,29 @@ Phase 2 is complete and tagged `v1.3.0`. Phase 3 evidence collection, the source
 
 **Deliverable:** complete official query infrastructure.
 
-- [ ] Audit `highlights.scm` against the current public syntax tree.
-- [ ] Verify that highlight patterns are specific and deterministic.
-- [ ] Document every highlight capture name and intended meaning.
-- [ ] Decide whether API-name-specific highlights are compatible with project scope.
-- [ ] Remove or relocate semantic analysis that does not belong in syntax queries.
-- [ ] Audit `locals.scm` scopes, definitions, and references.
-- [ ] Verify that function call identifiers are not incorrectly treated as definitions.
-- [ ] Verify that object keys are not incorrectly treated as variable definitions.
-- [ ] Evaluate whether `injections.scm` is justified by actual requirements.
-- [ ] Add only justified injections; do not create an empty or speculative query file.
-- [ ] Add query compilation tests.
-- [ ] Add query execution tests against representative compositions.
-- [ ] Keep capture names stable and document breaking changes.
-- [ ] Register official queries in `tree-sitter.json`, `package.json`, and packaging rules.
-- [ ] Add query documentation under `docs/`.
+- [x] Audit `highlights.scm` against the current public syntax tree.
+- [x] Verify that highlight patterns are specific and deterministic.
+- [x] Document every highlight capture name and intended meaning.
+- [x] Decide whether API-name-specific highlights are compatible with project scope.
+- [x] Remove or relocate semantic analysis that does not belong in syntax queries.
+- [x] Audit `locals.scm` scopes, definitions, and references.
+- [x] Verify that function call identifiers are not incorrectly treated as definitions.
+- [x] Verify that object keys are not incorrectly treated as variable definitions.
+- [x] Evaluate whether `injections.scm` is justified by actual requirements.
+- [x] Add only justified injections; do not create an empty or speculative query file.
+- [x] Add query compilation tests.
+- [x] Add query execution tests against representative compositions.
+- [x] Keep capture names stable and document breaking changes.
+- [x] Register official queries in `tree-sitter.json`, `package.json`, and packaging rules.
+- [x] Add query documentation under `docs/`.
 
 ### Phase 5 acceptance criteria
 
-- [ ] Every official query compiles and executes against representative fixtures.
-- [ ] Capture names and meanings are documented.
-- [ ] Query behavior matches the public syntax-tree API.
-- [ ] Queries avoid editor-specific assumptions and semantic-analysis responsibilities.
-- [ ] Packaged queries are present in published package contents.
+- [x] Every official query compiles and executes against representative fixtures.
+- [x] Capture names and meanings are documented.
+- [x] Query behavior matches the public syntax-tree API.
+- [x] Queries avoid editor-specific assumptions and semantic-analysis responsibilities.
+- [x] Packaged queries are present in published package contents.
 
 ---
 
@@ -386,7 +386,7 @@ See [CI](ci.md) for the workflow, commands, and remaining gaps.
 - [ ] Document public fields.
 - [ ] Document precedence and intentional conflicts.
 - [ ] Document error recovery considerations.
-- [ ] Add query documentation with capture names and conventions.
+- [x] Add query documentation with capture names and conventions.
 - [ ] Add development environment documentation.
 - [ ] Document build and generation procedures.
 - [ ] Document testing procedures.
@@ -458,6 +458,12 @@ For each deferred item, record:
   - Reason for deferral: outside the completed compatibility-upgrade scope.
   - Suggested phase or trigger: Phases 4 and 5.
 
+- **Remaining `locals.scm` semantic follow-ups**
+  - Opportunity and expected benefit: capture import aliases, nested array-pattern bindings, and catch/function scopes correctly, and narrow the blanket reference rule so references represent actual identifier reads.
+  - Reason for deferral: the current audit item is diagnostic; the immediately following roadmap items cover call identifiers and object keys first.
+  - Suggested phase or trigger: later Phase 5 locals work, after the call-identifier and object-key decisions.
+  - Related evidence: [locals audit](locals-audit.md).
+
 ## Verification log
 
 For checked items, add a short entry using this format:
@@ -526,3 +532,15 @@ For checked items, add a short entry using this format:
 - Phase 4 — Incremental parsing: added `docs/incremental-equivalence-procedure.md`, documenting the guarantee under test, authoritative inputs, edit model, step-by-step comparison procedure, CLI parse-error handling, pass/fail rules, output format, current coverage, how to add sequences, and scope limitations. Linked it from the docs index, the sequence catalog, grammar architecture, and CI notes. The incremental-parsing checklist is now complete; no grammar change was required.
 - Phase 4 — Closeout: checked all four acceptance criteria after verifying 70 recovery corpus cases across eleven files, 112/112 total corpus cases, `make verify` success with synchronized generated artifacts, no `grammar.js` change during the phase, and incremental/fresh equivalence across 20 sequences, 27 steps, and 20/20 final-source comparisons. Bumped tracked version metadata from 1.3.0 to 1.4.0 and regenerated `src/parser.c` so its embedded language minor version matches. Created local annotated tag `v1.4.0`; the tag was not pushed. Phase 5 work starts from this tag.
 - Phase 6 — CI validation: added `.github/workflows/ci.yml` for pull requests and pushes to `main`, with SHA-pinned checkout/setup-node actions and a Node.js 22/24 matrix. Added `make ci`, `docs/ci.md`, the CI badge, and documentation links. `make ci` was run locally and passed generated-artifact, corpus, query, Node binding, and C build checks. Incremental, benchmark, formatting/static, and non-Node binding checks remain deferred.
+- Phase 5 — Query audit: audited all 40 `highlights.scm` patterns against `src/node-types.json` and `grammar.js`. All referenced named nodes, fields, and tokens exist; `tree-sitter query` and `make test-query` compiled and executed successfully, while negative controls confirmed compilation rejects invalid node and field names. Recorded fixture capture counts and follow-up findings in `docs/query-audit.md`: overlapping generic captures, broad parameter-container captures, hardcoded Strudel API-name groups, missing `?.` and template-delimiter punctuation coverage, and uneven fixture coverage. No grammar or query change was required for this audit item.
+- Phase 5 — Query specificity: removed the generic identifier fallback, all hardcoded Strudel API-name groups, and broad parameter/container captures. `highlights.scm` now uses contextual identifier patterns and direct constructor captures. Added `scripts/check_query_determinism.py` to `make test-query`; it failed a duplicate-capture negative control and passed the committed query with 901 captures across 901 ranges and no duplicate ranges. Updated `docs/query-audit.md` with the scope decision, before/after evidence, and limitations. Remaining work includes capture documentation and fixtures that exercise `?.` and `${`.
+- Phase 5 — Capture documentation: added `docs/highlight-captures.md` documenting all 16 current highlight captures, their exact syntactic contexts, determinism rules, scope boundaries, and removed capture names as breaking changes. Linked it from `README.md` and `docs/README.md`, and updated `docs/ci.md`. A targeted probe exposed a latent `${identifier}` overlap between `@variable` and `@expression`; replaced the wildcard template expression pattern with an explicit non-overlapping type list and added `test/query/determinism.strdl` to the determinism check. `tree-sitter parse` reports no errors, and `make test-query` reports 1,096 captures across 1,096 ranges with zero duplicates.
+- Phase 5 — Locals audit: audited all 12 `locals.scm` patterns against `src/node-types.json` and executed the query against `test.strdl`, `test-local.strdl`, and `test/query/determinism.strdl`. Confirmed that all referenced node types and fields are valid, call identifiers are reference-only, and object keys are emitted as `@local.definition.property` plus `@local.reference`. Recorded import-alias, nested array-pattern, catch-scope, function-name-scope, and blanket-reference findings in `docs/locals-audit.md` and deferred the non-immediate follow-ups. No query change was made for the audit item.
+- Phase 5 — Call identifier definitions: added `test/query/call_identifiers.scm` and `scripts/check_locals_definitions_absent.py` to `make test-query`. The grammar-derived check verified 30 call identifier ranges with no `local.definition.*` captures; a negative control adding a call definition pattern failed with `exit=1`. Updated `docs/locals-audit.md` and `docs/ci.md`. No `locals.scm` change was required because the current query already treats call identifiers as references only.
+- Phase 5 — Object key definitions: removed `(pair key: (identifier) @local.definition.property)` from `locals.scm` because object property names do not introduce lexical local bindings. Added `test/query/object_keys.scm` covering identifier, string, number, and computed keys, and wired the generic absence checker into `make test-query`. Verified 23 object key ranges with zero definition captures; restoring the removed pattern in a negative control failed with `exit=1`. Updated `docs/locals-audit.md` and `docs/ci.md` and recorded `@local.definition.property` as a breaking locals query API change.
+- Phase 5 — Injection evaluation: reviewed Tree-sitter injection semantics, `tree-sitter.json`, the two-query inventory, and evidence D05, D09, D20, D33, S07, S11, S12, S15, S16, S17, E10, C01, and C02. Concluded that no current construct justifies reparsing Strudel source content with another language and that `injection-regex: "^strudel$"` is a host-side declaration rather than a local query requirement. Recorded the evidence, candidate matrix, and revisit conditions in `docs/injections-evaluation.md`; no speculative query file was created.
+- Phase 5 — Query compilation tests: added `scripts/check_query_compilation.py` and the `make test-query-compile` target. The checker compiles every official query without source paths and requires negative controls with an invalid node type and invalid field name to fail for the expected reasons. Both official queries compiled; both negative controls were rejected. A temporary invalid query made the checker fail with `exit=1`. `make test-query` now runs the compilation target before execution and semantic checks.
+- Phase 5 — Query execution tests: added `scripts/check_query_captures.py`, the `make test-query-execution` target, and grammar-derived probe queries under `test/query/`. The check asserts that every probe-selected range in `test.strdl`, `test-local.strdl`, and `test/query/determinism.strdl` receives the expected capture. Verified nine highlight roles and three locals roles; an incorrect expected capture on call identifiers failed with `exit=1`. `make test-query` now runs compilation, execution assertions, and the existing semantic checks.
+- Phase 5 — Query registration: registered `locals.scm` in `tree-sitter.json` and the legacy `package.json` metadata alongside `highlights.scm`; no injection or tag query was registered. Exposed `HIGHLIGHTS_QUERY` and `LOCALS_QUERY` from the Python and Rust bindings. Added `scripts/check_query_registration.py` and `make test-query-registration` to verify registration, query-carrying packaging rules, and binding exports. Removing the `locals` registration in a negative control failed with `exit=1`; `npm pack --dry-run --json` listed both query files. `cargo fmt --check` passed, while `cargo check --offline` could not resolve `tree-sitter-language` from the local crate cache.
+- Phase 5 — Query documentation: added `docs/queries.md` as the official query-surface entry point and `docs/locals-captures.md` as the authoritative locals capture API reference. Linked both from `README.md` and `docs/README.md`, and cross-linked the existing highlight, locals, query audit, and injection documents. Local Markdown links resolve, `make docs` lists the new documents, and all Phase 5 acceptance criteria are now evidenced.
+- Phase 5 — Closeout: checked all five acceptance criteria. `make verify-all` passed generated-artifact sync, 112/112 corpus cases, query compilation, execution assertions, registration checks, determinism checks, and the Node.js binding test before version metadata changed. After the closeout bump, regeneration was stable and `make test`, `make test-query`, and `make test-node` passed; query checks reported 1,096 captures across 1,096 ranges, 30 call identifier ranges, and 23 object key ranges with zero definition-capture failures. Phase 5 made no `grammar.js` or parser-source changes; only version metadata was regenerated at closeout. Bumped tracked version metadata from 1.4.0 to 1.5.0 and created local annotated tag `v1.5.0`; the tag was not pushed. Phase 6 work starts from this tag.

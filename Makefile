@@ -48,6 +48,8 @@ EXTRAS := $(filter-out $(PARSER),$(wildcard $(SRC_DIR)/*.c))
 OBJS := $(patsubst %.c,%.o,$(PARSER) $(EXTRAS))
 QUERIES := $(wildcard $(QUERY_DIR)/*.scm)
 FIXTURES := test.strdl test-local.strdl
+QUERY_DETERMINISM_FIXTURES := test/query/determinism.strdl
+QUERY_EXECUTION_FIXTURES := $(FIXTURES) $(QUERY_DETERMINISM_FIXTURES)
 RECOVERY_FILES := $(wildcard $(TEST_DIR)/incomplete_*.txt $(TEST_DIR)/malformed_*.txt $(TEST_DIR)/missing_*.txt $(TEST_DIR)/noncascading_*.txt $(TEST_DIR)/recovery_*.txt $(TEST_DIR)/unfinished_*.txt $(TEST_DIR)/valid_*.txt)
 
 # Test inputs (override on the command line)
@@ -95,7 +97,7 @@ D = $(shell tput sgr0 2>/dev/null)
 _SUCCESS = [$(GRN)SUCCESS$(D)]
 _INFO    = [$(BLU)INFO$(D)]
 
-.PHONY: all build generate test test-recovery test-incremental test-query test-node parse playground wasm \
+.PHONY: all build generate test test-recovery test-incremental test-query-compile test-query-execution test-query-registration test-query test-node parse playground wasm \
 	local-install install uninstall clean check-generated verify verify-all ci \
 	docs docs-open help
 
@@ -153,12 +155,41 @@ test-incremental:	## Compare incremental and fresh parses (INCREMENTAL_FILTER=id
 	@python3 scripts/test_incremental.py $(INCREMENTAL_FILTER)
 	@echo "$(YEL)* $(_SUCCESS) Incremental equivalence tests completed$(D)"
 
-test-query:	## Compile and run official queries against the fixtures
+test-query-compile:	## Compile official queries and verify invalid queries are rejected
+	@echo "$(YEL)Running query compilation checks...$(D)"
+	@python3 scripts/check_query_compilation.py $(TS) $(QUERIES)
+	@echo "$(YEL)* $(_SUCCESS) Query compilation checks completed$(D)"
+
+test-query-execution:	## Assert query captures on representative compositions
+	@echo "$(YEL)Running query execution tests...$(D)"
+	@python3 scripts/check_query_captures.py $(TS) $(QUERY_DIR)/highlights.scm test/query/call_identifiers.scm function.call "call identifiers" $(QUERY_EXECUTION_FIXTURES)
+	@python3 scripts/check_query_captures.py $(TS) $(QUERY_DIR)/highlights.scm test/query/call_methods.scm function.method "method callees" $(QUERY_EXECUTION_FIXTURES)
+	@python3 scripts/check_query_captures.py $(TS) $(QUERY_DIR)/highlights.scm test/query/declaration_names.scm variable "declaration names" $(QUERY_EXECUTION_FIXTURES)
+	@python3 scripts/check_query_captures.py $(TS) $(QUERY_DIR)/highlights.scm test/query/arrow_parameters.scm variable.parameter "arrow parameters" $(QUERY_EXECUTION_FIXTURES)
+	@python3 scripts/check_query_captures.py $(TS) $(QUERY_DIR)/highlights.scm test/query/identifier_pair_keys.scm property "identifier object keys" $(QUERY_EXECUTION_FIXTURES)
+	@python3 scripts/check_query_captures.py $(TS) $(QUERY_DIR)/highlights.scm test/query/label_names.scm label "labels" $(QUERY_EXECUTION_FIXTURES)
+	@python3 scripts/check_query_captures.py $(TS) $(QUERY_DIR)/highlights.scm test/query/template_substitution_identifiers.scm variable "substitution identifiers" $(QUERY_EXECUTION_FIXTURES)
+	@python3 scripts/check_query_captures.py $(TS) $(QUERY_DIR)/highlights.scm test/query/string_literals.scm string "strings" $(QUERY_EXECUTION_FIXTURES)
+	@python3 scripts/check_query_captures.py $(TS) $(QUERY_DIR)/highlights.scm test/query/number_literals.scm number "numbers" $(QUERY_EXECUTION_FIXTURES)
+	@python3 scripts/check_query_captures.py $(TS) $(QUERY_DIR)/locals.scm test/query/declaration_names.scm local.definition.var "variable declarations" $(QUERY_EXECUTION_FIXTURES)
+	@python3 scripts/check_query_captures.py $(TS) $(QUERY_DIR)/locals.scm test/query/arrow_parameters.scm local.definition.parameter "arrow parameters" $(QUERY_EXECUTION_FIXTURES)
+	@python3 scripts/check_query_captures.py $(TS) $(QUERY_DIR)/locals.scm test/query/call_identifiers.scm local.reference "call identifiers" $(QUERY_EXECUTION_FIXTURES)
+	@echo "$(YEL)* $(_SUCCESS) Query execution tests completed$(D)"
+
+test-query-registration:	## Verify official queries are registered, packaged, and exported
+	@echo "$(YEL)Running query registration checks...$(D)"
+	@python3 scripts/check_query_registration.py
+	@echo "$(YEL)* $(_SUCCESS) Query registration checks completed$(D)"
+
+test-query: test-query-compile test-query-execution test-query-registration	## Compile, run, and check official queries against the fixtures
 	@echo "$(YEL)Running query checks...$(D)"
 	@for query in $(QUERIES); do \
 		$(TS) query --quiet --grammar-path . "$$query" $(FIXTURES) || exit 1; \
 	done
-	@echo "$(YEL)* $(_SUCCESS) Queries compiled and executed$(D)"
+	@python3 scripts/check_query_determinism.py $(TS) $(QUERY_DIR)/highlights.scm $(FIXTURES) $(QUERY_DETERMINISM_FIXTURES)
+	@python3 scripts/check_locals_definitions_absent.py $(TS) $(QUERY_DIR)/locals.scm test/query/call_identifiers.scm "call identifier" $(FIXTURES) $(QUERY_DETERMINISM_FIXTURES)
+	@python3 scripts/check_locals_definitions_absent.py $(TS) $(QUERY_DIR)/locals.scm test/query/object_keys.scm "object key" $(FIXTURES) $(QUERY_DETERMINISM_FIXTURES)
+	@echo "$(YEL)* $(_SUCCESS) Queries compiled, executed, and deterministic$(D)"
 
 test-node:	## Run Node.js binding tests (requires a matching native ABI)
 	@echo "$(YEL)Running Node.js binding tests...$(D)"
