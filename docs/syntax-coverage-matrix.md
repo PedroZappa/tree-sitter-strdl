@@ -1,69 +1,73 @@
 # Phase 3 syntax coverage matrix
 
-This matrix compares the current grammar with the significant syntax requirements established by [syntax-evidence.md](syntax-evidence.md). Evidence IDs (`D`, `S`, `E`, and `C`) resolve to exact snippets and source URLs in that document. The audit reflects [`grammar.js`](../grammar.js), [`src/node-types.json`](../src/node-types.json), committed corpus tests, and temporary parse probes at commit `2d9b706`.
+This matrix compares the grammar with the significant syntax requirements established by [syntax-evidence.md](syntax-evidence.md). Evidence IDs (`D`, `S`, `E`, and `C`) resolve to exact snippets and source URLs in that document. Statuses reflect the Phase 3 structured refactor in [`grammar.js`](../grammar.js), regenerated artifacts in `src/`, and 45 corpus cases in [`test/corpus/`](../test/corpus/).
 
 Statuses:
 
 - **Implemented**: the grammar rule produces the expected structure.
-- **Missing**: there is no dedicated grammar support; probes failed or produced unrelated nodes.
+- **Partial**: some evidenced forms parse, but at least one required form does not.
+- **Missing**: there is no dedicated grammar support.
 - **Intentionally opaque/excluded**: the syntax is accepted only as literal content, or its meaning is deliberately outside this grammar.
 
 | ID | Requirement | Evidence | Status | Grammar and corpus audit | Next action |
 | --- | --- | --- | --- | --- | --- |
-| M01 | `var`, `let`, and `const` declarations | D03, D24, D32, C02, C04 | Implemented | `variable_declaration` and `lexical_declaration`; corpus: `variable_var.txt`, `declarations.txt`, `arrow_funcs.txt` | No grammar change. |
-| M02 | Labeled pattern assignments (`$:`, `_$:`, custom labels, `S$:`) | D07, D12, D18, D25, S02, S13, S14 | Implemented | `assignment`; corpus: `array_literal.txt`, `objects_args.txt` | No grammar change. |
-| M03 | JavaScript assignment statements (`bpm=60`) | C03 | Missing | Probe errors; `=` is only accepted in `variable_declarator` initializers. | Add assignment expression statements. |
-| M04 | Semicolon-terminated expression statements | D07, D24, D25, E04, E09, S08 | Missing | Probe `s("bd");` errors. Declaration statements allow an optional `;`, but expressions do not. | Allow optional semicolons after expression statements. |
-| M05 | Direct calls, nested calls, and argument lists | D01, D06, E17, S10 | Implemented | `function_call` and `commaSepTrailing`; corpus: `function_call.txt`, `number_args.txt`, `array_literal.txt` | No grammar change. |
-| M06 | Method-call chains | D01, D04, D16, S10 | Implemented | `chained_method` and `method_call`; corpus: `function_call_chained.txt`, `objects_args.txt`, `arrow_funcs.txt` | No grammar change. |
-| M07 | Plain member expressions (`mouse.x`) | C03, E17 | Missing | Probe errors. `.name(...)` is supported as `method_call`, but property access without a call is not. | Add member expressions separately from method calls. |
-| M08 | Computed member access (`a.fft[0]`) | D21 | Missing | Probe errors; tokens are parsed as unrelated sibling expressions. | Add computed member expressions. |
-| M09 | Single-parameter expression-bodied arrows | D03, D13, D14, D15, S13 | Implemented | `arrow_function`; corpus: `arrow_funcs.txt` | No grammar change. |
-| M10 | Zero-parameter arrows | C03, D21, S09 | Missing | Probe `() => 1` errors. | Extend arrow parameters. |
-| M11 | Multiple-parameter arrows | D17, E03, E07, E08 | Missing | Probe `(x,i) => ...` errors. | Extend arrow parameters. |
-| M12 | Block-bodied arrows with `return` | S09 | Missing | Probe `() => { return 1 }` errors. | Add block bodies and return statements. |
-| M13 | Destructured arrow parameters | C07 | Missing | Probe `([n, f]) => ...` errors. | Add destructuring patterns to arrow parameters. |
-| M14 | Named `function` declarations with default parameters | C06 | Missing | Probe `function f(a=1) { ... }` errors. | Add function declarations, formal parameters, and block statements. |
-| M15 | Arrays and nested arrays | D18, D19, E06 | Implemented | `array`; corpus: `array_literal.txt`, `base_expressions.txt` | No grammar change. |
-| M16 | Object literals with key/value properties | D22, D23, D26, D29, D30, E02, E11 | Implemented | `object` and `pair`; corpus: `objects_args.txt`, `base_expressions.txt`. Quoted keys are probe-confirmed but have no dedicated corpus case. | Add a quoted-key corpus case. |
-| M17 | Object shorthand properties | AGENTS.md requirement; no active evidence | Missing | Probe `{a}` errors. | Leave missing until active evidence is recorded. |
-| M18 | Destructuring declarations | S18 is commented out; C07 actively uses an array destructuring pattern | Missing | Probes for `const {a} = b`, `const [a] = b`, and destructured arrows error. | Add patterns only for the evidenced arrow-parameter form first. |
-| M19 | Object spread | C07; E18 is inactive | Missing | Probe `({...doh})` errors. | Add object spread and a dedicated corpus case. |
-| M20 | Rest parameters and spread arguments | No active evidence | Missing | Probe `s(...xs)` errors. | Leave missing until active evidence is recorded. |
-| M21 | Arithmetic `+`, `-`, `*`, `/` with precedence | D08, D13, E03, E07, C04, S11 | Implemented | `additive_expression` and `multiplicative_expression`; corpus: `number_args.txt`, `precedence.txt` | No grammar change. |
-| M22 | Comparison expressions (`>`) | S11 | Missing | Probe `a > b` errors. | Add comparison operators. |
-| M23 | Logical expressions (`&&`, `||`) | E18 is inactive; no active evidence | Missing | Probe `a && b` errors. | Leave missing until active evidence is recorded. |
-| M24 | Unary expressions (`-`, `!`) | E15 | Missing | Probe `-a` errors. Binary `-` is implemented, but unary minus is not. | Add unary expressions. |
-| M25 | Conditional/ternary expressions | S11 | Missing | Probe `a ? b : c` errors. | Add ternary expressions. |
-| M26 | Optional chaining | S17 | Missing | Probe `a?.b` errors. The runtime unwraps `ChainExpression`, but the grammar has no member-expression base for it. | Add optional chaining with member expressions. |
-| M27 | Nullish coalescing | No active evidence | Missing | Probe `a ?? b` errors. | Leave missing until active evidence is recorded. |
-| M28 | Template literals as opaque strings | D09, D32, S07 | Implemented | Backtick branch of `string`; corpus: `base_expressions.txt` | No grammar change. |
-| M29 | Template interpolation (`${...}`) | S11 | Missing | Probe <code>x${y}</code> in a backtick string is error-free but the whole text is one opaque `string`; no expression child is exposed. | Parse interpolation expressions while keeping literal content opaque. |
-| M30 | Single-quoted and double-quoted strings | D01, D05, D23 | Implemented | `string`; corpus: `base_expressions.txt`, `function_call_chained.txt` | No grammar change. |
-| M31 | Line comments | D02, D20, E12, S12 | Implemented | `comment` is an `extra`; no dedicated corpus case. | Add a dedicated line-comment corpus case. |
-| M32 | Block comments | D20, S12 | Missing | Probe `/* block */` errors. | Add block comments. |
-| M33 | Parenthesized expressions | D06, D21 | Implemented | Anonymous `seq('(', $.expression, ')')`; probe-confirmed, no dedicated corpus case and no dedicated node. | Add a dedicated corpus case. |
-| M34 | Named imports | D31 | Missing | Probe `import { x } from 'y'` errors; no import node exists. | Add relevant import declarations. |
-| M35 | `export const` declarations | D32 | Missing | Probe is error-free only because `export` is parsed as an `identifier`; no export node exists. | Add relevant export declarations. |
-| M36 | `export default` declarations | C01 | Missing | Probe is error-free only because `export` and `default` are separate identifiers; no export node exists. | Add `export default`. |
-| M37 | Default imports | No active evidence | Missing | No active evidence and no import grammar. | Leave missing until active evidence is recorded. |
-| M38 | Top-level `await` | D21, E10, S01, S08 | Missing | Probe is error-free only because `await` is an `identifier`; no `await` expression exists. | Add `await` expressions. |
-| M39 | `new` expressions | E05 | Missing | `new Foo()` is error-free only as two sibling expressions; `new` has no dedicated node. A longer real-world chain probe errors. | Add `new` expressions. |
-| M40 | Tagged template literals | D33, E10, S07, S15, S16 | Missing | Probe parses `loadCsound` and the template as separate expressions; no tagged-template relationship exists. | Add tagged templates with opaque bodies. |
-| M41 | Hexadecimal number literals | D27 | Missing | Probe `0x43` errors. | Extend the number token. |
-| M42 | `try` / `catch` statements | C05 | Missing | Probe errors. | Add try/catch statements if they remain relevant to user-authored compositions. |
-| M43 | Mini-notation string content | D05, D09, S12 | Intentionally opaque/excluded | Ordinary `string` nodes expose no mini-notation structure. | Preserve opacity; add no mini-notation grammar rules. |
-| M44 | Strudel API names and runtime conventions | S04, S05, S17 | Intentionally excluded | The grammar contains no Strudel API function names and assigns no runtime meaning to labels or calls. | Preserve separation; keep semantic handling downstream. |
-| M45 | Kabelsalat, registered-language, and tagged-DSL bodies | S16, D33, E10 | Intentionally opaque/excluded | Bodies stay inside string/template content; only the surrounding JavaScript shape is in scope. | Keep bodies opaque while adding the surrounding JavaScript forms where evidenced. |
+| M01 | `var`, `let`, and `const` declarations | D03, D24, D32, C02, C04 | Implemented | `variable_declaration` with `kind`; corpus: `declarations.txt`, `variable_var.txt`, `statements.txt` | No further action. |
+| M02 | Labeled pattern assignments (`$:`, `_$:`, custom labels, `S$:`) | D07, D12, D18, D25, S02, S13, S14 | Implemented | `labeled_statement` with `label` and `body`; corpus: `array_literal.txt`, `objects_args.txt`, `test-local.strdl` | No further action. |
+| M03 | JavaScript assignment statements (`bpm=60`) | C03 | Implemented | `assignment_expression` with `left` and `right`; corpus: `assignments.txt` | No further action. |
+| M04 | Semicolon-terminated expression statements | D07, D24, D25, E04, E09, S08 | Implemented | Optional `;` on `expression_statement`; corpus: `assignments.txt`, `declarations.txt` | No further action. |
+| M05 | Direct calls, nested calls, and argument lists | D01, D06, E17, S10 | Implemented | `call_expression` and `arguments`; corpus: `function_call.txt`, `number_args.txt`, `base_expressions.txt` | No further action. |
+| M06 | Method-call chains | D01, D04, D16, S10 | Implemented | Left-nested `call_expression` over `member_expression`; corpus: `function_call_chained.txt`, `objects_args.txt`, `objects.txt` | No further action. |
+| M07 | Plain member expressions (`mouse.x`) | C03, E17 | Implemented | `member_expression` with `object` and `property`; corpus: `assignments.txt` | No further action. |
+| M08 | Computed member access (`a.fft[0]`) | D21 | Implemented | `subscript_expression` with `object` and `index`; corpus: `assignments.txt` | No further action. |
+| M09 | Single-parameter expression-bodied arrows | D03, D13, D14, D15, S13 | Implemented | `arrow_function` with `parameters`; corpus: `arrow_funcs.txt`, `precedence.txt` | No further action. |
+| M10 | Zero-parameter arrows | C03, D21, S09 | Implemented | `formal_parameters` with no `parameter`; corpus: `functions.txt` | No further action. |
+| M11 | Multiple-parameter arrows | D17, E03, E07, E08 | Implemented | `formal_parameters` with repeated `parameter`; corpus: `functions.txt` | No further action. |
+| M12 | Block-bodied arrows with `return` | S09 | Implemented | `block` and `return_statement`; corpus: `functions.txt` | No further action. |
+| M13 | Destructured arrow parameters | C07 | Implemented | `array_pattern` in `formal_parameters`; corpus: `functions.txt` | No further action. |
+| M14 | Named `function` declarations with default parameters | C06 | Implemented | `function_declaration`, `formal_parameters`, `assignment_pattern`, `block`; corpus: `functions.txt` | No further action. |
+| M15 | Arrays and nested arrays | D18, D19, E06 | Implemented | `array` with `element`; corpus: `array_literal.txt`, `base_expressions.txt` | No further action. |
+| M16 | Object literals with key/value properties | D22, D23, D26, D29, D30, E02, E11 | Implemented | `object`, `pair`, `_property_name`; quoted and computed keys parse; corpus: `objects_args.txt`, `base_expressions.txt` | No further action. |
+| M17 | Object shorthand properties | AGENTS.md requirement; no active evidence | Missing | Probe `{a}` errors; object members require `pair` or `spread_element`. | Leave missing until active evidence is recorded. |
+| M18 | Destructuring declarations | S18 is commented out; C07 actively uses an array destructuring pattern | Partial | Array patterns parse in declarations and arrow parameters (`array_destructure`, `destructured_arrow`); object destructuring probe errors. | Add object patterns only if active evidence is established. |
+| M19 | Object spread | C07; E18 is inactive | Implemented | `spread_element` with `value`; corpus: `objects.txt` | No further action. |
+| M20 | Rest parameters and spread arguments | No active evidence | Missing | Probe `s(...xs)` errors; `...` is only accepted inside `object`. | Leave missing until active evidence is recorded. |
+| M21 | Arithmetic `+`, `-`, `*`, `/` with precedence | D08, D13, E03, E07, C04, S11 | Implemented | `binary_expression` with named `additive` and `multiplicative` levels; corpus: `number_args.txt`, `precedence.txt` | No further action. |
+| M22 | Comparison expressions (`>`) | S11 | Implemented | `binary_expression` with comparison operators and `comparison` precedence; corpus: `operators.txt` | No further action. |
+| M23 | Logical expressions (`&&`, `||`) | E18 is inactive; no active evidence | Missing | Probes for `a && b` and `a || b` error after the evidence-driven refactor. | Leave missing until active evidence is recorded. |
+| M24 | Unary expressions (`-`, `!`) | E15 | Implemented | `unary_expression` with `operator` and `argument`; corpus: `operators.txt` | No further action. |
+| M25 | Conditional/ternary expressions | S11 | Implemented | `conditional_expression` with right associativity; corpus: `operators.txt` | No further action. |
+| M26 | Optional chaining | S17 | Implemented | `member_expression` and `subscript_expression` accept `?.`; the `?.` token is anonymous; corpus: `assignments.txt` | No further action. |
+| M27 | Nullish coalescing | No active evidence | Missing | Probe `a ?? b` errors after the evidence-driven refactor. | Leave missing until active evidence is recorded. |
+| M28 | Template literals as opaque strings | D09, D32, S07 | Implemented | `template_string`; literal text is opaque; corpus: `base_expressions.txt`, `templates.txt` | No further action. |
+| M29 | Template interpolation (`${...}`) | S11 | Implemented | `template_substitution` exposes the interpolation expression; corpus: `templates.txt` | No further action. |
+| M30 | Single-quoted and double-quoted strings | D01, D05, D23 | Implemented | `string`; corpus: `base_expressions.txt`, `function_call_chained.txt` | No further action. |
+| M31 | Line comments | D02, D20, E12, S12 | Implemented | `comment` is an `extra`; corpus: `statements.txt` | No further action. |
+| M32 | Block comments | D20, S12 | Implemented | `comment` token covers `/* ... */`; corpus: `statements.txt` | No further action. |
+| M33 | Parenthesized expressions | D06, D21 | Implemented | `parenthesized_expression` with `expression`; corpus: `precedence.txt` | No further action. |
+| M34 | Named imports | D31 | Implemented | `import_declaration`, `named_imports`, `import_specifier`; corpus: `modules.txt` | No further action. |
+| M35 | `export const` declarations | D32 | Implemented | `export_declaration` with `declaration`; corpus: `modules.txt` | No further action. |
+| M36 | `export default` declarations | C01 | Implemented | `export_declaration` with `value`; corpus: `modules.txt` | No further action. |
+| M37 | Default imports | No active evidence | Missing | `import_declaration` only supports named specifiers. | Leave missing until active evidence is recorded. |
+| M38 | Top-level `await` | D21, E10, S01, S08 | Implemented | `await_expression` with `argument`; corpus: `modules.txt`, `templates.txt` | No further action. |
+| M39 | `new` expressions | E05 | Implemented | `new_expression` with `constructor` and optional `arguments`; corpus: `modules.txt`, `objects.txt` | No further action. |
+| M40 | Tagged template literals | D33, E10, S07, S15, S16 | Implemented | `tagged_template_expression` with `tag` and opaque `template`; corpus: `templates.txt` | No further action. |
+| M41 | Hexadecimal number literals | D27 | Implemented | `number` token accepts `0x`/`0X`; corpus: `statements.txt` | No further action. |
+| M42 | `try` / `catch` statements | C05 | Implemented | `try_statement` with `body`, optional `parameter`, and `handler`; corpus: `statements.txt` | No further action. |
+| M43 | Mini-notation string content | D05, D09, S12 | Intentionally opaque/excluded | Mini-notation stays inside ordinary `string` nodes; no pattern grammar was added. | Preserve opacity. |
+| M44 | Strudel API names and runtime conventions | S04, S05, S17 | Intentionally excluded | `grammar.js` contains no Strudel API names. Query files contain editor-only naming aliases; no runtime meaning is assigned. | Preserve separation. |
+| M45 | Kabelsalat, registered-language, and tagged-DSL bodies | S16, D33, E10 | Intentionally opaque/excluded | Bodies stay inside `string` or `template_string` content; outer JavaScript forms are parsed. | Keep bodies opaque. |
 
 ## Audit notes
 
-- The audit used `node_modules/.bin/tree-sitter parse` with CLI `0.27.2` against 43 temporary probes under `/tmp/opencode/coverage-probes`. No probe was added to the repository and no grammar file was changed.
-- Error-free probes were checked with `--cst` before classification. `await`, `new`, `export const`, `export default`, and tagged templates are error-free but structurally wrong, so they are **Missing**, not **Implemented**.
-- `src/node-types.json` still reports 20 named nodes and 7 fields; this matrix introduces no public CST change.
-- Rows marked **Partial** in the Phase 1 inventory have been split into the specific evidenced forms above so implementation decisions can be made per construct.
+- The initial audit used `node_modules/.bin/tree-sitter parse` with CLI `0.27.2` against 43 temporary probes under `/tmp/opencode/coverage-probes` at commit `2d9b706`. Error-free but structurally wrong cases were reviewed with `--cst`.
+- The structured refactor was then regenerated and validated against all 43 probes. Named imports were corrected to consume the `from` token. The remaining expected probe failures are object destructuring, spread arguments, shorthand properties, logical operators, and nullish coalescing.
+- Corpus coverage grew from 17 to 42 cases. All 42 pass with CLI `0.27.2`.
+- `src/node-types.json` now reports 40 named nodes and 31 fields. This is a deliberate breaking CST API change documented in [grammar-architecture.md](grammar-architecture.md).
+- Official query files were rewritten for the new node and field names. `tree-sitter test` compiles both query files successfully.
+- No Strudel-specific semantic rules were introduced. Mini-notation, DSL bodies, and runtime conventions remain outside the grammar.
 
 ## Intentionally deferred
 
-- `%`, `**`, bitwise operators, loops, classes, and broader ECMAScript syntax are not in the current evidence set and are not proposed for this phase.
-- Default imports, default exports of ordinary values, rest parameters, nullish coalescing, shorthand properties, and active logical expressions have no active evidence. They remain missing until a source establishes them.
+- Object shorthand properties, object destructuring declarations, rest parameters, spread arguments, default imports, and any active logical/nullish evidence require new source material before further grammar work.
+- `%`, `**`, bitwise operators, loops, classes, and broader ECMAScript syntax are outside the current evidence set.
+- Dedicated malformed-input and incremental-parsing regression tests belong to Phase 4.

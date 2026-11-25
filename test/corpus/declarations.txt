@@ -8,11 +8,10 @@ var a = 1, b;
 
 (source_file
   (variable_declaration
-    (variable_declarator
+    declarator: (variable_declarator
       name: (identifier)
-      value: (expression
-        (number)))
-    (variable_declarator
+      value: (number))
+    declarator: (variable_declarator
       name: (identifier))))
 
 ==================
@@ -24,11 +23,10 @@ let c = 2;
 ---
 
 (source_file
-  (lexical_declaration
-    (variable_declarator
+  (variable_declaration
+    declarator: (variable_declarator
       name: (identifier)
-      value: (expression
-        (number)))))
+      value: (number))))
 
 ==================
 const declaration with multiple declarators
@@ -39,12 +37,10 @@ const d = 3, e = 4;
 ---
 
 (source_file
-  (lexical_declaration
-    (variable_declarator
+  (variable_declaration
+    declarator: (variable_declarator
       name: (identifier)
-      value: (expression
-        (number)))
-    (variable_declarator
+      value: (number))
+    declarator: (variable_declarator
       name: (identifier)
-      value: (expression
-        (number)))))
+      value: (number))))

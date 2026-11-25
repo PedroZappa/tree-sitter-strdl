@@ -10,30 +10,15 @@ setCps(100/60)
 ---
 
 (source_file
-	(expression
-		(function_call
-			(identifier)
-			(expression
-				(number)
-			)
-		)
-	)
-	(expression
-		(function_call
-			(identifier)
-			(expression
-				(binary_expression
-					(multiplicative_expression
-						(binary_expression
-							(number)
-						)
-						(binary_expression
-							(number)
-						)
-					)
-				)
-			)
-		)
-	)
-)
-
+  (expression_statement
+    (call_expression
+      (identifier)
+      (arguments
+        (number))))
+  (expression_statement
+    (call_expression
+      (identifier)
+      (arguments
+        (binary_expression
+          (number)
+          (number))))))

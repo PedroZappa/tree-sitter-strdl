@@ -1,51 +1,45 @@
 ; ---------------------------------------------------------------------------
-;  Strudel locals.scm - Scope resolution for semantic highlighting
-; ---------------------------------------------------------------------------
-;  Used by tree-sitter for:
-;  1. Distinguishing variable definitions from references
-;  2. Proper scoping for semantic analysis
-;  3. Enhanced syntax highlighting based on context
+;  Strudel locals.scm — lexical scopes, definitions, and references
 ; ---------------------------------------------------------------------------
 
-; ──────────────────────────────────────────────────────────────────────────
-; Scopes - Define lexical scoping boundaries
-; ──────────────────────────────────────────────────────────────────────────
-
+; Scopes
 [
   (source_file)
+  (block)
   (arrow_function)
-  (object)
-  (array)
+  (function_declaration)
 ] @local.scope
 
-; ──────────────────────────────────────────────────────────────────────────
-; Definitions - Where variables/functions are declared
-; ──────────────────────────────────────────────────────────────────────────
-
-; Variable declarations with var/let/const
+; Definitions
 (variable_declarator
   name: (identifier) @local.definition.var)
 
-; Assignment expressions (including $: patterns)
-(assignment
-  (identifier) @local.definition.var)
+(assignment_expression
+  left: (identifier) @local.definition.var)
 
-; Arrow function parameters
-(arrow_function
+(function_declaration
+  name: (identifier) @local.definition.function)
+
+(formal_parameters
   parameter: (identifier) @local.definition.parameter)
 
-; Object property definitions
+(array_pattern
+  element: (identifier) @local.definition.parameter)
+
+(assignment_pattern
+  left: (identifier) @local.definition.parameter)
+
+(arrow_function
+  parameters: (identifier) @local.definition.parameter)
+
+(import_specifier
+  name: (identifier) @local.definition.var)
+
+(try_statement
+  parameter: (identifier) @local.definition.parameter)
+
 (pair
   key: (identifier) @local.definition.property)
 
-; Function call identifiers (when they define something in context)
-(function_call
-  (identifier) @local.definition.function)
-
-; ──────────────────────────────────────────────────────────────────────────
-; References - Where variables/functions are used
-; ──────────────────────────────────────────────────────────────────────────
-
-; All identifiers are potential references
+; References
 (identifier) @local.reference
-

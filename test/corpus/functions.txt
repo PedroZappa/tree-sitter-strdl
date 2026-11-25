@@ -1,0 +1,80 @@
+==================
+zero-parameter arrow
+==================
+() => 1
+---
+
+(source_file
+  (expression_statement
+    (arrow_function
+      (formal_parameters)
+      (number))))
+
+==================
+multiple-parameter arrow
+==================
+(x,i) => x.add(i)
+---
+
+(source_file
+  (expression_statement
+    (arrow_function
+      (formal_parameters
+        (identifier)
+        (identifier))
+      (call_expression
+        (member_expression
+          (identifier)
+          (identifier))
+        (arguments
+          (identifier))))))
+
+==================
+destructured arrow parameter
+==================
+([n, f]) => register(n, f)
+---
+
+(source_file
+  (expression_statement
+    (arrow_function
+      (formal_parameters
+        (array_pattern
+          (identifier)
+          (identifier)))
+      (call_expression
+        (identifier)
+        (arguments
+          (identifier)
+          (identifier))))))
+
+==================
+block-bodied arrow
+==================
+() => { return 1 }
+---
+
+(source_file
+  (expression_statement
+    (arrow_function
+      (formal_parameters)
+      (block
+        (return_statement
+          (number))))))
+
+==================
+function declaration with default parameter
+==================
+function f(a=1) { return a }
+---
+
+(source_file
+  (function_declaration
+    (identifier)
+    (formal_parameters
+      (assignment_pattern
+        (identifier)
+        (number)))
+    (block
+      (return_statement
+        (identifier)))))

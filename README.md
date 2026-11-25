@@ -2,13 +2,33 @@
 
 Tree-sitter parser for Strudel, a Tidal Cycles based live coding tool.
 
-___
+The grammar targets the JavaScript subset used in Strudel compositions. It is independent of Strudel runtime evaluation and does not parse mini-notation: `s("bd sd")` is a function call with one opaque string argument.
+
+## Installation
+
+The parser is distributed as a conventional Tree-sitter grammar package with committed generated artifacts in `src/`. Consumers do not need to run the generator.
+
+Requirements:
+
+- Tree-sitter runtime 0.25 or newer (ABI 15 parser)
+- Tree-sitter CLI 0.27.2 when regenerating artifacts
 
 ## Usage
 
-To install the parser in Neovim:
+```js
+const Parser = require("tree-sitter");
+const Strudel = require("tree-sitter-strdl");
 
-- Create a file `strudel-integration.lua` in your `~/.config/nvim/lua/` directory:
+const parser = new Parser();
+parser.setLanguage(Strudel);
+
+const tree = parser.parse('$: s("bd sd").gain(0.8)');
+console.log(tree.rootNode.toString());
+```
+
+### Neovim
+
+Create `~/.config/nvim/lua/strudel-integration.lua`:
 
 ```lua
 ---@class ParserConfig
@@ -34,27 +54,67 @@ vim.api.nvim_create_autocmd("BufRead", {
 })
 ```
 
-- On your `~/.config/nvim/init.lua`:
+Then add this to `~/.config/nvim/init.lua`:
 
 ```lua
 require("strudel-integration")
 ```
 
-Run the following to install the parsers schemas:
+Run the following to install the parser schemas:
 
 ```bash
 npm run local_install
 ```
 
+## Supported syntax
 
+Current coverage includes:
 
-## Docs
+- `var`, `let`, and `const` declarations
+- labeled Strudel assignments such as `$:` and assignment expressions
+- direct calls, nested calls, method chains, plain and computed member access
+- arrow functions with zero, one, multiple, destructured, and block-bodied forms
+- named functions with default parameters
+- arrays, objects, object spread, and hexadecimal numbers
+- arithmetic, comparison, unary, and conditional expressions
+- template literals with interpolation, tagged templates, and `await`
+- named imports, `export const`, and `export default`
+- `try`/`catch`, blocks, `return`, and line/block comments
+
+Not supported: mini-notation semantics, object shorthand, object destructuring declarations, spread arguments, default imports, logical operators, nullish coalescing, and general ECMAScript syntax. See the [coverage matrix](docs/syntax-coverage-matrix.md) for the exact status and evidence for each construct.
+
+## Syntax tree
+
+The public CST API is documented in [grammar architecture](docs/grammar-architecture.md). The Phase 3 structured refactor changed node and field names; consumers upgrading from the Phase 2 baseline must update their queries and tree-walking code.
+
+Generated parser artifacts and `src/node-types.json` are committed. Do not hand-edit generated files.
+
+## Development
+
+```bash
+npm install
+node_modules/.bin/tree-sitter generate
+node_modules/.bin/tree-sitter test
+```
+
+Official queries live in `queries/`:
+
+- `highlights.scm` — syntax highlighting
+- `locals.scm` — scopes, definitions, and references
+
+## Documentation
+
+- [Repository assessment](docs/repository-assessment.md)
+- [Grammar architecture](docs/grammar-architecture.md)
+- [Syntax evidence](docs/syntax-evidence.md)
+- [Syntax coverage matrix](docs/syntax-coverage-matrix.md)
+- [Compatibility](docs/compatibility.md)
+- [Development roadmap](docs/roadmap.md)
+- [Documentation index](docs/README.md)
+
+## External resources
 
 - [Tree-sitter](https://tree-sitter.github.io/tree-sitter/)
-- [Strudel.cc](https://strudel.cc/)
-- [Tidal Cycles ](https://tidalcycles.org/)
-
-## Learning Resources
-
-- [Crafting Interpreters by Robert Nystrom](https://www.craftinginterpreters.com/)
-
+- [Strudel](https://strudel.cc/)
+- [Tidal Cycles](https://tidalcycles.org/)
+- [Crafting Interpreters](https://www.craftinginterpreters.com/)

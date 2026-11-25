@@ -1,125 +1,156 @@
 # Grammar architecture
 
-This document records the grammar foundation established in Phase 2. [grammar.js](../grammar.js) remains the authoritative grammar definition; generated files under `src/` are build artifacts. The node and field names described here are the public syntax-tree API baseline as of version `1.3.0`.
+This document records the Phase 3 structured grammar refactor. [grammar.js](../grammar.js) remains the authoritative grammar definition; generated files under `src/` are build artifacts. The node and field names described here are the public syntax-tree API as of the Phase 3 refactor on branch `phase/3-language-coverage`.
 
 ## Scope
 
-The grammar parses a JavaScript subset used by Strudel compositions. It deliberately does not parse mini-notation: `s("bd sd")` is a function call with one opaque `string` argument. Runtime evaluation, symbol resolution, and Strudel-specific interpretation belong downstream.
+The grammar parses the JavaScript subset used by Strudel compositions. It deliberately does not parse mini-notation: `s("bd sd")` is a `call_expression` with one opaque `string` argument. Runtime evaluation, symbol resolution, and Strudel-specific interpretation belong downstream.
+
+The refactor replaces the Phase 2 wrapper-heavy hierarchy with composable, JavaScript-like expression and statement rules. This is a deliberate public CST API change.
 
 ## Naming conventions
 
-- Named nodes use `snake_case` and describe structural syntax: `function_call`, `variable_declarator`, `binary_expression`.
-- Hidden grammar rules begin with `_`. They organize the grammar but do not produce nodes: `_statement`, `_initializer`, `_base_expression`.
-- Anonymous tokens are literal grammar text such as `var`, `let`, `=>`, and punctuation. They are part of the concrete tree but receive no project-specific node name.
+- Named nodes use `snake_case` and describe structural syntax: `call_expression`, `member_expression`, `variable_declarator`, `binary_expression`.
+- Hidden grammar rules begin with `_`. They organize the grammar but do not produce nodes: `_statement`, `_expression`, `_primary_expression`.
+- Anonymous tokens are literal grammar text such as `var`, `=>`, `?.`, and punctuation. They are part of the concrete tree but have no project-specific node name.
+- Fields describe structural relationships: `function`, `arguments`, `object`, `property`, `left`, `right`, `body`, and similar.
 - List helpers are local JavaScript functions, not grammar rules: `commaSep`, `commaSep1`, and `commaSepTrailing`.
-- Names that correspond to established JavaScript grammar concepts follow those conventions where they are useful to consumers. The rule bodies remain Strudel-oriented and are not a full ECMAScript grammar.
+- Names follow established JavaScript grammar conventions where they improve downstream compatibility. The rule bodies remain Strudel-oriented and are not a full ECMAScript grammar.
 - Renaming a named node, field, or changing whether a rule is hidden is a public syntax-tree API change and requires a deliberate versioned decision.
 
 ## Public syntax-tree API
 
-The stable baseline is the set of named node types and fields in [node-types.json](../src/node-types.json). There are 20 named node types and 7 field names. All fields are single-valued; only `variable_declarator.value` is optional.
+[src/node-types.json](../src/node-types.json) contains 40 named node types and 31 field names. Fields are recorded on the node types below; `?` marks an optional field.
 
-| Area | Named nodes | Notes |
-| --- | --- | --- |
-| Root and statements | `source_file`, `assignment`, `variable_declaration`, `lexical_declaration`, `variable_declarator`, `comment` | `source_file` is the root. `comment` is an `extra` and may also appear as a statement. |
-| Expressions | `expression`, `binary_expression`, `additive_expression`, `multiplicative_expression`, `chained_method`, `method_call`, `function_call`, `arrow_function` | Wrapper nodes are part of the current API. Parenthesized expressions have no dedicated node. |
-| Values and containers | `object`, `pair`, `array`, `string`, `number`, `identifier` | Strings are opaque; mini-notation content is not interpreted. |
+| Area | Named nodes |
+| --- | --- |
+| Root and statements | `source_file`, `block`, `expression_statement`, `labeled_statement`, `return_statement`, `try_statement`, `comment` |
+| Declarations and parameters | `variable_declaration`, `variable_declarator`, `function_declaration`, `formal_parameters`, `import_declaration`, `named_imports`, `import_specifier`, `export_declaration`, `array_pattern`, `assignment_pattern` |
+| Calls and access | `call_expression`, `arguments`, `member_expression`, `subscript_expression`, `new_expression`, `tagged_template_expression` |
+| Operators and control flow | `assignment_expression`, `binary_expression`, `unary_expression`, `await_expression`, `conditional_expression`, `arrow_function` |
+| Values and containers | `object`, `pair`, `computed_property_name`, `spread_element`, `array`, `string`, `template_string`, `template_substitution`, `number`, `identifier`, `parenthesized_expression` |
 
 ### Fields
 
-| Node | Field | Required | Meaning |
-| --- | --- | --- | --- |
-| `additive_expression` | `operator` | yes | `+` or `-`. |
-| `multiplicative_expression` | `operator` | yes | `*` or `/`. |
-| `arrow_function` | `parameter` | yes | The single identifier parameter. |
-| `arrow_function` | `body` | yes | The expression body. |
-| `lexical_declaration` | `kind` | yes | The anonymous `let` or `const` token. |
-| `pair` | `key` | yes | An `identifier`, `string`, or `number` property key. |
-| `pair` | `value` | yes | The property value expression. |
-| `variable_declarator` | `name` | yes | The declared identifier. |
-| `variable_declarator` | `value` | no | The initializer expression. |
+| Node | Fields |
+| --- | --- |
+| `arguments` | `argument?` |
+| `array` | `element?` |
+| `array_pattern` | `element?` |
+| `arrow_function` | `parameters`, `body` |
+| `assignment_expression` | `left`, `right` |
+| `assignment_pattern` | `left`, `right` |
+| `await_expression` | `argument` |
+| `binary_expression` | `left`, `operator`, `right` |
+| `call_expression` | `function`, `arguments` |
+| `computed_property_name` | `expression` |
+| `conditional_expression` | `condition`, `consequence`, `alternative` |
+| `export_declaration` | `declaration?`, `value?` |
+| `formal_parameters` | `parameter?` |
+| `function_declaration` | `name`, `parameters`, `body` |
+| `import_declaration` | `specifiers`, `source` |
+| `import_specifier` | `name`, `alias?` |
+| `labeled_statement` | `label`, `body` |
+| `member_expression` | `object`, `property` |
+| `new_expression` | `constructor`, `arguments?` |
+| `pair` | `key`, `value` |
+| `parenthesized_expression` | `expression` |
+| `return_statement` | `value?` |
+| `spread_element` | `value` |
+| `subscript_expression` | `object`, `index` |
+| `tagged_template_expression` | `tag`, `template` |
+| `template_substitution` | `expression` |
+| `try_statement` | `body`, `parameter?`, `handler` |
+| `unary_expression` | `operator`, `argument` |
+| `variable_declaration` | `kind`, `declarator` |
+| `variable_declarator` | `name`, `value?` |
 
-Calls, chains, assignments, and arithmetic operands intentionally have no `callee`, `argument`, `receiver`, `left`, or `right` fields in this baseline. Consumers distinguish those children by node type and position. Adding such fields later would be a public API change. `variable_declaration` has no `kind` field, while `lexical_declaration` does; this asymmetry is part of the current baseline.
+### API changes from the Phase 2 baseline
+
+| Phase 2 | Phase 3 | Reason |
+| --- | --- | --- |
+| `expression` wrapper | Removed; expression nodes are direct children | The wrapper obscured call, member, and operator structure. |
+| `assignment` | `labeled_statement` for `label:`; `assignment_expression` for `x = y` | The two forms have different syntax and behavior. |
+| `lexical_declaration` | Folded into `variable_declaration` with a `kind` field | `var`, `let`, and `const` share one declaration structure. |
+| `additive_expression`, `multiplicative_expression` | `binary_expression` with an `operator` field | one node type supports all binary operators and precedence levels. |
+| `function_call` | `call_expression` with `function` and `arguments` fields | Aligns with standard JavaScript grammar conventions. |
+| `chained_method`, `method_call` | Nested `call_expression` and `member_expression` | Chains now expose receiver and callee relationships explicitly. |
+| `arrow_function.parameter` | `arrow_function.parameters` | Supports zero, one, multiple, and destructured parameters. |
+| No parenthesized node | `parenthesized_expression` | Preserves grouping explicitly. |
+| Opaque backtick strings | `template_string` with `template_substitution` | Exposes interpolation expressions while leaving literal text opaque. |
+
+Consumers should treat this as a breaking CST API change and update queries or normalization logic accordingly.
 
 ## Statement and expression hierarchy
 
 `source_file` contains zero or more statements. The hidden `_statement` rule is the union of:
 
-- `assignment` (`$:` or a labeled `identifier :` form);
-- `variable_declaration` (`var`);
-- `lexical_declaration` (`let` or `const`);
-- `expression`;
-- `comment`.
+- declarations (`variable_declaration`, `function_declaration`, `import_declaration`, `export_declaration`);
+- `labeled_statement`;
+- `return_statement`;
+- `try_statement`;
+- `expression_statement`;
+- `block`.
 
-The hidden `_initializer` rule supplies the optional `= expression` portion of a `variable_declarator`. It is flattened into the `value` field.
+The hidden `_expression` rule is the union of assignment, conditional, binary, unary, `await`, `new`, arrow, tagged template, call, member, subscript, and primary expressions. Left-recursive call/member/tagged-template forms are resolved by named precedence levels.
 
-The public `expression` node is the top-level expression wrapper. It is a choice over `chained_method`, `binary_expression`, `arrow_function`, and the hidden `_base_expression`. `_base_expression` is the composable primary-expression category:
+Primary expressions are `identifier`, `string`, `number`, `template_string`, `object`, `array`, and `parenthesized_expression`. Mini-notation remains ordinary `string` content; template and tagged-template bodies remain opaque except for `${...}` interpolation expressions.
 
-- `function_call`;
-- `identifier`;
-- `string`;
-- `number`;
-- `object`;
-- `array`;
-- parenthesized `expression`.
-
-A `chained_method` is a `_base_expression` followed by one or more `method_call` nodes. Method calls are stored as a flat list, not as a left-nested tree.
-
-`binary_expression` wraps `additive_expression`, `multiplicative_expression`, or a `_base_expression`. Each additive or multiplicative rule contains two `binary_expression` operands. This produces a wrapper-heavy but uniform tree: for example, even a numeric operand appears under `expression → binary_expression → number`.
-
-The wrapper hierarchy is deliberate as the current API baseline, but it is not intended to encode Strudel semantics. Consumers that need a semantic AST should normalize these wrappers downstream.
+Binding patterns are `identifier` and `array_pattern`. Formal parameters additionally accept `assignment_pattern` for defaults. Object destructuring is not yet implemented.
 
 ## Precedence and associativity
 
-Tree-sitter numeric `prec` values and named precedence levels are separate mechanisms. Numeric values are compared with other numeric values; named levels are declared in the `precedences` table.
+Named precedence levels are declared from lowest to highest:
+
+```text
+assignment < ternary < comparison < additive < multiplicative
+           < unary < new < call < member
+```
 
 | Rule | Declaration | Effect |
 | --- | --- | --- |
-| `arrow_function` | `prec('arrow_function', ...)` | Uses the named `arrow_function` precedence level. This is the only named level retained. |
-| `assignment` | `prec(2, ...)` | Numeric precedence 2. |
-| `expression` | `prec(2, ...)` | Numeric precedence 2. |
-| `function_call` | `prec(1, ...)` | Numeric precedence 1. |
-| `binary_expression` | `prec(1, ...)` | Numeric precedence 1. |
-| `additive_expression` | `prec.left(1, ...)` | Left-associative at numeric precedence 1; covers `+` and `-`. |
-| `multiplicative_expression` | `prec.left(2, ...)` | Left-associative at numeric precedence 2; covers `*` and `/` and binds tighter than additive operations. |
-| `chained_method` | `prec.left(...)` | Left-associative marker at default numeric precedence. The implementation is a flat `repeat1($.method_call)`, so this marker is retained as existing behavior rather than relied on for nesting. |
+| `assignment_expression` | `prec.right("assignment", ...)` | Right-associative assignment at the lowest named level. |
+| `conditional_expression` | `prec.right("ternary", ...)` | Right-associative ternary. |
+| `binary_expression` alternatives | `prec.left(level, ...)` | Left-associative operators at their named levels. |
+| `unary_expression`, `await_expression` | `prec("unary", ...)` | Bind tighter than binary operators. |
+| `new_expression` | `prec.right("new", ...)` | Supports `new new Foo()` and argument-list continuation. |
+| `call_expression`, `tagged_template_expression` | `prec("call", ...)` | Bind tighter than `new` and unary forms. |
+| `member_expression`, `subscript_expression` | `prec("member", ...)` | Bind tightest, including optional chaining. |
+| `expression_statement`, `return_statement`, `variable_declarator`, `export default`, `_arrow_body` | `prec.right(-1, ...)` | Prefer postfix continuation (calls and members) over reducing a surrounding statement or body. |
+| `block` | `prec(1, ...)` | Prefers block interpretation over empty object literal in statement position. |
 
-The previously declared named levels `member`, `call`, `binary_times`, and `binary_plus` were unreferenced and have been removed. No rule uses `prec.right`.
-
-Phase 2 verification confirms:
-
-- `1 + 2 * 3` groups multiplication inside addition.
-- `1 + 2 + 3` and `1 - 2 - 3` group left-to-right.
-- `1 * 2 / 3` groups left-to-right.
-- `x.foo() + 1` requires parentheses around the chain. `binary_expression` does not directly accept `chained_method` or `arrow_function`; the parenthesized form parses. This is a documented current boundary, not a conflict.
+Verified precedence behavior is covered in [test/corpus/precedence.txt](../test/corpus/precedence.txt) and new operator tests in [test/corpus/operators.txt](../test/corpus/operators.txt).
 
 ## Conflict policy
 
-There are no active conflicts. The commented-out `conflicts` entry was dead metadata and has been removed. `src/grammar.json` records `conflicts: []`.
+Seven GLR conflicts are declared in `grammar.js`:
 
-A future conflict declaration must include:
+- `labeled_statement` / `_property_name`: `identifier :` inside braces can be a label or an object pair key.
+- `_binding_pattern` / `_primary_expression`: identifiers and arrays in parameter positions.
+- `_binding_pattern` / `_assignment_target`: defaults can be binding patterns or assignment targets.
+- `_expression` / `_unary_expression`: unary operands may continue as calls and members.
+- `_new_constructor` / `_primary_expression`, `_expression` / `_new_constructor`: constructor position overlaps expression position.
+- `array_pattern` / `array`: bracketed identifiers may be patterns or array literals.
 
-1. the exact ambiguous construct;
-2. parse evidence that a deterministic rule cannot represent it;
-3. the intended tree for each competing interpretation;
-4. corpus regression tests for both interpretations.
-
-No GLR conflict resolution is currently justified.
+These conflicts are deliberate. They preserve a composable grammar without duplicating rules for each context. Each conflict was introduced only after Tree-sitter reported an unresolved reduce/shift ambiguity that precedence alone could not resolve. Any future conflict must include parse evidence, the intended tree for each interpretation, and corpus regression tests.
 
 ## Error recovery and stability
 
-The grammar favors preserving valid syntax around malformed regions over producing a smaller tree. The `expression` and `binary_expression` wrappers can survive incomplete operands, and method chains remain visible as flat `method_call` children. Comments are extras, so they may be skipped between tokens while still appearing as named top-level nodes.
+Tree-sitter's standard error recovery applies; no custom scanner is used. The grammar favors preserving valid syntax around malformed regions. `arguments`, `call_expression`, `member_expression`, and container nodes remain visible even when a child is missing. Comments are extras, so they may appear between any tokens and are also exposed as named nodes.
 
-Parenthesized expressions produce no node of their own; their structure is represented only by the nested `expression`. On malformed input, consumers should not assume that every wrapper has a complete child set.
+Template literals expose only `${...}` substitutions as expression children. All other backtick content is opaque literal text. Tagged templates expose a `tag` expression and an opaque `template_string`.
 
-Phase 2 intentionally makes no changes to named nodes, fields, or tree shape. Regenerated artifacts are reviewed as an API event even when `node-types.json` is unchanged. Any later wrapper removal, field addition, node rename, or associativity change must be documented here and recorded in the roadmap as a syntax-tree API change.
+Phase 4 will add dedicated incomplete-syntax and incremental-parsing regression tests. Until then, the current corpus covers complete syntax forms only.
 
 ## Verification
 
-Foundational rules and precedence decisions are covered by corpus tests in [test/corpus](../test/corpus). After every grammar change:
+After every grammar change:
 
-1. regenerate with the pinned Tree-sitter CLI;
+1. regenerate with the pinned Tree-sitter CLI (`0.27.2`);
 2. review the `src/node-types.json` diff;
 3. run corpus tests;
 4. compile and execute both official queries;
-5. update this document when public tree behavior changes.
+5. parse representative fixture files;
+6. update this document when public tree behavior changes.
+
+Phase 3 verification results are recorded in [roadmap.md](roadmap.md).

@@ -38,7 +38,7 @@ These observations are inputs to Phase 1, not proof that any phase is complete.
 
 ## Immediate next work
 
-Phase 2 is complete and tagged `v1.3.0`. Phase 3 evidence collection and the sourced coverage matrix are complete in `docs/syntax-evidence.md` and `docs/syntax-coverage-matrix.md`; the next work is implementing verified gaps.
+Phase 2 is complete and tagged `v1.3.0`. Phase 3 evidence collection, the sourced coverage matrix, and the evidence-driven structured refactor are complete; the next work is Phase 4 error recovery and incremental parsing.
 
 - [x] Capture the current functional baseline: grammar generation, corpus tests, Node.js binding tests, and query compilation.
 - [x] Verify whether regenerated files under `src/` match the committed artifacts.
@@ -180,22 +180,22 @@ Phase 2 is complete and tagged `v1.3.0`. Phase 3 evidence collection and the sou
 
 ### Implement verified gaps
 
-- [ ] Implement only constructs supported by collected evidence.
-- [ ] Keep Strudel API function names out of grammar rules.
-- [ ] Preserve composable JavaScript-like expression rules.
-- [ ] Add corpus tests for every newly supported construct.
-- [ ] Add representative real-world Strudel fixtures.
-- [ ] Add regression tests for bugs discovered during implementation.
-- [ ] Regenerate and review generated artifacts.
-- [ ] Update the supported-syntax documentation.
+- [x] Implement only constructs supported by collected evidence.
+- [x] Keep Strudel API function names out of grammar rules.
+- [x] Preserve composable JavaScript-like expression rules.
+- [x] Add corpus tests for every newly supported construct.
+- [x] Add representative real-world Strudel fixtures.
+- [x] Add regression tests for bugs discovered during implementation.
+- [x] Regenerate and review generated artifacts.
+- [x] Update the supported-syntax documentation.
 
 ### Phase 3 acceptance criteria
 
-- [ ] The coverage matrix records implemented, missing, and intentionally excluded constructs.
-- [ ] Every implemented gap has an evidence source and corpus coverage.
-- [ ] Real-world fixtures parse without unexpected errors.
-- [ ] Mini-notation has no grammar-specific nodes or semantics.
-- [ ] Generated artifacts remain synchronized.
+- [x] The coverage matrix records implemented, missing, and intentionally excluded constructs.
+- [x] Every implemented gap has an evidence source and corpus coverage.
+- [x] Real-world fixtures parse without unexpected errors.
+- [x] Mini-notation has no grammar-specific nodes or semantics.
+- [x] Generated artifacts remain synchronized.
 
 ---
 
@@ -503,3 +503,8 @@ For checked items, add a short entry using this format:
 - Phase 3 — Community evidence: checked repository activity via the GitHub API and inspected user-facing pattern/helper code from `Coriou/strasbeat`, `edcrub/edcrub.github.io`, and `calvinw/strudel-llm-docs`, plus the dated GoSuraj GSB post, on 2026-11-25; recorded seven C-IDs in [syntax-evidence.md](syntax-evidence.md). Adds active evidence for `var`, assignment statements, `export default`, named `function` declarations with default parameters, array destructuring in arrow parameters, object spread, and `try`/`catch`.
 - Phase 3 — Coverage matrix: recorded M01–M45 with evidence IDs, current status, grammar/corpus audit, next action, intentional exclusions, and deferred constructs in [syntax-coverage-matrix.md](syntax-coverage-matrix.md) on 2026-11-25.
 - Phase 3 — Audit current coverage: inspected `grammar.js`, `src/node-types.json`, and committed corpus tests at `2d9b706`, then parsed 43 temporary probes under `/tmp/opencode/coverage-probes` with `node_modules/.bin/tree-sitter parse` using CLI 0.27.2 on 2026-11-25. Error-free `await`, `new`, `export const`, `export default`, and tagged-template probes were reviewed with `--cst` and classified as structurally missing. No grammar or generated files changed.
+- Phase 3 — Structured grammar refactor: replaced wrapper-heavy expression/statement rules with composable JavaScript-like rules, added named fields, explicit parenthesized/interpolation nodes, and seven justified GLR conflicts on 2026-11-25. Regenerated with `node_modules/.bin/tree-sitter generate` using CLI 0.27.2. `src/node-types.json` changed from 20 named nodes/7 fields to 40 named nodes/31 fields; the public CST change is documented in [grammar-architecture.md](grammar-architecture.md).
+- Phase 3 — Corpus and query validation: `node_modules/.bin/tree-sitter test --update` rewrote all prior expected trees and added 28 cases; three unsupported logical/nullish operator cases were then removed, leaving 25 net new cases. A final `node_modules/.bin/tree-sitter test` passed 42/42 cases with CLI 0.27.2. The same command compiled and executed `queries/highlights.scm` and `queries/locals.scm` successfully after both were rewritten for the new CST.
+- Phase 3 — Probe and fixture validation: all 43 temporary probes were reparsed after regeneration. Named imports were fixed to consume `from`; expected remaining errors are object destructuring, spread arguments, shorthand properties, logical operators, and nullish coalescing. `node_modules/.bin/tree-sitter parse test.strdl test-local.strdl` completed without `ERROR` or `MISSING` nodes.
+- Phase 3 — Evidence discipline: logical operators and nullish coalescing were briefly added with the binary-expression family, then removed because E18 is inactive and no active evidence exists. Final matrix rows M23 and M27 remain **Missing**.
+- Phase 3 — Documentation: updated [README.md](../README.md), [grammar-architecture.md](grammar-architecture.md), [syntax-coverage-matrix.md](syntax-coverage-matrix.md), [compatibility.md](compatibility.md), and the historical notice in [repository-assessment.md](repository-assessment.md). `git diff --check` passed before the change was staged.

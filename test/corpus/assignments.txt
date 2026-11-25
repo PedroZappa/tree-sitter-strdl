@@ -1,0 +1,62 @@
+==================
+assignment expression
+==================
+bpm=60
+---
+
+(source_file
+  (expression_statement
+    (assignment_expression
+      (identifier)
+      (number))))
+
+==================
+expression statement semicolon
+==================
+s("bd");
+---
+
+(source_file
+  (expression_statement
+    (call_expression
+      (identifier)
+      (arguments
+        (string)))))
+
+==================
+plain member expression
+==================
+mouse.x
+---
+
+(source_file
+  (expression_statement
+    (member_expression
+      (identifier)
+      (identifier))))
+
+==================
+computed member expression
+==================
+a.fft[0]
+---
+
+(source_file
+  (expression_statement
+    (subscript_expression
+      (member_expression
+        (identifier)
+        (identifier))
+      (number))))
+
+==================
+optional chaining
+==================
+a?.b
+---
+
+(source_file
+  (expression_statement
+    (member_expression
+      (identifier)
+      (identifier))))

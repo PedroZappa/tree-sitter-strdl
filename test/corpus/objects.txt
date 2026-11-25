@@ -1,0 +1,33 @@
+==================
+object spread
+==================
+({...doh})
+---
+
+(source_file
+  (expression_statement
+    (parenthesized_expression
+      (object
+        (spread_element
+          (identifier))))))
+
+==================
+new expression in method chain
+==================
+"c1*2".tone(new MembraneSynth().toDestination())
+---
+
+(source_file
+  (expression_statement
+    (call_expression
+      (member_expression
+        (string)
+        (identifier))
+      (arguments
+        (new_expression
+          (member_expression
+            (call_expression
+              (identifier)
+              (arguments))
+            (identifier))
+          (arguments))))))
