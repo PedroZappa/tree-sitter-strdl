@@ -32,8 +32,7 @@ The audit covers structural validity, scope coverage, definition patterns, and r
 | 7 | `arrow_function` `parameters` identifier | `@local.definition.parameter` |
 | 8 | `import_specifier` `name` identifier | `@local.definition.var` |
 | 9 | `try_statement` `parameter` identifier | `@local.definition.parameter` |
-| 10 | `pair` `key` identifier | `@local.definition.property` |
-| 11 | any `identifier` | `@local.reference` |
+| 10 | any `identifier` | `@local.reference` |
 
 All referenced node types and fields exist in the current CST. The query compiles and executes.
 
@@ -45,7 +44,6 @@ Across `test.strdl`, `test-local.strdl`, and `test/query/determinism.strdl`, the
 | --- | ---: |
 | `local.reference` | 258 |
 | `local.definition.var` | 24 |
-| `local.definition.property` | 20 |
 | `local.scope` | 10 |
 | `local.definition.parameter` | 7 |
 | `local.definition.function` | 1 |
@@ -77,9 +75,13 @@ No definition pattern matches `call_expression`. Call identifiers such as `setCp
 
 `scripts/check_locals_definitions_absent.py` now enforces this structurally. It uses [`test/query/call_identifiers.scm`](../test/query/call_identifiers.scm) to select every `call_expression` callee identifier, then fails if any selected range also receives a `local.definition.*` capture. No Strudel API names are hardcoded.
 
-### 5. Object keys are currently definitions
+### 5. Object keys are no longer definitions
 
-The pattern `(pair key: (identifier) @local.definition.property)` captures object literal keys as definitions. Fixture output shows keys such as `edo`, `hapRadius`, `key`, and `source` receiving both `local.definition.property` and `local.reference`. This is a semantic concern because an object property name does not introduce a lexical local binding. It is left to the next roadmap item for an explicit decision and fix.
+The initial audit found that `(pair key: (identifier) @local.definition.property)` captured object literal keys as definitions. Fixture output showed keys such as `edo`, `hapRadius`, `key`, and `source` receiving both `local.definition.property` and `local.reference`. Because an object property name does not introduce a lexical local binding, that pattern was removed.
+
+`scripts/check_locals_definitions_absent.py` now enforces the decision with [`test/query/object_keys.scm`](../test/query/object_keys.scm), which selects identifier, string, number, and computed pair keys. No selected object key may receive a `local.definition.*` capture.
+
+Object keys can still receive `@local.reference` from the blanket identifier rule. Narrowing reference captures is a separate deferred improvement.
 
 ### 6. The blanket reference rule is over-inclusive
 
@@ -87,16 +89,18 @@ The pattern `(pair key: (identifier) @local.definition.property)` captures objec
 
 ## Decision
 
-No `locals.scm` or grammar change was made for the audit item. The query is structurally aligned with the current CST, but its locals semantics need explicit follow-up.
+No `locals.scm` or grammar change was made for the audit item itself. The query is structurally aligned with the current CST.
 
-The next roadmap items should address function-call identifiers and object keys. Import aliases, nested array-pattern bindings, catch scope, and the blanket reference rule are recorded as deferred work in [roadmap.md](roadmap.md).
+The following object-key roadmap item removed `@local.definition.property` from `locals.scm`. That capture name is no longer part of the locals query API, which is a breaking query change. Import aliases, nested array-pattern bindings, catch scope, function-name scope, and the blanket reference rule remain recorded as deferred work in [roadmap.md](roadmap.md).
 
 ## Verification log
 
-- Enumerated all 12 top-level `locals.scm` patterns and checked their node types and fields against `src/node-types.json`.
+- Initial audit enumerated all 12 top-level `locals.scm` patterns and checked their node types and fields against `src/node-types.json`; after removing the object-key definition rule, the query has 11 patterns.
 - `node_modules/.bin/tree-sitter query queries/locals.scm test.strdl test-local.strdl test/query/determinism.strdl` — compiled and executed successfully.
 - `make test-query` — passed.
 - `node_modules/.bin/tree-sitter parse test/query/determinism.strdl` — no `ERROR` or `MISSING` nodes.
-- Capture output inspection — confirmed call identifiers are reference-only and object keys receive both definition and reference captures.
+- Initial capture output inspection — confirmed call identifiers are reference-only and object keys receive both definition and reference captures.
 - `make test-query` — verified 30 call identifier ranges across the three fixtures; none received a `local.definition.*` capture.
 - Negative control — adding `(call_expression function: (identifier) @local.definition.var)` to a temporary locals query made the check fail with `exit=1`, confirming that the check detects incorrect call definitions.
+- Final `make test-query` — verified 23 object key ranges covering identifier, string, number, and computed keys; none received a `local.definition.*` capture.
+- Negative control — restoring `(pair key: (identifier) @local.definition.property)` to a temporary locals query made the object-key check fail with `exit=1`.
