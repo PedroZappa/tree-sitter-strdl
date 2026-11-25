@@ -365,7 +365,7 @@ ABI-15 compatibility is encoded for Node.js, Python, Rust, and in the local Swif
 - It also hard-codes many Strudel API names into `@function.control`, `@function.audio`, `@function.pattern`, `@function.effect`, `@function.envelope`, `@function.time`, `@function.utility`, `@function.midi`, and `@function.sample` captures. This needs a scope decision before Phase 5.
 - `queries/locals.scm` captures scopes, variable/parameter/property/function definitions, and identifier references. Its blanket reference rule and function-call/object-key definition rules need semantic review.
 - Only `highlights.scm` is registered in `tree-sitter.json` and `package.json`. `locals.scm` is packaged but not registered.
-- No `injections.scm` or `tags.scm` exists. `tree-sitter.json` declares `"injection-regex": "^strudel$"` without a corresponding injection query.
+- No `injections.scm` or `tags.scm` exists. `tree-sitter.json` declares `"injection-regex": "^strudel$"` without a corresponding injection query. Phase 5 concluded that the missing injection query is intentional; see [injection evaluation](injections-evaluation.md).
 - Both query files compile and execute, but no automated compilation or capture tests exist. Python and Rust query exports are commented out despite queries being copied into packages.
 
 ### Tests and fixtures

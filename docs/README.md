@@ -16,6 +16,7 @@ This folder contains project-level planning and developer documentation for `tre
 - [Query audit](query-audit.md) — Phase 5 structural audit of `highlights.scm` against the current node and field API, with fixture evidence and follow-up findings.
 - [Highlight captures](highlight-captures.md) — authoritative reference for every `highlights.scm` capture name, its syntactic meaning, and query API stability notes.
 - [Locals audit](locals-audit.md) — Phase 5 audit of `locals.scm` scopes, definitions, references, and semantic gaps.
+- [Injection evaluation](injections-evaluation.md) — Phase 5 decision on whether `injections.scm` is justified by actual syntax requirements.
 
 ## Sources of truth
 

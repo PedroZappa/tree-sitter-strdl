@@ -250,8 +250,8 @@ Phase 2 is complete and tagged `v1.3.0`. Phase 3 evidence collection, the source
 - [x] Audit `locals.scm` scopes, definitions, and references.
 - [x] Verify that function call identifiers are not incorrectly treated as definitions.
 - [x] Verify that object keys are not incorrectly treated as variable definitions.
-- [ ] Evaluate whether `injections.scm` is justified by actual requirements.
-- [ ] Add only justified injections; do not create an empty or speculative query file.
+- [x] Evaluate whether `injections.scm` is justified by actual requirements.
+- [x] Add only justified injections; do not create an empty or speculative query file.
 - [ ] Add query compilation tests.
 - [ ] Add query execution tests against representative compositions.
 - [x] Keep capture names stable and document breaking changes.
@@ -538,3 +538,4 @@ For checked items, add a short entry using this format:
 - Phase 5 — Locals audit: audited all 12 `locals.scm` patterns against `src/node-types.json` and executed the query against `test.strdl`, `test-local.strdl`, and `test/query/determinism.strdl`. Confirmed that all referenced node types and fields are valid, call identifiers are reference-only, and object keys are emitted as `@local.definition.property` plus `@local.reference`. Recorded import-alias, nested array-pattern, catch-scope, function-name-scope, and blanket-reference findings in `docs/locals-audit.md` and deferred the non-immediate follow-ups. No query change was made for the audit item.
 - Phase 5 — Call identifier definitions: added `test/query/call_identifiers.scm` and `scripts/check_locals_definitions_absent.py` to `make test-query`. The grammar-derived check verified 30 call identifier ranges with no `local.definition.*` captures; a negative control adding a call definition pattern failed with `exit=1`. Updated `docs/locals-audit.md` and `docs/ci.md`. No `locals.scm` change was required because the current query already treats call identifiers as references only.
 - Phase 5 — Object key definitions: removed `(pair key: (identifier) @local.definition.property)` from `locals.scm` because object property names do not introduce lexical local bindings. Added `test/query/object_keys.scm` covering identifier, string, number, and computed keys, and wired the generic absence checker into `make test-query`. Verified 23 object key ranges with zero definition captures; restoring the removed pattern in a negative control failed with `exit=1`. Updated `docs/locals-audit.md` and `docs/ci.md` and recorded `@local.definition.property` as a breaking locals query API change.
+- Phase 5 — Injection evaluation: reviewed Tree-sitter injection semantics, `tree-sitter.json`, the two-query inventory, and evidence D05, D09, D20, D33, S07, S11, S12, S15, S16, S17, E10, C01, and C02. Concluded that no current construct justifies reparsing Strudel source content with another language and that `injection-regex: "^strudel$"` is a host-side declaration rather than a local query requirement. Recorded the evidence, candidate matrix, and revisit conditions in `docs/injections-evaluation.md`; no speculative query file was created.
