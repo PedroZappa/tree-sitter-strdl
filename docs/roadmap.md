@@ -38,7 +38,7 @@ These observations are inputs to Phase 1, not proof that any phase is complete.
 
 ## Immediate next work
 
-Phase 2 is complete and tagged `v1.3.0`. Phase 3 evidence collection, the sourced coverage matrix, and the evidence-driven structured refactor are complete; the next work is Phase 4 error recovery and incremental parsing.
+Phase 2 is complete and tagged `v1.3.0`. Phase 3 evidence collection, the sourced coverage matrix, and the evidence-driven structured refactor are complete. Phase 4 is complete and tagged `v1.4.0`; the next work is Phase 5 queries.
 
 - [x] Capture the current functional baseline: grammar generation, corpus tests, Node.js binding tests, and query compilation.
 - [x] Verify whether regenerated files under `src/` match the committed artifacts.
@@ -231,10 +231,10 @@ Phase 2 is complete and tagged `v1.3.0`. Phase 3 evidence collection, the source
 
 ### Phase 4 acceptance criteria
 
-- [ ] Incomplete and malformed inputs retain useful syntax-tree information.
-- [ ] Valid-code correctness is not weakened to improve malformed-input recovery.
-- [ ] Incremental and fresh parses are equivalent for all recorded editing sequences.
-- [ ] Recovery regressions have permanent corpus tests.
+- [x] Incomplete and malformed inputs retain useful syntax-tree information.
+- [x] Valid-code correctness is not weakened to improve malformed-input recovery.
+- [x] Incremental and fresh parses are equivalent for all recorded editing sequences.
+- [x] Recovery regressions have permanent corpus tests.
 
 ---
 
@@ -524,4 +524,5 @@ For checked items, add a short entry using this format:
 - Phase 4 — Incremental parsing: extended `scripts/test_incremental.py` to compare incremental and fresh trees after every edit, not only the final state. The CLI exits nonzero on malformed parses but still emits a CST, so the harness now detects genuine failures by the presence of a `source_file` node and strips `Parse:`/`Edit:` timing lines. Added `object-brace-repair` and `string-quote-repair`, bringing malformed-state coverage to missing call parentheses, missing object braces, and unterminated strings. Malformed subset passes 4/4 sequences with 4 malformed steps; full catalog passes 20/20 sequences and 27/27 steps. Updated `docs/incremental-editing-sequences.md`; no grammar change was required.
 - Phase 4 — Incremental parsing: made final-source equivalence an explicit harness result. `scripts/test_incremental.py` now tracks the last step of each sequence separately and reports `Final-source comparisons: 20/20 passed`. This confirms that every incremental result for the completed source is byte-for-byte equivalent to a fresh parse of the same final source, and that the comparison is automated through the repeatable `make test-incremental` target with optional `INCREMENTAL_FILTER` subsets. No grammar change was required.
 - Phase 4 — Incremental parsing: added `docs/incremental-equivalence-procedure.md`, documenting the guarantee under test, authoritative inputs, edit model, step-by-step comparison procedure, CLI parse-error handling, pass/fail rules, output format, current coverage, how to add sequences, and scope limitations. Linked it from the docs index, the sequence catalog, grammar architecture, and CI notes. The incremental-parsing checklist is now complete; no grammar change was required.
+- Phase 4 — Closeout: checked all four acceptance criteria after verifying 70 recovery corpus cases across eleven files, 112/112 total corpus cases, `make verify` success with synchronized generated artifacts, no `grammar.js` change during the phase, and incremental/fresh equivalence across 20 sequences, 27 steps, and 20/20 final-source comparisons. Bumped tracked version metadata from 1.3.0 to 1.4.0 and regenerated `src/parser.c` so its embedded language minor version matches. Created local annotated tag `v1.4.0`; the tag was not pushed. Phase 5 work starts from this tag.
 - Phase 6 — CI validation: added `.github/workflows/ci.yml` for pull requests and pushes to `main`, with SHA-pinned checkout/setup-node actions and a Node.js 22/24 matrix. Added `make ci`, `docs/ci.md`, the CI badge, and documentation links. `make ci` was run locally and passed generated-artifact, corpus, query, Node binding, and C build checks. Incremental, benchmark, formatting/static, and non-Node binding checks remain deferred.
