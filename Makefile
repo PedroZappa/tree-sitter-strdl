@@ -95,7 +95,7 @@ _SUCCESS = [$(GRN)SUCCESS$(D)]
 _INFO    = [$(BLU)INFO$(D)]
 
 .PHONY: all build generate test test-recovery test-query test-node parse playground wasm \
-	local-install install uninstall clean check-generated verify verify-all \
+	local-install install uninstall clean check-generated verify verify-all ci \
 	docs docs-open help
 
 #==============================================================================#
@@ -176,6 +176,8 @@ check-generated:	## Verify committed parser artifacts match grammar.js
 verify: check-generated test test-query	## Run the core CI gate (artifacts, corpus, queries)
 
 verify-all: verify test-node	## Run the core gate plus Node.js binding tests
+
+ci: verify-all build	## Run the complete CI gate locally (requires npm ci first)
 
 ##@ Utility Rules 🛠
 

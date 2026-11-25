@@ -35,6 +35,8 @@ tree-sitter generate
 | Swift | `SwiftTreeSitter` `from: "0.10.0"` | Resolved SwiftTreeSitter 0.25.0 and tree-sitter 0.25.10 | `swift build` passed; `swift test` blocked by missing XCTest |
 | C | No Tree-sitter runtime dependency declared | Not separately built | ABI validation covered by CLI tests |
 
+GitHub Actions validates the Node.js binding on Node.js 22 and 24 for pull requests and pushes to `main`; see [CI](ci.md).
+
 `~=0.25.0` is used for Python because plain `~=0.25` permits any 0.x release up to 1.0.
 
 ## Validation performed

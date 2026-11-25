@@ -1,5 +1,7 @@
 # tree-sitter-strdl
 
+[![CI](https://github.com/pedrozappa/tree-sitter-strdl/actions/workflows/ci.yml/badge.svg)](https://github.com/pedrozappa/tree-sitter-strdl/actions/workflows/ci.yml)
+
 Tree-sitter parser for Strudel, a Tidal Cycles based live coding tool.
 
 The grammar targets the JavaScript subset used in Strudel compositions. It is independent of Strudel runtime evaluation and does not parse mini-notation: `s("bd sd")` is a function call with one opaque string argument.
@@ -92,9 +94,18 @@ Generated parser artifacts and `src/node-types.json` are committed. Do not hand-
 ## Development
 
 ```bash
-npm install
-node_modules/.bin/tree-sitter generate
-node_modules/.bin/tree-sitter test
+npm ci
+make ci
+```
+
+`make ci` checks generated artifacts, runs corpus and query tests, builds the C libraries, and runs the Node.js binding tests. GitHub Actions runs the same gate on pull requests and pushes to `main`; see [CI](docs/ci.md).
+
+To regenerate artifacts or run a single layer directly:
+
+```bash
+make generate
+make test
+make test-query
 ```
 
 Official queries live in `queries/`:
@@ -109,6 +120,7 @@ Official queries live in `queries/`:
 - [Syntax evidence](docs/syntax-evidence.md)
 - [Syntax coverage matrix](docs/syntax-coverage-matrix.md)
 - [Compatibility](docs/compatibility.md)
+- [CI](docs/ci.md)
 - [Development roadmap](docs/roadmap.md)
 - [Documentation index](docs/README.md)
 

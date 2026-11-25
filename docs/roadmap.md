@@ -305,19 +305,21 @@ Phase 2 is complete and tagged `v1.3.0`. Phase 3 evidence collection, the source
 
 ### CI validation
 
-- [ ] Run grammar generation in CI.
-- [ ] Check generated-file consistency in CI.
-- [ ] Run corpus tests in CI.
-- [ ] Run query tests in CI.
-- [ ] Run Node.js binding tests in CI.
+- [x] Run grammar generation in CI.
+- [x] Check generated-file consistency in CI.
+- [x] Run corpus tests in CI.
+- [x] Run query tests in CI.
+- [x] Run Node.js binding tests in CI.
 - [ ] Run incremental parsing tests in CI.
 - [ ] Run formatting and static checks in CI.
-- [ ] Run compatibility checks in CI.
+- [x] Run compatibility checks in CI (Node.js 22 and 24 matrix).
 - [ ] Run performance checks with hardware-variance-aware reporting.
+
+See [CI](ci.md) for the workflow, commands, and remaining gaps.
 
 ### Phase 6 acceptance criteria
 
-- [ ] Test layers and commands are documented.
+- [x] Test layers and commands are documented.
 - [ ] All required test layers run automatically.
 - [ ] Baselines are reproducible and committed.
 - [ ] Performance budgets, if any, are based on measured baselines.
@@ -451,11 +453,6 @@ For each deferred item, record:
   - Reason for deferral: XCTest could not be resolved by the installed command-line tools; dependency resolution selected SwiftTreeSitter 0.25.0 and tree-sitter 0.25.10, and the library build passed.
   - Suggested phase or trigger: Phase 7, with a Swift toolchain that provides XCTest.
 
-- **Automated generated-artifact consistency check**
-  - Opportunity and expected benefit: prevent unpinned or stale CLI output from entering CI or releases.
-  - Reason for deferral: the current check was performed manually with checksum comparison; no CI workflow infrastructure exists yet.
-  - Suggested phase or trigger: Phase 6.
-
 - **Automated query capture and incremental parsing tests**
   - Opportunity and expected benefit: verify query semantics and edit equivalence rather than only query compilation and manual regeneration checks.
   - Reason for deferral: outside the completed compatibility-upgrade scope.
@@ -512,3 +509,4 @@ For checked items, add a short entry using this format:
 - Phase 4 — Error recovery: added `test/corpus/incomplete_expressions.txt` with five permanent cases covering missing binary/comparison operands, a missing ternary alternative, a nested incomplete operator, and a missing member property. Each case preserves the expression node and synthesizes a `MISSING` terminal. A bare `!` at EOF was probed but collapses to a root `ERROR`, so it was not recorded as expected-good recovery. `node_modules/.bin/tree-sitter test` passes 52/52 cases with CLI 0.27.2. `make test-recovery` runs both recovery corpus files and passes 10/10 cases.
 - Phase 4 — Error recovery: added `test/corpus/missing_delimiters.txt` with five permanent cases covering missing `]`, `)`, and `}` delimiters while preserving arrays, parenthesized expressions, computed access, object literals, and blocks. Object recovery is tested in declaration context because bare `{a: 1` is a labeled block in statement position; `f({a: 1` collapses to `ERROR` because both `}` and `)` are missing and was not recorded as expected-good recovery. Extended `make test-recovery` to include `missing_*.txt`. `node_modules/.bin/tree-sitter test` passes 57/57 cases with CLI 0.27.2; `make test-recovery` passes 15/15 cases.
 - Phase 4 — Error recovery: added `test/corpus/incomplete_argument_lists.txt` with six permanent cases covering trailing commas, a trailing comma after multiple arguments, a nested incomplete call, a leading comma, a doubled comma, and a missing comma. Partial lists synthesize `MISSING ")"`, while malformed separators produce localized `ERROR` nodes and preserve the surrounding arguments and call. The nested case records both missing closing parentheses without collapsing the surrounding call. `node_modules/.bin/tree-sitter test` passes 63/63 cases with CLI 0.27.2; `make test-recovery` passes 21/21 cases.
+- Phase 6 — CI validation: added `.github/workflows/ci.yml` for pull requests and pushes to `main`, with SHA-pinned checkout/setup-node actions and a Node.js 22/24 matrix. Added `make ci`, `docs/ci.md`, the CI badge, and documentation links. `make ci` was run locally and passed generated-artifact, corpus, query, Node binding, and C build checks. Incremental, benchmark, formatting/static, and non-Node binding checks remain deferred.

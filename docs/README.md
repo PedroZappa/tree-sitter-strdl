@@ -10,6 +10,7 @@ This folder contains project-level planning and developer documentation for `tre
 - [Strudel syntax evidence](syntax-evidence.md) — Phase 3 examples from official documentation, runtime source, official examples/tutorials, and maintained community sources, with source paths and rendered URLs.
 - [Syntax coverage matrix](syntax-coverage-matrix.md) — Phase 3 comparison of each significant requirement with current grammar and corpus coverage.
 - [Compatibility](compatibility.md) — supported CLI, parser ABI, runtime floor, and binding validation matrix.
+- [CI](ci.md) — GitHub Actions triggers, validation commands, pinned tooling, local reproduction, and deferred checks.
 
 ## Sources of truth
 
