@@ -30,7 +30,7 @@ tree-sitter generate
 
 | Binding | Declared requirement                                                                  | Validation version                                      | Result                                                       |
 | ------- | ------------------------------------------------------------------------------------- | ------------------------------------------------------- | ------------------------------------------------------------ |
-| Node.js | peer `tree-sitter: ^0.25.0`                                                           | `tree-sitter` 0.25.1, Node.js 26.8.2                    | Passed `npm test`                                            |
+| Node.js | peer `tree-sitter: ^0.25.0`                                                           | `tree-sitter` 0.25.1, Node.js 26.8.2 and 26.13.1        | Passed `npm test` and a clean tracked-source build           |
 | Python  | optional extra `tree-sitter~=0.25.0`                                                  | `tree-sitter` 0.25.2, Python 3.15.2                     | Passed `bindings/python/tests/test_binding.py`               |
 | Rust    | dev-dependency `tree-sitter = "0.25.8"`                                               | Not run; cargo unavailable                              | Not verified in this environment                             |
 | Go      | `github.com/tree-sitter/go-tree-sitter` v0.25.0 resolved by the temporary test module | Go 1.27.4                                               | Passed `go test` in a module-aware temporary copy            |
@@ -50,13 +50,13 @@ On 2026-11-25:
 - `tree-sitter test` passed all 42 current corpus cases with CLI 0.27.2.
 - `tree-sitter test` also compiled and executed both official query files successfully.
 - `tree-sitter parse test.strdl test-local.strdl` completed without `ERROR` or `MISSING` nodes after the refactor.
-- `npm test` passed earlier with `tree-sitter` 0.25.1 and Node.js 26.8.2. A later run in this environment could not load the native binding because no build for Node.js 26.13.1 ABI 147 was present; this is an environment/build artifact limitation, not a parser validation failure.
+- `npm test` passed with `tree-sitter` 0.25.1 on Node.js 26.8.2 and, after a clean tracked-source `npm ci --offline` rebuild, on Node.js 26.13.1 (ABI 147). The clean build verified that committed parser artifacts remained byte-identical.
 
 Query commands emitted a parser-directory warning but compiled and executed successfully.
 
 ## Known limitations
 
-- A post-refactor `npm test` run could not load the native binding because no Node.js ABI 147 build was available in this environment. Earlier Node binding validation passed with Node.js 26.8.2.
+- npm 11 in this environment blocks dependency install scripts for `tree-sitter` and `tree-sitter-cli` by default; the project's own install script still compiled the addon, and the clean build's `npm test` run loaded the runtime successfully.
 - Rust tests were not run because `cargo` is unavailable in this environment.
 - Swift tests were not run successfully because XCTest could not be resolved by the installed command-line tools.
 - `npm install` emitted script-allowlist warnings, but the pinned local CLI was executable and was used for the final regeneration check.
