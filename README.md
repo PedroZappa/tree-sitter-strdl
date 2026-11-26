@@ -98,7 +98,7 @@ Current coverage includes:
 - named imports, `export const`, and `export default`
 - `try`/`catch`, blocks, `return`, and line/block comments
 
-Not supported: mini-notation semantics, object shorthand, object destructuring declarations, spread arguments, default imports, logical operators, nullish coalescing, and general ECMAScript syntax. See the [coverage matrix](docs/syntax-coverage-matrix.md) for the exact status and evidence for each construct.
+Not supported: mini-notation semantics, object shorthand, object destructuring declarations, spread arguments, default imports, logical operators, nullish coalescing, and general ECMAScript syntax. See the [coverage matrix](docs/syntax-coverage-matrix.md) for the exact status and evidence for each construct, and the [compatibility policy](docs/compatibility.md#syntax-coverage-compatibility) for what each status promises across releases.
 
 ## Syntax tree
 

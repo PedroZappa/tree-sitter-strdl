@@ -1,6 +1,6 @@
 # Phase 3 syntax coverage matrix
 
-This matrix compares the grammar with the significant syntax requirements established by [syntax-evidence.md](syntax-evidence.md). Evidence IDs (`D`, `S`, `E`, and `C`) resolve to exact snippets and source URLs in that document. Statuses reflect the Phase 3 structured refactor in [`grammar.js`](../grammar.js), regenerated artifacts in `src/`, and 45 corpus cases in [`test/corpus/`](../test/corpus/).
+This matrix compares the grammar with the significant syntax requirements established by [syntax-evidence.md](syntax-evidence.md). Evidence IDs (`D`, `S`, `E`, and `C`) resolve to exact snippets and source URLs in that document. Statuses reflect the Phase 3 structured refactor in [`grammar.js`](../grammar.js), regenerated artifacts in `src/`, and 45 corpus cases in [`test/corpus/`](../test/corpus/). The compatibility meaning of each status is defined in [syntax coverage compatibility](compatibility.md#syntax-coverage-compatibility).
 
 Statuses:
 

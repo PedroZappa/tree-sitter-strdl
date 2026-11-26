@@ -56,6 +56,27 @@ The aggregate Phase 7 decision retains every existing non-Node binding and depre
 
 Promoting Go to a first-class binding requires explicit approval for module metadata, a Go CI leg, and a declared `go-tree-sitter` compatibility floor. Adding a Swift release path, committing `Package.resolved`, or removing any existing integration also requires explicit approval and a breaking-change entry.
 
+## Syntax coverage compatibility
+
+The [syntax coverage matrix](syntax-coverage-matrix.md) is the source of truth for the syntax this grammar currently accepts. The [syntax evidence](syntax-evidence.md) records why each construct is in scope. This section defines what consumers can rely on across releases; it does not redefine the public CST naming policy or query compatibility rules.
+
+| Matrix status                 | Compatibility meaning                                                                                                                                                                                                                       |
+| ----------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Implemented                   | Supported syntax. A release that stops accepting it, downgrades it to `Partial` or `Missing`, or materially changes its concrete syntax tree is a breaking syntax change.                                                                   |
+| Partial                       | Only the forms explicitly described in the matrix are supported. Other variants of the same JavaScript construct are not guaranteed.                                                                                                        |
+| Missing                       | Not supported. Implementing it later is additive coverage, provided existing parses and trees remain unchanged.                                                                                                                             |
+| Intentionally opaque/excluded | Accepted only as literal content or deliberately outside this grammar. Mini-notation and embedded DSL bodies remain inside `string` or `template_string` nodes; Strudel API names and runtime conventions are not encoded as grammar rules. |
+
+The grammar targets a Strudel-oriented JavaScript subset, not full ECMAScript compatibility. ES2020+ constructs are added only when relevant evidence exists and the matrix records them as `Implemented`. Unsupported constructs listed in the matrix remain outside the compatibility promise until an evidence-backed change updates the matrix and corpus tests.
+
+Evidence follows the project hierarchy: official Strudel documentation, shipped source and runtime, official examples and tutorials, maintained community examples, then ECMAScript specifications and established JavaScript grammar references. Commented-out or inactive examples do not establish support. General JavaScript syntax that has no Strudel evidence is not promised merely because a runtime might accept it.
+
+Syntax additions are compatible when they accept previously unsupported input without changing existing trees. Narrowing accepted syntax, changing precedence or associativity, or changing the concrete tree for previously valid input is a breaking syntax change. Every supported-syntax change must update the corpus tests, the coverage matrix, and the generated parser artifacts with the pinned CLI.
+
+Error recovery is best-effort for actively edited and malformed input. The stable compatibility contract applies to valid source using constructs recorded as `Implemented`. Malformed-input trees may improve or change without being treated as a syntax compatibility break.
+
+Mini-notation remains opaque string content. This grammar exposes the surrounding JavaScript call and literal structure only; it does not parse pattern semantics, and no Strudel API function name is hardcoded into grammar rules.
+
 ## Package compatibility expectations
 
 The npm package is the primary distribution artifact. Its file contract is the `files` allowlist in `package.json`, and `make test-package` checks the actual `npm pack --dry-run --json --ignore-scripts` output against that contract. At version `1.5.0`, the packed artifact contains 18 files: license and README, `binding.gyp`, Node binding sources and its test, `grammar.js`, `package.json`, both official queries, the committed generated parser artifacts and headers, and `tree-sitter.json`.
