@@ -111,9 +111,9 @@ Consumers can expect:
 - The npm package contains no C, Go, Python, Rust, or Swift binding. Those integrations are distributed or consumed through the channels defined in the [binding support policy](#binding-support-policy).
 - `grammar.js` and the two official query files are packaged for editor/tooling consumers. Their presence is intentional, but consumers should prefer the committed generated artifacts at runtime.
 - Version `1.5.0` is aligned across the npm and Tree-sitter metadata and checked by `make check-version`. `make test-package` additionally requires the npm description, version, license, author, repository, scope, and file types to match the canonical `tree-sitter.json` metadata; official query registrations are checked separately by `make test-query-registration`. A version alone does not imply a different runtime floor; ABI and runtime compatibility are defined at the top of this document.
-- `make test-tarball-install` packs tracked sources into a real npm tarball, installs it offline into a clean consumer without `tree-sitter-cli`, verifies that every packed file survives installation with unchanged generated artifacts, requires a freshly compiled native addon, and loads the installed package.
+- `make test-tarball-install` packs tracked sources into a real npm tarball, installs it offline into a clean consumer without `tree-sitter-cli`, verifies that every packed file survives installation with unchanged generated artifacts, requires a freshly compiled native addon, installs the pinned `tree-sitter` runtime separately, and parses a representative tracked composition through the installed package.
 
-This section describes the expected package contract. Separate roadmap items cover parsing from an installed package and final publication-content validation; those checks are not implied by this documentation.
+This section describes the expected package contract. A separate roadmap item covers final publication-content validation; that check is not implied by this documentation.
 
 ## Validation performed
 

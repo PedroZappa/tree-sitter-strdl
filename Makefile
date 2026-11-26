@@ -283,10 +283,10 @@ test-package:	## Verify npm package contents and metadata
 	@python3 scripts/check_package_integrity.py $(NPM)
 	@echo "$(YEL)* $(_SUCCESS) npm package integrity check completed$(D)"
 
-test-tarball-install:	## Install the npm tarball into a clean consumer
+test-tarball-install:	## Install the npm tarball and parse a fixture in a clean consumer
 	@echo "$(YEL)Installing npm tarball into a clean consumer...$(D)"
 	@python3 scripts/check_tarball_install.py $(NPM) $(NODE)
-	@echo "$(YEL)* $(_SUCCESS) npm tarball installation verified$(D)"
+	@echo "$(YEL)* $(_SUCCESS) npm tarball installation and parse verified$(D)"
 
 test-regressions:	## Verify recorded bugs have permanent regression artifacts
 	@echo "$(YEL)Checking regression coverage...$(D)"
@@ -400,7 +400,7 @@ check-version:	## Verify version numbers are aligned across package metadata
 
 verify: check-generated check-format check-static test test-incremental test-query test-regressions check-benchmark-fixtures check-benchmark-baseline reproduce-benchmark-baseline check-benchmark-budgets	## Run the core CI gate (artifacts, formatting, static checks, corpus, incremental equivalence, queries, regressions, fixtures, baseline reproduction, budgets)
 
-verify-all: verify test-node test-node-clean-build test-generated-runtime test-c test-python test-rust test-swift check-version test-package test-tarball-install	## Run the core gate plus Node.js, clean-build, generated-runtime, C/Python/Rust/Swift bindings, version, package, and tarball-install checks
+verify-all: verify test-node test-node-clean-build test-generated-runtime test-c test-python test-rust test-swift check-version test-package test-tarball-install	## Run the core gate plus Node.js, clean-build, generated-runtime, C/Python/Rust/Swift bindings, version, package, and tarball-install/parse checks
 
 ci: verify-all build	## Run the complete CI gate locally (requires make install-dev first)
 

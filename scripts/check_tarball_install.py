@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
-"""Verify that the npm tarball installs into a clean consumer without regeneration."""
+"""Verify that the npm tarball installs and parses in a clean consumer."""
 
 from __future__ import annotations
 
 import hashlib
 import json
 import os
+import shutil
 import subprocess
 import sys
 import tempfile
@@ -53,11 +54,46 @@ FORBIDDEN_PACKED_PREFIXES = FORBIDDEN_INSTALLED_PATHS + ("build", "prebuilds")
 FORBIDDEN_PACKED_FILES = ("package-lock.json",)
 FORBIDDEN_PACKED_SUFFIXES = (".node", ".tgz", ".wasm")
 
+FIXTURE = "test/fixtures/test.strdl"
+
 LOAD_SCRIPT = """const assert = require('node:assert/strict');
 const language = require(process.argv[1]);
 assert.ok(language.language, 'native language handle is missing');
 assert.ok(Array.isArray(language.nodeTypeInfo), 'node types are unavailable');
 console.log('tarball package loaded');
+"""
+
+PARSE_SCRIPT = """const assert = require('node:assert/strict');
+const fs = require('node:fs');
+const path = require('node:path');
+const Parser = require('tree-sitter');
+const language = require(process.argv[1]);
+const fixture = process.argv[2];
+const expectedVersion = process.argv[3];
+
+const runtimeVersion = require('tree-sitter/package.json').version;
+assert.equal(runtimeVersion, expectedVersion, 'unexpected tree-sitter runtime version');
+assert.ok(language.nodeTypeInfo, 'generated node types are unavailable');
+
+const parser = new Parser();
+parser.setLanguage(language);
+const source = fs.readFileSync(fixture, 'utf8');
+const tree = parser.parse(source);
+const { rootNode } = tree;
+
+assert.equal(rootNode.type, 'source_file', 'unexpected root node type');
+assert.equal(rootNode.hasError, false, 'representative composition has parse errors');
+assert.equal(rootNode.text, source, 'parse tree text differs from source');
+assert.ok(rootNode.namedChildren.length > 0, 'representative composition produced no named nodes');
+
+const calls = rootNode.descendantsOfType('call_expression');
+const strings = rootNode.descendantsOfType('string');
+const identifiers = rootNode.descendantsOfType('identifier').map((node) => node.text);
+assert.ok(calls.length > 1, 'method chain calls were not parsed');
+assert.ok(strings.some((node) => node.text.includes('sh*8')), 'mini-notation string was not preserved');
+assert.ok(identifiers.includes('s') && identifiers.includes('note'), 'expected call identifiers are missing');
+
+console.log(`installed package parsed ${path.basename(fixture)}: ${calls.length} calls, ${strings.length} strings`);
 """
 
 
@@ -98,6 +134,20 @@ def npm_env() -> dict[str, str]:
     env["npm_config_audit"] = "false"
     env["npm_config_fund"] = "false"
     return env
+
+
+def locked_runtime_version(check: Checker) -> str:
+    lock = json.loads((ROOT / "package-lock.json").read_text(encoding="utf-8"))
+    packages = lock.get("packages") if isinstance(lock, dict) else None
+    entry = packages.get("node_modules/tree-sitter") if isinstance(packages, dict) else None
+    version = entry.get("version") if isinstance(entry, dict) else None
+    check.require(
+        isinstance(version, str) and bool(version),
+        "package-lock.json lacks the tree-sitter runtime version",
+    )
+    if not isinstance(version, str) or not version:
+        raise RuntimeError("package-lock.json lacks the tree-sitter runtime version")
+    return version
 
 
 def pack(npm: str, destination: Path, check: Checker) -> tuple[dict[str, Any], Path]:
@@ -265,8 +315,12 @@ def main(argv: list[str]) -> int:
                 npm_env(),
             )
             check.require(
+                not (consumer / "node_modules/tree-sitter").exists(),
+                "grammar install pulled in the tree-sitter runtime",
+            )
+            check.require(
                 not (consumer / "node_modules/.bin/tree-sitter").exists(),
-                "install pulled in the tree-sitter CLI",
+                "grammar install pulled in the tree-sitter CLI",
             )
 
             installed = installed_package(consumer, entry.get("name"), check)
@@ -277,6 +331,39 @@ def main(argv: list[str]) -> int:
                 [node, "-e", LOAD_SCRIPT, str(installed)],
                 consumer,
                 "installed package load",
+            )
+
+            source_fixture = ROOT / FIXTURE
+            check.require(source_fixture.is_file(), f"representative fixture is missing: {FIXTURE}")
+            if not source_fixture.is_file():
+                raise RuntimeError(f"representative fixture is missing: {FIXTURE}")
+
+            version = locked_runtime_version(check)
+            run(
+                [
+                    npm,
+                    "install",
+                    "--offline",
+                    "--no-audit",
+                    "--no-fund",
+                    "--save-exact",
+                    f"tree-sitter@{version}",
+                ],
+                consumer,
+                "install pinned tree-sitter runtime",
+                npm_env(),
+            )
+            check.require(
+                not (consumer / "node_modules/.bin/tree-sitter").exists(),
+                "runtime install pulled in the tree-sitter CLI",
+            )
+
+            consumer_fixture = consumer / "composition.strdl"
+            shutil.copy2(source_fixture, consumer_fixture)
+            parse_result = run(
+                [node, "-e", PARSE_SCRIPT, str(installed), str(consumer_fixture), version],
+                consumer,
+                "installed package parse",
             )
     except (OSError, RuntimeError, TypeError, ValueError) as error:
         print(f"tarball install check failed: {error}", file=sys.stderr)
@@ -296,7 +383,8 @@ def main(argv: list[str]) -> int:
     print(
         f"tarball install: {filename} installed offline into a clean consumer; "
         f"{len(paths)} packed files verified; {len(values)} generated artifacts unchanged; "
-        f"{relative} compiled; package load passed"
+        f"{relative} compiled; tree-sitter {version} installed separately; "
+        f"{parse_result.stdout.strip()}"
     )
     print_terminal_status(
         "tarball install",
@@ -306,7 +394,8 @@ def main(argv: list[str]) -> int:
             f"{len(paths)} files",
             f"{len(values)} generated artifacts",
             str(relative),
-            "load passed",
+            f"tree-sitter {version}",
+            "load and parse passed",
         ],
     )
     return 0
