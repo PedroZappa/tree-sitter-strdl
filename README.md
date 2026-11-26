@@ -2,11 +2,19 @@
 
 [![CI](https://github.com/pedrozappa/tree-sitter-strdl/actions/workflows/ci.yml/badge.svg)](https://github.com/pedrozappa/tree-sitter-strdl/actions/workflows/ci.yml)
 
-Tree-sitter parser for Strudel, a Tidal Cycles based live coding tool.
+## Purpose and scope
 
-The grammar targets the JavaScript subset used in Strudel compositions. It is independent of Strudel runtime evaluation and does not parse mini-notation: `s("bd sd")` is a function call with one opaque string argument.
+`tree-sitter-strdl` provides a Tree-sitter grammar for the JavaScript subset used in Strudel compositions, a Tidal Cycles based live coding tool. It exposes a concrete syntax tree (CST) for editors, language servers, and other Tree-sitter consumers.
+
+The grammar is syntax-only. It is independent of Strudel runtime evaluation and does not parse mini-notation: `s("bd sd")` is a function call with one opaque string argument. Runtime behavior, semantic analysis, symbol resolution, and Strudel API metadata belong in downstream tools. See the [grammar architecture](docs/grammar-architecture.md#scope) for the formal boundary.
 
 ## Installation
+
+Install the npm package with a compatible Tree-sitter runtime:
+
+```sh
+npm install tree-sitter-strdl tree-sitter@^0.25.0
+```
 
 The parser is distributed as a conventional Tree-sitter grammar package with committed generated artifacts in `src/`. Consumers do not need to run the generator.
 
@@ -98,7 +106,15 @@ Current coverage includes:
 - named imports, `export const`, and `export default`
 - `try`/`catch`, blocks, `return`, and line/block comments
 
-Not supported: mini-notation semantics, object shorthand, object destructuring declarations, spread arguments, default imports, logical operators, nullish coalescing, and general ECMAScript syntax. See the [coverage matrix](docs/syntax-coverage-matrix.md) for the exact status and evidence for each construct, and the [compatibility policy](docs/compatibility.md#syntax-coverage-compatibility) for what each status promises across releases.
+See the [coverage matrix](docs/syntax-coverage-matrix.md) for the exact status and evidence for each construct, and the [compatibility policy](docs/compatibility.md#syntax-coverage-compatibility) for what each status promises across releases.
+
+## Limitations
+
+- This is not a complete ECMAScript parser. Current gaps include object shorthand, object destructuring declarations, spread and rest arguments, default imports, logical operators, nullish coalescing, and syntax outside the evidenced Strudel subset.
+- Mini-notation is opaque string content. This grammar exposes the surrounding expression but assigns no mini-notation semantics.
+- Error recovery is best effort. Some incomplete constructs consume following tokens; recoverable cases and known weak-recovery cases are recorded as permanent regressions. See [error recovery](docs/grammar-architecture.md#error-recovery-and-stability) and [regression coverage](docs/regression-coverage.md).
+- The parser requires Tree-sitter runtime 0.25 or newer because the committed artifacts use ABI 15. Older runtimes are unsupported.
+- Generated files under `src/` are committed build artifacts. Do not hand-edit them; regenerate with the pinned CLI. Environment-specific caveats are recorded in [known limitations](docs/compatibility.md#known-limitations).
 
 ## Syntax tree
 
