@@ -45,7 +45,7 @@ Do not use the probe queries under `test/query/` as official captures. They exis
 | Target | Responsibility |
 | --- | --- |
 | `make test-query-compile` | Compile official queries and reject invalid node and field names. |
-| `make test-query-execution` | Assert expected captures on grammar-derived roles in representative fixtures. |
+| `make test-query-execution` | Assert every official capture name on grammar-derived roles in representative fixtures and reject a wrong-capture negative control. |
 | `make test-query-registration` | Verify metadata, packaging rules, and binding exports. |
 | `make test-query` | Run the three targets above, then execute and check determinism and locals invariants. |
 

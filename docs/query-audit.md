@@ -189,3 +189,4 @@ The Python binding exposes `HIGHLIGHTS_QUERY` and `LOCALS_QUERY` through `__geta
 - Absent-query negative control — temporarily adding an `injections` entry to `package.json` made the checker fail with `exit=1`.
 - `npm pack --dry-run --json` — confirmed that `queries/highlights.scm` and `queries/locals.scm` are both present in the npm package file list.
 - `python3 -m py_compile bindings/python/tree_sitter_strudel/__init__.py` and `cargo fmt --check` — passed. `cargo check --offline` could not resolve `tree-sitter-language` from the local crate cache, so Rust compilation was not verified offline.
+- Phase 6 query capture audit — expanded `make test-query-execution` from 12 to 25 assertions so all 16 highlight captures and all five locals captures are exercised. Added a permanent wrong-capture negative control; `make test-query` passes with 1,096 deterministic captures across 1,096 ranges.

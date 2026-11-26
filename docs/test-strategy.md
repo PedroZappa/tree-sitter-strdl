@@ -22,7 +22,7 @@ The tests cover syntax recognition and the public concrete syntax tree (CST). Th
 | Recovery subset | `make test-recovery` | `incomplete_*`, `malformed_*`, `missing_*`, `noncascading_*`, `recovery_*`, `unfinished_*`, and `valid_*` corpus files | Re-runs the recovery-focused corpus files as a dedicated subset. These cases also run under `make test`. |
 | Incremental equivalence | `make test-incremental` (`INCREMENTAL_FILTER=...` optional) | `test/fixtures/incremental_sequences.json`, `test.strdl`, `test-local.strdl` | Incremental parses equal fresh parses after every edit and at the final source. See [incremental equivalence](incremental-equivalence-procedure.md) and the [sequence catalog](incremental-editing-sequences.md). |
 | Query compilation | `make test-query-compile` | `queries/*.scm` | Every official query compiles, and built-in negative controls reject invalid node and field names. |
-| Query execution | `make test-query-execution` | `test/query/*.scm`, representative fixtures | Probe-selected syntactic roles receive the expected highlight or locals captures. |
+| Query execution | `make test-query-execution` | `test/query/*.scm`, representative fixtures | Probe-selected ranges assert every official highlight and locals capture name; a wrong-capture negative control is rejected. |
 | Query registration | `make test-query-registration` | `tree-sitter.json`, `package.json`, binding exports | Official queries are registered, packaged, and exported consistently. See [query audit](query-audit.md#registration-packaging-and-binding-exports). |
 | Query invariants | `make test-query` | `queries/`, `test.strdl`, `test-local.strdl`, `test/query/determinism.strdl` | Official queries execute; highlights are deterministic; call identifiers and object keys receive no locals definition captures. |
 | Node.js binding | `make test-node` | `bindings/node/*_test.js` | The native addon loads and parses a precedence-sensitive expression from the current generated parser through the primary binding. |
@@ -60,7 +60,7 @@ Run `make help` for the authoritative target list and parameter names.
 - `scripts/check_query_registration.py`: checks official query registration, packaging, and binding exports.
 - `scripts/test_incremental.py`: replays edits and compares incremental and fresh CSTs.
 
-Temporary negative controls used while developing the determinism, locals-definition, registration, and capture checks are recorded in the [roadmap verification log](roadmap.md#verification-log). Only the query compilation checker currently contains permanent built-in negative controls.
+Temporary negative controls used while developing the determinism, locals-definition, registration, and capture checks are recorded in the [roadmap verification log](roadmap.md#verification-log). The query compilation checker contains built-in negative controls, and `test-query-execution` includes a permanent wrong-capture negative control.
 
 ## Adding or changing tests
 

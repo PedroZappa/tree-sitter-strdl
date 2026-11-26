@@ -1,0 +1,16 @@
+[
+  "var"
+  "let"
+  "const"
+  "function"
+  "return"
+  "try"
+  "catch"
+  "import"
+  "export"
+  "default"
+  "from"
+  "as"
+  "new"
+  "await"
+] @keyword_probe
