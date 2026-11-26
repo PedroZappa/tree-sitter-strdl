@@ -381,7 +381,7 @@ See [CI](ci.md) for the workflow, commands, and remaining gaps.
 ### Documentation
 
 - [x] Expand `README.md` with purpose, scope, installation, usage, supported syntax, and limitations.
-- [ ] Add grammar architecture documentation.
+- [x] Add grammar architecture documentation.
 - [ ] Document important node types.
 - [ ] Document public fields.
 - [ ] Document precedence and intentional conflicts.
@@ -589,3 +589,4 @@ For checked items, add a short entry using this format:
 - Phase 7 — Published contents: ran `make test-package` on 2026-11-26; `npm pack --dry-run --json --ignore-scripts` listed 18 files, and the gate verified 17 required files, 9 allowlist entries, 12 forbidden patterns, packed-size agreement, and metadata alignment with `tree-sitter.json`. An isolated tracked-source negative control removing `src/parser.c` from the `package.json` allowlist failed with `exit=1` and reported both the missing allowlist entry and absent packed file. No checker or package change was required.
 - Phase 7 — Build artifacts: verified on 2026-11-26 that the package gate rejects build artifacts and missing generated sources. An isolated tracked-source negative control restoring `src/**` and adding `src/parser.o` failed with `exit=1`, reporting the broad allowlist pattern and the forbidden packed object file. The clean dry-run surface contains only grammar, generated sources, Node bindings, queries, metadata, license, and README files. Marked both package-integrity items and the package-contents acceptance criterion complete. No grammar or generated-parser change was required.
 - Phase 8 — README: added an explicit purpose-and-scope section, a concrete npm install command, and a consolidated limitations section covering syntax gaps, mini-notation opacity, best-effort recovery, the ABI 15 runtime floor, and generated-artifact handling. Retained the existing Node.js and Neovim usage examples and linked to the authoritative grammar, coverage, compatibility, recovery, and regression documents. Verified all local Markdown links resolve and `make check-format` passes on 2026-11-26. No grammar, generated-parser, binding, or CI change was required.
+- Phase 8 — Grammar architecture: verified that [grammar-architecture.md](grammar-architecture.md) documents scope, naming, all 40 generated named nodes, all 31 generated fields, statement/expression hierarchy, precedence, seven GLR conflicts, and error recovery. Compared the document against `grammar.js` and `src/node-types.json`, refreshed stale phase wording, and checked local links on 2026-11-26. `make check-generated`, `make test`, `make test-query`, and `make check-format` passed. No grammar or generated-parser change was required.
