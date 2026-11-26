@@ -25,7 +25,7 @@ The tests cover syntax recognition and the public concrete syntax tree (CST). Th
 | Query execution | `make test-query-execution` | `test/query/*.scm`, representative fixtures | Probe-selected syntactic roles receive the expected highlight or locals captures. |
 | Query registration | `make test-query-registration` | `tree-sitter.json`, `package.json`, binding exports | Official queries are registered, packaged, and exported consistently. See [query audit](query-audit.md#registration-packaging-and-binding-exports). |
 | Query invariants | `make test-query` | `queries/`, `test.strdl`, `test-local.strdl`, `test/query/determinism.strdl` | Official queries execute; highlights are deterministic; call identifiers and object keys receive no locals definition captures. |
-| Node.js binding | `make test-node` | `bindings/node/*_test.js` | The native addon loads and exposes a usable parser through the primary binding. |
+| Node.js binding | `make test-node` | `bindings/node/*_test.js` | The native addon loads and parses a precedence-sensitive expression from the current generated parser through the primary binding. |
 | C library build | `make build` (included in `make ci`) | `bindings/c/`, generated sources | Static/shared libraries and pkg-config metadata build from generated artifacts. Build validation is distinct from behavioral testing. |
 
 ## Command map

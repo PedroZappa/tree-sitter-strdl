@@ -100,6 +100,8 @@ Binding patterns are `identifier` and `array_pattern`. Formal parameters additio
 
 Phase 6 added `test/corpus/modern_javascript_constructs.txt` to assert grammar-supported forms that previously lacked explicit cases: optional `catch` bindings, valueless `return`, valid array destructuring, trailing commas in parameter and import lists, import aliases, all assignment targets and comparison operators, nested ternaries, richer `new` constructors, empty containers, numeric object keys, and string/template escapes.
 
+Phase 6 added `test/corpus/nested_expressions_and_method_chains.txt` to assert receiver and argument nesting: parenthesized, subscripted, optional, computed-index, tagged-template, and awaited chain receivers; call-on-call results; and arithmetic, conditional, container, and deeply nested call arguments.
+
 ## Precedence and associativity
 
 Named precedence levels are declared from highest to lowest, as required by Tree-sitter:
