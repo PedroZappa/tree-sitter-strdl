@@ -25,7 +25,7 @@ The tests cover syntax recognition and the public concrete syntax tree (CST). Th
 | Query execution | `make test-query-execution` | `test/query/*.scm`, representative fixtures | Probe-selected ranges assert every official highlight and locals capture name; a wrong-capture negative control is rejected. |
 | Query registration | `make test-query-registration` | `tree-sitter.json`, `package.json`, binding exports | Official queries are registered, packaged, and exported consistently. See [query audit](query-audit.md#registration-packaging-and-binding-exports). |
 | Query invariants | `make test-query` | `queries/`, `test.strdl`, `test-local.strdl`, `test/query/determinism.strdl` | Official queries execute; highlights are deterministic; call identifiers and object keys receive no locals definition captures. |
-| Node.js binding | `make test-node` | `bindings/node/*_test.js` | The native addon loads and parses a precedence-sensitive expression from the current generated parser through the primary binding. |
+| Node.js binding | `make test-node` | `bindings/node/*_test.js` | The native addon loads, exports generated metadata, exposes CST fields, recovers from incomplete input, executes a query, and matches a fresh parse after an incremental edit. |
 | C library build | `make build` (included in `make ci`) | `bindings/c/`, generated sources | Static/shared libraries and pkg-config metadata build from generated artifacts. Build validation is distinct from behavioral testing. |
 
 ## Command map
@@ -69,13 +69,14 @@ Temporary negative controls used while developing the determinism, locals-defini
 3. **Query invariants:** extend the relevant script and Makefile target. Include negative-control evidence in the roadmap when a new invariant is introduced.
 4. **Incremental parsing:** add a sequence to `test/fixtures/incremental_sequences.json`, run the filtered subset, then run the full harness.
 5. **Query inventory changes:** update `scripts/check_query_registration.py`, registration metadata, binding exports, and the query documentation in the same change.
-6. **New test layer:** add a `make` target, include it in the appropriate aggregate target, link it here and from [CI](ci.md), and update the roadmap.
+6. **Node.js binding behavior:** extend `bindings/node/binding_test.js` when native export shape, parser behavior, query execution, or incremental parsing through the primary binding needs coverage.
+7. **New test layer:** add a `make` target, include it in the appropriate aggregate target, link it here and from [CI](ci.md), and update the roadmap.
 
 Do not weaken or delete an existing test to make a change pass without an explicit, sound rationale recorded in the roadmap.
 
 ## Current coverage and gaps
 
-Covered by `make ci` today: generated-file consistency, corpus behavior, all query layers, Node.js binding loading, and the C library build. Recovery cases run inside the full corpus suite; `make test-recovery` is the dedicated local subset.
+Covered by `make ci` today: generated-file consistency, corpus behavior, all query layers, Node.js binding load/metadata/CST/recovery/query/incremental behavior, and the C library build. Recovery cases run inside the full corpus suite; `make test-recovery` is the dedicated local subset.
 
 Local-only: incremental/fresh equivalence.
 
