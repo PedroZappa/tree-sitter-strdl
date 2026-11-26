@@ -194,6 +194,43 @@ When an increase warrants attention:
 
 This target is local-only and is not part of `make ci`. It supports investigation; it does not establish performance budgets or CI gates.
 
+## Performance budgets
+
+The committed budgets are in [budgets.json](../benchmarks/results/budgets.json). They are derived from three complete measurement sessions: the committed baseline plus two independent sessions with matching environment, configuration, fixtures, and edit catalog. The rule is an observed envelope, not an arbitrary multiplier:
+
+- P50 and P95 budgets use the highest session P50 and P95 respectively.
+- P99 budgets use the highest single observed sample (`maxMs`) across the sessions, giving tail headroom without a chosen factor.
+- Retained heap/RSS per tree and sampled heap/RSS peak budgets use the highest observed value across the sessions.
+- Every budget stores its observations and the source session that produced the maximum.
+
+No hardware normalization, safety factor, or invented threshold is applied. The artifact records the baseline commit, environment, configuration, methodology, session provenance, and budgets for all 52 cases.
+
+Regenerate the budgets deliberately with a session manifest that lists the two additional report triples; the committed baseline supplies the first session:
+
+```sh
+cat > /tmp/budget-sessions.json <<'JSON'
+{
+  "version": 1,
+  "sessions": [
+    {
+      "fresh": "/tmp/fresh-1.json",
+      "incremental": "/tmp/incremental-1.json",
+      "memory": "/tmp/memory-1.json"
+    },
+    {
+      "fresh": "/tmp/fresh-2.json",
+      "incremental": "/tmp/incremental-2.json",
+      "memory": "/tmp/memory-2.json"
+    }
+  ]
+}
+JSON
+make build-benchmark-budgets BENCH_BUDGET_INPUTS=/tmp/budget-sessions.json
+make check-benchmark-budgets
+```
+
+`make check-benchmark-budgets` is part of `make verify` and `make ci`. It validates provenance, environment/configuration agreement, fixture and catalog coverage, and recomputes every budget from its stored observations. It does not compare current timings against the budgets, so it remains a structural integrity check rather than a performance gate.
+
 ## Validation performed
 
 - All four `expected_clean: true` fixtures parse with `tree-sitter parse --quiet` and exit 0 using CLI 0.27.2.
@@ -222,7 +259,8 @@ This target is local-only and is not part of `make ci`. It supports investigatio
 - A generated `BENCH_OUTPUT` report reproduced the documented runtime subset exactly: Node `v26.13.1`, tree-sitter runtime `0.25.1`, `linux`/`x64`, 24 logical CPUs, CPU model `12th Gen Intel(R) Core(TM) i9-12900KF`, and `33,437,925,376` bytes of `os.totalmem()`. The remaining documented values were checked against `/etc/os-release`, `uname`, `lscpu`, `/proc/meminfo`, `node --version`, `process.versions`, `npm --version`, both CLI paths, and `git rev-parse`. A temporary report copy with `cpuCount` changed to 23 failed validation with exit 1.
 - Three full `BENCH_OUTPUT` reports were generated sequentially in one session and built into `benchmarks/results/baseline.json` with `make build-benchmark-baseline`. The 67,191-byte artifact records commit `aae76dc`, five fixtures, 21 sequences, and 15 measured with two warmup samples per case. `make check-benchmark-baseline` passed. Negative controls that changed `version`, nulled a fresh P50, removed a fixture, changed the baseline CPU count, invalidated a source timestamp, changed a memory result mode, and changed a source environment all failed with exit 1. The baseline contains no `/tmp/` paths.
 - A new full measurement session was compared with the committed baseline through `make compare-benchmark-baseline`. Environment and configuration matched; 80 positive deltas were reported, led by `incremental/compact-set-cps/p99Ms` at ratio 2.674172. `make ci` passed, and `git diff --name-only aae76dc..HEAD` was empty for `grammar.js`, `src/`, `bindings/`, `queries/`, and package metadata. Isolated reruns kept identical CST checksums and fixture bytes, with nearly unchanged minimum latencies but higher outlier maxima: `compact-set-cps` min/max moved from 0.010129/0.010573 ms to 0.010482/0.031055 ms, and `deeply-nested` from 0.371120/0.384343 ms to 0.372704/0.480931 ms. Retained per-tree memory stayed stable or moved by allocator-sized RSS steps. The increases were treated as run-to-run variance under normal desktop load, not a code regression. A three-report CPU-count mismatch produced `environmentComparison.matches: false` with exit 0, a three-report warmup mismatch produced `configComparison.matches: false` with exit 0, and a null fresh P50 or tampered baseline version failed with exit 1.
+- Two additional full measurement sessions were run on the same environment and configuration as the baseline and combined with it through `make build-benchmark-budgets BENCH_BUDGET_INPUTS=...`. The 51,511-byte version-1 `benchmarks/results/budgets.json` stores the observed envelope for 52 cases (5 fresh, 21 incremental, 5 fresh memory, 21 incremental memory) with per-metric observations and source session. For `incremental/compact-set-cps`, the P50/P95/P99 budgets are 0.010719/0.017109/0.031055 ms, each tracing to the session that produced the maximum. `make check-benchmark-budgets` passed; the artifact contains no `/tmp/` paths. Negative controls failed with exit 1 for a changed version, a budget that was not the observed maximum, a source that was not the maximum session, a removed case, shortened observations, a tampered top-level environment, and a tampered session environment. Build-time negative controls also failed with exit 1 for a session environment mismatch and a session configuration mismatch.
 
 ## Remaining work
 
-Performance budgets and hardware-variance-aware CI reporting remain separate roadmap items. The committed baseline stores observations, local comparison supports investigation, and the dedicated environment record above is not hardware-normalized. This document will own future budget and CI decisions as they are made.
+Performance budgets are committed as observed observations and validated structurally, but current timings are not gated against them. Hardware-variance-aware CI reporting remains a separate roadmap item. The committed baseline stores observations, local comparison supports investigation, and the dedicated environment record above is not hardware-normalized. This document will own future CI reporting decisions as they are made.

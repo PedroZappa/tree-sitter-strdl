@@ -1096,9 +1096,26 @@ function main() {
   }
 }
 
-try {
-  main();
-} catch (error) {
-  console.error(`baseline results failed: ${error.message}`);
-  process.exitCode = 1;
+if (require.main === module) {
+  try {
+    main();
+  } catch (error) {
+    console.error(`baseline results failed: ${error.message}`);
+    process.exitCode = 1;
+  }
 }
+
+module.exports = {
+  readJson,
+  validateEnvironment,
+  validateBaseline,
+  validateFreshReport,
+  validateIncrementalReport,
+  validateMemoryReport,
+  validateReportAgreement,
+  combinedEnvironment,
+  comparisonConfig,
+  environmentDifferences,
+  configDifferences,
+  round,
+};
