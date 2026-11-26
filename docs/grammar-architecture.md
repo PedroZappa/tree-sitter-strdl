@@ -98,6 +98,8 @@ Primary expressions are `identifier`, `string`, `number`, `template_string`, `ob
 
 Binding patterns are `identifier` and `array_pattern`. Formal parameters additionally accept `assignment_pattern` for defaults. Object destructuring is not yet implemented.
 
+Phase 6 added `test/corpus/modern_javascript_constructs.txt` to assert grammar-supported forms that previously lacked explicit cases: optional `catch` bindings, valueless `return`, valid array destructuring, trailing commas in parameter and import lists, import aliases, all assignment targets and comparison operators, nested ternaries, richer `new` constructors, empty containers, numeric object keys, and string/template escapes.
+
 ## Precedence and associativity
 
 Named precedence levels are declared from highest to lowest, as required by Tree-sitter:
