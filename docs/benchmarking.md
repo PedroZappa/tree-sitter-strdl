@@ -63,6 +63,48 @@ make bench-memory BENCH_CATEGORY=compact-fixture
 
 `scripts/bench_memory.js --json` prints the same report as structured output. Heap values describe reachable JavaScript heap after GC; native tree memory may appear primarily in RSS. RSS is process-wide and allocator-granular, so per-tree values can be zero or jump in page-sized increments. Sampled peak deltas are observed after retaining each tree, not a continuous high-water trace. This is a measurement tool, not a committed baseline or CI gate.
 
+## Percentile reporting
+
+Fresh and incremental latency results are reported as separate reports, not as one pooled distribution. `scripts/bench_common.js` sorts each sample set and interpolates P50, P95, and P99 at ranks `(n - 1) * 0.50`, `(n - 1) * 0.95`, and `(n - 1) * 0.99`. Fresh samples are individual `Parser.parse` calls. Incremental samples are replay totals: the sum of the `tree.edit` plus incremental `Parser.parse` timings for every step in one replay. Per-step incremental percentiles are also present in the JSON report.
+
+The following values were recorded from one default run with 15 measured samples and 2 warmup samples per case. They are observations, not baselines.
+
+### Fresh parse latency percentiles
+
+| Fixture | P50 (ms) | P95 (ms) | P99 (ms) |
+| --- | ---: | ---: | ---: |
+| `representative-main` | 0.324216 | 0.369064 | 0.401948 |
+| `representative-local` | 0.017270 | 0.023297 | 0.031866 |
+| `synthetic-large` | 10.259487 | 10.546336 | 10.551806 |
+| `deeply-nested` | 0.380255 | 0.396238 | 0.402565 |
+| `pathological` | 2.018148 | 2.056487 | 2.075988 |
+
+### Incremental replay-total latency percentiles
+
+| Sequence | P50 (ms) | P95 (ms) | P99 (ms) |
+| --- | ---: | ---: | ---: |
+| `method-chain-insertion` | 0.050129 | 0.088407 | 0.089975 |
+| `pattern-string-replacement` | 0.101519 | 0.111033 | 0.118090 |
+| `declaration-deletion` | 0.037129 | 0.057602 | 0.069556 |
+| `nested-object-edits` | 0.070891 | 0.086573 | 0.097651 |
+| `malformed-call-repair` | 0.071524 | 0.074884 | 0.076636 |
+| `declaration-insertion` | 0.042142 | 0.047449 | 0.047707 |
+| `arrow-parameter-rename` | 0.069568 | 0.080019 | 0.085170 |
+| `method-deletion` | 0.042669 | 0.047781 | 0.049059 |
+| `call-statement-insertion` | 0.042367 | 0.043557 | 0.043971 |
+| `template-content-edit` | 0.042356 | 0.044184 | 0.044375 |
+| `compact-set-cps` | 0.010447 | 0.011305 | 0.012178 |
+| `compact-declaration-deletion` | 0.011136 | 0.028865 | 0.030224 |
+| `compact-malformed-repair` | 0.026983 | 0.041677 | 0.043210 |
+| `argument-deletion` | 0.033337 | 0.041979 | 0.055613 |
+| `object-property-deletion` | 0.034633 | 0.036612 | 0.038690 |
+| `method-name-replacement` | 0.037836 | 0.038668 | 0.038799 |
+| `nested-call-edit` | 0.044240 | 0.053095 | 0.066321 |
+| `nested-arrow-body-edit` | 0.038268 | 0.039654 | 0.040085 |
+| `object-brace-repair` | 0.073640 | 0.075948 | 0.076225 |
+| `string-quote-repair` | 0.081336 | 0.091253 | 0.100235 |
+| `array-bracket-repair` | 0.107875 | 0.109792 | 0.110390 |
+
 ## Validation performed
 
 - All four `expected_clean: true` fixtures parse with `tree-sitter parse --quiet` and exit 0 using CLI 0.27.2.
@@ -87,6 +129,7 @@ make bench-memory BENCH_CATEGORY=compact-fixture
 - `make bench-memory` with 15 retained iterations and 2 unretained warmups ran on Node v26.13.1, tree-sitter runtime 0.25.1, linux/x64 with 24 logical CPUs. It forced GC and covered all 5 fresh fixtures and 21 incremental sequences. Observed retained heap per tree was 870, 683, 198, 189, and 183 bytes for representative-main, representative-local, synthetic-large, deeply-nested, and pathological; incremental values ranged from 282 to 2,291 bytes per tree. Sampled peak RSS reached 61,341,696 bytes for synthetic-large and 7,274,496 bytes for pattern-string-replacement.
 - Negative controls failed with exit 1 when the memory script was run without `--expose-gc`, when a catalog edit used `occurrence: 99`, when `representative-main` SHA-256 was wrong, and when `--mode` was invalid.
 - A filtered JSON-report control wrote a one-fixture report with `mode: memory`, two retained trees, finite heap per tree, and `gcAvailable: true`; a `compact-fixture` category control selected four incremental sequences; `node --check` passed for all four benchmark scripts.
+- Separate JSON reports were generated with `BENCH_OUTPUT` and checked against distinct expected shapes: `mode: fresh` with five `fixtures` and no `sequences`, and `mode: incremental` with 21 `sequences` and no `fixtures`. All 26 reported stats objects had finite P50/P95/P99/max values ordered as `P50 <= P95 <= P99 <= max`. Temporary report copies with a deleted fresh `p95Ms` and a null incremental `p50Ms` failed validation with exit 1.
 
 ## Remaining work
 

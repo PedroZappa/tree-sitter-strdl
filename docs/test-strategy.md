@@ -35,6 +35,8 @@ The tests cover syntax recognition and the public concrete syntax tree (CST). Th
 | Parse-tree memory | `make bench-memory` | `scripts/bench_memory.js`, `scripts/bench_common.js`, benchmark manifest, incremental catalog, Node.js binding | Forces GC and reports retained heap/RSS deltas for fresh and incremental trees with fresh-CST guards. Not a CI gate. See [benchmarking](benchmarking.md#memory-consumption). |
 | C library build | `make build` (included in `make ci`) | `bindings/c/`, generated sources | Static/shared libraries and pkg-config metadata build from generated artifacts. Build validation is distinct from behavioral testing. |
 
+Fresh and incremental latency reports keep P50, P95, and P99 in separate modes; consolidated observations are recorded in [benchmarking](benchmarking.md#percentile-reporting).
+
 ## Command map
 
 | Target | Scope |
