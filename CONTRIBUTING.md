@@ -53,6 +53,7 @@ Discuss significant architectural, compatibility, licensing, or release decision
 - Update the document that owns the behavior rather than duplicating detail across files.
 - Mark a roadmap item complete only after its acceptance criteria and verification evidence are present.
 - Update `docs/roadmap.md` in the same change, including a short [verification log](docs/roadmap.md#verification-log) entry for checked items.
+- Update [`CHANGELOG.md`](CHANGELOG.md) for user-visible changes under the `Unreleased` section when the change affects consumers, release behavior, or documented guarantees.
 - Report limitations honestly; a task is not complete because its implementation merely appears to work.
 
 ### Dependencies and toolchains
