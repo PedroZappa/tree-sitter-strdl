@@ -108,6 +108,7 @@ make clean
 | Command                       | Purpose                                                                                                            |
 | ----------------------------- | ------------------------------------------------------------------------------------------------------------------ |
 | `make check-generated`        | Regenerates and compares committed parser artifacts against `HEAD`.                                                |
+| Publish workflow preflight    | Runs `make check-generated` on the exact release tag and blocks every publication job when it fails.               |
 | `make build`                  | Compiles and links the C static and shared libraries and pkg-config metadata.                                      |
 | `make test-generated-runtime` | Confirms committed generated files parse representative fixtures without `grammar.js` or the CLI.                  |
 | `make test-node-clean-build`  | Confirms the Node addon compiles and tests from clean tracked sources without regeneration.                        |

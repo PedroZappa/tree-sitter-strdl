@@ -43,6 +43,10 @@ The pinned versions used by CI come from `package-lock.json` (Tree-sitter CLI `0
 
 All `make ci` checks above are correctness gates: a failure produces a nonzero exit status. These gates cover every required Phase 6 test layer, the clean Node.js binding build, the generated parser runtime check, the C binding symbol check, the Python binding capsule check, the Rust binding surface and `cargo test --locked` checks, the Swift binding surface and `swift build`/`swift test` checks, cross-file version consistency, offline tarball installation into a clean consumer, and parsing a representative composition through that installation; remaining Phase 7 work, especially Go binding validation, is listed in [Not yet covered](#not-yet-covered). Latency and memory observations are outside CI; comparison reports explicitly mark timing deltas and comparability mismatches as [non-gating performance warnings](benchmarking.md#correctness-failures-versus-performance-warnings). A correctness failure is never reported as a performance warning.
 
+## Release generation gate
+
+Tag pushes are handled by the [publish workflow](../.github/workflows/publish.yml). Its `verify-generated` job checks out the exact tagged commit, installs locked dependencies with `npm ci`, and runs `make check-generated` with the pinned Tree-sitter CLI. The check regenerates the committed parser artifacts and requires them to match `HEAD`. The GitHub release, npm, crates, and PyPI jobs all declare `needs: verify-generated`, so no publication job starts when `grammar.js` and the committed generated artifacts are out of sync. This gate complements the same check on pull requests and pushes to `main`. The downstream reusable workflows still run with `generate: true`; the project preflight validates the tagged source before those jobs regenerate their build copies.
+
 ## AGENTS.md validation coverage
 
 The same `validate` job runs for every pull request and every push to `main`, so both trigger types receive the checks required by [CI/CD and release management](../AGENTS.md#12-cicd-and-release-management).
