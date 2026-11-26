@@ -3,6 +3,7 @@
 
 from __future__ import annotations
 
+import json
 import os
 import subprocess
 import sys
@@ -18,6 +19,42 @@ QUERY_SNIPPETS = {
     "LOCALS_QUERY": "@local.scope",
 }
 EXPECTED_OUTPUT = "python binding: capsule and query exports ok"
+UNSUPPORTED_LINKER_FLAGS = ("-Wl,-z,pack-relative-relocs",)
+
+
+def sanitize_linker_flags(value: str) -> str:
+    for flag in UNSUPPORTED_LINKER_FLAGS:
+        value = value.replace(flag, "")
+    return value
+
+
+def interpreter_linker_env(interpreter: str) -> dict[str, str]:
+    code = (
+        "import json, sysconfig; "
+        "print(json.dumps({key: sysconfig.get_config_var(key) or '' "
+        "for key in ('LDSHARED', 'LDFLAGS')}))"
+    )
+    result = subprocess.run(
+        [interpreter, "-c", code],
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    if result.returncode != 0:
+        detail = result.stderr.strip() or result.stdout.strip() or "no output"
+        raise RuntimeError(
+            f"Python linker configuration failed with exit {result.returncode}: {detail}"
+        )
+    config = json.loads(result.stdout)
+    if not isinstance(config, dict):
+        raise RuntimeError("Python linker configuration was not a JSON object")
+
+    env = os.environ.copy()
+    ldshared = env.get("LDSHARED") or str(config.get("LDSHARED", ""))
+    ldflags = env.get("LDFLAGS") or str(config.get("LDFLAGS", ""))
+    env["LDSHARED"] = sanitize_linker_flags(ldshared)
+    env["LDFLAGS"] = sanitize_linker_flags(ldflags)
+    return env
 
 
 def run(
@@ -96,7 +133,7 @@ def main(argv: list[str]) -> int:
                 ],
                 "Python binding build",
                 ROOT,
-                os.environ.copy(),
+                interpreter_linker_env(interpreter),
             )
 
             package = library / PACKAGE

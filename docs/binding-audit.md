@@ -25,12 +25,12 @@ This document accumulates the Phase 7 binding audits. It records implementation,
 
 ### Decision
 
-Retain the C binding. It is a small, source-level integration with a correct public symbol, two working build paths, and explicit installer rules. Removing it would break CMake/Make consumers and contradict the enabled `bindings.c` metadata without providing a distribution benefit, because npm does not publish the C binding anyway. This is a C-specific retention decision; the aggregate non-Node binding decision remains pending until the Rust and Swift audits are complete.
+Retain the C binding. It is a small, source-level integration with a correct public symbol, two working build paths, and explicit installer rules. Removing it would break CMake/Make consumers and contradict the enabled `bindings.c` metadata without providing a distribution benefit, because npm does not publish the C binding anyway. This is a C-specific retention decision; the aggregate non-Node binding decision remains pending until the Swift audit is complete.
 
 ### Known gaps and deferred work
 
 - `make test-c` validates binding compilation, linking, and symbol return, not tree parsing semantics. Parser behavior is covered by the CLI corpus, incremental, and query layers and by Node.js binding tests.
-- The Makefile and CMake project version is `1.3.0`, while `package.json` and `tree-sitter.json` are `1.5.0`; the tracked `tree-sitter-strudel.pc` is generated output with an empty description and version `1.3.0`. Version alignment is a separate Phase 7 package-integrity item.
+- Phase 7 follow-up aligned Makefile, CMake, Cargo, Python, and pkg-config metadata at `1.5.0`; `make check-version` now gates cross-file alignment. The regenerated `tree-sitter-strudel.pc` includes the project description and URL.
 - The CMake custom command can regenerate `src/parser.c` inside the source tree when timestamps require it and discovers an arbitrary `tree-sitter` CLI from `PATH`. CI therefore validates the pinned Makefile generation path instead of invoking CMake.
 - `cmake --install --prefix` does not rewrite the configured `prefix` in the generated pkg-config file, because `bindings/c/tree-sitter-strudel.pc.in` uses `CMAKE_INSTALL_PREFIX` at configure time. Configure with the intended installation prefix until release packaging addresses this.
 
@@ -57,7 +57,7 @@ Retain the C binding. It is a small, source-level integration with a correct pub
 
 ### Decision
 
-Retain the Go binding as a source-level, source-only integration. Its metadata explicitly enables it, its source and test are tracked, and a compatible runtime previously passed. Removing it would break source consumers and discard useful validation without solving the packaging gap. This audit does not promote Go to a first-class distributed binding: adding `go.mod`/`go.sum`, wiring a Go CI leg, or disabling the binding would materially change compatibility and requires explicit approval. The aggregate non-Node binding decision remains pending until the Rust and Swift audits are complete.
+Retain the Go binding as a source-level, source-only integration. Its metadata explicitly enables it, its source and test are tracked, and a compatible runtime previously passed. Removing it would break source consumers and discard useful validation without solving the packaging gap. This audit does not promote Go to a first-class distributed binding: adding `go.mod`/`go.sum`, wiring a Go CI leg, or disabling the binding would materially change compatibility and requires explicit approval. The aggregate non-Node binding decision remains pending until the Swift audit is complete.
 
 ### Known gaps and deferred work
 
@@ -76,7 +76,7 @@ Retain the Go binding as a source-level, source-only integration. Its metadata e
 | Public API  | `bindings/python/tree_sitter_strudel/binding.c` declares `tree_sitter_strudel()` and returns a `PyCapsule` named `tree_sitter.Language`; `__init__.py` exposes `language()`, `HIGHLIGHTS_QUERY`, and `LOCALS_QUERY`, with matching entries in `__init__.pyi`. | Correct runtime capsule contract and typed module surface; official queries are exposed as module attributes.                            |
 | Build       | `setup.py` builds the `_binding` extension from `binding.c` plus `src/parser.c` and optional `src/scanner.c`, copies `queries/` into the package, and emits an abi3 wheel for CPython 3.10+.                                                                  | Standard setuptools path; the extension imports without installing the optional `tree-sitter` runtime.                                   |
 | Packaging   | `pyproject.toml` declares name, AGPL-3.0-only license, `requires-python >=3.10`, and optional `core = tree-sitter~=0.25.0`; `publish.yml` has a PyPI job with `generate: true`.                                                                               | The Python binding has a real distribution path and a declared ABI-compatible runtime floor.                                             |
-| Version     | `pyproject.toml` uses `1.3.0`, matching Makefile and CMake metadata, while `package.json` and `tree-sitter.json` use `1.5.0`.                                                                                                                                 | Version alignment remains a Phase 7 package-integrity gap; it is not a binding functionality failure.                                    |
+| Version     | `pyproject.toml`, Makefile, CMake, Cargo, and generated pkg-config metadata now use `1.5.0`, matching `package.json` and `tree-sitter.json`.                                                                                                                  | `make check-version` gates alignment across all package metadata.                                                                        |
 | Test source | `bindings/python/tests/test_binding.py` constructs `tree_sitter.Language(tree_sitter_strudel.language())`; `scripts/check_query_registration.py` statically checks module and stub exports.                                                                   | Existing test is a shallow load test; parser, query, recovery, and incremental behavior are covered by other layers, not through Python. |
 | npm package | npm `files` excludes non-Node bindings, including `bindings/python/`.                                                                                                                                                                                         | Python consumers use the PyPI package or source checkout, not npm.                                                                       |
 
@@ -87,19 +87,52 @@ Retain the Go binding as a source-level, source-only integration. Its metadata e
 - `make test-python` was added and wired into `verify-all` and `make ci`.
 - A negative control that expected a missing capture in `HIGHLIGHTS_QUERY` failed with `exit=1`.
 - The [compatibility record](compatibility.md#validation-performed) documents a prior pass with Python 3.15.2 and `tree-sitter` 0.25.2. That runtime is not installed in this environment, so the current check validates the binding surface without constructing a `tree_sitter.Language` object.
+- A CI reproduction with `clang` and `ld.gold` failed because the target Python's `-Wl,-z,pack-relative-relocs` linker flag is unsupported by gold. The checker now strips that flag from `LDSHARED`/`LDFLAGS`; the forced gold reproduction and the normal build both pass.
 
 ### Decision
 
-Retain the Python binding as an officially distributed integration. It has a working CPython extension, typed query/API exports, a PyPI publish job, and a declared ABI-compatible runtime extra. Removing it would break an established distribution path and contradict `bindings.python: true`. Version alignment and deeper behavioral coverage are tracked separately rather than treated as reasons to remove the binding.
+Retain the Python binding as an officially distributed integration. It has a working CPython extension, typed query/API exports, a PyPI publish job, and a declared ABI-compatible runtime extra. Removing it would break an established distribution path and contradict `bindings.python: true`. Deeper behavioral coverage is tracked separately rather than treated as a reason to remove the binding.
 
 ### Known gaps and deferred work
 
-- `pyproject.toml` is at `1.3.0` while npm and Tree-sitter metadata are at `1.5.0`; release packaging must align them.
 - The optional `core` extra means the existing `test_binding.py` does not run unless `tree-sitter` is installed; the new gate checks the extension without that runtime.
 - No representative parse, query-execution, recovery, or incremental-equivalence test runs through the Python binding.
 - The abi3 wheel target is declared for CPython 3.10+, but only Python 3.14.10 was built locally in this audit.
 - `setup.py` currently copies `binding.c` into the built package; harmless but unnecessary package content.
 
+## Rust binding — audited 2026-11-26
+
+### Implementation and build reachability
+
+| Area        | Evidence                                                                                                                                                                                               | Assessment                                                                                                               |
+| ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------ |
+| Public API  | `bindings/rust/lib.rs` declares `extern "C" fn tree_sitter_strudel()`, exposes `LANGUAGE: LanguageFn`, and embeds `NODE_TYPES`, `HIGHLIGHTS_QUERY`, and `LOCALS_QUERY` from committed files.           | Standard Tree-sitter Rust template shape with typed query exports and no grammar-specific semantic logic.                |
+| Build       | `bindings/rust/build.rs` compiles `src/parser.c` with `cc`, adds an optional `src/scanner.c`, sets C11, and emits `tree-sitter-strudel`.                                                               | Conventional build script tied to the committed generated parser.                                                        |
+| Manifest    | `Cargo.toml` declares `tree-sitter-language = "0.1"`, `cc = "1.2"`, and dev `tree-sitter = "0.25.8"`; a tracked `Cargo.lock` pins 25 resolved packages; `tree-sitter.json` enables `bindings.rust`.    | Dependencies are reproducibly locked; the dev dependency declares the ABI-compatible runtime floor.                      |
+| Packaging   | `Cargo.toml` includes `bindings/rust/*`, `queries/*`, `src/*`, `tree-sitter.json`, and `LICENSE`; the crates publish job has `CARGO_REGISTRY_TOKEN` and `generate: true`.                              | A real crates.io distribution path exists and regenerates parser artifacts during release packaging.                     |
+| Version     | `Cargo.toml` and `Cargo.lock` now use `1.5.0`, matching Makefile, CMake, Python, pkg-config, npm, and Tree-sitter metadata.                                                                            | `make check-version` gates alignment across all package metadata.                                                        |
+| Test source | Inline `test_can_load_grammar` constructs `tree_sitter::Parser` and calls `set_language(&LANGUAGE.into())`; `scripts/check_query_registration.py` checks Rust query constants and Cargo include rules. | Shallow load test only; parser, query, recovery, and incremental behavior are covered by other layers, not through Rust. |
+| npm package | npm `files` includes only Node.js binding artifacts and omits `bindings/rust/`.                                                                                                                        | Rust consumers use crates.io or the source repository, not npm.                                                          |
+
+### Verification performed
+
+- `rustc` and `cargo` 1.100.0 are installed locally.
+- In a clean temporary copy of tracked sources, `cargo metadata --offline --no-deps --format-version 1` exited `0`, confirming that Cargo parses the manifest and package identity without fetching dependencies.
+- After explicit approval, `cargo fetch` downloaded the missing crates and generated `Cargo.lock`; `cargo test --locked` passed the inline load and doc tests with Rust 1.100.0.
+- Added `scripts/check_rust_binding.py` and `make test-rust`, wired into `verify-all` and `make ci`. The checker validates manifest fields, dependency declarations, `Cargo.lock`, Cargo include coverage, build-script wiring, public API constants, language symbol declaration, npm exclusion, crates publish configuration, and a `cargo test --locked` run in a temporary tracked-source copy.
+- Negative controls that renamed `LANGUAGE` or removed the loader call in temporary tracked-source copies failed with `exit=1`.
+- A forced reproduction in which `ld.lld` was selected for Cargo compilation failed before the fix. The checker now appends GNU `ld.bfd` flags on Linux for both `RUSTFLAGS`/`CARGO_ENCODED_RUSTFLAGS` and `RUSTDOCFLAGS`; the forced `ld.lld` configurations then passed.
+
+### Decision
+
+Retain the Rust binding. It has a working manifest, a locked dependency graph, a standard parser build script, a typed `LanguageFn` API, committed query constants, gated load tests, and a crates.io publish job with parser generation enabled. Removing it would discard an established crate integration and contradict `bindings.rust: true`. Deeper Rust behavior tests remain deferred rather than treated as a reason to remove the binding.
+
+### Known gaps and deferred work
+
+- The first uncached `cargo test --locked` run needs network access to crates.io; CI runners provide that, and `Cargo.lock` pins the resolved graph once fetched.
+- The inline Rust test is a nil-language load check only; no representative parse, query-execution, recovery, or incremental-equivalence test runs through Rust.
+- Rust releases are not published from ordinary commits; the crates job still triggers only on tags through the controlled publish workflow.
+
 ## Other bindings
 
-Audits for Rust and Swift are pending and tracked in the [roadmap](roadmap.md#phase-7--packaging-and-compatibility).
+The Swift audit is pending and tracked in the [roadmap](roadmap.md#phase-7--packaging-and-compatibility).

@@ -17,7 +17,7 @@ endif
 # Project metadata
 LANGUAGE_NAME := tree-sitter-strudel
 HOMEPAGE_URL := https://github.com/pedrozappa/tree-sitter-strdl
-VERSION := 1.3.0
+VERSION := 1.5.0
 DESCRIPTION := Parser for Strudel, a Tidal Cycles based live coding tool
 
 # Directories
@@ -111,6 +111,11 @@ ifneq ($(filter $(HOST_OS),FreeBSD NetBSD DragonFly),)
 	PCLIBDIR := $(PREFIX)/libdata/pkgconfig
 endif
 
+# Query checks use the freshly built shared library instead of the CLI's global
+# parser cache, which can hold a stale or symbol-less parser.
+QUERY_LIB := $(CURDIR)/lib$(LANGUAGE_NAME).$(SOEXT)
+export TREE_SITTER_LIB_PATH := $(QUERY_LIB)
+
 # Colors. tput is silenced when TERM is unset (for example in CI), leaving the
 # escape sequences empty without polluting every make invocation with errors.
 B = $(shell tput bold 2>/dev/null)
@@ -126,8 +131,8 @@ D = $(shell tput sgr0 2>/dev/null)
 _SUCCESS = [$(GRN)SUCCESS$(D)]
 _INFO    = [$(BLU)INFO$(D)]
 
-.PHONY: all build generate test test-recovery test-incremental test-query-compile test-query-execution test-query-registration test-query test-node test-node-clean-build test-generated-runtime test-c test-python test-package test-regressions benchmark-fixtures check-benchmark-fixtures bench-fresh bench-incremental bench-memory build-benchmark-baseline check-benchmark-baseline reproduce-benchmark-baseline compare-benchmark-baseline build-benchmark-budgets check-benchmark-budgets performance-report format check-format check-static parse playground wasm \
-	local-install install-dev install uninstall clean check-generated verify verify-all ci \
+.PHONY: all build generate test test-recovery test-incremental test-query-compile test-query-execution test-query-registration test-query test-node test-node-clean-build test-generated-runtime test-c test-python test-rust test-package test-regressions benchmark-fixtures check-benchmark-fixtures bench-fresh bench-incremental bench-memory build-benchmark-baseline check-benchmark-baseline reproduce-benchmark-baseline compare-benchmark-baseline build-benchmark-budgets check-benchmark-budgets performance-report format check-format check-static parse playground wasm \
+	local-install install-dev install uninstall clean check-generated check-version verify verify-all ci \
 	docs docs-open help
 
 #==============================================================================#
@@ -184,12 +189,12 @@ test-incremental:	## Compare incremental and fresh parses (INCREMENTAL_FILTER=id
 	@python3 scripts/test_incremental.py $(INCREMENTAL_FILTER)
 	@echo "$(YEL)* $(_SUCCESS) Incremental equivalence tests completed$(D)"
 
-test-query-compile:	## Compile official queries and verify invalid queries are rejected
+test-query-compile: lib$(LANGUAGE_NAME).$(SOEXT)	## Compile official queries and verify invalid queries are rejected
 	@echo "$(YEL)Running query compilation checks...$(D)"
 	@python3 scripts/check_query_compilation.py $(TS) $(QUERIES)
 	@echo "$(YEL)* $(_SUCCESS) Query compilation checks completed$(D)"
 
-test-query-execution:	## Assert query captures on representative compositions
+test-query-execution: lib$(LANGUAGE_NAME).$(SOEXT)	## Assert query captures on representative compositions
 	@echo "$(YEL)Running query execution tests...$(D)"
 	@python3 scripts/check_query_captures.py $(TS) $(QUERY_DIR)/highlights.scm test/query/call_identifiers.scm function.call "call identifiers" $(QUERY_EXECUTION_FIXTURES)
 	@python3 scripts/check_query_captures.py $(TS) $(QUERY_DIR)/highlights.scm test/query/call_methods.scm function.method "method callees" $(QUERY_EXECUTION_FIXTURES)
@@ -231,7 +236,7 @@ test-query-registration:	## Verify official queries are registered, packaged, an
 test-query: test-query-compile test-query-execution test-query-registration	## Compile, run, and check official queries against the fixtures
 	@echo "$(YEL)Running query checks...$(D)"
 	@for query in $(QUERIES); do \
-		$(TS) query --quiet --grammar-path . "$$query" $(FIXTURES) || exit 1; \
+		$(TS) query --quiet --lib-path "$(QUERY_LIB)" --lang-name strudel "$$query" $(FIXTURES) || exit 1; \
 	done
 	@python3 scripts/check_query_determinism.py $(TS) $(QUERY_DIR)/highlights.scm $(FIXTURES) $(QUERY_DETERMINISM_FIXTURES)
 	@python3 scripts/check_locals_definitions_absent.py $(TS) $(QUERY_DIR)/locals.scm test/query/call_identifiers.scm "call identifier" $(FIXTURES) $(QUERY_DETERMINISM_FIXTURES)
@@ -262,6 +267,11 @@ test-python:	## Build and verify the Python binding extension
 	@echo "$(YEL)Verifying Python binding...$(D)"
 	@python3 scripts/check_python_binding.py
 	@echo "$(YEL)* $(_SUCCESS) Python binding verified$(D)"
+
+test-rust:	## Verify Rust binding metadata, packaging, public API, and cargo tests
+	@echo "$(YEL)Verifying Rust binding...$(D)"
+	@python3 scripts/check_rust_binding.py
+	@echo "$(YEL)* $(_SUCCESS) Rust binding verified$(D)"
 
 test-package:	## Verify npm package contents and metadata
 	@echo "$(YEL)Checking npm package integrity...$(D)"
@@ -373,9 +383,14 @@ check-generated:	## Verify committed parser artifacts match grammar.js
 	}
 	@echo "$(YEL)* $(_SUCCESS) Generated artifacts are in sync$(D)"
 
+check-version:	## Verify version numbers are aligned across package metadata
+	@echo "$(YEL)Checking version consistency...$(D)"
+	@python3 scripts/check_version_consistency.py
+	@echo "$(YEL)* $(_SUCCESS) Package versions are aligned$(D)"
+
 verify: check-generated check-format check-static test test-incremental test-query test-regressions check-benchmark-fixtures check-benchmark-baseline reproduce-benchmark-baseline check-benchmark-budgets	## Run the core CI gate (artifacts, formatting, static checks, corpus, incremental equivalence, queries, regressions, fixtures, baseline reproduction, budgets)
 
-verify-all: verify test-node test-node-clean-build test-generated-runtime test-c test-python test-package	## Run the core gate plus Node.js, clean-build, generated-runtime, C/Python bindings, and package checks
+verify-all: verify test-node test-node-clean-build test-generated-runtime test-c test-python test-rust check-version test-package	## Run the core gate plus Node.js, clean-build, generated-runtime, C/Python/Rust bindings, version, and package checks
 
 ci: verify-all build	## Run the complete CI gate locally (requires make install-dev first)
 

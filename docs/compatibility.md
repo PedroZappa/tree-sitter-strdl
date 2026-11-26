@@ -32,7 +32,7 @@ tree-sitter generate
 | ------- | ------------------------------------------------------------------------------------- | ---------------------------------------------------------- | ------------------------------------------------------------ |
 | Node.js | peer `tree-sitter: ^0.25.0`                                                           | `tree-sitter` 0.25.1, Node.js 26.8.2 and 26.13.1           | Passed `npm test` and a clean tracked-source build           |
 | Python  | optional extra `tree-sitter~=0.25.0`                                                  | `tree-sitter` 0.25.2 previously; Python 3.15.2 and 3.14.10 | Passed `test_binding.py` and `make test-python`              |
-| Rust    | dev-dependency `tree-sitter = "0.25.8"`                                               | Not run; cargo unavailable                                 | Not verified in this environment                             |
+| Rust    | dev-dependency `tree-sitter = "0.25.8"`                                               | `cargo`/`rustc` 1.100.0; `cargo test --locked`             | Passed load and doc tests; `Cargo.lock` pins dependencies    |
 | Go      | `github.com/tree-sitter/go-tree-sitter` v0.25.0 resolved by the temporary test module | Go 1.27.4                                                  | Passed `go test` in a temporary copy; retained source-only   |
 | Swift   | `SwiftTreeSitter` `from: "0.10.0"`                                                    | Resolved SwiftTreeSitter 0.25.0 and tree-sitter 0.25.10    | `swift build` passed; `swift test` blocked by missing XCTest |
 | C       | No Tree-sitter runtime dependency declared                                            | C11 with GCC 16.2.1; CMake 4.5.1                           | Passed `make build`, CMake build/install, and C symbol check |
@@ -62,10 +62,16 @@ The Go binding was audited on 2026-11-26 as well. Its source and test were inspe
 
 The Python binding was audited on 2026-11-26. `make test-python` built the extension with Python 3.14.10 and validated the `tree_sitter.Language` capsule plus both official query exports without installing the optional runtime. The earlier `tree-sitter` 0.25.2 / Python 3.15.2 load test remains the runtime-level evidence. See the [Python audit](binding-audit.md#python-binding--audited-2026-11-26).
 
+The Rust binding was audited on 2026-11-26. After approval, crates were fetched, `Cargo.lock` was generated, and `cargo test --locked` passed with Cargo 1.100.0. `make test-rust` now combines structural checks with that locked runtime test; see the [Rust audit](binding-audit.md#rust-binding--audited-2026-11-26).
+
+Query gates now build the shared C library and pass it to the CLI with `--lib-path`, avoiding the stale global parser cache that caused an intermediate CI failure. Release metadata is aligned at `1.5.0`, and `make check-version` gates that alignment.
+
+The Python binding check removes `-Wl,-z,pack-relative-relocs` from the target interpreter's linker configuration because `ld.gold` rejects that flag; a forced `clang`/`ld.gold` reproduction now builds successfully. On Linux, the Rust gate appends GNU `ld.bfd` flags for Cargo compilation and doc tests; forced `ld.lld` configurations now pass.
+
 ## Known limitations
 
 - npm 11 in this environment blocks dependency install scripts for `tree-sitter` and `tree-sitter-cli` by default; the project's own install script still compiled the addon, and the clean build's `npm test` run loaded the runtime successfully.
-- Rust tests were not run because `cargo` is unavailable in this environment.
+- The Rust gate needs network access on the first uncached run to fetch crates.io dependencies; subsequent runs use the locked graph and local cache.
 - Swift tests were not run successfully because XCTest could not be resolved by the installed command-line tools.
 - `npm install` emitted script-allowlist warnings, but the pinned local CLI was executable and was used for the final regeneration check.
 
