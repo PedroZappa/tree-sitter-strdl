@@ -23,7 +23,7 @@ The parser is intentionally limited to syntax recognition and the public concret
    .venv/bin/pip install -r requirements-dev.txt
    ```
 
-3. Run `make help` to see the available targets and supported variables.
+3. Run `make help` for the available targets and common override hints; consult the [Makefile](Makefile) for exact variable names.
 4. Inspect `git status --short` and preserve unrelated working-tree changes.
 5. Create a focused branch. Phase work uses `phase/<number>-<slug>` branches created from the corresponding phase tag; ordinary fixes and documentation changes can use a descriptive topic branch.
 

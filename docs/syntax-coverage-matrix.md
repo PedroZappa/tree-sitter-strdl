@@ -1,6 +1,6 @@
 # Phase 3 syntax coverage matrix
 
-This matrix compares the grammar with the significant syntax requirements established by [syntax-evidence.md](syntax-evidence.md). Evidence IDs (`D`, `S`, `E`, and `C`) resolve to exact snippets and source URLs in that document. Statuses reflect the Phase 3 structured refactor in [`grammar.js`](../grammar.js), regenerated artifacts in `src/`, and 45 corpus cases in [`test/corpus/`](../test/corpus/). The compatibility meaning of each status is defined in [syntax coverage compatibility](compatibility.md#syntax-coverage-compatibility).
+This matrix compares the grammar with the significant syntax requirements established by [syntax-evidence.md](syntax-evidence.md). Evidence IDs (`D`, `S`, `E`, and `C`) resolve to exact snippets and source URLs in that document. Statuses reflect the Phase 3 structured refactor in [`grammar.js`](../grammar.js) and regenerated artifacts in `src/`; the current corpus contains 157 cases across 32 files in [`test/corpus/`](../test/corpus/). The compatibility meaning of each status is defined in [syntax coverage compatibility](compatibility.md#syntax-coverage-compatibility).
 
 Statuses:
 
@@ -61,13 +61,13 @@ Statuses:
 
 - The initial audit used `node_modules/.bin/tree-sitter parse` with CLI `0.27.2` against 43 temporary probes under `/tmp/opencode/coverage-probes` at commit `2d9b706`. Error-free but structurally wrong cases were reviewed with `--cst`.
 - The structured refactor was then regenerated and validated against all 43 probes. Named imports were corrected to consume the `from` token. The remaining expected probe failures are object destructuring, spread arguments, shorthand properties, logical operators, and nullish coalescing.
-- Corpus coverage grew from 17 to 42 cases. All 42 pass with CLI `0.27.2`.
+- Corpus coverage grew from 17 cases at the initial audit to 42 cases by the Phase 3 audit. The current corpus contains 157 cases across 32 files, and all 157 pass with CLI `0.27.2`.
 - `src/node-types.json` now reports 40 named nodes and 31 fields. This is a deliberate breaking CST API change documented in [grammar-architecture.md](grammar-architecture.md).
 - Official query files were rewritten for the new node and field names. `tree-sitter test` compiles both query files successfully.
 - No Strudel-specific semantic rules were introduced. Mini-notation, DSL bodies, and runtime conventions remain outside the grammar.
+- Phase 4 added dedicated malformed-input, incremental-parsing, and regression coverage after this Phase 3 audit.
 
 ## Intentionally deferred
 
 - Object shorthand properties, object destructuring declarations, rest parameters, spread arguments, default imports, and any active logical/nullish evidence require new source material before further grammar work.
 - `%`, `**`, bitwise operators, loops, classes, and broader ECMAScript syntax are outside the current evidence set.
-- Dedicated malformed-input and incremental-parsing regression tests belong to Phase 4.

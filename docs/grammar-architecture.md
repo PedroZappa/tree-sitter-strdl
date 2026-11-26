@@ -32,7 +32,7 @@ The refactor replaces the Phase 2 wrapper-heavy hierarchy with composable, JavaS
 
 ### Public fields
 
-The table below is the complete node-to-field inventory. A trailing `?` marks an optional singular field; a trailing `*` marks a repeatable field with zero or more children in source order. An unmarked field is required and singular.
+The table below is the complete node-to-field inventory. A trailing `?` marks an optional singular field; a trailing `*` marks a repeatable field with zero or more children in source order, except `variable_declaration.declarator`, which is required and repeatable. An unmarked field is required and singular.
 
 | Node                         | Fields                                    |
 | ---------------------------- | ----------------------------------------- |
@@ -64,7 +64,7 @@ The table below is the complete node-to-field inventory. A trailing `?` marks an
 | `template_substitution`      | `expression`                              |
 | `try_statement`              | `body`, `parameter?`, `handler`           |
 | `unary_expression`           | `operator`, `argument`                    |
-| `variable_declaration`       | `kind`, `declarator*`                     |
+| `variable_declaration`       | `kind`, `declarator+`                     |
 | `variable_declarator`        | `name`, `value?`                          |
 
 #### Repeatable fields
@@ -75,9 +75,9 @@ The table below is the complete node-to-field inventory. A trailing `?` marks an
 | `array.element*`                   | Ordered values in an array literal.                                               |
 | `array_pattern.element*`           | Ordered binding targets in an array destructuring pattern.                        |
 | `formal_parameters.parameter*`     | Ordered function or arrow parameters; defaults are `assignment_pattern` children. |
-| `variable_declaration.declarator*` | Ordered bindings declared by one `var`, `let`, or `const` keyword.                |
+| `variable_declaration.declarator+` | Ordered bindings declared by one `var`, `let`, or `const` keyword.                |
 
-Repeated fields produce one child per occurrence. Consumers should preserve their order; Tree-sitter does not sort them.
+Repeated fields produce one child per occurrence. Consumers should preserve their order; Tree-sitter does not sort them. The `+` suffix marks the one required repeatable field; `*` marks fields that may be absent.
 
 #### Optional singular fields
 
@@ -303,7 +303,7 @@ Template literals expose only `${...}` substitutions as expression children; all
 
 ### Known limitations
 
-- **Root-`ERROR` collapses:** bare `!`, `function f()` without a body, `import { x } from` without a source, unterminated quoted strings (`"bd`, `s("bd`), an untagged template at exact EOF, an unfinished `${...}` substitution, and multiple missing delimiters (`f({a: 1`, `[{a: 1}, {b: 2`, `s("bd", note("c3"`).
+- **Root-`ERROR` or localized `ERROR` limitations:** bare `!`, `function f()` without a body, `import { x } from` without a source, unterminated quoted strings (`"bd`, `s("bd`), an untagged template at exact EOF, an unfinished `${...}` substitution, and multiple missing delimiters (`f({a: 1`, `[{a: 1}, {b: 2`, `s("bd", note("c3"`). Some cases collapse the whole source to `ERROR`; `s("bd` and `f({a: 1` retain surrounding syntax beside a localized `ERROR`.
 - **Cascading consumption:** an unfinished call, a missing initializer, or an incomplete arrow immediately before the next declaration keyword consumes that keyword. In `s("bd",` followed by `const a = 1`, `const` is parsed as an argument identifier and `a = 1` as an assignment expression. An unclosed quoted string consumes the rest of the file.
 - These behaviors are locked in by [recovery_limitations.txt](../test/corpus/recovery_limitations.txt) (15 cases). They document current behavior; they are not expected-good recovery and are not supported syntax.
 
@@ -313,7 +313,7 @@ Incremental/fresh equivalence is a tree-identity guarantee, not a recovery-quali
 
 ### Validation and change policy
 
-- `make test` runs the full corpus, including all recovery cases (157 cases at the time of writing). `make test-recovery` reruns the 12 recovery-focused corpus files as a local subset (86 cases). `make verify` and `make ci` run the full corpus and the incremental harness; Node.js binding recovery assertions also run through `make test-node`.
+- `make test` runs the full corpus, including all recovery cases (157 cases at the time of writing). `make test-recovery` reruns 13 corpus files matched by `RECOVERY_FILES`, including `valid_syntax_expansions.txt`, as a local subset (86 cases). `make verify` and `make ci` run the full corpus and the incremental harness; Node.js binding recovery assertions also run through `make test-node`.
 - Every discovered recovery bug or weakness gets a permanent corpus case. Expected trees containing `ERROR` or `MISSING` may need to be derived from parse probes because `tree-sitter test --update` refuses to auto-accept them.
 - Never promote a root-`ERROR` collapse into an expected-good tree; add it to the limitation fixture instead.
 - After any grammar change, regenerate with the pinned CLI, review `src/node-types.json`, run corpus and incremental tests, and update this section when recovery behavior changes.
