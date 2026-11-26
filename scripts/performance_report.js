@@ -60,12 +60,18 @@ function usage() {
     "  --memory PATH     Parse-tree memory report",
     "  --output PATH     Also write the Markdown report to this file",
     "  --json-output PATH Also write the structured report to this file",
+    "  --format FORMAT   stdout format: auto (default), terminal, markdown, or json",
     "  --help            Show this message",
   ].join("\n");
 }
 
 function parseArgs(argv) {
-  const options = { help: false, output: null, jsonOutput: null };
+  const options = {
+    help: false,
+    output: null,
+    jsonOutput: null,
+    format: "auto",
+  };
   for (const field of INPUT_FIELDS) {
     options[field] = null;
   }
@@ -81,14 +87,16 @@ function parseArgs(argv) {
         ? "jsonOutput"
         : flag === "output"
           ? "output"
-          : INPUT_FIELDS.includes(flag)
-            ? flag
-            : null;
+          : flag === "format"
+            ? "format"
+            : INPUT_FIELDS.includes(flag)
+              ? flag
+              : null;
     check(optionName, `unknown option ${argument}`);
-    check(index + 1 < argv.length, `${argument} requires a path`);
+    check(index + 1 < argv.length, `${argument} requires a value`);
     index += 1;
     options[optionName] = argv[index];
-    check(options[optionName].length > 0, `${argument} requires a path`);
+    check(options[optionName].length > 0, `${argument} requires a value`);
   }
   if (options.help) {
     return options;
@@ -96,6 +104,10 @@ function parseArgs(argv) {
   for (const field of INPUT_FIELDS) {
     check(options[field], `missing required option --${field}`);
   }
+  check(
+    ["auto", "terminal", "markdown", "json"].includes(options.format),
+    `--format must be auto, terminal, markdown, or json`,
+  );
   return options;
 }
 
@@ -402,6 +414,159 @@ function renderReport(report) {
   return `${lines.join("\n")}\n`;
 }
 
+function terminalStyles() {
+  const enabled = Boolean(process.stdout.isTTY) && !process.env.NO_COLOR;
+  const paint = (code) => (text) =>
+    enabled ? `\x1b[${code}m${text}\x1b[0m` : text;
+  return {
+    bold: paint("1"),
+    dim: paint("2"),
+    green: paint("32"),
+    yellow: paint("33"),
+  };
+}
+
+function terminalWidth() {
+  const columns = process.stdout.columns;
+  return Math.max(
+    60,
+    Math.min(typeof columns === "number" ? columns : 100, 120),
+  );
+}
+
+function clip(text, width) {
+  const value = String(text);
+  return value.length <= width ? value : `${value.slice(0, width - 1)}…`;
+}
+
+function pad(value, width) {
+  return String(value).padEnd(width, " ");
+}
+
+function styleVerdict(style, verdict) {
+  if (verdict === "within-observed-envelope") {
+    return style.green("within");
+  }
+  if (verdict === "above-observed-envelope") {
+    return style.yellow("above");
+  }
+  if (verdict === "non-comparable") {
+    return style.dim("non-comparable");
+  }
+  return verdict;
+}
+
+function renderTerminal(report) {
+  const style = terminalStyles();
+  const width = terminalWidth();
+  const lines = [];
+
+  lines.push(style.bold("Performance check report"));
+  lines.push(
+    style.dim(
+      `${report.generatedAt} · baseline ${report.baseline.repositoryCommit} · informational only`,
+    ),
+  );
+  lines.push("");
+
+  lines.push(style.bold("Comparability"));
+  if (report.comparability.comparable) {
+    lines.push(
+      "  Environment and configuration match baseline and budget sessions.",
+    );
+  } else {
+    lines.push(
+      style.yellow(
+        "  NOT COMPARABLE — numeric verdicts are informational only.",
+      ),
+    );
+    for (const difference of report.comparability.differences) {
+      lines.push(
+        `  ${pad(difference.field, 18)} ${number(difference.baseline)} -> ${number(difference.current)}`,
+      );
+    }
+  }
+  lines.push("");
+
+  lines.push(style.bold("Observed envelope"));
+  lines.push(
+    `  ${report.summary.metrics} metrics: ${report.summary.withinEnvelope} within, ` +
+      `${report.summary.aboveEnvelope} above, ${report.summary.nonComparable} non-comparable`,
+  );
+  const scopes = [
+    ["Fresh latency", "fresh", report.summary.cases.fresh],
+    ["Incremental latency", "incremental", report.summary.cases.incremental],
+    ["Fresh memory", "memory-fresh", report.summary.cases.memoryFresh],
+    [
+      "Incremental memory",
+      "memory-incremental",
+      report.summary.cases.memoryIncremental,
+    ],
+  ];
+  for (const [label, mode, cases] of scopes) {
+    const relevant = report.evaluations.filter((item) => item.mode === mode);
+    const within = relevant.filter(
+      (item) => item.verdict === "within-observed-envelope",
+    ).length;
+    const above = relevant.filter(
+      (item) => item.verdict === "above-observed-envelope",
+    ).length;
+    const nonComparable = relevant.filter(
+      (item) => item.verdict === "non-comparable",
+    ).length;
+    lines.push(
+      `  ${pad(label, 20)} ${pad(`${cases} cases`, 10)} ${pad(`${within} within`, 11)} ` +
+        `${pad(`${above} above`, 10)} ${nonComparable} non-comparable`,
+    );
+  }
+  lines.push("");
+
+  lines.push(style.bold("Largest increases"));
+  if (report.increases.length === 0) {
+    lines.push("  No increases versus the committed baseline.");
+  } else {
+    const lookup = new Map(
+      report.evaluations.map((item) => [
+        `${item.mode}|${item.id}|${item.metric}`,
+        item,
+      ]),
+    );
+    for (const increase of report.increases.slice(0, 10)) {
+      const evaluation = lookup.get(
+        `${increase.mode}|${increase.id}|${increase.metric}`,
+      );
+      const subject = clip(
+        `${increase.mode}/${increase.id}/${increase.metric}`,
+        width - 4,
+      );
+      lines.push(`  ${subject}`);
+      const baselineValue = evaluation ? number(evaluation.baseline) : "n/a";
+      const currentValue = evaluation ? number(evaluation.current) : "n/a";
+      const budgetValue = evaluation ? number(evaluation.budget) : "n/a";
+      const verdict = evaluation
+        ? styleVerdict(style, evaluation.verdict)
+        : "no budget metric";
+      lines.push(
+        `    ${baselineValue} -> ${currentValue}  ${ratio(increase.ratio)}  ` +
+          `${verdict}  budget ${budgetValue}`,
+      );
+    }
+  }
+  lines.push("");
+
+  lines.push(style.bold("Notes"));
+  lines.push("  · Timing and memory deltas never fail CI.");
+  lines.push(
+    "  · Above-envelope results are warnings, not regressions by themselves.",
+  );
+  lines.push(
+    "  · Reproduce them on the reference environment before investigating code.",
+  );
+  lines.push("  · Correctness gates in make ci remain mandatory.");
+  lines.push("");
+  return `${lines.join("\n")}\n`;
+}
+
 function writeText(file, content) {
   fs.mkdirSync(path.dirname(file), { recursive: true });
   fs.writeFileSync(file, content);
@@ -472,6 +637,23 @@ function buildReport(options) {
   };
 }
 
+function resolveFormat(format) {
+  if (format === "auto") {
+    return process.stdout.isTTY ? "terminal" : "markdown";
+  }
+  return format;
+}
+
+function renderStdout(report, format) {
+  if (format === "json") {
+    return `${JSON.stringify(report, null, 2)}\n`;
+  }
+  if (format === "terminal") {
+    return renderTerminal(report);
+  }
+  return renderReport(report);
+}
+
 function main() {
   const options = parseArgs(process.argv.slice(2));
   if (options.help) {
@@ -479,10 +661,10 @@ function main() {
     return;
   }
   const report = buildReport(options);
-  const markdown = renderReport(report);
-  process.stdout.write(markdown);
+  const stdoutFormat = resolveFormat(options.format);
+  process.stdout.write(renderStdout(report, stdoutFormat));
   if (options.output) {
-    writeText(options.output, markdown);
+    writeText(options.output, renderReport(report));
   }
   if (options.jsonOutput) {
     writeText(options.jsonOutput, `${JSON.stringify(report, null, 2)}\n`);
@@ -503,4 +685,4 @@ if (require.main === module) {
   }
 }
 
-module.exports = { buildReport, renderReport };
+module.exports = { buildReport, renderReport, renderTerminal };

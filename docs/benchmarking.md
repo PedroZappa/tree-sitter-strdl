@@ -244,7 +244,9 @@ make check-benchmark-budgets
 
 ## Hardware-variance-aware reporting
 
-`make performance-report` runs `bench-fresh`, `bench-incremental`, and `bench-memory` with the committed defaults, then renders a Markdown report from those reports, [baseline.json](../benchmarks/results/baseline.json), and [budgets.json](../benchmarks/results/budgets.json). GitHub Actions runs this target on the Node 24 matrix leg after the `make ci` gate. It is deliberately outside `make verify` and `make ci`: the report is informational and no timing observation can fail a build.
+`make performance-report` runs `bench-fresh`, `bench-incremental`, and `bench-memory` with the committed defaults, then renders a report from those reports, [baseline.json](../benchmarks/results/baseline.json), and [budgets.json](../benchmarks/results/budgets.json). GitHub Actions runs this target on the Node 24 matrix leg after the `make ci` gate. It is deliberately outside `make verify` and `make ci`: the report is informational and no timing observation can fail a build.
+
+Standard output uses `--format auto`: interactive terminals receive a compact terminal rendering, while redirected output and CI logs receive Markdown. `--format terminal`, `--format markdown`, and `--format json` force a specific stdout format. `NO_COLOR` disables terminal colors without changing the compact layout. The terminal rendering groups comparability and per-scope counts, then prints the ten largest increases as short two-line entries instead of wide Markdown tables.
 
 The report separates two questions:
 
@@ -262,10 +264,11 @@ The report also reuses the comparison tool's [classification](#correctness-failu
 
 ```sh
 make performance-report
-make performance-report PERF_REPORT_OUTPUT=/tmp/performance.md PERF_REPORT_JSON_OUTPUT=/tmp/performance.json
+make performance-report PERF_REPORT_FORMAT=markdown PERF_REPORT_OUTPUT=/tmp/performance.md
+make performance-report PERF_REPORT_FORMAT=terminal PERF_REPORT_JSON_OUTPUT=/tmp/performance.json
 ```
 
-`PERF_REPORT_OUTPUT` writes the Markdown report to a file while stdout keeps the same report for CI logs. `PERF_REPORT_JSON_OUTPUT` writes the structured evaluations, comparability metadata, and summary for downstream tooling.
+`PERF_REPORT_OUTPUT` always writes the Markdown report to a file, regardless of stdout format. `PERF_REPORT_JSON_OUTPUT` writes the structured evaluations, comparability metadata, and summary for downstream tooling. `PERF_REPORT_FORMAT` sets the stdout format (`auto`, `terminal`, `markdown`, or `json`) and defaults to `auto`.
 
 ## Validation performed
 
@@ -298,6 +301,7 @@ make performance-report PERF_REPORT_OUTPUT=/tmp/performance.md PERF_REPORT_JSON_
 - Two additional full measurement sessions were run on the same environment and configuration as the baseline and combined with it through `make build-benchmark-budgets BENCH_BUDGET_INPUTS=...`. The 51,511-byte version-1 `benchmarks/results/budgets.json` stores the observed envelope for 52 cases (5 fresh, 21 incremental, 5 fresh memory, 21 incremental memory) with per-metric observations and source session. For `incremental/compact-set-cps`, the P50/P95/P99 budgets are 0.010719/0.017109/0.031055 ms, each tracing to the session that produced the maximum. `make check-benchmark-budgets` passed; the artifact contains no `/tmp/` paths. Negative controls failed with exit 1 for a changed version, a budget that was not the observed maximum, a source that was not the maximum session, a removed case, shortened observations, a tampered top-level environment, and a tampered session environment. Build-time negative controls also failed with exit 1 for a session environment mismatch and a session configuration mismatch.
 - Comparison output was checked against the explicit classification policy. A report with 80 observed increases and matching environment/configuration exited `0` with `correctness.gates: true`, `performance.gates: false`, and `observedIncreases.count: 80`. A three-report CPU-count mismatch exited `0` with `environmentMismatch.present: true` and `fields: ["cpuCount"]`; a three-report warmup mismatch exited `0` with `configurationMismatch.present: true` and `fields: ["warmup"]`. A corrupted current report exited `1` and wrote no comparison, confirming that input validation remains a gating correctness failure. Benchmark guard controls also exited `1`: a temporary manifest with the `representative-main` SHA-256 changed failed before timing any fixture, and a temporary incremental catalog whose first edit used `occurrence: 99` failed before replaying edits.
 - `make performance-report` was run end to end with the committed baseline and budgets. A comparable session evaluated 182 metrics: 139 within the observed envelope and 43 above it, with exit `0`. Report copies with `cpuCount` changed from 24 to 23 and with `warmup` changed from 2 to 3 both exited `0`, listed the differing field, and marked all 182 verdicts non-comparable. A corrupted fresh `p50Ms` exited `1` and wrote no report; a budget copy missing one incremental case exited `1`. Markdown and JSON outputs were generated and checked. The GitHub Actions workflow adds the report as a Node 24 step after `make ci`; no timing result changes the build status.
+- The TTY-aware renderer was checked with explicit `terminal`, `markdown`, and `json` formats, all exiting `0` and producing their expected headings or JSON object. An invalid `--format` exited `1`. Under a pseudo-terminal, `--format auto` emitted the compact terminal layout with 30 ANSI style sequences; `NO_COLOR=1` retained that layout with zero ANSI sequences. `make performance-report PERF_REPORT_FORMAT=markdown` wrote Markdown to both stdout and `PERF_REPORT_OUTPUT`, while the structured `PERF_REPORT_JSON_OUTPUT` remained valid JSON.
 
 ## Remaining work
 

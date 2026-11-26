@@ -74,6 +74,7 @@ BENCH_COMPARE_OUTPUT ?=
 BENCH_BUDGET_INPUTS ?=
 PERF_REPORT_OUTPUT ?=
 PERF_REPORT_JSON_OUTPUT ?=
+PERF_REPORT_FORMAT ?= auto
 RECOVERY_FILES := $(wildcard $(TEST_DIR)/incomplete_*.txt $(TEST_DIR)/malformed_*.txt $(TEST_DIR)/missing_*.txt $(TEST_DIR)/noncascading_*.txt $(TEST_DIR)/recovery_*.txt $(TEST_DIR)/unfinished_*.txt $(TEST_DIR)/valid_*.txt)
 
 # Test inputs (override on the command line)
@@ -310,7 +311,7 @@ performance-report:	## Run performance checks and print a hardware-variance-awar
 	$(MAKE) bench-fresh BENCH_OUTPUT="$$dir/fresh.json" >/dev/null; \
 	$(MAKE) bench-incremental BENCH_OUTPUT="$$dir/incremental.json" >/dev/null; \
 	$(MAKE) bench-memory BENCH_OUTPUT="$$dir/memory.json" >/dev/null; \
-	$(NODE) scripts/performance_report.js --baseline $(BENCH_BASELINE) --budgets $(BENCH_BUDGETS) --fresh "$$dir/fresh.json" --incremental "$$dir/incremental.json" --memory "$$dir/memory.json" $(if $(PERF_REPORT_OUTPUT),--output $(PERF_REPORT_OUTPUT),) $(if $(PERF_REPORT_JSON_OUTPUT),--json-output $(PERF_REPORT_JSON_OUTPUT),)
+	$(NODE) scripts/performance_report.js --baseline $(BENCH_BASELINE) --budgets $(BENCH_BUDGETS) --fresh "$$dir/fresh.json" --incremental "$$dir/incremental.json" --memory "$$dir/memory.json" --format $(PERF_REPORT_FORMAT) $(if $(PERF_REPORT_OUTPUT),--output $(PERF_REPORT_OUTPUT),) $(if $(PERF_REPORT_JSON_OUTPUT),--json-output $(PERF_REPORT_JSON_OUTPUT),)
 	@echo "$(YEL)* $(_SUCCESS) Performance report generated (informational only)$(D)"
 
 format:	## Apply Prettier and Ruff formatting plus safe Ruff fixes
