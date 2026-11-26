@@ -31,12 +31,13 @@ The tests cover syntax recognition and the public concrete syntax tree (CST). Th
 | Regression inventory | `make test-regressions` | `test/fixtures/regression_inventory.json` | Every recorded bug resolves to an existing, wired corpus case, binding test, fixture, or gate artifact; documented exclusions remain rationale-only. See [regression coverage](regression-coverage.md). |
 | Benchmark fixture consistency | `make check-benchmark-fixtures` | `benchmarks/fixtures/manifest.json`, generated and representative fixtures | Fixture sizes, hashes, and generated content match the manifest exactly. See [benchmarking](benchmarking.md). |
 | Benchmark baseline integrity | `make check-benchmark-baseline` | `benchmarks/results/baseline.json`, `scripts/baseline_results.js`, benchmark manifest, incremental catalog | Validates baseline version, schema, source metadata, environment agreement, fixture/catalog coverage, sample statistics, and memory invariants. Not a performance gate. See [benchmarking](benchmarking.md#baseline-results). |
+| Benchmark comparison | `make compare-benchmark-baseline` | `benchmarks/results/baseline.json`, three current benchmark reports | Produces paired deltas and ratios for investigation, with environment/configuration agreement checks. Local-only; no thresholds or pass/fail status. See [benchmarking](benchmarking.md#regression-investigation). |
 | Fresh parse latency | `make bench-fresh` | `scripts/bench_fresh.js`, `benchmarks/fixtures/manifest.json`, Node.js binding | Measures `Parser.parse` latency with warmup, percentiles, fixture hash validation, and `expected_clean` guards. Not a CI gate. See [benchmarking](benchmarking.md#fresh-parsing-latency). |
 | Incremental parse latency | `make bench-incremental` | `scripts/bench_incremental.js`, `scripts/bench_common.js`, `test/fixtures/incremental_sequences.json`, Node.js binding | Times `tree.edit` plus incremental `Parser.parse` with warmup and percentiles, and rejects any step whose tree differs from a fresh parse. Not a CI gate. See [benchmarking](benchmarking.md#incremental-parsing-latency). |
 | Parse-tree memory | `make bench-memory` | `scripts/bench_memory.js`, `scripts/bench_common.js`, benchmark manifest, incremental catalog, Node.js binding | Forces GC and reports retained heap/RSS deltas for fresh and incremental trees with fresh-CST guards. Not a CI gate. See [benchmarking](benchmarking.md#memory-consumption). |
 | C library build | `make build` (included in `make ci`) | `bindings/c/`, generated sources | Static/shared libraries and pkg-config metadata build from generated artifacts. Build validation is distinct from behavioral testing. |
 
-Fresh and incremental latency reports keep P50, P95, and P99 in separate modes; consolidated observations are recorded in [benchmarking](benchmarking.md#percentile-reporting). The committed baseline is validated structurally, not against performance thresholds, and is described in [benchmarking](benchmarking.md#baseline-results). The hardware and software context is recorded in [benchmarking](benchmarking.md#benchmark-environment).
+Fresh and incremental latency reports keep P50, P95, and P99 in separate modes; consolidated observations are recorded in [benchmarking](benchmarking.md#percentile-reporting). The committed baseline is validated structurally, not against performance thresholds, and is described in [benchmarking](benchmarking.md#baseline-results). Local comparisons use the [regression investigation](benchmarking.md#regression-investigation) workflow. The hardware and software context is recorded in [benchmarking](benchmarking.md#benchmark-environment).
 
 ## Command map
 
@@ -59,6 +60,7 @@ Fresh and incremental latency reports keep P50, P95, and P99 in separate modes; 
 | `make bench-memory` | Fresh/incremental parse-tree memory measurement with mode, iteration, warmup, fixture, sequence/category, and JSON overrides. |
 | `make build-benchmark-baseline` | Build the committed baseline from fresh/incremental/memory JSON reports. |
 | `make check-benchmark-baseline` | Validate baseline structure and coverage without a performance gate. |
+| `make compare-benchmark-baseline` | Compare three current reports with the committed baseline and produce investigation data without gating. |
 | `make check-generated` | Generated-file consistency against `HEAD`. |
 | `make verify` | Generated-file, benchmark-fixture, baseline-integrity, corpus, query, and regression-inventory layers. |
 | `make verify-all` | `verify` plus Node.js binding and package checks. |
@@ -88,7 +90,7 @@ Run `make help` for the authoritative target list and parameter names.
 - `scripts/bench_fresh.js`: fresh parse latency measurement.
 - `scripts/bench_incremental.js`: incremental parse latency measurement with fresh-CST equivalence guards.
 - `scripts/bench_memory.js`: fresh and incremental parse-tree memory measurement with forced GC.
-- `scripts/baseline_results.js`: builds and structurally validates the committed baseline.
+- `scripts/baseline_results.js`: builds, structurally validates, and compares committed baseline observations.
 - `scripts/test_incremental.py`: replays edits and compares incremental and fresh CSTs.
 
 Temporary negative controls used while developing the determinism, locals-definition, registration, and capture checks are recorded in the [roadmap verification log](roadmap.md#verification-log). The query compilation checker contains built-in negative controls, and `test-query-execution` includes a permanent wrong-capture negative control.
@@ -113,6 +115,6 @@ Do not weaken or delete an existing test to make a change pass without an explic
 
 Covered by `make ci` today: generated-file, benchmark-fixture, and benchmark-baseline structural consistency; corpus behavior; all query layers; regression-inventory integrity; Node.js binding load/metadata/CST/recovery/query/incremental behavior; npm package integrity; and the C library build. Recovery cases run inside the full corpus suite; `make test-recovery` is the dedicated local subset.
 
-Local-only: incremental/fresh equivalence and fresh/incremental latency and memory measurement. Baseline regeneration is also local-only; CI validates the committed artifact but does not compare current timings against it.
+Local-only: incremental/fresh equivalence, fresh/incremental latency and memory measurement, baseline regeneration, and baseline comparison. CI validates the committed artifact but does not compare current timings against it.
 
-Not yet implemented: performance-regression reporting and budgets, formatting/static checks, and non-Node binding validation. These are tracked in the [Phase 6](roadmap.md#phase-6--testing-and-performance) and [Phase 7](roadmap.md#phase-7--packaging-and-compatibility) checklists. CI gaps are also summarized in [CI](ci.md#not-yet-covered).
+Not yet implemented: performance budgets, hardware-variance-aware CI reporting, formatting/static checks, and non-Node binding validation. Baseline comparison is available as a local investigation tool but is not a CI gate. These are tracked in the [Phase 6](roadmap.md#phase-6--testing-and-performance) and [Phase 7](roadmap.md#phase-7--packaging-and-compatibility) checklists. CI gaps are also summarized in [CI](ci.md#not-yet-covered).

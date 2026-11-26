@@ -167,6 +167,33 @@ make check-benchmark-baseline
 
 `make check-benchmark-baseline` is part of `make verify` and `make ci`. It is a structural integrity check only: no timing, memory, percentile, or pass-rate threshold is enforced against the baseline. The environment record above supplies the hardware and software context; the baseline does not normalize results across machines or define a performance budget.
 
+## Regression investigation
+
+Use `make compare-benchmark-baseline` to compare a complete new measurement session with the committed baseline:
+
+```sh
+make bench-fresh BENCH_OUTPUT=/tmp/fresh-current.json
+make bench-incremental BENCH_OUTPUT=/tmp/incremental-current.json
+make bench-memory BENCH_OUTPUT=/tmp/memory-current.json
+make compare-benchmark-baseline \
+  BENCH_FRESH_REPORT=/tmp/fresh-current.json \
+  BENCH_INCREMENTAL_REPORT=/tmp/incremental-current.json \
+  BENCH_MEMORY_REPORT=/tmp/memory-current.json \
+  BENCH_COMPARE_OUTPUT=/tmp/comparison.json
+```
+
+`scripts/baseline_results.js compare` validates both the committed baseline and all three current reports before comparing them. The report records `environmentComparison` and `configComparison` first: a mismatch means the session is not directly comparable, so it must not be attributed to a code change. `observations` then stores paired baseline/current values, absolute deltas, and ratios for fresh P50/P95/P99, incremental replay-total P50/P95/P99, retained heap/RSS per tree, and sampled heap/RSS peaks. `increases` lists every positive delta, ordered by ratio then absolute delta, as investigation candidates rather than verdicts. No threshold or pass/fail status is produced.
+
+When an increase warrants attention:
+
+1. Confirm `environmentComparison.matches` and `configComparison.matches` are both `true`; otherwise repeat the measurement under the recorded environment and configuration.
+2. Run `make ci` to confirm correctness gates still pass. A timing difference is not a correctness failure.
+3. Re-run the full session, or use the existing `FIXTURE`, `SEQUENCE`, and `CATEGORY` filters to repeat only the affected cases. An isolated spike is not enough to attribute a regression.
+4. If the increase persists, inspect parser-relevant changes between `baseline.repositoryCommit` and the current revision: `grammar.js`, generated parser artifacts, bindings, and benchmark harnesses.
+5. Record the conclusion in the [roadmap verification log](roadmap.md#verification-log). A confirmed performance regression should be fixed or explicitly deferred; an accepted variance should say why it was not attributed to code.
+
+This target is local-only and is not part of `make ci`. It supports investigation; it does not establish performance budgets or CI gates.
+
 ## Validation performed
 
 - All four `expected_clean: true` fixtures parse with `tree-sitter parse --quiet` and exit 0 using CLI 0.27.2.
@@ -194,7 +221,8 @@ make check-benchmark-baseline
 - Separate JSON reports were generated with `BENCH_OUTPUT` and checked against distinct expected shapes: `mode: fresh` with five `fixtures` and no `sequences`, and `mode: incremental` with 21 `sequences` and no `fixtures`. All 26 reported stats objects had finite P50/P95/P99/max values ordered as `P50 <= P95 <= P99 <= max`. Temporary report copies with a deleted fresh `p95Ms` and a null incremental `p50Ms` failed validation with exit 1.
 - A generated `BENCH_OUTPUT` report reproduced the documented runtime subset exactly: Node `v26.13.1`, tree-sitter runtime `0.25.1`, `linux`/`x64`, 24 logical CPUs, CPU model `12th Gen Intel(R) Core(TM) i9-12900KF`, and `33,437,925,376` bytes of `os.totalmem()`. The remaining documented values were checked against `/etc/os-release`, `uname`, `lscpu`, `/proc/meminfo`, `node --version`, `process.versions`, `npm --version`, both CLI paths, and `git rev-parse`. A temporary report copy with `cpuCount` changed to 23 failed validation with exit 1.
 - Three full `BENCH_OUTPUT` reports were generated sequentially in one session and built into `benchmarks/results/baseline.json` with `make build-benchmark-baseline`. The 67,191-byte artifact records commit `aae76dc`, five fixtures, 21 sequences, and 15 measured with two warmup samples per case. `make check-benchmark-baseline` passed. Negative controls that changed `version`, nulled a fresh P50, removed a fixture, changed the baseline CPU count, invalidated a source timestamp, changed a memory result mode, and changed a source environment all failed with exit 1. The baseline contains no `/tmp/` paths.
+- A new full measurement session was compared with the committed baseline through `make compare-benchmark-baseline`. Environment and configuration matched; 80 positive deltas were reported, led by `incremental/compact-set-cps/p99Ms` at ratio 2.674172. `make ci` passed, and `git diff --name-only aae76dc..HEAD` was empty for `grammar.js`, `src/`, `bindings/`, `queries/`, and package metadata. Isolated reruns kept identical CST checksums and fixture bytes, with nearly unchanged minimum latencies but higher outlier maxima: `compact-set-cps` min/max moved from 0.010129/0.010573 ms to 0.010482/0.031055 ms, and `deeply-nested` from 0.371120/0.384343 ms to 0.372704/0.480931 ms. Retained per-tree memory stayed stable or moved by allocator-sized RSS steps. The increases were treated as run-to-run variance under normal desktop load, not a code regression. A three-report CPU-count mismatch produced `environmentComparison.matches: false` with exit 0, a three-report warmup mismatch produced `configComparison.matches: false` with exit 0, and a null fresh P50 or tampered baseline version failed with exit 1.
 
 ## Remaining work
 
-Performance budgets and performance-regression reporting remain separate roadmap items. The committed baseline stores observations, and the dedicated environment record above is not hardware-normalized. This document will own future comparison results as they are added.
+Performance budgets and hardware-variance-aware CI reporting remain separate roadmap items. The committed baseline stores observations, local comparison supports investigation, and the dedicated environment record above is not hardware-normalized. This document will own future budget and CI decisions as they are made.

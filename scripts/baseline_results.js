@@ -17,15 +17,19 @@ const {
 } = require("./bench_common");
 
 const BASELINE_VERSION = 1;
+const COMPARISON_VERSION = 1;
+const LATENCY_METRICS = ["meanMs", "p50Ms", "p95Ms", "p99Ms"];
+const RETAINED_MEMORY_METRICS = ["heapUsedBytesPerTree", "rssBytesPerTree"];
+const PEAK_MEMORY_METRICS = ["heapDeltaBytes", "rssDeltaBytes"];
 const DEFAULT_BASELINE = path.join(ROOT, "benchmarks/results/baseline.json");
 const DEFAULT_MANIFEST_PATH = path.relative(ROOT, DEFAULT_MANIFEST);
 const DEFAULT_CATALOG_PATH = path.relative(ROOT, DEFAULT_CATALOG);
 
 function usage() {
   return [
-    "Usage: node scripts/baseline_results.js <build|check> [options]",
+    "Usage: node scripts/baseline_results.js <build|check|compare> [options]",
     "",
-    "Build or validate the committed performance baseline.",
+    "Build, validate, or compare the committed performance baseline.",
     "",
     "Build options:",
     "  --fresh PATH        Fresh latency JSON report",
@@ -37,6 +41,13 @@ function usage() {
     "Check options:",
     "  --baseline PATH     Baseline to validate (default: benchmarks/results/baseline.json)",
     "",
+    "Compare options:",
+    "  --fresh PATH        Fresh latency JSON report",
+    "  --incremental PATH  Incremental latency JSON report",
+    "  --memory PATH       Memory JSON report",
+    "  --baseline PATH     Baseline to compare (default: benchmarks/results/baseline.json)",
+    "  --output PATH       Optional comparison JSON path; stdout when omitted",
+    "",
     "  -h, --help          Show this help",
   ].join("\n");
 }
@@ -47,7 +58,7 @@ function parseArgs(argv) {
   }
 
   const command = argv[0];
-  if (!["build", "check"].includes(command)) {
+  if (!["build", "check", "compare"].includes(command)) {
     throw new Error(`unknown command: ${command}`);
   }
 
@@ -61,7 +72,16 @@ function parseArgs(argv) {
           output: DEFAULT_BASELINE,
           commit: null,
         }
-      : { command, baseline: DEFAULT_BASELINE };
+      : command === "compare"
+        ? {
+            command,
+            fresh: null,
+            incremental: null,
+            memory: null,
+            baseline: DEFAULT_BASELINE,
+            output: null,
+          }
+        : { command, baseline: DEFAULT_BASELINE };
 
   for (let index = 1; index < argv.length; index += 1) {
     const argument = argv[index];
@@ -86,21 +106,21 @@ function parseArgs(argv) {
 
     switch (flag) {
       case "--fresh":
-        if (command !== "build") throw new Error(`--fresh is invalid for ${command}`);
+        if (command === "check") throw new Error(`--fresh is invalid for ${command}`);
         options.fresh = path.resolve(value());
         break;
       case "--incremental":
-        if (command !== "build") {
+        if (command === "check") {
           throw new Error(`--incremental is invalid for ${command}`);
         }
         options.incremental = path.resolve(value());
         break;
       case "--memory":
-        if (command !== "build") throw new Error(`--memory is invalid for ${command}`);
+        if (command === "check") throw new Error(`--memory is invalid for ${command}`);
         options.memory = path.resolve(value());
         break;
       case "--output":
-        if (command !== "build") throw new Error(`--output is invalid for ${command}`);
+        if (command === "check") throw new Error(`--output is invalid for ${command}`);
         options.output = path.resolve(value());
         break;
       case "--commit":
@@ -108,7 +128,7 @@ function parseArgs(argv) {
         options.commit = value();
         break;
       case "--baseline":
-        if (command !== "check") throw new Error(`--baseline is invalid for ${command}`);
+        if (command === "build") throw new Error(`--baseline is invalid for ${command}`);
         options.baseline = path.resolve(value());
         break;
       default:
@@ -119,10 +139,10 @@ function parseArgs(argv) {
   if (options.help) {
     return options;
   }
-  if (command === "build") {
+  if (command === "build" || command === "compare") {
     for (const field of ["fresh", "incremental", "memory"]) {
       if (!options[field]) {
-        throw new Error(`build requires --${field}`);
+        throw new Error(`${command} requires --${field}`);
       }
     }
   }
@@ -679,6 +699,25 @@ function currentCommit() {
   }).trim();
 }
 
+function combinedEnvironment(reports) {
+  return {
+    ...commonEnvironment(reports.fresh.data.environment),
+    gcAvailable: reports.memory.data.environment.gcAvailable,
+    nodeFlags: reports.memory.data.environment.nodeFlags,
+  };
+}
+
+function comparisonConfig(reports) {
+  return {
+    manifest: reports.fresh.data.config.manifest,
+    catalog: reports.incremental.data.config.catalog,
+    iterations: reports.fresh.data.config.iterations,
+    warmup: reports.fresh.data.config.warmup,
+    fixtureCount: reports.fresh.data.config.fixtureCount,
+    sequenceCount: reports.incremental.data.config.sequenceCount,
+  };
+}
+
 function buildBaseline(reports, options) {
   const commit = options.commit || currentCommit();
   check(/^[0-9a-f]{7,40}$/.test(commit), "commit must be a short or full hexadecimal git hash");
@@ -690,11 +729,7 @@ function buildBaseline(reports, options) {
     repositoryCommit: commit,
     purpose: "Observed performance baseline; not a performance budget or CI gate.",
     environmentRecord: "docs/benchmarking.md#benchmark-environment",
-    environment: {
-      ...commonEnvironment(reports.fresh.data.environment),
-      gcAvailable: reports.memory.data.environment.gcAvailable,
-      nodeFlags: reports.memory.data.environment.nodeFlags,
-    },
+    environment: combinedEnvironment(reports),
     config: {
       manifest: reports.fresh.data.config.manifest,
       catalog: reports.incremental.data.config.catalog,
@@ -738,9 +773,257 @@ function buildBaseline(reports, options) {
   return baseline;
 }
 
-function writeBaseline(output, baseline) {
+function valuesEqual(actual, expected) {
+  return JSON.stringify(actual) === JSON.stringify(expected);
+}
+
+function environmentDifferences(baselineEnvironment, currentEnvironment) {
+  const differences = [];
+  const fields = [
+    "node",
+    "treeSitterRuntime",
+    "platform",
+    "arch",
+    "cpuModel",
+    "cpuCount",
+    "totalMemoryBytes",
+    "gcAvailable",
+  ];
+  for (const field of fields) {
+    if (baselineEnvironment[field] !== currentEnvironment[field]) {
+      differences.push({
+        field,
+        baseline: baselineEnvironment[field],
+        current: currentEnvironment[field],
+      });
+    }
+  }
+  if (!valuesEqual(baselineEnvironment.nodeFlags, currentEnvironment.nodeFlags)) {
+    differences.push({
+      field: "nodeFlags",
+      baseline: baselineEnvironment.nodeFlags,
+      current: currentEnvironment.nodeFlags,
+    });
+  }
+  return differences;
+}
+
+function configDifferences(baselineConfig, currentConfig) {
+  const differences = [];
+  const fields = ["manifest", "catalog", "iterations", "warmup", "fixtureCount", "sequenceCount"];
+  for (const field of fields) {
+    if (baselineConfig[field] !== currentConfig[field]) {
+      differences.push({ field, baseline: baselineConfig[field], current: currentConfig[field] });
+    }
+  }
+  return differences;
+}
+
+function metricChange(baselineValue, currentValue, label) {
+  finiteNumber(baselineValue, `${label}.baseline`);
+  finiteNumber(currentValue, `${label}.current`);
+  return {
+    baseline: baselineValue,
+    current: currentValue,
+    delta: round(currentValue - baselineValue),
+    ratio: baselineValue > 0 ? round(currentValue / baselineValue) : null,
+  };
+}
+
+function addIncrease(increases, mode, id, metric, change, source) {
+  if (change.delta > 0) {
+    increases.push({ mode, id, metric, source, delta: change.delta, ratio: change.ratio });
+  }
+}
+
+function compareLatencyResult(baselineResult, currentResult, label, mode, increases) {
+  check(baselineResult.id === currentResult.id, `${label} id mismatch`);
+  const metrics = {};
+  for (const field of LATENCY_METRICS) {
+    const change = metricChange(
+      baselineResult.stats[field],
+      currentResult.stats[field],
+      `${label}.stats.${field}`,
+    );
+    metrics[field] = change;
+    addIncrease(increases, mode, baselineResult.id, field, change, `${label}.stats.${field}`);
+  }
+  return { id: baselineResult.id, stats: metrics };
+}
+
+function compareResultLists(baselineResults, currentResults, label, mode, increases, compareOne) {
+  array(baselineResults, `${label}.baseline`);
+  array(currentResults, `${label}.current`);
+  check(
+    baselineResults.length === currentResults.length,
+    `${label} result count mismatch`,
+  );
+  const currentById = new Map();
+  for (let index = 0; index < currentResults.length; index += 1) {
+    const result = object(currentResults[index], `${label}.current[${index}]`);
+    text(result.id, `${label}.current[${index}].id`);
+    check(!currentById.has(result.id), `${label} duplicate current id ${result.id}`);
+    currentById.set(result.id, result);
+  }
+  return baselineResults.map((baselineResult, index) => {
+    const baselineItem = object(baselineResult, `${label}.baseline[${index}]`);
+    text(baselineItem.id, `${label}.baseline[${index}].id`);
+    const currentItem = currentById.get(baselineItem.id);
+    check(currentItem, `${label} missing current result for ${baselineItem.id}`);
+    return compareOne(
+      baselineItem,
+      currentItem,
+      `${label}[${baselineItem.id}]`,
+      mode,
+      increases,
+    );
+  });
+}
+
+function compareFreshResults(baselineResults, currentResults, increases) {
+  return compareResultLists(
+    baselineResults,
+    currentResults,
+    "fresh",
+    "fresh",
+    increases,
+    compareLatencyResult,
+  );
+}
+
+function compareIncrementalResults(baselineResults, currentResults, increases) {
+  return compareResultLists(
+    baselineResults,
+    currentResults,
+    "incremental",
+    "incremental",
+    increases,
+    compareLatencyResult,
+  );
+}
+
+function compareMemoryResult(baselineResult, currentResult, label, mode, increases) {
+  check(baselineResult.id === currentResult.id, `${label} id mismatch`);
+  check(
+    baselineResult.retainedTrees === currentResult.retainedTrees,
+    `${label} retained-tree count mismatch`,
+  );
+  const retained = {};
+  for (const field of RETAINED_MEMORY_METRICS) {
+    const change = metricChange(
+      baselineResult.retained[field],
+      currentResult.retained[field],
+      `${label}.retained.${field}`,
+    );
+    retained[field] = change;
+    addIncrease(increases, mode, baselineResult.id, field, change, `${label}.retained.${field}`);
+  }
+  const sampledPeak = {};
+  for (const field of PEAK_MEMORY_METRICS) {
+    const change = metricChange(
+      baselineResult.sampledPeak[field],
+      currentResult.sampledPeak[field],
+      `${label}.sampledPeak.${field}`,
+    );
+    sampledPeak[field] = change;
+    addIncrease(
+      increases,
+      mode,
+      baselineResult.id,
+      field,
+      change,
+      `${label}.sampledPeak.${field}`,
+    );
+  }
+  return { id: baselineResult.id, retained, sampledPeak };
+}
+
+function compareMemoryResults(baselineResults, currentResults, increases) {
+  object(baselineResults, "memory.baseline");
+  object(currentResults, "memory.current");
+  return {
+    fresh: compareResultLists(
+      baselineResults.fresh,
+      currentResults.fresh,
+      "memory-fresh",
+      "memory-fresh",
+      increases,
+      compareMemoryResult,
+    ),
+    incremental: compareResultLists(
+      baselineResults.incremental,
+      currentResults.incremental,
+      "memory-incremental",
+      "memory-incremental",
+      increases,
+      compareMemoryResult,
+    ),
+  };
+}
+
+function buildComparison(baseline, reports) {
+  const currentEnvironment = combinedEnvironment(reports);
+  const currentConfig = comparisonConfig(reports);
+  const environmentDiffs = environmentDifferences(baseline.environment, currentEnvironment);
+  const configDiffs = configDifferences(baseline.config, currentConfig);
+  const increases = [];
+  const observations = {
+    fresh: compareFreshResults(baseline.results.fresh, reports.fresh.data.fixtures, increases),
+    incremental: compareIncrementalResults(
+      baseline.results.incremental,
+      reports.incremental.data.sequences,
+      increases,
+    ),
+    memory: compareMemoryResults(baseline.results.memory, reports.memory.data, increases),
+  };
+  increases.sort((left, right) => {
+    const leftRatio = left.ratio === null ? Number.NEGATIVE_INFINITY : left.ratio;
+    const rightRatio = right.ratio === null ? Number.NEGATIVE_INFINITY : right.ratio;
+    return rightRatio - leftRatio || right.delta - left.delta;
+  });
+
+  return {
+    version: COMPARISON_VERSION,
+    kind: "comparison",
+    generatedAt: new Date().toISOString(),
+    baseline: {
+      generatedAt: baseline.generatedAt,
+      repositoryCommit: baseline.repositoryCommit,
+      environment: baseline.environment,
+      config: baseline.config,
+    },
+    current: {
+      fresh: {
+        generatedAt: reports.fresh.data.generatedAt,
+        report: path.basename(reports.fresh.absolute),
+        environment: reports.fresh.data.environment,
+      },
+      incremental: {
+        generatedAt: reports.incremental.data.generatedAt,
+        report: path.basename(reports.incremental.absolute),
+        environment: reports.incremental.data.environment,
+      },
+      memory: {
+        generatedAt: reports.memory.data.generatedAt,
+        report: path.basename(reports.memory.absolute),
+        environment: reports.memory.data.environment,
+      },
+    },
+    environmentComparison: { matches: environmentDiffs.length === 0, differences: environmentDiffs },
+    configComparison: { matches: configDiffs.length === 0, differences: configDiffs },
+    observations,
+    increases,
+    interpretation: "Observed increases for investigation; no thresholds or pass/fail status.",
+  };
+}
+
+function writeJson(output, data) {
   fs.mkdirSync(path.dirname(output), { recursive: true });
-  fs.writeFileSync(output, `${JSON.stringify(baseline, null, 2)}\n`);
+  fs.writeFileSync(output, `${JSON.stringify(data, null, 2)}\n`);
+}
+
+function writeBaseline(output, baseline) {
+  writeJson(output, baseline);
 }
 
 function runBuild(options) {
@@ -771,6 +1054,33 @@ function runCheck(options) {
   );
 }
 
+function runCompare(options) {
+  const baseline = readJson(options.baseline, "baseline").data;
+  validateBaseline(baseline);
+
+  const reports = {
+    fresh: readJson(options.fresh, "fresh"),
+    incremental: readJson(options.incremental, "incremental"),
+    memory: readJson(options.memory, "memory"),
+  };
+  validateFreshReport(reports.fresh.data);
+  validateIncrementalReport(reports.incremental.data);
+  validateMemoryReport(reports.memory.data);
+  validateReportAgreement(reports.fresh.data, reports.incremental.data, reports.memory.data);
+
+  const comparison = buildComparison(baseline, reports);
+  if (!options.output) {
+    process.stdout.write(`${JSON.stringify(comparison, null, 2)}\n`);
+    return;
+  }
+  writeJson(options.output, comparison);
+  console.log(
+    `comparison written: ${relative(options.output)} (${comparison.observations.fresh.length} fixtures, ` +
+      `${comparison.observations.incremental.length} sequences, ${comparison.increases.length} increases, ` +
+      `environment ${comparison.environmentComparison.matches ? "matches" : "differs"})`,
+  );
+}
+
 function main() {
   const options = parseArgs(process.argv.slice(2));
   if (options.help) {
@@ -779,8 +1089,10 @@ function main() {
   }
   if (options.command === "build") {
     runBuild(options);
-  } else {
+  } else if (options.command === "check") {
     runCheck(options);
+  } else {
+    runCompare(options);
   }
 }
 

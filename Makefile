@@ -65,6 +65,7 @@ BENCH_BASELINE := benchmarks/results/baseline.json
 BENCH_FRESH_REPORT ?=
 BENCH_INCREMENTAL_REPORT ?=
 BENCH_MEMORY_REPORT ?=
+BENCH_COMPARE_OUTPUT ?=
 RECOVERY_FILES := $(wildcard $(TEST_DIR)/incomplete_*.txt $(TEST_DIR)/malformed_*.txt $(TEST_DIR)/missing_*.txt $(TEST_DIR)/noncascading_*.txt $(TEST_DIR)/recovery_*.txt $(TEST_DIR)/unfinished_*.txt $(TEST_DIR)/valid_*.txt)
 
 # Test inputs (override on the command line)
@@ -112,7 +113,7 @@ D = $(shell tput sgr0 2>/dev/null)
 _SUCCESS = [$(GRN)SUCCESS$(D)]
 _INFO    = [$(BLU)INFO$(D)]
 
-.PHONY: all build generate test test-recovery test-incremental test-query-compile test-query-execution test-query-registration test-query test-node test-package test-regressions benchmark-fixtures check-benchmark-fixtures bench-fresh bench-incremental bench-memory build-benchmark-baseline check-benchmark-baseline parse playground wasm \
+.PHONY: all build generate test test-recovery test-incremental test-query-compile test-query-execution test-query-registration test-query test-node test-package test-regressions benchmark-fixtures check-benchmark-fixtures bench-fresh bench-incremental bench-memory build-benchmark-baseline check-benchmark-baseline compare-benchmark-baseline parse playground wasm \
 	local-install install uninstall clean check-generated verify verify-all ci \
 	docs docs-open help
 
@@ -278,6 +279,11 @@ check-benchmark-baseline:	## Validate committed benchmark baseline structure wit
 	@echo "$(YEL)Checking benchmark baseline...$(D)"
 	@$(NODE) scripts/baseline_results.js check --baseline $(BENCH_BASELINE)
 	@echo "$(YEL)* $(_SUCCESS) Benchmark baseline is structurally valid$(D)"
+
+compare-benchmark-baseline:	## Compare fresh/incremental/memory reports against the baseline without gating
+	@echo "$(YEL)Comparing benchmark reports with baseline...$(D)"
+	@$(NODE) scripts/baseline_results.js compare --baseline $(BENCH_BASELINE) --fresh $(BENCH_FRESH_REPORT) --incremental $(BENCH_INCREMENTAL_REPORT) --memory $(BENCH_MEMORY_REPORT) $(if $(BENCH_COMPARE_OUTPUT),--output $(BENCH_COMPARE_OUTPUT),)
+	@echo "$(YEL)* $(_SUCCESS) Benchmark comparison generated$(D)"
 
 ##@ Verification ✅
 
