@@ -35,7 +35,7 @@ tree-sitter generate
 | Rust    | dev-dependency `tree-sitter = "0.25.8"`                                               | Not run; cargo unavailable                              | Not verified in this environment                             |
 | Go      | `github.com/tree-sitter/go-tree-sitter` v0.25.0 resolved by the temporary test module | Go 1.27.4                                               | Passed `go test` in a module-aware temporary copy            |
 | Swift   | `SwiftTreeSitter` `from: "0.10.0"`                                                    | Resolved SwiftTreeSitter 0.25.0 and tree-sitter 0.25.10 | `swift build` passed; `swift test` blocked by missing XCTest |
-| C       | No Tree-sitter runtime dependency declared                                            | Not separately built                                    | ABI validation covered by CLI tests                          |
+| C       | No Tree-sitter runtime dependency declared                                            | C11 with GCC 16.2.1; CMake 4.5.1                        | Passed `make build`, CMake build/install, and C symbol check |
 
 GitHub Actions validates the Node.js binding on Node.js 22 and 24 for pull requests and pushes to `main`; see [CI](ci.md).
 
@@ -55,6 +55,8 @@ On 2026-11-25:
 Query commands emitted a parser-directory warning but compiled and executed successfully.
 
 On 2026-11-26, a runtime-only copy containing committed generated artifacts but no `grammar.js`, scripts, tests, or Tree-sitter CLI installed the pinned `tree-sitter` 0.25.1 runtime offline, compiled the native addon, and parsed both representative fixtures without modifying the generated files. This check is wired into `make test-generated-runtime` and `make ci`.
+
+Also on 2026-11-26, the C binding was audited and retained. `make build` produced static and shared libraries; a clean tracked-source CMake build and install produced the shared library, header, pkg-config metadata, and queries; and `make test-c` compiled and linked `tree_sitter_strudel()` against `src/parser.c`, confirming a non-null language pointer. See the [binding audit](binding-audit.md#c-binding--audited-2026-11-26) for evidence, retained-binding rationale, and deferred packaging gaps.
 
 ## Known limitations
 
