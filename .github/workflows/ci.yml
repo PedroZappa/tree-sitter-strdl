@@ -42,3 +42,7 @@ jobs:
 
       - name: Run CI gate
         run: make ci
+
+      - name: Run hardware-variance-aware performance report
+        if: matrix.node-version == 24
+        run: make performance-report

@@ -34,6 +34,10 @@ The pinned versions used by CI come from `package-lock.json` (Tree-sitter CLI `0
 
 All `make ci` checks above are correctness gates: a failure produces a nonzero exit status. Latency and memory observations are outside CI; comparison reports explicitly mark timing deltas and comparability mismatches as [non-gating performance warnings](benchmarking.md#correctness-failures-versus-performance-warnings). A correctness failure is never reported as a performance warning.
 
+## Performance reporting
+
+After the CI gate, the Node 24 matrix leg runs `make performance-report`. It measures fresh latency, incremental latency, and parse-tree memory with the committed defaults, compares them with the [committed baseline and budgets](benchmarking.md#hardware-variance-aware-reporting), and prints a Markdown report in the job log. A different runner or configuration makes the session non-comparable rather than slower; budget exceedances are warnings for investigation. This step never gates the build, while the benchmark harnesses' correctness guards still fail on invalid fixtures or CST mismatches.
+
 ## Reproduce locally
 
 From a clean checkout:
@@ -51,5 +55,6 @@ Alternatively, `make install-dev` performs both dependency installs. `make ci` e
 
 The following checks are required by the project roadmap but are not yet part of `make ci`:
 
-- hardware-variance-aware CI reporting (Phase 6); performance budgets are committed and structurally validated but do not gate current timings;
 - non-Node binding builds and their package-content checks (Phase 7).
+
+Performance budgets and reports are committed or published observations, not gates: `make ci` validates their structure, while `make performance-report` reports comparability and envelope status without failing the build.

@@ -72,6 +72,8 @@ BENCH_INCREMENTAL_REPORT ?=
 BENCH_MEMORY_REPORT ?=
 BENCH_COMPARE_OUTPUT ?=
 BENCH_BUDGET_INPUTS ?=
+PERF_REPORT_OUTPUT ?=
+PERF_REPORT_JSON_OUTPUT ?=
 RECOVERY_FILES := $(wildcard $(TEST_DIR)/incomplete_*.txt $(TEST_DIR)/malformed_*.txt $(TEST_DIR)/missing_*.txt $(TEST_DIR)/noncascading_*.txt $(TEST_DIR)/recovery_*.txt $(TEST_DIR)/unfinished_*.txt $(TEST_DIR)/valid_*.txt)
 
 # Test inputs (override on the command line)
@@ -119,7 +121,7 @@ D = $(shell tput sgr0 2>/dev/null)
 _SUCCESS = [$(GRN)SUCCESS$(D)]
 _INFO    = [$(BLU)INFO$(D)]
 
-.PHONY: all build generate test test-recovery test-incremental test-query-compile test-query-execution test-query-registration test-query test-node test-package test-regressions benchmark-fixtures check-benchmark-fixtures bench-fresh bench-incremental bench-memory build-benchmark-baseline check-benchmark-baseline compare-benchmark-baseline build-benchmark-budgets check-benchmark-budgets format check-format check-static parse playground wasm \
+.PHONY: all build generate test test-recovery test-incremental test-query-compile test-query-execution test-query-registration test-query test-node test-package test-regressions benchmark-fixtures check-benchmark-fixtures bench-fresh bench-incremental bench-memory build-benchmark-baseline check-benchmark-baseline compare-benchmark-baseline build-benchmark-budgets check-benchmark-budgets performance-report format check-format check-static parse playground wasm \
 	local-install install-dev install uninstall clean check-generated verify verify-all ci \
 	docs docs-open help
 
@@ -300,6 +302,16 @@ check-benchmark-budgets:	## Validate committed budget provenance and observed ma
 	@echo "$(YEL)Checking benchmark budgets...$(D)"
 	@$(NODE) scripts/benchmark_budgets.js check --budget $(BENCH_BUDGETS)
 	@echo "$(YEL)* $(_SUCCESS) Benchmark budgets are structurally valid$(D)"
+
+performance-report:	## Run performance checks and print a hardware-variance-aware report (non-gating)
+	@echo "$(YEL)Running performance checks...$(D)"
+	@set -e; dir=$$(mktemp -d); \
+	trap 'rm -rf "$$dir"' EXIT; \
+	$(MAKE) bench-fresh BENCH_OUTPUT="$$dir/fresh.json" >/dev/null; \
+	$(MAKE) bench-incremental BENCH_OUTPUT="$$dir/incremental.json" >/dev/null; \
+	$(MAKE) bench-memory BENCH_OUTPUT="$$dir/memory.json" >/dev/null; \
+	$(NODE) scripts/performance_report.js --baseline $(BENCH_BASELINE) --budgets $(BENCH_BUDGETS) --fresh "$$dir/fresh.json" --incremental "$$dir/incremental.json" --memory "$$dir/memory.json" $(if $(PERF_REPORT_OUTPUT),--output $(PERF_REPORT_OUTPUT),) $(if $(PERF_REPORT_JSON_OUTPUT),--json-output $(PERF_REPORT_JSON_OUTPUT),)
+	@echo "$(YEL)* $(_SUCCESS) Performance report generated (informational only)$(D)"
 
 format:	## Apply Prettier and Ruff formatting plus safe Ruff fixes
 	@echo "$(YEL)Formatting source files...$(D)"

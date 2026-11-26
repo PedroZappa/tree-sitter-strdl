@@ -242,6 +242,31 @@ make check-benchmark-budgets
 
 `make check-benchmark-budgets` is part of `make verify` and `make ci`. It validates provenance, environment/configuration agreement, fixture and catalog coverage, and recomputes every budget from its stored observations. It does not compare current timings against the budgets, so it remains a structural integrity check rather than a performance gate.
 
+## Hardware-variance-aware reporting
+
+`make performance-report` runs `bench-fresh`, `bench-incremental`, and `bench-memory` with the committed defaults, then renders a Markdown report from those reports, [baseline.json](../benchmarks/results/baseline.json), and [budgets.json](../benchmarks/results/budgets.json). GitHub Actions runs this target on the Node 24 matrix leg after the `make ci` gate. It is deliberately outside `make verify` and `make ci`: the report is informational and no timing observation can fail a build.
+
+The report separates two questions:
+
+- **Comparability:** the current environment and configuration are compared with both the baseline sessions and the budget sessions. A difference in CPU model, CPU count, memory, Node.js runtime, tree-sitter runtime, platform, architecture, iteration count, or warmup count makes the session non-comparable. All numeric verdicts then become informational; they are not evidence of a regression.
+- **Observed envelope:** for comparable sessions, each current P50, P95, and P99 latency and each retained/peak memory value is checked against the corresponding observed-envelope budget. A value at or below the recorded envelope is `within-observed-envelope`; a value above it is `above-observed-envelope` and is a warning for investigation. `meanMs` has no budget and is shown in the increases table without an envelope verdict.
+
+| Outcome                        | Meaning                                                                         | Exit status |
+| ------------------------------ | ------------------------------------------------------------------------------- | ----------- |
+| Comparable, within envelope    | No observed signal beyond the recorded sessions                                 | `0`         |
+| Comparable, above envelope     | Investigate on the reference environment; not a regression by itself            | `0`         |
+| Non-comparable session         | Hardware, runtime, or configuration differs; numeric verdicts are informational | `0`         |
+| Invalid input or guard failure | Malformed report/budget, fixture hash mismatch, or CST mismatch                 | nonzero     |
+
+The report also reuses the comparison tool's [classification](#correctness-failures-versus-performance-warnings): correctness guards remain gating wherever they run, while performance findings never do.
+
+```sh
+make performance-report
+make performance-report PERF_REPORT_OUTPUT=/tmp/performance.md PERF_REPORT_JSON_OUTPUT=/tmp/performance.json
+```
+
+`PERF_REPORT_OUTPUT` writes the Markdown report to a file while stdout keeps the same report for CI logs. `PERF_REPORT_JSON_OUTPUT` writes the structured evaluations, comparability metadata, and summary for downstream tooling.
+
 ## Validation performed
 
 - All four `expected_clean: true` fixtures parse with `tree-sitter parse --quiet` and exit 0 using CLI 0.27.2.
@@ -272,7 +297,8 @@ make check-benchmark-budgets
 - A new full measurement session was compared with the committed baseline through `make compare-benchmark-baseline`. Environment and configuration matched; 80 positive deltas were reported, led by `incremental/compact-set-cps/p99Ms` at ratio 2.674172. `make ci` passed, and `git diff --name-only aae76dc..HEAD` was empty for `grammar.js`, `src/`, `bindings/`, `queries/`, and package metadata. Isolated reruns kept identical CST checksums and fixture bytes, with nearly unchanged minimum latencies but higher outlier maxima: `compact-set-cps` min/max moved from 0.010129/0.010573 ms to 0.010482/0.031055 ms, and `deeply-nested` from 0.371120/0.384343 ms to 0.372704/0.480931 ms. Retained per-tree memory stayed stable or moved by allocator-sized RSS steps. The increases were treated as run-to-run variance under normal desktop load, not a code regression. A three-report CPU-count mismatch produced `environmentComparison.matches: false` with exit 0, a three-report warmup mismatch produced `configComparison.matches: false` with exit 0, and a null fresh P50 or tampered baseline version failed with exit 1.
 - Two additional full measurement sessions were run on the same environment and configuration as the baseline and combined with it through `make build-benchmark-budgets BENCH_BUDGET_INPUTS=...`. The 51,511-byte version-1 `benchmarks/results/budgets.json` stores the observed envelope for 52 cases (5 fresh, 21 incremental, 5 fresh memory, 21 incremental memory) with per-metric observations and source session. For `incremental/compact-set-cps`, the P50/P95/P99 budgets are 0.010719/0.017109/0.031055 ms, each tracing to the session that produced the maximum. `make check-benchmark-budgets` passed; the artifact contains no `/tmp/` paths. Negative controls failed with exit 1 for a changed version, a budget that was not the observed maximum, a source that was not the maximum session, a removed case, shortened observations, a tampered top-level environment, and a tampered session environment. Build-time negative controls also failed with exit 1 for a session environment mismatch and a session configuration mismatch.
 - Comparison output was checked against the explicit classification policy. A report with 80 observed increases and matching environment/configuration exited `0` with `correctness.gates: true`, `performance.gates: false`, and `observedIncreases.count: 80`. A three-report CPU-count mismatch exited `0` with `environmentMismatch.present: true` and `fields: ["cpuCount"]`; a three-report warmup mismatch exited `0` with `configurationMismatch.present: true` and `fields: ["warmup"]`. A corrupted current report exited `1` and wrote no comparison, confirming that input validation remains a gating correctness failure. Benchmark guard controls also exited `1`: a temporary manifest with the `representative-main` SHA-256 changed failed before timing any fixture, and a temporary incremental catalog whose first edit used `occurrence: 99` failed before replaying edits.
+- `make performance-report` was run end to end with the committed baseline and budgets. A comparable session evaluated 182 metrics: 139 within the observed envelope and 43 above it, with exit `0`. Report copies with `cpuCount` changed from 24 to 23 and with `warmup` changed from 2 to 3 both exited `0`, listed the differing field, and marked all 182 verdicts non-comparable. A corrupted fresh `p50Ms` exited `1` and wrote no report; a budget copy missing one incremental case exited `1`. Markdown and JSON outputs were generated and checked. The GitHub Actions workflow adds the report as a Node 24 step after `make ci`; no timing result changes the build status.
 
 ## Remaining work
 
-Performance budgets are committed as observed observations and validated structurally, but current timings are not gated against them. Hardware-variance-aware CI reporting remains a separate roadmap item. The committed baseline stores observations, local comparison supports investigation, and the dedicated environment record above is not hardware-normalized. This document will own future CI reporting decisions as they are made.
+Performance budgets are committed as observed observations and validated structurally, but current timings are not gated against them. Hardware-variance-aware reporting now runs on the Node 24 CI matrix leg and locally through `make performance-report`; it checks comparability and observed envelopes without changing the build status. The committed baseline stores observations, local comparison supports investigation, and the dedicated environment record above is not hardware-normalized. Future changes to CI reporting policy should be recorded here.

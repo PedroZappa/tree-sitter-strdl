@@ -1519,5 +1519,6 @@ module.exports = {
   comparisonConfig,
   environmentDifferences,
   configDifferences,
+  buildComparison,
   round,
 };
