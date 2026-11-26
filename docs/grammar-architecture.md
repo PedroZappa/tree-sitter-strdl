@@ -20,7 +20,7 @@ The refactor replaces the Phase 2 wrapper-heavy hierarchy with composable, JavaS
 
 ## Public syntax-tree API
 
-[src/node-types.json](../src/node-types.json) contains 40 named node types and 31 field names. Fields are recorded on the node types below; `?` marks an optional field.
+[src/node-types.json](../src/node-types.json) contains 40 named node types and 31 field names. Field names are part of the public syntax-tree API: queries such as `(call_expression function: (identifier) @callee)` depend on them.
 
 | Area                        | Named nodes                                                                                                                                                                                                        |
 | --------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
@@ -30,13 +30,15 @@ The refactor replaces the Phase 2 wrapper-heavy hierarchy with composable, JavaS
 | Operators and control flow  | `assignment_expression`, `binary_expression`, `unary_expression`, `await_expression`, `conditional_expression`, `arrow_function`                                                                                   |
 | Values and containers       | `object`, `pair`, `computed_property_name`, `spread_element`, `array`, `string`, `template_string`, `template_substitution`, `number`, `identifier`, `parenthesized_expression`                                    |
 
-### Fields
+### Public fields
+
+The table below is the complete node-to-field inventory. A trailing `?` marks an optional singular field; a trailing `*` marks a repeatable field with zero or more children in source order. An unmarked field is required and singular.
 
 | Node                         | Fields                                    |
 | ---------------------------- | ----------------------------------------- |
-| `arguments`                  | `argument?`                               |
-| `array`                      | `element?`                                |
-| `array_pattern`              | `element?`                                |
+| `arguments`                  | `argument*`                               |
+| `array`                      | `element*`                                |
+| `array_pattern`              | `element*`                                |
 | `arrow_function`             | `parameters`, `body`                      |
 | `assignment_expression`      | `left`, `right`                           |
 | `assignment_pattern`         | `left`, `right`                           |
@@ -46,7 +48,7 @@ The refactor replaces the Phase 2 wrapper-heavy hierarchy with composable, JavaS
 | `computed_property_name`     | `expression`                              |
 | `conditional_expression`     | `condition`, `consequence`, `alternative` |
 | `export_declaration`         | `declaration?`, `value?`                  |
-| `formal_parameters`          | `parameter?`                              |
+| `formal_parameters`          | `parameter*`                              |
 | `function_declaration`       | `name`, `parameters`, `body`              |
 | `import_declaration`         | `specifiers`, `source`                    |
 | `import_specifier`           | `name`, `alias?`                          |
@@ -62,12 +64,62 @@ The refactor replaces the Phase 2 wrapper-heavy hierarchy with composable, JavaS
 | `template_substitution`      | `expression`                              |
 | `try_statement`              | `body`, `parameter?`, `handler`           |
 | `unary_expression`           | `operator`, `argument`                    |
-| `variable_declaration`       | `kind`, `declarator`                      |
+| `variable_declaration`       | `kind`, `declarator*`                     |
 | `variable_declarator`        | `name`, `value?`                          |
+
+#### Repeatable fields
+
+| Field                              | Meaning                                                                           |
+| ---------------------------------- | --------------------------------------------------------------------------------- |
+| `arguments.argument*`              | Ordered call arguments inside the `arguments` node.                               |
+| `array.element*`                   | Ordered values in an array literal.                                               |
+| `array_pattern.element*`           | Ordered binding targets in an array destructuring pattern.                        |
+| `formal_parameters.parameter*`     | Ordered function or arrow parameters; defaults are `assignment_pattern` children. |
+| `variable_declaration.declarator*` | Ordered bindings declared by one `var`, `let`, or `const` keyword.                |
+
+Repeated fields produce one child per occurrence. Consumers should preserve their order; Tree-sitter does not sort them.
+
+#### Optional singular fields
+
+| Field                             | Absent when                                                             |
+| --------------------------------- | ----------------------------------------------------------------------- |
+| `import_specifier.alias?`         | A named import keeps its original name.                                 |
+| `new_expression.arguments?`       | A constructor is called without an argument list, as in `new Synth`.    |
+| `export_declaration.declaration?` | The export uses `export default <expression>` instead of a declaration. |
+| `export_declaration.value?`       | The export wraps a declaration instead of a default expression.         |
+| `try_statement.parameter?`        | `catch` omits its binding, as in `catch {}`.                            |
+| `return_statement.value?`         | `return` has no operand.                                                |
+| `variable_declarator.value?`      | A binding has no initializer, as in `let pattern;`.                     |
+
+Only one of `export_declaration.declaration?` and `export_declaration.value?` is used by a supported export form. Optional fields are not failures: queries should match them only when the specific syntax is required.
+
+#### Field values and anonymous tokens
+
+Most field values are named nodes. The exact type union for each field is recorded in [src/node-types.json](../src/node-types.json); the full expression union is intentionally broad so consumers do not need to normalize one expression node per operator.
+
+Three fields contain anonymous tokens rather than named nodes:
+
+| Field                        | Allowed tokens                                                     |
+| ---------------------------- | ------------------------------------------------------------------ |
+| `variable_declaration.kind`  | `var`, `let`, `const`                                              |
+| `binary_expression.operator` | `!=`, `!==`, `*`, `+`, `-`, `/`, `<`, `<=`, `==`, `===`, `>`, `>=` |
+| `unary_expression.operator`  | `!`, `-`                                                           |
+
+Query those values as quoted token patterns, for example `(variable_declaration kind: "const") @declaration`.
+
+Field names are contextual rather than global. `value` can be an initializer, return operand, export expression, object property value, or spread operand depending on its node; `expression` can be an expression inside parentheses, a computed key, or a template substitution; `left` and `right` describe both binary operands and default-parameter patterns. Match the node type and field together, and avoid treating a field name alone as a semantic role.
+
+The following query uses fields to target the opaque string argument of a direct call without depending on the callee name:
+
+```scheme
+(call_expression
+  function: (identifier) @callee
+  arguments: (arguments argument: (string) @literal))
+```
 
 ### Important node types
 
-The complete inventory is above. The entries below explain the nodes downstream consumers are most likely to use. This is a reading guide, not a second API definition: use the [field table](#fields) and [src/node-types.json](../src/node-types.json) for exact field and subtype sets.
+The complete inventory is above. The entries below explain the nodes downstream consumers are most likely to use. This is a reading guide, not a second API definition: use the [field table](#public-fields) and [src/node-types.json](../src/node-types.json) for exact field and subtype sets.
 
 #### Root, statements, and declarations
 
@@ -164,7 +216,7 @@ Phase 6 added `test/corpus/nested_expressions_and_method_chains.txt` to assert r
 
 ## Precedence and associativity
 
-Named precedence levels are declared from highest to lowest, as required by Tree-sitter:
+Named precedence levels are declared in [grammar.js](../grammar.js) from highest to lowest, as required by Tree-sitter:
 
 ```text
 member > call > new > unary > multiplicative > additive
@@ -173,44 +225,98 @@ member > call > new > unary > multiplicative > additive
 
 An earlier declaration used ascending order, which inverted mixed-operator trees. The corrected order makes `a + b * c` parse as `a + (b * c)` and `a > b ? c : d` parse as a conditional expression with a comparison condition.
 
-| Rule                                                                                               | Declaration                     | Effect                                                                                         |
-| -------------------------------------------------------------------------------------------------- | ------------------------------- | ---------------------------------------------------------------------------------------------- |
-| `assignment_expression`                                                                            | `prec.right("assignment", ...)` | Right-associative assignment at the lowest named level.                                        |
-| `conditional_expression`                                                                           | `prec.right("ternary", ...)`    | Right-associative ternary.                                                                     |
-| `binary_expression` alternatives                                                                   | `prec.left(level, ...)`         | Left-associative operators at their named levels.                                              |
-| `unary_expression`, `await_expression`                                                             | `prec("unary", ...)`            | Bind tighter than binary operators.                                                            |
-| `new_expression`                                                                                   | `prec.right("new", ...)`        | Supports `new new Foo()` and argument-list continuation.                                       |
-| `call_expression`, `tagged_template_expression`                                                    | `prec("call", ...)`             | Bind tighter than `new` and unary forms.                                                       |
-| `member_expression`, `subscript_expression`                                                        | `prec("member", ...)`           | Bind tightest, including optional chaining.                                                    |
-| `expression_statement`, `return_statement`, `variable_declarator`, `export default`, `_arrow_body` | `prec.right(-1, ...)`           | Prefer postfix continuation (calls and members) over reducing a surrounding statement or body. |
-| `block`                                                                                            | `prec(1, ...)`                  | Prefers block interpretation over empty object literal in statement position.                  |
+| Level            | Applied to                                                | Associativity or effect                                                        |
+| ---------------- | --------------------------------------------------------- | ------------------------------------------------------------------------------ |
+| `member`         | `member_expression`, `subscript_expression`               | Dot, optional dot, index, and optional index bind tightest.                    |
+| `call`           | `call_expression`, `tagged_template_expression`           | Argument lists and tagged templates bind tighter than `new` and unary forms.   |
+| `new`            | `new_expression`                                          | Right-associative; supports nested `new` and member access on a `new` result.  |
+| `unary`          | `unary_expression`, `await_expression`                    | Operands use `_unary_expression`, so postfix chains remain inside the operand. |
+| `multiplicative` | `binary_expression` with `*` or `/`                       | Left-associative.                                                              |
+| `additive`       | `binary_expression` with `+` or `-`                       | Left-associative.                                                              |
+| `comparison`     | `binary_expression` with comparison or equality operators | Left-associative.                                                              |
+| `ternary`        | `conditional_expression`                                  | Right-associative.                                                             |
+| `assignment`     | `assignment_expression`                                   | Right-associative and lowest named level.                                      |
 
-Verified precedence behavior is covered in [test/corpus/precedence.txt](../test/corpus/precedence.txt), [test/corpus/operators.txt](../test/corpus/operators.txt), and the ternary interpolation regression in [test/corpus/valid_syntax_expansions.txt](../test/corpus/valid_syntax_expansions.txt).
+Two numeric precedence values are separate from the named levels. `prec.right(-1, ...)` on `expression_statement`, `return_statement`, `variable_declarator`, `export default`, and `_arrow_body` prefers postfix continuation over reducing a surrounding statement or body. `prec(1, ...)` on `block` prefers a block over an empty object literal in statement position. `prec.right("new", ...)` is included in the named-level table because it participates in the declared ordering.
+
+Representative trees checked with the current binding confirm the intended shapes:
+
+| Input               | Result                |
+| ------------------- | --------------------- |
+| `a + b * c`         | `a + (b * c)`         |
+| `a - b - c`         | `(a - b) - c`         |
+| `a = b = c`         | `a = (b = c)`         |
+| `a ? b : c ? d : e` | `a ? b : (c ? d : e)` |
+| `!x(1)`             | `!(x(1))`             |
+| `f()()`             | `(f())()`             |
+| `new Foo().bar`     | `(new Foo()).bar`     |
+| `new new Foo()`     | `new (new Foo())`     |
+
+These shapes are covered by [test/corpus/precedence.txt](../test/corpus/precedence.txt), [test/corpus/operators.txt](../test/corpus/operators.txt), [test/corpus/modules.txt](../test/corpus/modules.txt), [test/corpus/nested_expressions_and_method_chains.txt](../test/corpus/nested_expressions_and_method_chains.txt), the ternary interpolation regression in [test/corpus/valid_syntax_expansions.txt](../test/corpus/valid_syntax_expansions.txt), and the right-nested ternary case in [test/corpus/modern_javascript_constructs.txt](../test/corpus/modern_javascript_constructs.txt).
 
 ## Conflict policy
 
-Seven GLR conflicts are declared in `grammar.js`:
+Seven GLR conflicts are declared in [grammar.js](../grammar.js). Each is load-bearing: removing any one declaration from an isolated copy makes `tree-sitter generate` fail with an unresolved ambiguity. They preserve context-sensitive interpretations without duplicating rules; they do not encode Strudel semantics.
 
-- `labeled_statement` / `_property_name`: `identifier :` inside braces can be a label or an object pair key.
-- `_binding_pattern` / `_primary_expression`: identifiers and arrays in parameter positions.
-- `_binding_pattern` / `_assignment_target`: defaults can be binding patterns or assignment targets.
-- `_expression` / `_unary_expression`: unary operands may continue as calls and members.
-- `_new_constructor` / `_primary_expression`, `_expression` / `_new_constructor`: constructor position overlaps expression position.
-- `array_pattern` / `array`: bracketed identifiers may be patterns or array literals.
+| Conflict                                   | Ambiguous input                      | Chosen interpretation                                                 | Corpus evidence                                                                                                                                                                               |
+| ------------------------------------------ | ------------------------------------ | --------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `labeled_statement` / `_property_name`     | `$: note("c3")`, `{ gain: 0.5 }`     | `$:` is a label in statement position; `gain:` is a pair key.         | [objects_args.txt](../test/corpus/objects_args.txt), [array_literal.txt](../test/corpus/array_literal.txt), [valid_syntax_expansions.txt](../test/corpus/valid_syntax_expansions.txt)         |
+| `_binding_pattern` / `_primary_expression` | `const [a] = voices`, `[1, 2]`       | Bracketed identifiers bind on the left; numeric arrays remain values. | [modern_javascript_constructs.txt](../test/corpus/modern_javascript_constructs.txt), [base_expressions.txt](../test/corpus/base_expressions.txt)                                              |
+| `_binding_pattern` / `_assignment_target`  | `function f([a] = notes) {}`         | The left side of a default parameter is an `assignment_pattern`.      | [modern_javascript_constructs.txt](../test/corpus/modern_javascript_constructs.txt)                                                                                                           |
+| `_expression` / `_unary_expression`        | `!ready`, `await initHydra().set(1)` | The call chain remains inside the unary or await operand.             | [operators.txt](../test/corpus/operators.txt), [modules.txt](../test/corpus/modules.txt), [nested_expressions_and_method_chains.txt](../test/corpus/nested_expressions_and_method_chains.txt) |
+| `_new_constructor` / `_primary_expression` | `new Foo`, `new a.B[0]()`            | Identifier, member, and subscript forms are valid constructors.       | [modules.txt](../test/corpus/modules.txt), [modern_javascript_constructs.txt](../test/corpus/modern_javascript_constructs.txt)                                                                |
+| `_expression` / `_new_constructor`         | `new Foo().bar`                      | Member continuation applies to the completed `new_expression`.        | [objects.txt](../test/corpus/objects.txt), [modern_javascript_constructs.txt](../test/corpus/modern_javascript_constructs.txt)                                                                |
+| `array_pattern` / `array`                  | `const [a, b] = [1, 2]`              | The left bracket group is a pattern; the right is an array value.     | [modern_javascript_constructs.txt](../test/corpus/modern_javascript_constructs.txt), [base_expressions.txt](../test/corpus/base_expressions.txt)                                              |
 
-These conflicts are deliberate. They preserve a composable grammar without duplicating rules for each context. Each conflict was introduced only after Tree-sitter reported an unresolved reduce/shift ambiguity that precedence alone could not resolve. Any future conflict must include parse evidence, the intended tree for each interpretation, and corpus regression tests.
+Any future conflict must include parse evidence, the intended tree for each interpretation, and corpus regression tests. Precedence is preferred when it can resolve an ambiguity deterministically.
 
 ## Error recovery and stability
 
-Tree-sitter's standard error recovery applies; no custom scanner is used. The grammar favors preserving valid syntax around malformed regions. `arguments`, `call_expression`, `member_expression`, and container nodes remain visible even when a child is missing. Comments are extras, so they may appear between any tokens and are also exposed as named nodes.
+### Model and compatibility scope
 
-Template literals expose only `${...}` substitutions as expression children. All other backtick content is opaque literal text. Tagged templates expose a `tag` expression and an opaque `template_string`.
+Tree-sitter's standard error recovery applies; the grammar uses no custom external scanner and no error-specific rules. Comments are `extras`, so they may appear between any tokens and remain named `comment` nodes inside malformed regions.
 
-Phase 4 added dedicated unfinished-call, unfinished-template, incomplete-argument-list, incomplete-arrow-function, incomplete-declaration, incomplete-expression, malformed-nested, missing-delimiter, valid-context, noncascading, and known-limitation cases in `test/corpus/incomplete_calls.txt`, `test/corpus/unfinished_templates.txt`, `test/corpus/incomplete_argument_lists.txt`, `test/corpus/incomplete_arrow_functions.txt`, `test/corpus/incomplete_declarations.txt`, `test/corpus/incomplete_expressions.txt`, `test/corpus/malformed_nested_structures.txt`, `test/corpus/missing_delimiters.txt`, `test/corpus/valid_syntax_around_errors.txt`, `test/corpus/noncascading_errors.txt`, and `test/corpus/recovery_limitations.txt`. Variable declarations with a missing initializer preserve the declaration kind and binding name but leave the trailing `=` in a localized `ERROR`. Recoverable forms are recorded as expected-good trees; forms that collapse to a root `ERROR` are recorded separately as known-limitation regressions rather than as expected-good recovery.
+Incomplete constructs surface as synthesized `MISSING` terminals; unexpected or unrecoverable input surfaces as `ERROR` nodes. Consumers should check `hasError` (or the equivalent binding API) before relying on a tree. Recovery is best effort, not part of the stable public-tree contract: valid source is the compatibility surface, while malformed-input trees may improve or change without a breaking release. See [syntax coverage compatibility](compatibility.md#syntax-coverage-compatibility) and the [breaking-change policy](compatibility.md#breaking-change-policy-for-cst-and-queries).
 
-Phase 6 adds `test/corpus/malformed_expansions.txt` with chained and optional subscript delimiters, malformed formal and arrow parameters, nested separator errors, ternary errors inside calls, and a malformed array binding pattern. These cases extend the same principle to function parameters, member chains, and conditional expressions without changing the grammar.
+Two invariants guide grammar changes:
 
-Five boundary cases confirm that valid declarations and calls on both sides of a localized error remain usable. Six noncascading cases show that an unexpected token between call arguments, a missing comma in an object or array, a missing object value, an invalid initializer, and a stray statement token each produce one local error region while following statements still parse. Fifteen known-limitation cases lock in current behavior for bare `!`, missing function and import bodies, unterminated strings, untagged templates at exact EOF, unfinished template substitutions, missing object and call delimiters, nested missing delimiters, and incomplete constructs that consume the next declaration keyword. An unfinished call, a missing initializer, or an incomplete arrow body can consume the following declaration keyword; an unclosed string can consume the rest of the file. Realistic incremental editing sequences are defined in `docs/incremental-editing-sequences.md` and `test/fixtures/incremental_sequences.json`; `make test-incremental` compares incremental and fresh trees at every edit step, and the comparison procedure is documented in `docs/incremental-equivalence-procedure.md`.
+1. Valid source keeps its exact tree. Recovery improvements never justify weakening valid-code correctness.
+2. Errors stay local where the generated parser permits. Named wrapper nodes (`arguments`, `call_expression`, `member_expression`, `array`, `object`, `block`) keep a recognizable parent around a missing child, and the precedence and GLR decisions above are not introduced solely for recovery.
+
+Template literals expose only `${...}` substitutions as expression children; all other backtick content is opaque literal text. Tagged templates expose a `tag` expression and an opaque `template_string`. This limits how far an unfinished template can disrupt the surrounding tree.
+
+### Terminology
+
+- **Recoverable case:** the malformed region produces a `MISSING` terminal or a localized `ERROR`, and surrounding statements remain separate syntax nodes.
+- **Known limitation:** the parse collapses to a root `ERROR`, or the malformed construct consumes following statements. These cases are recorded as regression fixtures, not as expected-good recovery.
+
+### Recoverable categories
+
+- **Unfinished calls and argument lists** — [incomplete_calls.txt](../test/corpus/incomplete_calls.txt), [incomplete_argument_lists.txt](../test/corpus/incomplete_argument_lists.txt). `const x = s(` keeps the declaration, `variable_declarator`, `call_expression`, and `arguments` with `MISSING ")"`. Trailing commas, doubled commas, and nested incomplete calls localize the malformed separator while preserving completed arguments.
+- **Missing delimiters** — [missing_delimiters.txt](../test/corpus/missing_delimiters.txt). `[1, 2`, `(1 + 2`, `a[0`, `const x = {a: 1`, and `function f() { return 1` synthesize the closing token while preserving the array, parenthesized expression, computed member, object, or block. Object recovery is tested in declaration context because a bare `{a: 1` in statement position is a labeled block.
+- **Incomplete expressions** — [incomplete_expressions.txt](../test/corpus/incomplete_expressions.txt). Missing binary and comparison operands, ternary alternatives, and member properties retain the expression node with a synthesized terminal.
+- **Unfinished templates** — [unfinished_templates.txt](../test/corpus/unfinished_templates.txt). An untagged template ending with a newline, a template after a completed `${...}` substitution, and a tagged template each preserve the template or tagged-template node with ``MISSING "`"``.
+- **Incomplete declarations** — [incomplete_declarations.txt](../test/corpus/incomplete_declarations.txt). `const x =`, `const [a, b] =`, and `const x = 1,` preserve the declaration kind and binding name while leaving the trailing `=` in a localized `ERROR`; `export default` synthesizes a missing value.
+- **Incomplete arrows** — [incomplete_arrow_functions.txt](../test/corpus/incomplete_arrow_functions.txt). Missing bodies after single, parenthesized, empty, and destructured parameter lists, an incomplete expression body, and a missing block brace still produce `arrow_function` with `MISSING number` or `MISSING "}"`.
+- **Malformed nested structures** — [malformed_nested_structures.txt](../test/corpus/malformed_nested_structures.txt), [malformed_expansions.txt](../test/corpus/malformed_expansions.txt). Missing brackets and braces inside calls or objects, doubled commas in arrays, objects, and parameters, and malformed ternary or subscript chains keep the outer node and localize the inner error.
+- **Valid syntax around errors** — [valid_syntax_around_errors.txt](../test/corpus/valid_syntax_around_errors.txt), [noncascading_errors.txt](../test/corpus/noncascading_errors.txt). A stray token, missing comma, missing value, or invalid initializer produces one local error region while following declarations and calls still parse.
+
+### Known limitations
+
+- **Root-`ERROR` collapses:** bare `!`, `function f()` without a body, `import { x } from` without a source, unterminated quoted strings (`"bd`, `s("bd`), an untagged template at exact EOF, an unfinished `${...}` substitution, and multiple missing delimiters (`f({a: 1`, `[{a: 1}, {b: 2`, `s("bd", note("c3"`).
+- **Cascading consumption:** an unfinished call, a missing initializer, or an incomplete arrow immediately before the next declaration keyword consumes that keyword. In `s("bd",` followed by `const a = 1`, `const` is parsed as an argument identifier and `a = 1` as an assignment expression. An unclosed quoted string consumes the rest of the file.
+- These behaviors are locked in by [recovery_limitations.txt](../test/corpus/recovery_limitations.txt) (15 cases). They document current behavior; they are not expected-good recovery and are not supported syntax.
+
+### Relationship to incremental parsing
+
+Incremental/fresh equivalence is a tree-identity guarantee, not a recovery-quality guarantee: a malformed intermediate step passes when both parses produce the same tree, however poor that tree is. See the [incremental equivalence procedure](incremental-equivalence-procedure.md). Recorded sequences include repairs with `MISSING ")"`, a missing object brace, and an unterminated string; `make test-incremental` compares incremental and fresh trees at every step. Recovery changes must therefore be revalidated with the incremental harness.
+
+### Validation and change policy
+
+- `make test` runs the full corpus, including all recovery cases (157 cases at the time of writing). `make test-recovery` reruns the 12 recovery-focused corpus files as a local subset (86 cases). `make verify` and `make ci` run the full corpus and the incremental harness; Node.js binding recovery assertions also run through `make test-node`.
+- Every discovered recovery bug or weakness gets a permanent corpus case. Expected trees containing `ERROR` or `MISSING` may need to be derived from parse probes because `tree-sitter test --update` refuses to auto-accept them.
+- Never promote a root-`ERROR` collapse into an expected-good tree; add it to the limitation fixture instead.
+- After any grammar change, regenerate with the pinned CLI, review `src/node-types.json`, run corpus and incremental tests, and update this section when recovery behavior changes.
 
 ## Verification
 
