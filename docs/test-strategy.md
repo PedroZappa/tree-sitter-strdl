@@ -32,6 +32,7 @@ The tests cover syntax recognition and the public concrete syntax tree (CST). Th
 | Benchmark fixture consistency | `make check-benchmark-fixtures` | `benchmarks/fixtures/manifest.json`, generated and representative fixtures | Fixture sizes, hashes, and generated content match the manifest exactly. See [benchmarking](benchmarking.md). |
 | Fresh parse latency | `make bench-fresh` | `scripts/bench_fresh.js`, `benchmarks/fixtures/manifest.json`, Node.js binding | Measures `Parser.parse` latency with warmup, percentiles, fixture hash validation, and `expected_clean` guards. Not a CI gate. See [benchmarking](benchmarking.md#fresh-parsing-latency). |
 | Incremental parse latency | `make bench-incremental` | `scripts/bench_incremental.js`, `scripts/bench_common.js`, `test/fixtures/incremental_sequences.json`, Node.js binding | Times `tree.edit` plus incremental `Parser.parse` with warmup and percentiles, and rejects any step whose tree differs from a fresh parse. Not a CI gate. See [benchmarking](benchmarking.md#incremental-parsing-latency). |
+| Parse-tree memory | `make bench-memory` | `scripts/bench_memory.js`, `scripts/bench_common.js`, benchmark manifest, incremental catalog, Node.js binding | Forces GC and reports retained heap/RSS deltas for fresh and incremental trees with fresh-CST guards. Not a CI gate. See [benchmarking](benchmarking.md#memory-consumption). |
 | C library build | `make build` (included in `make ci`) | `bindings/c/`, generated sources | Static/shared libraries and pkg-config metadata build from generated artifacts. Build validation is distinct from behavioral testing. |
 
 ## Command map
@@ -52,6 +53,7 @@ The tests cover syntax recognition and the public concrete syntax tree (CST). Th
 | `make check-benchmark-fixtures` | Benchmark fixture size, hash, and regeneration consistency. |
 | `make bench-fresh` | Fresh parse latency measurement with configurable iterations, warmup, fixture filter, and JSON output. |
 | `make bench-incremental` | Incremental parse latency measurement with configurable iterations, warmup, sequence/category filters, and JSON output. |
+| `make bench-memory` | Fresh/incremental parse-tree memory measurement with mode, iteration, warmup, fixture, sequence/category, and JSON overrides. |
 | `make check-generated` | Generated-file consistency against `HEAD`. |
 | `make verify` | Generated-file, benchmark-fixture, corpus, query, and regression-inventory layers. |
 | `make verify-all` | `verify` plus Node.js binding and package checks. |
@@ -79,6 +81,7 @@ Run `make help` for the authoritative target list and parameter names.
 - `scripts/bench_common.js`: shared benchmark argument, fixture, catalog, edit replay, statistics, and report helpers.
 - `scripts/bench_fresh.js`: fresh parse latency measurement.
 - `scripts/bench_incremental.js`: incremental parse latency measurement with fresh-CST equivalence guards.
+- `scripts/bench_memory.js`: fresh and incremental parse-tree memory measurement with forced GC.
 - `scripts/test_incremental.py`: replays edits and compares incremental and fresh CSTs.
 
 Temporary negative controls used while developing the determinism, locals-definition, registration, and capture checks are recorded in the [roadmap verification log](roadmap.md#verification-log). The query compilation checker contains built-in negative controls, and `test-query-execution` includes a permanent wrong-capture negative control.
@@ -102,6 +105,6 @@ Do not weaken or delete an existing test to make a change pass without an explic
 
 Covered by `make ci` today: generated-file and benchmark-fixture consistency, corpus behavior, all query layers, regression-inventory integrity, Node.js binding load/metadata/CST/recovery/query/incremental behavior, npm package integrity, and the C library build. Recovery cases run inside the full corpus suite; `make test-recovery` is the dedicated local subset.
 
-Local-only: incremental/fresh equivalence and fresh/incremental latency measurement.
+Local-only: incremental/fresh equivalence and fresh/incremental latency and memory measurement.
 
-Not yet implemented: memory measurement, committed benchmark baselines and performance-regression reporting, formatting/static checks, and non-Node binding validation. These are tracked in the [Phase 6](roadmap.md#phase-6--testing-and-performance) and [Phase 7](roadmap.md#phase-7--packaging-and-compatibility) checklists. CI gaps are also summarized in [CI](ci.md#not-yet-covered).
+Not yet implemented: committed benchmark baselines and performance-regression reporting, formatting/static checks, and non-Node binding validation. These are tracked in the [Phase 6](roadmap.md#phase-6--testing-and-performance) and [Phase 7](roadmap.md#phase-7--packaging-and-compatibility) checklists. CI gaps are also summarized in [CI](ci.md#not-yet-covered).

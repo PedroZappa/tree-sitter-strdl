@@ -1,6 +1,6 @@
 # Benchmarking
 
-This document owns the Phase 6 benchmark fixture inventory and fresh/incremental latency measurements. The authoritative fixture metadata is [manifest.json](../benchmarks/fixtures/manifest.json); no committed baselines or memory results are recorded yet.
+This document owns the Phase 6 benchmark fixture inventory and fresh/incremental latency and memory measurements. The authoritative fixture metadata is [manifest.json](../benchmarks/fixtures/manifest.json); no committed baselines are recorded yet.
 
 ## Fixture inventory
 
@@ -50,6 +50,19 @@ make bench-incremental BENCH_CATEGORY=compact-fixture
 
 `scripts/bench_incremental.js --json` prints the same report as structured output. Sequence totals are not directly comparable with fresh fixture totals because they replay different source sizes and edit counts; use the report's fixture path, edit count, and per-step values when interpreting results. This is a measurement tool, not a committed baseline or CI gate.
 
+## Memory consumption
+
+`make bench-memory` runs Node with `--expose-gc` and measures retained parse-tree memory for fresh and incremental workloads. It forces GC before each baseline and again after the measured trees are retained, then reports deltas for V8 `heapUsed`, `heapTotal`, `external`, `arrayBuffers`, and RSS. Each fresh iteration retains one parse tree; each incremental replay retains the initial tree plus one tree per edit and compares every step with a fresh parse. Warmup iterations are unretained.
+
+```sh
+make bench-memory
+make bench-memory BENCH_MODE=fresh BENCH_FIXTURE=synthetic-large
+make bench-memory BENCH_MODE=incremental BENCH_SEQUENCE=malformed-call-repair BENCH_OUTPUT=benchmarks/results/memory.json
+make bench-memory BENCH_CATEGORY=compact-fixture
+```
+
+`scripts/bench_memory.js --json` prints the same report as structured output. Heap values describe reachable JavaScript heap after GC; native tree memory may appear primarily in RSS. RSS is process-wide and allocator-granular, so per-tree values can be zero or jump in page-sized increments. Sampled peak deltas are observed after retaining each tree, not a continuous high-water trace. This is a measurement tool, not a committed baseline or CI gate.
+
 ## Validation performed
 
 - All four `expected_clean: true` fixtures parse with `tree-sitter parse --quiet` and exit 0 using CLI 0.27.2.
@@ -70,8 +83,11 @@ make bench-incremental BENCH_CATEGORY=compact-fixture
 - `make bench-incremental` with 15 measured replays and 2 warmup replays ran on Node v26.13.1, tree-sitter runtime 0.25.1, linux/x64 with 24 logical CPUs. It covered all 21 sequences, 29 edit steps, and 435 fresh-comparison parses per measured pass. Observed replay-total P99 values in milliseconds were: method-chain-insertion 0.414387, pattern-string-replacement 0.124559, declaration-deletion 0.049974, nested-object-edits 0.091612, malformed-call-repair 0.078348, declaration-insertion 0.049517, arrow-parameter-rename 0.098679, method-deletion 0.064867, call-statement-insertion 0.043110, template-content-edit 0.062985, compact-set-cps 0.010771, compact-declaration-deletion 0.024841, compact-malformed-repair 0.042569, argument-deletion 0.033128, object-property-deletion 0.035529, method-name-replacement 0.037611, nested-call-edit 0.058675, nested-arrow-body-edit 0.094787, object-brace-repair 0.073458, string-quote-repair 0.087804, and array-bracket-repair 0.112255.
 - A temporary catalog negative control that changed the first edit's `occurrence` to 99 failed with exit 1 before producing a report.
 - A temporary manifest negative control that changed `representative-main` SHA-256 failed with exit 1 before replaying edits.
-- A filtered JSON-report control wrote a one-sequence report with `mode: incremental`, one step, two fresh comparisons, and finite P99; a `compact-fixture` category control selected four sequences; `node --check` passed for all three benchmark scripts.
+- A filtered JSON-report control wrote a one-sequence report with `mode: incremental`, one step, two fresh comparisons, and finite P99; a `compact-fixture` category control selected four sequences; `node --check` passed for all three latency scripts.
+- `make bench-memory` with 15 retained iterations and 2 unretained warmups ran on Node v26.13.1, tree-sitter runtime 0.25.1, linux/x64 with 24 logical CPUs. It forced GC and covered all 5 fresh fixtures and 21 incremental sequences. Observed retained heap per tree was 870, 683, 198, 189, and 183 bytes for representative-main, representative-local, synthetic-large, deeply-nested, and pathological; incremental values ranged from 282 to 2,291 bytes per tree. Sampled peak RSS reached 61,341,696 bytes for synthetic-large and 7,274,496 bytes for pattern-string-replacement.
+- Negative controls failed with exit 1 when the memory script was run without `--expose-gc`, when a catalog edit used `occurrence: 99`, when `representative-main` SHA-256 was wrong, and when `--mode` was invalid.
+- A filtered JSON-report control wrote a one-fixture report with `mode: memory`, two retained trees, finite heap per tree, and `gcAvailable: true`; a `compact-fixture` category control selected four incremental sequences; `node --check` passed for all four benchmark scripts.
 
 ## Remaining work
 
-Memory measurement, committed fresh/incremental P50/P95/P99 baselines, dedicated hardware/software environment capture, and performance budgets remain separate roadmap items. Both reports include basic runtime metadata but are not hardware-normalized. This document will own those results as they are added.
+Committed fresh/incremental latency and memory baselines, dedicated hardware/software environment capture, and performance budgets remain separate roadmap items. The reports include basic runtime metadata but are not hardware-normalized. This document will own those results as they are added.
