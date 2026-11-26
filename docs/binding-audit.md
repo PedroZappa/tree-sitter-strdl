@@ -25,7 +25,7 @@ This document accumulates the Phase 7 binding audits. It records implementation,
 
 ### Decision
 
-Retain the C binding. It is a small, source-level integration with a correct public symbol, two working build paths, and explicit installer rules. Removing it would break CMake/Make consumers and contradict the enabled `bindings.c` metadata without providing a distribution benefit, because npm does not publish the C binding anyway. This is a C-specific retention decision; the aggregate non-Node binding decision remains pending until Go, Python, Rust, and Swift audits are complete.
+Retain the C binding. It is a small, source-level integration with a correct public symbol, two working build paths, and explicit installer rules. Removing it would break CMake/Make consumers and contradict the enabled `bindings.c` metadata without providing a distribution benefit, because npm does not publish the C binding anyway. This is a C-specific retention decision; the aggregate non-Node binding decision remains pending until the Rust and Swift audits are complete.
 
 ### Known gaps and deferred work
 
@@ -57,7 +57,7 @@ Retain the C binding. It is a small, source-level integration with a correct pub
 
 ### Decision
 
-Retain the Go binding as a source-level, source-only integration. Its metadata explicitly enables it, its source and test are tracked, and a compatible runtime previously passed. Removing it would break source consumers and discard useful validation without solving the packaging gap. This audit does not promote Go to a first-class distributed binding: adding `go.mod`/`go.sum`, wiring a Go CI leg, or disabling the binding would materially change compatibility and requires explicit approval. The aggregate non-Node binding decision remains pending until Python, Rust, and Swift audits are complete.
+Retain the Go binding as a source-level, source-only integration. Its metadata explicitly enables it, its source and test are tracked, and a compatible runtime previously passed. Removing it would break source consumers and discard useful validation without solving the packaging gap. This audit does not promote Go to a first-class distributed binding: adding `go.mod`/`go.sum`, wiring a Go CI leg, or disabling the binding would materially change compatibility and requires explicit approval. The aggregate non-Node binding decision remains pending until the Rust and Swift audits are complete.
 
 ### Known gaps and deferred work
 
@@ -67,6 +67,39 @@ Retain the Go binding as a source-level, source-only integration. Its metadata e
 - No Go build or test is wired into `make ci`, and no Go publish job exists.
 - Installing a Go toolchain and adding module metadata are deferred pending an explicit compatibility and distribution decision.
 
+## Python binding — audited 2026-11-26
+
+### Implementation and build reachability
+
+| Area        | Evidence                                                                                                                                                                                                                                                      | Assessment                                                                                                                               |
+| ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
+| Public API  | `bindings/python/tree_sitter_strudel/binding.c` declares `tree_sitter_strudel()` and returns a `PyCapsule` named `tree_sitter.Language`; `__init__.py` exposes `language()`, `HIGHLIGHTS_QUERY`, and `LOCALS_QUERY`, with matching entries in `__init__.pyi`. | Correct runtime capsule contract and typed module surface; official queries are exposed as module attributes.                            |
+| Build       | `setup.py` builds the `_binding` extension from `binding.c` plus `src/parser.c` and optional `src/scanner.c`, copies `queries/` into the package, and emits an abi3 wheel for CPython 3.10+.                                                                  | Standard setuptools path; the extension imports without installing the optional `tree-sitter` runtime.                                   |
+| Packaging   | `pyproject.toml` declares name, AGPL-3.0-only license, `requires-python >=3.10`, and optional `core = tree-sitter~=0.25.0`; `publish.yml` has a PyPI job with `generate: true`.                                                                               | The Python binding has a real distribution path and a declared ABI-compatible runtime floor.                                             |
+| Version     | `pyproject.toml` uses `1.3.0`, matching Makefile and CMake metadata, while `package.json` and `tree-sitter.json` use `1.5.0`.                                                                                                                                 | Version alignment remains a Phase 7 package-integrity gap; it is not a binding functionality failure.                                    |
+| Test source | `bindings/python/tests/test_binding.py` constructs `tree_sitter.Language(tree_sitter_strudel.language())`; `scripts/check_query_registration.py` statically checks module and stub exports.                                                                   | Existing test is a shallow load test; parser, query, recovery, and incremental behavior are covered by other layers, not through Python. |
+| npm package | npm `files` excludes non-Node bindings, including `bindings/python/`.                                                                                                                                                                                         | Python consumers use the PyPI package or source checkout, not npm.                                                                       |
+
+### Verification performed
+
+- `python3 scripts/check_python_binding.py` built `_binding.abi3.so` with Python 3.14.10, setuptools 84.2.1, and wheel 0.48.0 in a temporary tree, using `--egg-base` to avoid writing egg metadata into the checkout.
+- The checker imported the built package, confirmed `language()` returns a `PyCapsule` named `tree_sitter.Language` with a non-null pointer, and loaded both official query strings through the module attributes.
+- `make test-python` was added and wired into `verify-all` and `make ci`.
+- A negative control that expected a missing capture in `HIGHLIGHTS_QUERY` failed with `exit=1`.
+- The [compatibility record](compatibility.md#validation-performed) documents a prior pass with Python 3.15.2 and `tree-sitter` 0.25.2. That runtime is not installed in this environment, so the current check validates the binding surface without constructing a `tree_sitter.Language` object.
+
+### Decision
+
+Retain the Python binding as an officially distributed integration. It has a working CPython extension, typed query/API exports, a PyPI publish job, and a declared ABI-compatible runtime extra. Removing it would break an established distribution path and contradict `bindings.python: true`. Version alignment and deeper behavioral coverage are tracked separately rather than treated as reasons to remove the binding.
+
+### Known gaps and deferred work
+
+- `pyproject.toml` is at `1.3.0` while npm and Tree-sitter metadata are at `1.5.0`; release packaging must align them.
+- The optional `core` extra means the existing `test_binding.py` does not run unless `tree-sitter` is installed; the new gate checks the extension without that runtime.
+- No representative parse, query-execution, recovery, or incremental-equivalence test runs through the Python binding.
+- The abi3 wheel target is declared for CPython 3.10+, but only Python 3.14.10 was built locally in this audit.
+- `setup.py` currently copies `binding.c` into the built package; harmless but unnecessary package content.
+
 ## Other bindings
 
-Audits for Python, Rust, and Swift are pending and tracked in the [roadmap](roadmap.md#phase-7--packaging-and-compatibility).
+Audits for Rust and Swift are pending and tracked in the [roadmap](roadmap.md#phase-7--packaging-and-compatibility).

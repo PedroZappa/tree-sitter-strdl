@@ -126,7 +126,7 @@ D = $(shell tput sgr0 2>/dev/null)
 _SUCCESS = [$(GRN)SUCCESS$(D)]
 _INFO    = [$(BLU)INFO$(D)]
 
-.PHONY: all build generate test test-recovery test-incremental test-query-compile test-query-execution test-query-registration test-query test-node test-node-clean-build test-generated-runtime test-c test-package test-regressions benchmark-fixtures check-benchmark-fixtures bench-fresh bench-incremental bench-memory build-benchmark-baseline check-benchmark-baseline reproduce-benchmark-baseline compare-benchmark-baseline build-benchmark-budgets check-benchmark-budgets performance-report format check-format check-static parse playground wasm \
+.PHONY: all build generate test test-recovery test-incremental test-query-compile test-query-execution test-query-registration test-query test-node test-node-clean-build test-generated-runtime test-c test-python test-package test-regressions benchmark-fixtures check-benchmark-fixtures bench-fresh bench-incremental bench-memory build-benchmark-baseline check-benchmark-baseline reproduce-benchmark-baseline compare-benchmark-baseline build-benchmark-budgets check-benchmark-budgets performance-report format check-format check-static parse playground wasm \
 	local-install install-dev install uninstall clean check-generated verify verify-all ci \
 	docs docs-open help
 
@@ -258,6 +258,11 @@ test-c:	## Verify the C binding header links to the generated parser
 	@python3 scripts/check_c_binding.py $(CC)
 	@echo "$(YEL)* $(_SUCCESS) C binding verified$(D)"
 
+test-python:	## Build and verify the Python binding extension
+	@echo "$(YEL)Verifying Python binding...$(D)"
+	@python3 scripts/check_python_binding.py
+	@echo "$(YEL)* $(_SUCCESS) Python binding verified$(D)"
+
 test-package:	## Verify npm package contents and metadata
 	@echo "$(YEL)Checking npm package integrity...$(D)"
 	@python3 scripts/check_package_integrity.py $(NPM)
@@ -370,7 +375,7 @@ check-generated:	## Verify committed parser artifacts match grammar.js
 
 verify: check-generated check-format check-static test test-incremental test-query test-regressions check-benchmark-fixtures check-benchmark-baseline reproduce-benchmark-baseline check-benchmark-budgets	## Run the core CI gate (artifacts, formatting, static checks, corpus, incremental equivalence, queries, regressions, fixtures, baseline reproduction, budgets)
 
-verify-all: verify test-node test-node-clean-build test-generated-runtime test-c test-package	## Run the core gate plus Node.js, clean-build, generated-runtime, C binding, and package checks
+verify-all: verify test-node test-node-clean-build test-generated-runtime test-c test-python test-package	## Run the core gate plus Node.js, clean-build, generated-runtime, C/Python bindings, and package checks
 
 ci: verify-all build	## Run the complete CI gate locally (requires make install-dev first)
 

@@ -28,14 +28,14 @@ tree-sitter generate
 
 ## Runtime support matrix
 
-| Binding | Declared requirement                                                                  | Validation version                                      | Result                                                       |
-| ------- | ------------------------------------------------------------------------------------- | ------------------------------------------------------- | ------------------------------------------------------------ |
-| Node.js | peer `tree-sitter: ^0.25.0`                                                           | `tree-sitter` 0.25.1, Node.js 26.8.2 and 26.13.1        | Passed `npm test` and a clean tracked-source build           |
-| Python  | optional extra `tree-sitter~=0.25.0`                                                  | `tree-sitter` 0.25.2, Python 3.15.2                     | Passed `bindings/python/tests/test_binding.py`               |
-| Rust    | dev-dependency `tree-sitter = "0.25.8"`                                               | Not run; cargo unavailable                              | Not verified in this environment                             |
-| Go      | `github.com/tree-sitter/go-tree-sitter` v0.25.0 resolved by the temporary test module | Go 1.27.4                                               | Passed `go test` in a temporary copy; retained source-only   |
-| Swift   | `SwiftTreeSitter` `from: "0.10.0"`                                                    | Resolved SwiftTreeSitter 0.25.0 and tree-sitter 0.25.10 | `swift build` passed; `swift test` blocked by missing XCTest |
-| C       | No Tree-sitter runtime dependency declared                                            | C11 with GCC 16.2.1; CMake 4.5.1                        | Passed `make build`, CMake build/install, and C symbol check |
+| Binding | Declared requirement                                                                  | Validation version                                         | Result                                                       |
+| ------- | ------------------------------------------------------------------------------------- | ---------------------------------------------------------- | ------------------------------------------------------------ |
+| Node.js | peer `tree-sitter: ^0.25.0`                                                           | `tree-sitter` 0.25.1, Node.js 26.8.2 and 26.13.1           | Passed `npm test` and a clean tracked-source build           |
+| Python  | optional extra `tree-sitter~=0.25.0`                                                  | `tree-sitter` 0.25.2 previously; Python 3.15.2 and 3.14.10 | Passed `test_binding.py` and `make test-python`              |
+| Rust    | dev-dependency `tree-sitter = "0.25.8"`                                               | Not run; cargo unavailable                                 | Not verified in this environment                             |
+| Go      | `github.com/tree-sitter/go-tree-sitter` v0.25.0 resolved by the temporary test module | Go 1.27.4                                                  | Passed `go test` in a temporary copy; retained source-only   |
+| Swift   | `SwiftTreeSitter` `from: "0.10.0"`                                                    | Resolved SwiftTreeSitter 0.25.0 and tree-sitter 0.25.10    | `swift build` passed; `swift test` blocked by missing XCTest |
+| C       | No Tree-sitter runtime dependency declared                                            | C11 with GCC 16.2.1; CMake 4.5.1                           | Passed `make build`, CMake build/install, and C symbol check |
 
 GitHub Actions validates the Node.js binding on Node.js 22 and 24 for pull requests and pushes to `main`; see [CI](ci.md).
 
@@ -59,6 +59,8 @@ On 2026-11-26, a runtime-only copy containing committed generated artifacts but 
 Also on 2026-11-26, the C binding was audited and retained. `make build` produced static and shared libraries; a clean tracked-source CMake build and install produced the shared library, header, pkg-config metadata, and queries; and `make test-c` compiled and linked `tree_sitter_strudel()` against `src/parser.c`, confirming a non-null language pointer. See the [binding audit](binding-audit.md#c-binding--audited-2026-11-26) for evidence, retained-binding rationale, and deferred packaging gaps.
 
 The Go binding was audited on 2026-11-26 as well. Its source and test were inspected, but no Go toolchain is installed in this environment, so the earlier temporary-module `go test` result remains the only execution evidence. The binding is retained as source-only with no committed module metadata or CI gate; see the [Go audit](binding-audit.md#go-binding--audited-2026-11-26).
+
+The Python binding was audited on 2026-11-26. `make test-python` built the extension with Python 3.14.10 and validated the `tree_sitter.Language` capsule plus both official query exports without installing the optional runtime. The earlier `tree-sitter` 0.25.2 / Python 3.15.2 load test remains the runtime-level evidence. See the [Python audit](binding-audit.md#python-binding--audited-2026-11-26).
 
 ## Known limitations
 
