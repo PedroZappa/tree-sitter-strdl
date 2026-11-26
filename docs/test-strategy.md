@@ -121,7 +121,7 @@ Do not weaken or delete an existing test to make a change pass without an explic
 
 ## Current coverage and gaps
 
-Covered by `make ci` today: generated-file, formatting, static-analysis, benchmark-fixture, benchmark-baseline, and benchmark-budget structural consistency; corpus behavior; CLI-level incremental/fresh equivalence; all query layers; regression-inventory integrity; Node.js binding load/metadata/CST/recovery/query/incremental behavior; npm package integrity; and the C library build. Recovery cases run inside the full corpus suite; `make test-recovery` is the dedicated local subset.
+Covered by `make ci` today: generated-file, formatting, static-analysis, benchmark-fixture, benchmark-baseline, and benchmark-budget structural consistency; corpus behavior; CLI-level incremental/fresh equivalence; all query layers; regression-inventory integrity; Node.js binding load/metadata/CST/recovery/query/incremental behavior; npm package integrity; and the C library build. All Phase 6 test layers in this index run automatically in both CI matrix legs through `make ci`. Recovery cases run inside the full corpus suite; `make test-recovery` is the dedicated local subset.
 
 Local-only: `make format` auto-fixes formatting and safe Ruff issues, filtered incremental-equivalence runs through `INCREMENTAL_FILTER`, fresh/incremental latency and memory measurement, baseline regeneration, baseline comparison, and budget regeneration. CI runs the complete equivalence catalog without a filter, validates the committed artifacts, and prints a hardware-variance-aware performance report on the Node 24 leg; no timing is compared as a pass/fail gate.
 
