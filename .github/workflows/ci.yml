@@ -35,5 +35,10 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Install Python development tools
+        run: |
+          python3 -m venv .venv
+          .venv/bin/pip install -r requirements-dev.txt
+
       - name: Run CI gate
         run: make ci

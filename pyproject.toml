@@ -27,3 +27,11 @@ core = ["tree-sitter~=0.25.0"]
 [tool.cibuildwheel]
 build = "cp310-*"
 build-frontend = "build"
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+exclude = ["bindings/python/tree_sitter_strudel/binding.c"]
+
+[tool.ruff.lint]
+select = ["E4", "E7", "E9", "F"]

@@ -6,10 +6,7 @@
       "camelcase": "Strudel",
       "title": "Strudel",
       "scope": "source.strdl",
-      "file-types": [
-        "strdl",
-        "strudel"
-      ],
+      "file-types": ["strdl", "strudel"],
       "injection-regex": "^strudel$",
       "class-name": "TreeSitterStrudel",
       "highlights": "queries/highlights.scm",

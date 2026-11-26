@@ -83,9 +83,7 @@ def main(argv: list[str]) -> int:
     locals_captures = run_query(tree_sitter, locals_query, fixtures, fixture_names)
     definition_ranges: dict[Location, list[str]] = {}
     for location, captures in locals_captures.items():
-        names = [
-            name for name, _ in captures if name.startswith("local.definition")
-        ]
+        names = [name for name, _ in captures if name.startswith("local.definition")]
         if names:
             definition_ranges[location] = names
 
@@ -97,7 +95,9 @@ def main(argv: list[str]) -> int:
         )
         for filename, start_row, start_column, end_row, end_column in overlaps:
             text = probe_captures[(filename, start_row, start_column, end_row, end_column)][0][1]
-            names = ", ".join(definition_ranges[(filename, start_row, start_column, end_row, end_column)])
+            names = ", ".join(
+                definition_ranges[(filename, start_row, start_column, end_row, end_column)]
+            )
             print(
                 f"  {filename}:{start_row}:{start_column}-{end_row}:{end_column} "
                 f"text: `{text}` -> {names}",
@@ -105,10 +105,7 @@ def main(argv: list[str]) -> int:
             )
         return 1
 
-    print(
-        f"verified {len(probe_captures)} {label} ranges; "
-        "none received local.definition captures"
-    )
+    print(f"verified {len(probe_captures)} {label} ranges; none received local.definition captures")
     return 0
 
 

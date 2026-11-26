@@ -59,9 +59,7 @@ def run_query(
             int(match["end_row"]),
             int(match["end_column"]),
         )
-        captures.setdefault(location, []).append(
-            (match["name"], match["text"] or "")
-        )
+        captures.setdefault(location, []).append((match["name"], match["text"] or ""))
 
     return captures
 
@@ -100,16 +98,12 @@ def main(argv: list[str]) -> int:
             filename, start_row, start_column, end_row, end_column = location
             text = probe_captures[location][0][1]
             print(
-                f"  {filename}:{start_row}:{start_column}-{end_row}:{end_column} "
-                f"text: `{text}`",
+                f"  {filename}:{start_row}:{start_column}-{end_row}:{end_column} text: `{text}`",
                 file=sys.stderr,
             )
         return 1
 
-    print(
-        f"verified {len(probe_captures)} {label} ranges; "
-        f"all received @{expected}"
-    )
+    print(f"verified {len(probe_captures)} {label} ranges; all received @{expected}")
     return 0
 
 

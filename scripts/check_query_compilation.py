@@ -34,9 +34,7 @@ def clean(text: str) -> str:
     return ANSI_RE.sub("", text).strip()
 
 
-def compile_query(
-    tree_sitter: str, query: str, source: str
-) -> subprocess.CompletedProcess[str]:
+def compile_query(tree_sitter: str, query: str, source: str) -> subprocess.CompletedProcess[str]:
     return subprocess.run(
         [tree_sitter, "query", "--quiet", "--grammar-path", ".", query, source],
         capture_output=True,
@@ -90,8 +88,7 @@ def main(argv: list[str]) -> int:
                 failures += 1
             elif expected_error not in output:
                 print(
-                    f"query compilation check failed: {label} failed for an "
-                    "unexpected reason",
+                    f"query compilation check failed: {label} failed for an unexpected reason",
                     file=sys.stderr,
                 )
                 if output:

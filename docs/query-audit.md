@@ -30,16 +30,16 @@ Because the committed query compiled successfully under the same compiler, every
 
 All named nodes used by query patterns are present in `src/node-types.json`:
 
-| Pattern area | Nodes used | Status |
-| --- | --- | --- |
-| Literals | `string`, `number`, `comment` | Valid |
-| Declarations and bindings | `variable_declarator`, `function_declaration`, `import_specifier`, `formal_parameters`, `array_pattern`, `assignment_pattern`, `arrow_function` | Valid |
-| Statements | `labeled_statement` | Valid |
-| Calls and access | `call_expression`, `member_expression`, `subscript_expression` | Valid |
-| Assignments and properties | `assignment_expression`, `pair` | Valid |
-| Expression context | `binary_expression`, `unary_expression`, `conditional_expression`, `template_substitution` | Valid |
-| Containers | `object`, `array` | Valid |
-| Fallback | `identifier` | Valid |
+| Pattern area               | Nodes used                                                                                                                                      | Status |
+| -------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- | ------ |
+| Literals                   | `string`, `number`, `comment`                                                                                                                   | Valid  |
+| Declarations and bindings  | `variable_declarator`, `function_declaration`, `import_specifier`, `formal_parameters`, `array_pattern`, `assignment_pattern`, `arrow_function` | Valid  |
+| Statements                 | `labeled_statement`                                                                                                                             | Valid  |
+| Calls and access           | `call_expression`, `member_expression`, `subscript_expression`                                                                                  | Valid  |
+| Assignments and properties | `assignment_expression`, `pair`                                                                                                                 | Valid  |
+| Expression context         | `binary_expression`, `unary_expression`, `conditional_expression`, `template_substitution`                                                      | Valid  |
+| Containers                 | `object`, `array`                                                                                                                               | Valid  |
+| Fallback                   | `identifier`                                                                                                                                    | Valid  |
 
 ### Fields referenced
 
@@ -64,26 +64,26 @@ The `.` and `?` punctuation patterns do not match `?.` because it is a single an
 
 Executing the full highlight query against `test.strdl` and `test-local.strdl` produced these capture counts:
 
-| Capture | Matches |
-| --- | ---: |
-| `punctuation.bracket` | 294 |
-| `variable` | 211 |
-| `punctuation.delimiter` | 185 |
-| `property` | 122 |
-| `number` | 91 |
-| `string` | 50 |
-| `function.method` | 45 |
-| `function.call` | 27 |
-| `operator` | 16 |
-| `constructor` | 16 |
-| `function.audio` | 13 |
-| `keyword` | 10 |
-| `comment` | 5 |
-| `expression` | 4 |
-| `label` | 3 |
-| `function.pattern` | 3 |
-| `variable.parameter` | 2 |
-| `function.control` | 2 |
+| Capture                 | Matches |
+| ----------------------- | ------: |
+| `punctuation.bracket`   |     294 |
+| `variable`              |     211 |
+| `punctuation.delimiter` |     185 |
+| `property`              |     122 |
+| `number`                |      91 |
+| `string`                |      50 |
+| `function.method`       |      45 |
+| `function.call`         |      27 |
+| `operator`              |      16 |
+| `constructor`           |      16 |
+| `function.audio`        |      13 |
+| `keyword`               |      10 |
+| `comment`               |       5 |
+| `expression`            |       4 |
+| `label`                 |       3 |
+| `function.pattern`      |       3 |
+| `variable.parameter`    |       2 |
+| `function.control`      |       2 |
 
 Several structurally valid patterns produced no captures on these fixtures: `function.declaration`, import-related captures, and the API-name groups for effects, envelopes, time, utilities, MIDI, and samples. This is fixture coverage information, not evidence that those patterns are invalid.
 
@@ -139,22 +139,22 @@ Before the specificity changes, executing `highlights.scm` against `test.strdl` 
 
 After the changes, the two original fixtures produce 901 captures across 901 ranges, with zero duplicate ranges. Final capture counts for those two fixtures are:
 
-| Capture | Matches |
-| --- | ---: |
-| `punctuation.bracket` | 294 |
-| `punctuation.delimiter` | 185 |
-| `property` | 122 |
-| `number` | 91 |
-| `string` | 50 |
-| `variable` | 47 |
-| `function.method` | 45 |
-| `function.call` | 27 |
-| `operator` | 16 |
-| `keyword` | 10 |
-| `comment` | 5 |
-| `expression` | 4 |
-| `label` | 3 |
-| `variable.parameter` | 2 |
+| Capture                 | Matches |
+| ----------------------- | ------: |
+| `punctuation.bracket`   |     294 |
+| `punctuation.delimiter` |     185 |
+| `property`              |     122 |
+| `number`                |      91 |
+| `string`                |      50 |
+| `variable`              |      47 |
+| `function.method`       |      45 |
+| `function.call`         |      27 |
+| `operator`              |      16 |
+| `keyword`               |      10 |
+| `comment`               |       5 |
+| `expression`            |       4 |
+| `label`                 |       3 |
+| `variable.parameter`    |       2 |
 
 A temporary negative-control query containing `(identifier) @variable` and `(identifier) @function.call` was rejected by the determinism checker, confirming that the check detects duplicate captures.
 

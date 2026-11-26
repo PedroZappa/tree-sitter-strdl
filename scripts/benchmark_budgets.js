@@ -79,7 +79,12 @@ function parseArgs(argv) {
 
   const options =
     command === "build"
-      ? { command, inputs: null, baseline: DEFAULT_BASELINE, output: DEFAULT_BUDGET }
+      ? {
+          command,
+          inputs: null,
+          baseline: DEFAULT_BASELINE,
+          output: DEFAULT_BUDGET,
+        }
       : { command, budget: DEFAULT_BUDGET };
 
   for (let index = 1; index < argv.length; index += 1) {
@@ -105,19 +110,23 @@ function parseArgs(argv) {
 
     switch (flag) {
       case "--inputs":
-        if (command !== "build") throw new Error(`--inputs is invalid for ${command}`);
+        if (command !== "build")
+          throw new Error(`--inputs is invalid for ${command}`);
         options.inputs = path.resolve(value());
         break;
       case "--baseline":
-        if (command !== "build") throw new Error(`--baseline is invalid for ${command}`);
+        if (command !== "build")
+          throw new Error(`--baseline is invalid for ${command}`);
         options.baseline = path.resolve(value());
         break;
       case "--output":
-        if (command !== "build") throw new Error(`--output is invalid for ${command}`);
+        if (command !== "build")
+          throw new Error(`--output is invalid for ${command}`);
         options.output = path.resolve(value());
         break;
       case "--budget":
-        if (command !== "check") throw new Error(`--budget is invalid for ${command}`);
+        if (command !== "check")
+          throw new Error(`--budget is invalid for ${command}`);
         options.budget = path.resolve(value());
         break;
       default:
@@ -141,7 +150,10 @@ function check(condition, message) {
 }
 
 function object(value, label) {
-  check(value !== null && typeof value === "object" && !Array.isArray(value), `${label} must be an object`);
+  check(
+    value !== null && typeof value === "object" && !Array.isArray(value),
+    `${label} must be an object`,
+  );
   return value;
 }
 
@@ -151,23 +163,35 @@ function array(value, label) {
 }
 
 function text(value, label) {
-  check(typeof value === "string" && value.length > 0, `${label} must be a non-empty string`);
+  check(
+    typeof value === "string" && value.length > 0,
+    `${label} must be a non-empty string`,
+  );
   return value;
 }
 
 function finiteNumber(value, label) {
-  check(typeof value === "number" && Number.isFinite(value), `${label} must be a finite number`);
+  check(
+    typeof value === "number" && Number.isFinite(value),
+    `${label} must be a finite number`,
+  );
   return value;
 }
 
 function integer(value, label, minimum) {
-  check(Number.isInteger(value) && value >= minimum, `${label} must be an integer >= ${minimum}`);
+  check(
+    Number.isInteger(value) && value >= minimum,
+    `${label} must be an integer >= ${minimum}`,
+  );
   return value;
 }
 
 function isoDate(value, label) {
   text(value, label);
-  check(value === new Date(value).toISOString(), `${label} must be an ISO UTC timestamp`);
+  check(
+    value === new Date(value).toISOString(),
+    `${label} must be an ISO UTC timestamp`,
+  );
   return value;
 }
 
@@ -178,7 +202,12 @@ function relative(filePath) {
 }
 
 function valueAt(result, source, label) {
-  const value = source.split(".").reduce((current, key) => (current === null ? undefined : current[key]), result);
+  const value = source
+    .split(".")
+    .reduce(
+      (current, key) => (current === null ? undefined : current[key]),
+      result,
+    );
   return finiteNumber(value, label);
 }
 
@@ -195,7 +224,10 @@ function validateSessionManifest(manifest, inputsPath) {
     const session = object(entry, `session manifest.sessions[${index}]`);
     const reportPaths = {};
     for (const mode of ["fresh", "incremental", "memory"]) {
-      const report = text(session[mode], `session manifest.sessions[${index}].${mode}`);
+      const report = text(
+        session[mode],
+        `session manifest.sessions[${index}].${mode}`,
+      );
       reportPaths[mode] = path.resolve(baseDirectory, report);
     }
     return reportPaths;
@@ -211,11 +243,18 @@ function loadSession(reportPaths, baseline, index) {
   validateFreshReport(reports.fresh.data);
   validateIncrementalReport(reports.incremental.data);
   validateMemoryReport(reports.memory.data);
-  validateReportAgreement(reports.fresh.data, reports.incremental.data, reports.memory.data);
+  validateReportAgreement(
+    reports.fresh.data,
+    reports.incremental.data,
+    reports.memory.data,
+  );
 
   const environment = combinedEnvironment(reports);
   const config = comparisonConfig(reports);
-  const environmentDiffs = environmentDifferences(baseline.environment, environment);
+  const environmentDiffs = environmentDifferences(
+    baseline.environment,
+    environment,
+  );
   check(
     environmentDiffs.length === 0,
     `session ${index} environment does not match baseline: ${environmentDiffs.map((item) => item.field).join(", ")}`,
@@ -280,11 +319,21 @@ function metricBudget(observations, sourceLabels, label) {
   };
 }
 
-function caseBudget(baselineCase, sessionCases, label, metricSpecs, sourceLabels, extraFields) {
+function caseBudget(
+  baselineCase,
+  sessionCases,
+  label,
+  metricSpecs,
+  sourceLabels,
+  extraFields,
+) {
   object(baselineCase, `${label}.baseline`);
   const id = text(baselineCase.id, `${label}.baseline.id`);
   for (let index = 0; index < sessionCases.length; index += 1) {
-    const sessionCase = object(sessionCases[index], `${label}.session[${index}]`);
+    const sessionCase = object(
+      sessionCases[index],
+      `${label}.session[${index}]`,
+    );
     check(sessionCase.id === id, `${label} session ${index} id mismatch`);
   }
 
@@ -293,16 +342,26 @@ function caseBudget(baselineCase, sessionCases, label, metricSpecs, sourceLabels
     const observations = [
       valueAt(baselineCase, spec.source, `${label}.baseline.${spec.source}`),
       ...sessionCases.map((sessionCase, index) =>
-        valueAt(sessionCase, spec.source, `${label}.session[${index}].${spec.source}`),
+        valueAt(
+          sessionCase,
+          spec.source,
+          `${label}.session[${index}].${spec.source}`,
+        ),
       ),
     ];
-    metrics[spec.name] = metricBudget(observations, sourceLabels, `${label}.${spec.name}`);
+    metrics[spec.name] = metricBudget(
+      observations,
+      sourceLabels,
+      `${label}.${spec.name}`,
+    );
   }
   return { ...extraFields, id, metrics };
 }
 
 function buildBudgetLists(baseline, resultSets, sourceLabels) {
-  const freshSessions = resultSets.map((results) => indexById(results.fresh, "session fresh"));
+  const freshSessions = resultSets.map((results) =>
+    indexById(results.fresh, "session fresh"),
+  );
   const incrementalSessions = resultSets.map((results) =>
     indexById(results.incremental, "session incremental"),
   );
@@ -361,8 +420,14 @@ function buildBudgetLists(baseline, resultSets, sourceLabels) {
 
 function validateConfig(config, label) {
   object(config, label);
-  check(config.manifest === DEFAULT_MANIFEST_PATH, `${label}.manifest must be ${DEFAULT_MANIFEST_PATH}`);
-  check(config.catalog === DEFAULT_CATALOG_PATH, `${label}.catalog must be ${DEFAULT_CATALOG_PATH}`);
+  check(
+    config.manifest === DEFAULT_MANIFEST_PATH,
+    `${label}.manifest must be ${DEFAULT_MANIFEST_PATH}`,
+  );
+  check(
+    config.catalog === DEFAULT_CATALOG_PATH,
+    `${label}.catalog must be ${DEFAULT_CATALOG_PATH}`,
+  );
   integer(config.iterations, `${label}.iterations`, 1);
   integer(config.warmup, `${label}.warmup`, 0);
   integer(config.fixtureCount, `${label}.fixtureCount`, 1);
@@ -378,7 +443,9 @@ function validateSessionMetadata(sessions, label) {
     for (const mode of ["fresh", "incremental", "memory"]) {
       text(reports[mode], `${label}[${index}].reports.${mode}`);
     }
-    validateEnvironment(session.environment, `${label}[${index}].environment`, { requireGc: true });
+    validateEnvironment(session.environment, `${label}[${index}].environment`, {
+      requireGc: true,
+    });
     validateConfig(session.config, `${label}[${index}].config`);
     return `session-${index + 1}`;
   });
@@ -388,7 +455,10 @@ function validateMetric(metric, label, sourceLabels) {
   object(metric, label);
   finiteNumber(metric.budget, `${label}.budget`);
   text(metric.source, `${label}.source`);
-  check(sourceLabels.includes(metric.source), `${label}.source is not a known session`);
+  check(
+    sourceLabels.includes(metric.source),
+    `${label}.source is not a known session`,
+  );
   array(metric.observations, `${label}.observations`);
   check(
     metric.observations.length === sourceLabels.length,
@@ -401,11 +471,23 @@ function validateMetric(metric, label, sourceLabels) {
       maxIndex = index;
     }
   }
-  check(metric.budget === round(metric.observations[maxIndex]), `${label}.budget is not the observed maximum`);
-  check(metric.source === sourceLabels[maxIndex], `${label}.source is not the maximum session`);
+  check(
+    metric.budget === round(metric.observations[maxIndex]),
+    `${label}.budget is not the observed maximum`,
+  );
+  check(
+    metric.source === sourceLabels[maxIndex],
+    `${label}.source is not the maximum session`,
+  );
 }
 
-function validateCaseList(cases, expectedIds, label, metricNames, sourceLabels) {
+function validateCaseList(
+  cases,
+  expectedIds,
+  label,
+  metricNames,
+  sourceLabels,
+) {
   array(cases, label);
   check(cases.length === expectedIds.size, `${label} case count mismatch`);
   const seen = new Set();
@@ -417,15 +499,25 @@ function validateCaseList(cases, expectedIds, label, metricNames, sourceLabels) 
     seen.add(id);
     const metrics = object(item.metrics, `${label}[${index}].metrics`);
     for (const metricName of metricNames) {
-      validateMetric(metrics[metricName], `${label}[${id}].metrics.${metricName}`, sourceLabels);
+      validateMetric(
+        metrics[metricName],
+        `${label}[${id}].metrics.${metricName}`,
+        sourceLabels,
+      );
     }
   }
-  check(seen.size === expectedIds.size, `${label} does not cover all expected cases`);
+  check(
+    seen.size === expectedIds.size,
+    `${label} does not cover all expected cases`,
+  );
 }
 
 function validateBudgets(budgets) {
   object(budgets, "budgets");
-  check(budgets.version === BUDGET_VERSION, `budgets.version must be ${BUDGET_VERSION}`);
+  check(
+    budgets.version === BUDGET_VERSION,
+    `budgets.version must be ${BUDGET_VERSION}`,
+  );
   check(budgets.kind === "budgets", "budgets.kind must be budgets");
   isoDate(budgets.generatedAt, "budgets.generatedAt");
 
@@ -437,15 +529,24 @@ function validateBudgets(budgets) {
     "budgets.baseline.repositoryCommit must be a hexadecimal git hash",
   );
   validateConfig(baseline.config, "budgets.baseline.config");
-  validateEnvironment(budgets.environment, "budgets.environment", { requireGc: true });
+  validateEnvironment(budgets.environment, "budgets.environment", {
+    requireGc: true,
+  });
 
   const methodology = object(budgets.methodology, "budgets.methodology");
-  check(methodology.rule === "observed-envelope", "budgets.methodology.rule must be observed-envelope");
+  check(
+    methodology.rule === "observed-envelope",
+    "budgets.methodology.rule must be observed-envelope",
+  );
   check(
     methodology.minimumSessions === MINIMUM_SESSION_COUNT,
     `budgets.methodology.minimumSessions must be ${MINIMUM_SESSION_COUNT}`,
   );
-  integer(methodology.sessionCount, "budgets.methodology.sessionCount", MINIMUM_SESSION_COUNT);
+  integer(
+    methodology.sessionCount,
+    "budgets.methodology.sessionCount",
+    MINIMUM_SESSION_COUNT,
+  );
   text(methodology.percentileRule, "budgets.methodology.percentileRule");
   text(methodology.normalization, "budgets.methodology.normalization");
 
@@ -459,7 +560,10 @@ function validateBudgets(budgets) {
   );
   for (let index = 0; index < budgets.sessions.length; index += 1) {
     const session = budgets.sessions[index];
-    const environmentDiffs = environmentDifferences(budgets.environment, session.environment);
+    const environmentDiffs = environmentDifferences(
+      budgets.environment,
+      session.environment,
+    );
     check(
       environmentDiffs.length === 0,
       `budgets.environment does not match session-${index + 1}: ${environmentDiffs.map((item) => item.field).join(", ")}`,
@@ -471,7 +575,10 @@ function validateBudgets(budgets) {
     );
   }
 
-  const fixtures = loadBenchmarkFixtures(path.resolve(ROOT, DEFAULT_MANIFEST), null);
+  const fixtures = loadBenchmarkFixtures(
+    path.resolve(ROOT, DEFAULT_MANIFEST),
+    null,
+  );
   const sequences = loadIncrementalCatalog(
     path.resolve(ROOT, DEFAULT_CATALOG),
     fixtures,
@@ -525,7 +632,10 @@ function runBuild(options) {
   validateBaseline(baseline);
 
   const inputsReport = readJson(options.inputs, "session manifest");
-  const reportPaths = validateSessionManifest(inputsReport.data, options.inputs);
+  const reportPaths = validateSessionManifest(
+    inputsReport.data,
+    options.inputs,
+  );
   const sessions = [];
   const resultSets = [];
   for (let index = 0; index < reportPaths.length; index += 1) {
@@ -534,7 +644,10 @@ function runBuild(options) {
     resultSets.push(session.results);
   }
 
-  const sourceLabels = ["baseline", ...sessions.map((_, index) => `session-${index + 1}`)];
+  const sourceLabels = [
+    "baseline",
+    ...sessions.map((_, index) => `session-${index + 1}`),
+  ];
   const budgets = {
     version: BUDGET_VERSION,
     kind: "budgets",
@@ -551,7 +664,8 @@ function runBuild(options) {
       sessionCount: sourceLabels.length,
       percentileRule:
         "P50 and P95 use the highest session percentile; P99 uses the highest single observed sample.",
-      normalization: "No hardware normalization, safety factor, or arbitrary multiplier is applied.",
+      normalization:
+        "No hardware normalization, safety factor, or arbitrary multiplier is applied.",
     },
     sessions,
     budgets: buildBudgetLists(baseline, resultSets, sourceLabels),

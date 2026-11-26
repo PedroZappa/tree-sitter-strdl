@@ -8,21 +8,21 @@ The measurement environment is recorded below. Individual JSON reports include a
 
 This environment was recorded on 2026-11-26 (UTC) at repository commit `362d5fd`, after the Phase 6 measurement work. It applies to the latency and memory observations in this document; the grammar, generated parser, and package metadata were unchanged across those measurement commits. The observations were taken under normal desktop load with no CPU affinity, frequency-governor locking, or workload isolation. The load average at capture was `1.79 1.60 1.54`; it is informational, not a controlled benchmark condition.
 
-| Field | Recorded value | Source |
-| --- | --- | --- |
-| Operating system | Omarchy 4.5.0 (`ID=omarchy`) | `/etc/os-release` |
-| Kernel | `Linux 7.2.15-1-omarchy` | `uname -sr` |
-| Machine architecture | `x86_64` | `uname -m` |
-| CPU model | `12th Gen Intel(R) Core(TM) i9-12900KF` | `lscpu`, `os.cpus()` |
-| CPU topology | 1 socket, 16 cores per socket, 2 threads per core, 24 logical CPUs | `lscpu`, `os.cpus()` |
-| CPU maximum frequency | 5,200.0000 MHz; not a guaranteed sustained frequency | `lscpu` |
-| Memory | 32,654,224 kB (`/proc/meminfo`); 33,437,925,376 bytes (`os.totalmem()`) | `/proc/meminfo`, benchmark reports |
-| Node.js | `v26.13.1`; V8 `14.6.202.34-node.40`; OpenSSL `3.5.9` | `node --version`, `process.versions` |
-| npm | `11.20.0` | `npm --version` |
-| Tree-sitter CLI | `0.27.2` via `node_modules/.bin/tree-sitter` selected by the Makefile; `0.26.9` on `PATH` | `$(TS) --version`, `tree-sitter --version` |
-| Tree-sitter Node runtime | `0.25.1` | `tree-sitter/package.json` |
-| Package version | `1.5.0` | `package.json` |
-| Repository commit | `362d5fd` | `git rev-parse --short HEAD` |
+| Field                    | Recorded value                                                                            | Source                                     |
+| ------------------------ | ----------------------------------------------------------------------------------------- | ------------------------------------------ |
+| Operating system         | Omarchy 4.5.0 (`ID=omarchy`)                                                              | `/etc/os-release`                          |
+| Kernel                   | `Linux 7.2.15-1-omarchy`                                                                  | `uname -sr`                                |
+| Machine architecture     | `x86_64`                                                                                  | `uname -m`                                 |
+| CPU model                | `12th Gen Intel(R) Core(TM) i9-12900KF`                                                   | `lscpu`, `os.cpus()`                       |
+| CPU topology             | 1 socket, 16 cores per socket, 2 threads per core, 24 logical CPUs                        | `lscpu`, `os.cpus()`                       |
+| CPU maximum frequency    | 5,200.0000 MHz; not a guaranteed sustained frequency                                      | `lscpu`                                    |
+| Memory                   | 32,654,224 kB (`/proc/meminfo`); 33,437,925,376 bytes (`os.totalmem()`)                   | `/proc/meminfo`, benchmark reports         |
+| Node.js                  | `v26.13.1`; V8 `14.6.202.34-node.40`; OpenSSL `3.5.9`                                     | `node --version`, `process.versions`       |
+| npm                      | `11.20.0`                                                                                 | `npm --version`                            |
+| Tree-sitter CLI          | `0.27.2` via `node_modules/.bin/tree-sitter` selected by the Makefile; `0.26.9` on `PATH` | `$(TS) --version`, `tree-sitter --version` |
+| Tree-sitter Node runtime | `0.25.1`                                                                                  | `tree-sitter/package.json`                 |
+| Package version          | `1.5.0`                                                                                   | `package.json`                             |
+| Repository commit        | `362d5fd`                                                                                 | `git rev-parse --short HEAD`               |
 
 Reproduce the runtime subset from a generated report and the remaining values with these commands:
 
@@ -45,13 +45,13 @@ git rev-parse --short HEAD
 
 ## Fixture inventory
 
-| ID | Role | Path | Parameters | Expected parse |
-| --- | --- | --- | --- | --- |
-| `representative-main` | Representative Strudel composition | [`test.strdl`](../test.strdl) | committed source | clean |
-| `representative-local` | Representative Strudel composition | [`test-local.strdl`](../test-local.strdl) | committed source | clean |
-| `synthetic-large` | Synthetic large document | [`synthetic-large.strdl`](../benchmarks/fixtures/generated/synthetic-large.strdl) | 2,000 declarations | clean |
-| `deeply-nested` | Deeply nested expression | [`deeply-nested.strdl`](../benchmarks/fixtures/generated/deeply-nested.strdl) | call depth 512 | clean |
-| `pathological` | Pathological stress input | [`pathological.strdl`](../benchmarks/fixtures/generated/pathological.strdl) | 300 malformed blocks | `ERROR` nodes expected |
+| ID                     | Role                               | Path                                                                              | Parameters           | Expected parse         |
+| ---------------------- | ---------------------------------- | --------------------------------------------------------------------------------- | -------------------- | ---------------------- |
+| `representative-main`  | Representative Strudel composition | [`test.strdl`](../test.strdl)                                                     | committed source     | clean                  |
+| `representative-local` | Representative Strudel composition | [`test-local.strdl`](../test-local.strdl)                                         | committed source     | clean                  |
+| `synthetic-large`      | Synthetic large document           | [`synthetic-large.strdl`](../benchmarks/fixtures/generated/synthetic-large.strdl) | 2,000 declarations   | clean                  |
+| `deeply-nested`        | Deeply nested expression           | [`deeply-nested.strdl`](../benchmarks/fixtures/generated/deeply-nested.strdl)     | call depth 512       | clean                  |
+| `pathological`         | Pathological stress input          | [`pathological.strdl`](../benchmarks/fixtures/generated/pathological.strdl)       | 300 malformed blocks | `ERROR` nodes expected |
 
 The two representative compositions are reused rather than duplicated. The manifest records their byte sizes and SHA-256 hashes so changes to those fixtures are explicit.
 
@@ -112,39 +112,39 @@ The following values were recorded from one default run with 15 measured samples
 
 ### Fresh parse latency percentiles
 
-| Fixture | P50 (ms) | P95 (ms) | P99 (ms) |
-| --- | ---: | ---: | ---: |
-| `representative-main` | 0.324216 | 0.369064 | 0.401948 |
-| `representative-local` | 0.017270 | 0.023297 | 0.031866 |
-| `synthetic-large` | 10.259487 | 10.546336 | 10.551806 |
-| `deeply-nested` | 0.380255 | 0.396238 | 0.402565 |
-| `pathological` | 2.018148 | 2.056487 | 2.075988 |
+| Fixture                |  P50 (ms) |  P95 (ms) |  P99 (ms) |
+| ---------------------- | --------: | --------: | --------: |
+| `representative-main`  |  0.324216 |  0.369064 |  0.401948 |
+| `representative-local` |  0.017270 |  0.023297 |  0.031866 |
+| `synthetic-large`      | 10.259487 | 10.546336 | 10.551806 |
+| `deeply-nested`        |  0.380255 |  0.396238 |  0.402565 |
+| `pathological`         |  2.018148 |  2.056487 |  2.075988 |
 
 ### Incremental replay-total latency percentiles
 
-| Sequence | P50 (ms) | P95 (ms) | P99 (ms) |
-| --- | ---: | ---: | ---: |
-| `method-chain-insertion` | 0.050129 | 0.088407 | 0.089975 |
-| `pattern-string-replacement` | 0.101519 | 0.111033 | 0.118090 |
-| `declaration-deletion` | 0.037129 | 0.057602 | 0.069556 |
-| `nested-object-edits` | 0.070891 | 0.086573 | 0.097651 |
-| `malformed-call-repair` | 0.071524 | 0.074884 | 0.076636 |
-| `declaration-insertion` | 0.042142 | 0.047449 | 0.047707 |
-| `arrow-parameter-rename` | 0.069568 | 0.080019 | 0.085170 |
-| `method-deletion` | 0.042669 | 0.047781 | 0.049059 |
-| `call-statement-insertion` | 0.042367 | 0.043557 | 0.043971 |
-| `template-content-edit` | 0.042356 | 0.044184 | 0.044375 |
-| `compact-set-cps` | 0.010447 | 0.011305 | 0.012178 |
+| Sequence                       | P50 (ms) | P95 (ms) | P99 (ms) |
+| ------------------------------ | -------: | -------: | -------: |
+| `method-chain-insertion`       | 0.050129 | 0.088407 | 0.089975 |
+| `pattern-string-replacement`   | 0.101519 | 0.111033 | 0.118090 |
+| `declaration-deletion`         | 0.037129 | 0.057602 | 0.069556 |
+| `nested-object-edits`          | 0.070891 | 0.086573 | 0.097651 |
+| `malformed-call-repair`        | 0.071524 | 0.074884 | 0.076636 |
+| `declaration-insertion`        | 0.042142 | 0.047449 | 0.047707 |
+| `arrow-parameter-rename`       | 0.069568 | 0.080019 | 0.085170 |
+| `method-deletion`              | 0.042669 | 0.047781 | 0.049059 |
+| `call-statement-insertion`     | 0.042367 | 0.043557 | 0.043971 |
+| `template-content-edit`        | 0.042356 | 0.044184 | 0.044375 |
+| `compact-set-cps`              | 0.010447 | 0.011305 | 0.012178 |
 | `compact-declaration-deletion` | 0.011136 | 0.028865 | 0.030224 |
-| `compact-malformed-repair` | 0.026983 | 0.041677 | 0.043210 |
-| `argument-deletion` | 0.033337 | 0.041979 | 0.055613 |
-| `object-property-deletion` | 0.034633 | 0.036612 | 0.038690 |
-| `method-name-replacement` | 0.037836 | 0.038668 | 0.038799 |
-| `nested-call-edit` | 0.044240 | 0.053095 | 0.066321 |
-| `nested-arrow-body-edit` | 0.038268 | 0.039654 | 0.040085 |
-| `object-brace-repair` | 0.073640 | 0.075948 | 0.076225 |
-| `string-quote-repair` | 0.081336 | 0.091253 | 0.100235 |
-| `array-bracket-repair` | 0.107875 | 0.109792 | 0.110390 |
+| `compact-malformed-repair`     | 0.026983 | 0.041677 | 0.043210 |
+| `argument-deletion`            | 0.033337 | 0.041979 | 0.055613 |
+| `object-property-deletion`     | 0.034633 | 0.036612 | 0.038690 |
+| `method-name-replacement`      | 0.037836 | 0.038668 | 0.038799 |
+| `nested-call-edit`             | 0.044240 | 0.053095 | 0.066321 |
+| `nested-arrow-body-edit`       | 0.038268 | 0.039654 | 0.040085 |
+| `object-brace-repair`          | 0.073640 | 0.075948 | 0.076225 |
+| `string-quote-repair`          | 0.081336 | 0.091253 | 0.100235 |
+| `array-bracket-repair`         | 0.107875 | 0.109792 | 0.110390 |
 
 ## Baseline results
 
@@ -198,10 +198,10 @@ This target is local-only and is not part of `make ci`. It supports investigatio
 
 Comparison reports carry a `classification` object so consumers can tell hard failures from non-gating observations without inferring meaning from an exit code:
 
-| Category | Examples | Command behavior | CI behavior |
-| --- | --- | --- | --- |
-| Correctness failure | Invalid baseline/budget/current report structure; fixture hash or regeneration mismatch; `expected_clean` violation; fresh/incremental CST mismatch; invalid benchmark options such as a missing `--expose-gc` | The command exits nonzero and does not write a report | `make ci` fails where the check is wired; local harnesses fail directly |
-| Performance warning | Increased P50/P95/P99 or memory value; environment or configuration mismatch | The command exits `0` for valid inputs; the warning is recorded in `classification.performance.warnings` and, for increases, in `increases[]` | Not part of `make ci`; no timing threshold gates a build |
+| Category            | Examples                                                                                                                                                                                                       | Command behavior                                                                                                                              | CI behavior                                                             |
+| ------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------- |
+| Correctness failure | Invalid baseline/budget/current report structure; fixture hash or regeneration mismatch; `expected_clean` violation; fresh/incremental CST mismatch; invalid benchmark options such as a missing `--expose-gc` | The command exits nonzero and does not write a report                                                                                         | `make ci` fails where the check is wired; local harnesses fail directly |
+| Performance warning | Increased P50/P95/P99 or memory value; environment or configuration mismatch                                                                                                                                   | The command exits `0` for valid inputs; the warning is recorded in `classification.performance.warnings` and, for increases, in `increases[]` | Not part of `make ci`; no timing threshold gates a build                |
 
 `classification.correctness.gates` is `true` and `classification.performance.gates` is `false`. A correctness failure is never downgraded to a warning. An environment or configuration mismatch is a "not comparable" warning, not evidence of a regression, and an observed increase is an investigation candidate. Neither changes the exit status. When `--output` is used, the command prints the gating classification and the total non-gating warning count alongside the report path.
 

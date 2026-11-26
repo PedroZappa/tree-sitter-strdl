@@ -111,14 +111,18 @@ function parseArgs(argv) {
   }
 
   if (!["fresh", "incremental", "all"].includes(options.mode)) {
-    throw new Error(`mode must be fresh, incremental, or all, got ${options.mode}`);
+    throw new Error(
+      `mode must be fresh, incremental, or all, got ${options.mode}`,
+    );
   }
   return options;
 }
 
 function requireGc() {
   if (typeof global.gc !== "function") {
-    throw new Error("memory benchmark requires --expose-gc (use make bench-memory)");
+    throw new Error(
+      "memory benchmark requires --expose-gc (use make bench-memory)",
+    );
   }
 }
 
@@ -294,7 +298,13 @@ function measureIncremental(sequence, iterations, warmup, parser) {
   );
 }
 
-function buildReport(options, fixtures, sequences, freshResults, incrementalResults) {
+function buildReport(
+  options,
+  fixtures,
+  sequences,
+  freshResults,
+  incrementalResults,
+) {
   return {
     mode: "memory",
     generatedAt: new Date().toISOString(),
@@ -345,7 +355,8 @@ const MEMORY_HEADER = formatRow([
 ]);
 
 function printSummary(report) {
-  const { node, treeSitterRuntime, platform, arch, cpuCount } = report.environment;
+  const { node, treeSitterRuntime, platform, arch, cpuCount } =
+    report.environment;
   console.log(
     `memory consumption: ${report.config.fixtureCount} fixtures, ` +
       `${report.config.sequenceCount} sequences, ${report.config.iterations} iterations, ` +
@@ -399,7 +410,8 @@ function main() {
 
   const parser = createParser();
   const includeFresh = options.mode === "all" || options.mode === "fresh";
-  const includeIncremental = options.mode === "all" || options.mode === "incremental";
+  const includeIncremental =
+    options.mode === "all" || options.mode === "incremental";
 
   let freshFixtures = [];
   let fixtures = [];

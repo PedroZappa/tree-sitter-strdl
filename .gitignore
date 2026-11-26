@@ -56,6 +56,7 @@ dkms.conf
 
 # Folders
 node_modules/
+.venv/
 build/
 
 # Artifacts

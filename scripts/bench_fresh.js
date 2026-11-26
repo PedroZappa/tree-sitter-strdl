@@ -144,7 +144,8 @@ function buildReport(options, fixtures, results) {
 }
 
 function printSummary(report) {
-  const { node, treeSitterRuntime, platform, arch, cpuCount } = report.environment;
+  const { node, treeSitterRuntime, platform, arch, cpuCount } =
+    report.environment;
   console.log(
     `fresh parse latency: ${report.config.fixtureCount} fixtures, ` +
       `${report.config.iterations} measured parses, ${report.config.warmup} warmup parses`,

@@ -94,10 +94,7 @@ def selected_sequences(data: dict, filters: list[str]) -> list[dict]:
     return [
         sequence
         for sequence in sequences
-        if any(
-            term in sequence["id"] or term in sequence.get("categories", [])
-            for term in filters
-        )
+        if any(term in sequence["id"] or term in sequence.get("categories", []) for term in filters)
     ]
 
 
@@ -111,9 +108,7 @@ def catalog_problems(data: dict, fixtures: dict[str, str]) -> list[str]:
             problems.append(f"duplicate sequence id: {sequence_id}")
         seen_ids.add(sequence_id)
         if sequence.get("fixture") not in fixtures:
-            problems.append(
-                f"{sequence_id}: unknown fixture {sequence.get('fixture')!r}"
-            )
+            problems.append(f"{sequence_id}: unknown fixture {sequence.get('fixture')!r}")
         if not sequence.get("edits"):
             problems.append(f"{sequence_id}: no edits")
     return problems
@@ -135,14 +130,10 @@ def compare_sequence(
     final_step = len(sources)
     final_matched = False
     final_clean = False
-    for step, (step_source, step_edits) in enumerate(
-        zip(sources, cumulative_edits), start=1
-    ):
+    for step, (step_source, step_edits) in enumerate(zip(sources, cumulative_edits), start=1):
         incremental_tree, incremental_stderr = run_parse(base_path, step_edits)
         if incremental_tree is None:
-            problems.append(
-                f"step {step}: incremental parse failed: {incremental_stderr.strip()}"
-            )
+            problems.append(f"step {step}: incremental parse failed: {incremental_stderr.strip()}")
             continue
 
         step_path = temp_dir / f"{sequence['id']}-step-{step}.strdl"
@@ -192,8 +183,7 @@ def main() -> int:
     data = json.loads(SEQUENCES_PATH.read_text(encoding="utf-8"))
     fixture_paths = data["fixtures"]
     fixtures = {
-        key: (REPO_ROOT / path).read_text(encoding="utf-8")
-        for key, path in fixture_paths.items()
+        key: (REPO_ROOT / path).read_text(encoding="utf-8") for key, path in fixture_paths.items()
     }
     selected = selected_sequences(data, args.filter)
 

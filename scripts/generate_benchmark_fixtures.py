@@ -12,7 +12,6 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
-import re
 import sys
 from pathlib import Path
 from typing import Any
@@ -84,9 +83,7 @@ def render_large(fixture_id: str, seed: str, params: dict[str, Any]) -> str:
             mini = " ".join(["bd sd"] * (1 + index % 3))
             lines.append(f's("{mini}").note("c3").room(0.{index % 10})')
         else:
-            lines.append(
-                f"const tempo_{index:04d} = slider({index % 12}, 5, 12) + {index % 7}"
-            )
+            lines.append(f"const tempo_{index:04d} = slider({index % 12}, 5, 12) + {index % 7}")
     return "\n".join(lines) + "\n"
 
 
@@ -209,9 +206,7 @@ def generate(manifest: dict[str, Any], fixtures: list[dict[str, Any]]) -> None:
         print(f"generated: {path.relative_to(ROOT)}")
 
 
-def update_manifest(
-    manifest: dict[str, Any], fixtures: list[dict[str, Any]], path: Path
-) -> None:
+def update_manifest(manifest: dict[str, Any], fixtures: list[dict[str, Any]], path: Path) -> None:
     for fixture in fixtures:
         target = safe_path(fixture.get("path"), Checker(), str(fixture.get("id")))
         if target is None or not target.is_file():

@@ -106,7 +106,8 @@ function parseArgs(argv) {
 
     switch (flag) {
       case "--fresh":
-        if (command === "check") throw new Error(`--fresh is invalid for ${command}`);
+        if (command === "check")
+          throw new Error(`--fresh is invalid for ${command}`);
         options.fresh = path.resolve(value());
         break;
       case "--incremental":
@@ -116,19 +117,23 @@ function parseArgs(argv) {
         options.incremental = path.resolve(value());
         break;
       case "--memory":
-        if (command === "check") throw new Error(`--memory is invalid for ${command}`);
+        if (command === "check")
+          throw new Error(`--memory is invalid for ${command}`);
         options.memory = path.resolve(value());
         break;
       case "--output":
-        if (command === "check") throw new Error(`--output is invalid for ${command}`);
+        if (command === "check")
+          throw new Error(`--output is invalid for ${command}`);
         options.output = path.resolve(value());
         break;
       case "--commit":
-        if (command !== "build") throw new Error(`--commit is invalid for ${command}`);
+        if (command !== "build")
+          throw new Error(`--commit is invalid for ${command}`);
         options.commit = value();
         break;
       case "--baseline":
-        if (command === "build") throw new Error(`--baseline is invalid for ${command}`);
+        if (command === "build")
+          throw new Error(`--baseline is invalid for ${command}`);
         options.baseline = path.resolve(value());
         break;
       default:
@@ -156,7 +161,10 @@ function check(condition, message) {
 }
 
 function object(value, label) {
-  check(value !== null && typeof value === "object" && !Array.isArray(value), `${label} must be an object`);
+  check(
+    value !== null && typeof value === "object" && !Array.isArray(value),
+    `${label} must be an object`,
+  );
   return value;
 }
 
@@ -166,23 +174,35 @@ function array(value, label) {
 }
 
 function text(value, label) {
-  check(typeof value === "string" && value.length > 0, `${label} must be a non-empty string`);
+  check(
+    typeof value === "string" && value.length > 0,
+    `${label} must be a non-empty string`,
+  );
   return value;
 }
 
 function finiteNumber(value, label) {
-  check(typeof value === "number" && Number.isFinite(value), `${label} must be a finite number`);
+  check(
+    typeof value === "number" && Number.isFinite(value),
+    `${label} must be a finite number`,
+  );
   return value;
 }
 
 function integer(value, label, minimum) {
-  check(Number.isInteger(value) && value >= minimum, `${label} must be an integer >= ${minimum}`);
+  check(
+    Number.isInteger(value) && value >= minimum,
+    `${label} must be an integer >= ${minimum}`,
+  );
   return value;
 }
 
 function isoDate(value, label) {
   text(value, label);
-  check(value === new Date(value).toISOString(), `${label} must be an ISO UTC timestamp`);
+  check(
+    value === new Date(value).toISOString(),
+    `${label} must be an ISO UTC timestamp`,
+  );
   return value;
 }
 
@@ -206,13 +226,17 @@ function readJson(filePath, label) {
   try {
     content = fs.readFileSync(absolute, "utf8");
   } catch (error) {
-    throw new Error(`cannot read ${label} report ${filePath}: ${error.message}`);
+    throw new Error(
+      `cannot read ${label} report ${filePath}: ${error.message}`,
+    );
   }
   let data;
   try {
     data = JSON.parse(content);
   } catch (error) {
-    throw new Error(`${label} report ${filePath} is not valid JSON: ${error.message}`);
+    throw new Error(
+      `${label} report ${filePath} is not valid JSON: ${error.message}`,
+    );
   }
   return { absolute, content, data };
 }
@@ -238,7 +262,10 @@ function validateStats(stats, label) {
 
 function validateSamples(samples, stats, label) {
   array(samples, `${label}.samplesMs`);
-  check(samples.length === stats.iterations, `${label}.samplesMs length does not match stats`);
+  check(
+    samples.length === stats.iterations,
+    `${label}.samplesMs length does not match stats`,
+  );
   for (let index = 0; index < samples.length; index += 1) {
     finiteNumber(samples[index], `${label}.samplesMs[${index}]`);
     check(samples[index] >= 0, `${label}.samplesMs[${index}] is negative`);
@@ -258,11 +285,20 @@ function validateEnvironment(environment, label, options = {}) {
   );
   integer(environment.cpuCount, `${label}.cpuCount`, 1);
   finiteNumber(environment.totalMemoryBytes, `${label}.totalMemoryBytes`);
-  check(environment.totalMemoryBytes > 0, `${label}.totalMemoryBytes must be positive`);
+  check(
+    environment.totalMemoryBytes > 0,
+    `${label}.totalMemoryBytes must be positive`,
+  );
   if (options.requireGc) {
-    check(environment.gcAvailable === true, `${label}.gcAvailable must be true`);
+    check(
+      environment.gcAvailable === true,
+      `${label}.gcAvailable must be true`,
+    );
     const flags = array(environment.nodeFlags, `${label}.nodeFlags`);
-    check(flags.includes("--expose-gc"), `${label}.nodeFlags must include --expose-gc`);
+    check(
+      flags.includes("--expose-gc"),
+      `${label}.nodeFlags must include --expose-gc`,
+    );
   }
 }
 
@@ -281,24 +317,41 @@ function validateReportConfig(config, label, kind) {
   }
   if (kind === "incremental") {
     text(config.catalog, `${label}.catalog`);
-    check(config.sequenceFilter === null, `${label}.sequenceFilter must be null`);
-    check(config.categoryFilter === null, `${label}.categoryFilter must be null`);
+    check(
+      config.sequenceFilter === null,
+      `${label}.sequenceFilter must be null`,
+    );
+    check(
+      config.categoryFilter === null,
+      `${label}.categoryFilter must be null`,
+    );
   }
   if (kind === "memory") {
     text(config.catalog, `${label}.catalog`);
     check(config.mode === "all", `${label}.mode must be all`);
     check(config.fixtureFilter === null, `${label}.fixtureFilter must be null`);
-    check(config.sequenceFilter === null, `${label}.sequenceFilter must be null`);
-    check(config.categoryFilter === null, `${label}.categoryFilter must be null`);
+    check(
+      config.sequenceFilter === null,
+      `${label}.sequenceFilter must be null`,
+    );
+    check(
+      config.categoryFilter === null,
+      `${label}.categoryFilter must be null`,
+    );
   }
 }
 
 function validateFreshResults(results, config, label, expectedFixtures) {
   array(results, label);
   integer(config.fixtureCount, `${label}.config.fixtureCount`, 1);
-  check(results.length === config.fixtureCount, `${label} fixture count mismatch`);
+  check(
+    results.length === config.fixtureCount,
+    `${label} fixture count mismatch`,
+  );
 
-  const expectedById = new Map(expectedFixtures.map((fixture) => [fixture.id, fixture]));
+  const expectedById = new Map(
+    expectedFixtures.map((fixture) => [fixture.id, fixture]),
+  );
   const seen = new Set();
   for (let index = 0; index < results.length; index += 1) {
     const result = object(results[index], `${label}[${index}]`);
@@ -310,14 +363,24 @@ function validateFreshResults(results, config, label, expectedFixtures) {
     text(result.kind, `${label}[${index}].kind`);
     text(result.role, `${label}[${index}].role`);
     text(result.path, `${label}[${index}].path`);
-    check(result.path === expected.path, `${label} path mismatch for ${result.id}`);
+    check(
+      result.path === expected.path,
+      `${label} path mismatch for ${result.id}`,
+    );
     integer(result.bytes, `${label}[${index}].bytes`, 1);
-    check(result.bytes === expected.bytes, `${label} byte count mismatch for ${result.id}`);
+    check(
+      result.bytes === expected.bytes,
+      `${label} byte count mismatch for ${result.id}`,
+    );
     check(
       result.expectedClean === expected.expectedClean,
       `${label} expected_clean mismatch for ${result.id}`,
     );
-    integer(result.rootChildChecksum, `${label}[${index}].rootChildChecksum`, 0);
+    integer(
+      result.rootChildChecksum,
+      `${label}[${index}].rootChildChecksum`,
+      0,
+    );
     validateStats(result.stats, `${label}[${index}].stats`);
     check(
       result.stats.iterations === config.iterations,
@@ -325,15 +388,23 @@ function validateFreshResults(results, config, label, expectedFixtures) {
     );
     validateSamples(result.samplesMs, result.stats, `${label}[${index}]`);
   }
-  check(seen.size === expectedById.size, `${label} does not cover the fixture manifest`);
+  check(
+    seen.size === expectedById.size,
+    `${label} does not cover the fixture manifest`,
+  );
 }
 
 function validateIncrementalResults(results, config, label, expectedSequences) {
   array(results, label);
   integer(config.sequenceCount, `${label}.config.sequenceCount`, 1);
-  check(results.length === config.sequenceCount, `${label} sequence count mismatch`);
+  check(
+    results.length === config.sequenceCount,
+    `${label} sequence count mismatch`,
+  );
 
-  const expectedById = new Map(expectedSequences.map((sequence) => [sequence.id, sequence]));
+  const expectedById = new Map(
+    expectedSequences.map((sequence) => [sequence.id, sequence]),
+  );
   const seen = new Set();
   for (let index = 0; index < results.length; index += 1) {
     const result = object(results[index], `${label}[${index}]`);
@@ -347,7 +418,10 @@ function validateIncrementalResults(results, config, label, expectedSequences) {
       `${label}[${index}].description must be a string or null`,
     );
     text(result.fixture, `${label}[${index}].fixture`);
-    check(result.fixture === expected.fixture.id, `${label} fixture mismatch for ${result.id}`);
+    check(
+      result.fixture === expected.fixture.id,
+      `${label} fixture mismatch for ${result.id}`,
+    );
     text(result.fixturePath, `${label}[${index}].fixturePath`);
     check(
       result.fixturePath === expected.fixture.path,
@@ -359,7 +433,11 @@ function validateIncrementalResults(results, config, label, expectedSequences) {
       `${label} initial byte count mismatch for ${result.id}`,
     );
     integer(result.finalBytes, `${label}[${index}].finalBytes`, 1);
-    deepEqual(result.categories, expected.categories, `${label} categories for ${result.id}`);
+    deepEqual(
+      result.categories,
+      expected.categories,
+      `${label} categories for ${result.id}`,
+    );
     integer(result.editCount, `${label}[${index}].editCount`, 1);
     check(
       result.editCount === expected.edits.length,
@@ -369,7 +447,11 @@ function validateIncrementalResults(results, config, label, expectedSequences) {
       result.freshComparisons === config.iterations * result.editCount,
       `${label} fresh comparison count mismatch for ${result.id}`,
     );
-    integer(result.rootChildChecksum, `${label}[${index}].rootChildChecksum`, 0);
+    integer(
+      result.rootChildChecksum,
+      `${label}[${index}].rootChildChecksum`,
+      0,
+    );
     validateStats(result.stats, `${label}[${index}].stats`);
     check(
       result.stats.iterations === config.iterations,
@@ -377,15 +459,32 @@ function validateIncrementalResults(results, config, label, expectedSequences) {
     );
 
     const steps = array(result.steps, `${label}[${index}].steps`);
-    check(steps.length === result.editCount, `${label} step count mismatch for ${result.id}`);
+    check(
+      steps.length === result.editCount,
+      `${label} step count mismatch for ${result.id}`,
+    );
     for (let stepIndex = 0; stepIndex < steps.length; stepIndex += 1) {
-      const step = object(steps[stepIndex], `${label}[${index}].steps[${stepIndex}]`);
+      const step = object(
+        steps[stepIndex],
+        `${label}[${index}].steps[${stepIndex}]`,
+      );
       const edit = expected.edits[stepIndex];
-      check(step.index === stepIndex + 1, `${label} step index mismatch for ${result.id}`);
-      const expectedOld = typeof edit.old === "string" ? Buffer.byteLength(edit.old) : null;
-      const expectedNew = typeof edit.new === "string" ? Buffer.byteLength(edit.new) : null;
-      check(step.oldBytes === expectedOld, `${label} old-byte mismatch for ${result.id}`);
-      check(step.newBytes === expectedNew, `${label} new-byte mismatch for ${result.id}`);
+      check(
+        step.index === stepIndex + 1,
+        `${label} step index mismatch for ${result.id}`,
+      );
+      const expectedOld =
+        typeof edit.old === "string" ? Buffer.byteLength(edit.old) : null;
+      const expectedNew =
+        typeof edit.new === "string" ? Buffer.byteLength(edit.new) : null;
+      check(
+        step.oldBytes === expectedOld,
+        `${label} old-byte mismatch for ${result.id}`,
+      );
+      check(
+        step.newBytes === expectedNew,
+        `${label} new-byte mismatch for ${result.id}`,
+      );
       validateStats(step.stats, `${label}[${index}].steps[${stepIndex}].stats`);
       check(
         step.stats.iterations === config.iterations,
@@ -398,7 +497,10 @@ function validateIncrementalResults(results, config, label, expectedSequences) {
       );
     }
   }
-  check(seen.size === expectedById.size, `${label} does not cover the edit catalog`);
+  check(
+    seen.size === expectedById.size,
+    `${label} does not cover the edit catalog`,
+  );
 }
 
 function validateRetained(retained, retainedTrees, label) {
@@ -416,7 +518,8 @@ function validateRetained(retained, retainedTrees, label) {
     finiteNumber(retained[field], `${label}.${field}`);
   }
   check(
-    retained.heapUsedBytesPerTree === round(retained.heapUsedBytes / retainedTrees),
+    retained.heapUsedBytesPerTree ===
+      round(retained.heapUsedBytes / retainedTrees),
     `${label}.heapUsedBytesPerTree mismatch`,
   );
   check(
@@ -433,9 +536,20 @@ function validateSampledPeak(peak, label) {
   }
 }
 
-function validateMemoryResults(results, config, label, expectedFixtures, expectedSequences) {
+function validateMemoryResults(
+  results,
+  config,
+  label,
+  expectedFixtures,
+  expectedSequences,
+) {
   object(results, label);
-  validateFreshResultsMemory(array(results.fresh, `${label}.fresh`), config, `${label}.fresh`, expectedFixtures);
+  validateFreshResultsMemory(
+    array(results.fresh, `${label}.fresh`),
+    config,
+    `${label}.fresh`,
+    expectedFixtures,
+  );
   validateIncrementalResultsMemory(
     array(results.incremental, `${label}.incremental`),
     config,
@@ -446,8 +560,13 @@ function validateMemoryResults(results, config, label, expectedFixtures, expecte
 
 function validateFreshResultsMemory(results, config, label, expectedFixtures) {
   integer(config.fixtureCount, `${label}.config.fixtureCount`, 1);
-  check(results.length === config.fixtureCount, `${label} fixture count mismatch`);
-  const expectedById = new Map(expectedFixtures.map((fixture) => [fixture.id, fixture]));
+  check(
+    results.length === config.fixtureCount,
+    `${label} fixture count mismatch`,
+  );
+  const expectedById = new Map(
+    expectedFixtures.map((fixture) => [fixture.id, fixture]),
+  );
   const seen = new Set();
   for (let index = 0; index < results.length; index += 1) {
     const result = object(results[index], `${label}[${index}]`);
@@ -460,29 +579,59 @@ function validateFreshResultsMemory(results, config, label, expectedFixtures) {
     text(result.kind, `${label}[${index}].kind`);
     text(result.role, `${label}[${index}].role`);
     text(result.path, `${label}[${index}].path`);
-    check(result.path === expected.path, `${label} path mismatch for ${result.id}`);
+    check(
+      result.path === expected.path,
+      `${label} path mismatch for ${result.id}`,
+    );
     integer(result.bytes, `${label}[${index}].bytes`, 1);
-    check(result.bytes === expected.bytes, `${label} byte count mismatch for ${result.id}`);
+    check(
+      result.bytes === expected.bytes,
+      `${label} byte count mismatch for ${result.id}`,
+    );
     check(
       result.expectedClean === expected.expectedClean,
       `${label} expected_clean mismatch for ${result.id}`,
     );
-    check(result.iterations === config.iterations, `${label} iteration mismatch for ${result.id}`);
-    integer(result.rootChildChecksum, `${label}[${index}].rootChildChecksum`, 0);
+    check(
+      result.iterations === config.iterations,
+      `${label} iteration mismatch for ${result.id}`,
+    );
+    integer(
+      result.rootChildChecksum,
+      `${label}[${index}].rootChildChecksum`,
+      0,
+    );
     check(
       result.retainedTrees === config.iterations,
       `${label} retained tree count mismatch for ${result.id}`,
     );
-    validateRetained(result.retained, result.retainedTrees, `${label}[${index}].retained`);
+    validateRetained(
+      result.retained,
+      result.retainedTrees,
+      `${label}[${index}].retained`,
+    );
     validateSampledPeak(result.sampledPeak, `${label}[${index}].sampledPeak`);
   }
-  check(seen.size === expectedById.size, `${label} does not cover the fixture manifest`);
+  check(
+    seen.size === expectedById.size,
+    `${label} does not cover the fixture manifest`,
+  );
 }
 
-function validateIncrementalResultsMemory(results, config, label, expectedSequences) {
+function validateIncrementalResultsMemory(
+  results,
+  config,
+  label,
+  expectedSequences,
+) {
   integer(config.sequenceCount, `${label}.config.sequenceCount`, 1);
-  check(results.length === config.sequenceCount, `${label} sequence count mismatch`);
-  const expectedById = new Map(expectedSequences.map((sequence) => [sequence.id, sequence]));
+  check(
+    results.length === config.sequenceCount,
+    `${label} sequence count mismatch`,
+  );
+  const expectedById = new Map(
+    expectedSequences.map((sequence) => [sequence.id, sequence]),
+  );
   const seen = new Set();
   for (let index = 0; index < results.length; index += 1) {
     const result = object(results[index], `${label}[${index}]`);
@@ -491,13 +640,19 @@ function validateIncrementalResultsMemory(results, config, label, expectedSequen
     seen.add(result.id);
     const expected = expectedById.get(result.id);
     check(expected, `${label} unknown sequence id ${result.id}`);
-    check(result.mode === "incremental", `${label} mode mismatch for ${result.id}`);
+    check(
+      result.mode === "incremental",
+      `${label} mode mismatch for ${result.id}`,
+    );
     check(
       result.description === null || typeof result.description === "string",
       `${label}[${index}].description must be a string or null`,
     );
     text(result.fixture, `${label}[${index}].fixture`);
-    check(result.fixture === expected.fixture.id, `${label} fixture mismatch for ${result.id}`);
+    check(
+      result.fixture === expected.fixture.id,
+      `${label} fixture mismatch for ${result.id}`,
+    );
     text(result.fixturePath, `${label}[${index}].fixturePath`);
     check(
       result.fixturePath === expected.fixture.path,
@@ -509,7 +664,11 @@ function validateIncrementalResultsMemory(results, config, label, expectedSequen
       `${label} initial byte count mismatch for ${result.id}`,
     );
     integer(result.finalBytes, `${label}[${index}].finalBytes`, 1);
-    deepEqual(result.categories, expected.categories, `${label} categories for ${result.id}`);
+    deepEqual(
+      result.categories,
+      expected.categories,
+      `${label} categories for ${result.id}`,
+    );
     integer(result.editCount, `${label}[${index}].editCount`, 1);
     check(
       result.editCount === expected.edits.length,
@@ -519,31 +678,55 @@ function validateIncrementalResultsMemory(results, config, label, expectedSequen
       result.treesPerReplay === 1 + result.editCount,
       `${label} trees-per-replay mismatch for ${result.id}`,
     );
-    check(result.iterations === config.iterations, `${label} iteration mismatch for ${result.id}`);
+    check(
+      result.iterations === config.iterations,
+      `${label} iteration mismatch for ${result.id}`,
+    );
     check(
       result.freshComparisons === config.iterations * result.editCount,
       `${label} fresh comparison count mismatch for ${result.id}`,
     );
-    integer(result.rootChildChecksum, `${label}[${index}].rootChildChecksum`, 0);
+    integer(
+      result.rootChildChecksum,
+      `${label}[${index}].rootChildChecksum`,
+      0,
+    );
     check(
       result.retainedTrees === config.iterations * result.treesPerReplay,
       `${label} retained tree count mismatch for ${result.id}`,
     );
-    validateRetained(result.retained, result.retainedTrees, `${label}[${index}].retained`);
+    validateRetained(
+      result.retained,
+      result.retainedTrees,
+      `${label}[${index}].retained`,
+    );
     validateSampledPeak(result.sampledPeak, `${label}[${index}].sampledPeak`);
   }
-  check(seen.size === expectedById.size, `${label} does not cover the edit catalog`);
+  check(
+    seen.size === expectedById.size,
+    `${label} does not cover the edit catalog`,
+  );
 }
 
 function loadManifestAndCatalog(manifestPath, catalogPath, label) {
   try {
-    const fixtures = loadBenchmarkFixtures(path.resolve(ROOT, manifestPath), null);
+    const fixtures = loadBenchmarkFixtures(
+      path.resolve(ROOT, manifestPath),
+      null,
+    );
     const sequences = catalogPath
-      ? loadIncrementalCatalog(path.resolve(ROOT, catalogPath), fixtures, null, null)
+      ? loadIncrementalCatalog(
+          path.resolve(ROOT, catalogPath),
+          fixtures,
+          null,
+          null,
+        )
       : null;
     return { fixtures, sequences };
   } catch (error) {
-    throw new Error(`cannot load baseline inputs from ${label}: ${error.message}`);
+    throw new Error(
+      `cannot load baseline inputs from ${label}: ${error.message}`,
+    );
   }
 }
 
@@ -558,7 +741,12 @@ function validateFreshReport(report) {
     null,
     "fresh report.config.manifest",
   );
-  validateFreshResults(report.fixtures, report.config, "fresh report.fixtures", fixtures);
+  validateFreshResults(
+    report.fixtures,
+    report.config,
+    "fresh report.fixtures",
+    fixtures,
+  );
 }
 
 function validateIncrementalReport(report) {
@@ -566,7 +754,11 @@ function validateIncrementalReport(report) {
   check(report.mode === "incremental", "incremental report has wrong mode");
   isoDate(report.generatedAt, "incremental report.generatedAt");
   validateEnvironment(report.environment, "incremental report.environment");
-  validateReportConfig(report.config, "incremental report.config", "incremental");
+  validateReportConfig(
+    report.config,
+    "incremental report.config",
+    "incremental",
+  );
   const { fixtures, sequences } = loadManifestAndCatalog(
     report.config.manifest,
     report.config.catalog,
@@ -585,25 +777,59 @@ function validateMemoryReport(report) {
   object(report, "memory report");
   check(report.mode === "memory", "memory report has wrong mode");
   isoDate(report.generatedAt, "memory report.generatedAt");
-  validateEnvironment(report.environment, "memory report.environment", { requireGc: true });
+  validateEnvironment(report.environment, "memory report.environment", {
+    requireGc: true,
+  });
   validateReportConfig(report.config, "memory report.config", "memory");
   const { fixtures, sequences } = loadManifestAndCatalog(
     report.config.manifest,
     report.config.catalog,
     "memory report inputs",
   );
-  validateMemoryResults(report, report.config, "memory report", fixtures, sequences);
+  validateMemoryResults(
+    report,
+    report.config,
+    "memory report",
+    fixtures,
+    sequences,
+  );
 }
 
 function validateReportAgreement(fresh, incremental, memory) {
-  deepEqual(commonEnvironment(fresh.environment), commonEnvironment(incremental.environment), "fresh/incremental environment");
-  deepEqual(commonEnvironment(fresh.environment), commonEnvironment(memory.environment), "fresh/memory environment");
-  check(fresh.config.manifest === incremental.config.manifest, "manifest paths disagree");
-  check(fresh.config.manifest === memory.config.manifest, "manifest paths disagree");
-  check(incremental.config.catalog === memory.config.catalog, "catalog paths disagree");
-  check(fresh.config.iterations === incremental.config.iterations, "iteration counts disagree");
-  check(fresh.config.iterations === memory.config.iterations, "iteration counts disagree");
-  check(fresh.config.warmup === incremental.config.warmup, "warmup counts disagree");
+  deepEqual(
+    commonEnvironment(fresh.environment),
+    commonEnvironment(incremental.environment),
+    "fresh/incremental environment",
+  );
+  deepEqual(
+    commonEnvironment(fresh.environment),
+    commonEnvironment(memory.environment),
+    "fresh/memory environment",
+  );
+  check(
+    fresh.config.manifest === incremental.config.manifest,
+    "manifest paths disagree",
+  );
+  check(
+    fresh.config.manifest === memory.config.manifest,
+    "manifest paths disagree",
+  );
+  check(
+    incremental.config.catalog === memory.config.catalog,
+    "catalog paths disagree",
+  );
+  check(
+    fresh.config.iterations === incremental.config.iterations,
+    "iteration counts disagree",
+  );
+  check(
+    fresh.config.iterations === memory.config.iterations,
+    "iteration counts disagree",
+  );
+  check(
+    fresh.config.warmup === incremental.config.warmup,
+    "warmup counts disagree",
+  );
   check(fresh.config.warmup === memory.config.warmup, "warmup counts disagree");
   check(
     fresh.config.manifest === DEFAULT_MANIFEST_PATH,
@@ -622,28 +848,54 @@ function validateSources(sources, baselineEnvironment) {
     check(source.mode === mode, `baseline.sources.${mode}.mode mismatch`);
     isoDate(source.generatedAt, `baseline.sources.${mode}.generatedAt`);
     text(source.report, `baseline.sources.${mode}.report`);
-    validateEnvironment(source.environment, `baseline.sources.${mode}.environment`, {
-      requireGc: mode === "memory",
-    });
+    validateEnvironment(
+      source.environment,
+      `baseline.sources.${mode}.environment`,
+      {
+        requireGc: mode === "memory",
+      },
+    );
   }
 
   const fresh = sources.fresh.environment;
   const incremental = sources.incremental.environment;
   const memory = sources.memory.environment;
-  deepEqual(commonEnvironment(fresh), commonEnvironment(incremental), "source environments");
-  deepEqual(commonEnvironment(fresh), commonEnvironment(memory), "source environments");
-  deepEqual(commonEnvironment(fresh), commonEnvironment(baselineEnvironment), "baseline environment");
+  deepEqual(
+    commonEnvironment(fresh),
+    commonEnvironment(incremental),
+    "source environments",
+  );
+  deepEqual(
+    commonEnvironment(fresh),
+    commonEnvironment(memory),
+    "source environments",
+  );
+  deepEqual(
+    commonEnvironment(fresh),
+    commonEnvironment(baselineEnvironment),
+    "baseline environment",
+  );
   check(
     baselineEnvironment.gcAvailable === memory.gcAvailable,
     "baseline gcAvailable does not match memory source",
   );
-  deepEqual(baselineEnvironment.nodeFlags, memory.nodeFlags, "baseline nodeFlags");
+  deepEqual(
+    baselineEnvironment.nodeFlags,
+    memory.nodeFlags,
+    "baseline nodeFlags",
+  );
 }
 
 function validateBaselineConfig(config) {
   object(config, "baseline.config");
-  check(config.manifest === DEFAULT_MANIFEST_PATH, `baseline.config.manifest must be ${DEFAULT_MANIFEST_PATH}`);
-  check(config.catalog === DEFAULT_CATALOG_PATH, `baseline.config.catalog must be ${DEFAULT_CATALOG_PATH}`);
+  check(
+    config.manifest === DEFAULT_MANIFEST_PATH,
+    `baseline.config.manifest must be ${DEFAULT_MANIFEST_PATH}`,
+  );
+  check(
+    config.catalog === DEFAULT_CATALOG_PATH,
+    `baseline.config.catalog must be ${DEFAULT_CATALOG_PATH}`,
+  );
   integer(config.iterations, "baseline.config.iterations", 1);
   integer(config.warmup, "baseline.config.warmup", 0);
   integer(config.fixtureCount, "baseline.config.fixtureCount", 1);
@@ -656,7 +908,10 @@ function validateBaselineConfig(config) {
 
 function validateBaseline(baseline) {
   object(baseline, "baseline");
-  check(baseline.version === BASELINE_VERSION, `baseline.version must be ${BASELINE_VERSION}`);
+  check(
+    baseline.version === BASELINE_VERSION,
+    `baseline.version must be ${BASELINE_VERSION}`,
+  );
   check(baseline.kind === "baseline", "baseline.kind must be baseline");
   isoDate(baseline.generatedAt, "baseline.generatedAt");
   check(
@@ -666,7 +921,9 @@ function validateBaseline(baseline) {
   );
   text(baseline.purpose, "baseline.purpose");
   text(baseline.environmentRecord, "baseline.environmentRecord");
-  validateEnvironment(baseline.environment, "baseline.environment", { requireGc: true });
+  validateEnvironment(baseline.environment, "baseline.environment", {
+    requireGc: true,
+  });
   validateBaselineConfig(baseline.config);
   validateSources(baseline.sources, baseline.environment);
 
@@ -676,7 +933,12 @@ function validateBaseline(baseline) {
     "baseline.config",
   );
   const results = object(baseline.results, "baseline.results");
-  validateFreshResults(results.fresh, baseline.config, "baseline.results.fresh", fixtures);
+  validateFreshResults(
+    results.fresh,
+    baseline.config,
+    "baseline.results.fresh",
+    fixtures,
+  );
   validateIncrementalResults(
     results.incremental,
     baseline.config,
@@ -720,14 +982,18 @@ function comparisonConfig(reports) {
 
 function buildBaseline(reports, options) {
   const commit = options.commit || currentCommit();
-  check(/^[0-9a-f]{7,40}$/.test(commit), "commit must be a short or full hexadecimal git hash");
+  check(
+    /^[0-9a-f]{7,40}$/.test(commit),
+    "commit must be a short or full hexadecimal git hash",
+  );
 
   const baseline = {
     version: BASELINE_VERSION,
     kind: "baseline",
     generatedAt: new Date().toISOString(),
     repositoryCommit: commit,
-    purpose: "Observed performance baseline; not a performance budget or CI gate.",
+    purpose:
+      "Observed performance baseline; not a performance budget or CI gate.",
     environmentRecord: "docs/benchmarking.md#benchmark-environment",
     environment: combinedEnvironment(reports),
     config: {
@@ -798,7 +1064,9 @@ function environmentDifferences(baselineEnvironment, currentEnvironment) {
       });
     }
   }
-  if (!valuesEqual(baselineEnvironment.nodeFlags, currentEnvironment.nodeFlags)) {
+  if (
+    !valuesEqual(baselineEnvironment.nodeFlags, currentEnvironment.nodeFlags)
+  ) {
     differences.push({
       field: "nodeFlags",
       baseline: baselineEnvironment.nodeFlags,
@@ -810,10 +1078,21 @@ function environmentDifferences(baselineEnvironment, currentEnvironment) {
 
 function configDifferences(baselineConfig, currentConfig) {
   const differences = [];
-  const fields = ["manifest", "catalog", "iterations", "warmup", "fixtureCount", "sequenceCount"];
+  const fields = [
+    "manifest",
+    "catalog",
+    "iterations",
+    "warmup",
+    "fixtureCount",
+    "sequenceCount",
+  ];
   for (const field of fields) {
     if (baselineConfig[field] !== currentConfig[field]) {
-      differences.push({ field, baseline: baselineConfig[field], current: currentConfig[field] });
+      differences.push({
+        field,
+        baseline: baselineConfig[field],
+        current: currentConfig[field],
+      });
     }
   }
   return differences;
@@ -832,11 +1111,24 @@ function metricChange(baselineValue, currentValue, label) {
 
 function addIncrease(increases, mode, id, metric, change, source) {
   if (change.delta > 0) {
-    increases.push({ mode, id, metric, source, delta: change.delta, ratio: change.ratio });
+    increases.push({
+      mode,
+      id,
+      metric,
+      source,
+      delta: change.delta,
+      ratio: change.ratio,
+    });
   }
 }
 
-function compareLatencyResult(baselineResult, currentResult, label, mode, increases) {
+function compareLatencyResult(
+  baselineResult,
+  currentResult,
+  label,
+  mode,
+  increases,
+) {
   check(baselineResult.id === currentResult.id, `${label} id mismatch`);
   const metrics = {};
   for (const field of LATENCY_METRICS) {
@@ -846,12 +1138,26 @@ function compareLatencyResult(baselineResult, currentResult, label, mode, increa
       `${label}.stats.${field}`,
     );
     metrics[field] = change;
-    addIncrease(increases, mode, baselineResult.id, field, change, `${label}.stats.${field}`);
+    addIncrease(
+      increases,
+      mode,
+      baselineResult.id,
+      field,
+      change,
+      `${label}.stats.${field}`,
+    );
   }
   return { id: baselineResult.id, stats: metrics };
 }
 
-function compareResultLists(baselineResults, currentResults, label, mode, increases, compareOne) {
+function compareResultLists(
+  baselineResults,
+  currentResults,
+  label,
+  mode,
+  increases,
+  compareOne,
+) {
   array(baselineResults, `${label}.baseline`);
   array(currentResults, `${label}.current`);
   check(
@@ -862,14 +1168,20 @@ function compareResultLists(baselineResults, currentResults, label, mode, increa
   for (let index = 0; index < currentResults.length; index += 1) {
     const result = object(currentResults[index], `${label}.current[${index}]`);
     text(result.id, `${label}.current[${index}].id`);
-    check(!currentById.has(result.id), `${label} duplicate current id ${result.id}`);
+    check(
+      !currentById.has(result.id),
+      `${label} duplicate current id ${result.id}`,
+    );
     currentById.set(result.id, result);
   }
   return baselineResults.map((baselineResult, index) => {
     const baselineItem = object(baselineResult, `${label}.baseline[${index}]`);
     text(baselineItem.id, `${label}.baseline[${index}].id`);
     const currentItem = currentById.get(baselineItem.id);
-    check(currentItem, `${label} missing current result for ${baselineItem.id}`);
+    check(
+      currentItem,
+      `${label} missing current result for ${baselineItem.id}`,
+    );
     return compareOne(
       baselineItem,
       currentItem,
@@ -902,7 +1214,13 @@ function compareIncrementalResults(baselineResults, currentResults, increases) {
   );
 }
 
-function compareMemoryResult(baselineResult, currentResult, label, mode, increases) {
+function compareMemoryResult(
+  baselineResult,
+  currentResult,
+  label,
+  mode,
+  increases,
+) {
   check(baselineResult.id === currentResult.id, `${label} id mismatch`);
   check(
     baselineResult.retainedTrees === currentResult.retainedTrees,
@@ -916,7 +1234,14 @@ function compareMemoryResult(baselineResult, currentResult, label, mode, increas
       `${label}.retained.${field}`,
     );
     retained[field] = change;
-    addIncrease(increases, mode, baselineResult.id, field, change, `${label}.retained.${field}`);
+    addIncrease(
+      increases,
+      mode,
+      baselineResult.id,
+      field,
+      change,
+      `${label}.retained.${field}`,
+    );
   }
   const sampledPeak = {};
   for (const field of PEAK_MEMORY_METRICS) {
@@ -1000,21 +1325,34 @@ function buildClassification(environmentDiffs, configDiffs, increases) {
 function buildComparison(baseline, reports) {
   const currentEnvironment = combinedEnvironment(reports);
   const currentConfig = comparisonConfig(reports);
-  const environmentDiffs = environmentDifferences(baseline.environment, currentEnvironment);
+  const environmentDiffs = environmentDifferences(
+    baseline.environment,
+    currentEnvironment,
+  );
   const configDiffs = configDifferences(baseline.config, currentConfig);
   const increases = [];
   const observations = {
-    fresh: compareFreshResults(baseline.results.fresh, reports.fresh.data.fixtures, increases),
+    fresh: compareFreshResults(
+      baseline.results.fresh,
+      reports.fresh.data.fixtures,
+      increases,
+    ),
     incremental: compareIncrementalResults(
       baseline.results.incremental,
       reports.incremental.data.sequences,
       increases,
     ),
-    memory: compareMemoryResults(baseline.results.memory, reports.memory.data, increases),
+    memory: compareMemoryResults(
+      baseline.results.memory,
+      reports.memory.data,
+      increases,
+    ),
   };
   increases.sort((left, right) => {
-    const leftRatio = left.ratio === null ? Number.NEGATIVE_INFINITY : left.ratio;
-    const rightRatio = right.ratio === null ? Number.NEGATIVE_INFINITY : right.ratio;
+    const leftRatio =
+      left.ratio === null ? Number.NEGATIVE_INFINITY : left.ratio;
+    const rightRatio =
+      right.ratio === null ? Number.NEGATIVE_INFINITY : right.ratio;
     return rightRatio - leftRatio || right.delta - left.delta;
   });
 
@@ -1045,12 +1383,23 @@ function buildComparison(baseline, reports) {
         environment: reports.memory.data.environment,
       },
     },
-    environmentComparison: { matches: environmentDiffs.length === 0, differences: environmentDiffs },
-    configComparison: { matches: configDiffs.length === 0, differences: configDiffs },
-    classification: buildClassification(environmentDiffs, configDiffs, increases),
+    environmentComparison: {
+      matches: environmentDiffs.length === 0,
+      differences: environmentDiffs,
+    },
+    configComparison: {
+      matches: configDiffs.length === 0,
+      differences: configDiffs,
+    },
+    classification: buildClassification(
+      environmentDiffs,
+      configDiffs,
+      increases,
+    ),
     observations,
     increases,
-    interpretation: "Observed increases for investigation; no thresholds or pass/fail status.",
+    interpretation:
+      "Observed increases for investigation; no thresholds or pass/fail status.",
   };
 }
 
@@ -1072,7 +1421,11 @@ function runBuild(options) {
   validateFreshReport(reports.fresh.data);
   validateIncrementalReport(reports.incremental.data);
   validateMemoryReport(reports.memory.data);
-  validateReportAgreement(reports.fresh.data, reports.incremental.data, reports.memory.data);
+  validateReportAgreement(
+    reports.fresh.data,
+    reports.incremental.data,
+    reports.memory.data,
+  );
 
   const baseline = buildBaseline(reports, options);
   writeBaseline(options.output, baseline);
@@ -1103,7 +1456,11 @@ function runCompare(options) {
   validateFreshReport(reports.fresh.data);
   validateIncrementalReport(reports.incremental.data);
   validateMemoryReport(reports.memory.data);
-  validateReportAgreement(reports.fresh.data, reports.incremental.data, reports.memory.data);
+  validateReportAgreement(
+    reports.fresh.data,
+    reports.incremental.data,
+    reports.memory.data,
+  );
 
   const comparison = buildComparison(baseline, reports);
   if (!options.output) {
@@ -1121,7 +1478,9 @@ function runCompare(options) {
     warnings.observedIncreases.count +
     (warnings.environmentMismatch.present ? 1 : 0) +
     (warnings.configurationMismatch.present ? 1 : 0);
-  console.log(`classification: correctness failures gating; ${warningCount} non-gating performance warnings`);
+  console.log(
+    `classification: correctness failures gating; ${warningCount} non-gating performance warnings`,
+  );
 }
 
 function main() {

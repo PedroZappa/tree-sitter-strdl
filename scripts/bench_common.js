@@ -10,7 +10,10 @@ const Language = require("../bindings/node");
 
 const ROOT = path.resolve(__dirname, "..");
 const DEFAULT_MANIFEST = path.join(ROOT, "benchmarks/fixtures/manifest.json");
-const DEFAULT_CATALOG = path.join(ROOT, "test/fixtures/incremental_sequences.json");
+const DEFAULT_CATALOG = path.join(
+  ROOT,
+  "test/fixtures/incremental_sequences.json",
+);
 
 function parseInteger(raw, label, minimum) {
   const value = Number(raw);
@@ -68,10 +71,14 @@ function createParser() {
 function assertExpectedParse(tree, fixture) {
   const hasError = tree.rootNode.hasError;
   if (fixture.expectedClean && hasError) {
-    throw new Error(`${fixture.id} was expected to parse cleanly but has an ERROR node`);
+    throw new Error(
+      `${fixture.id} was expected to parse cleanly but has an ERROR node`,
+    );
   }
   if (!fixture.expectedClean && !hasError) {
-    throw new Error(`${fixture.id} was expected to exercise errors but parsed cleanly`);
+    throw new Error(
+      `${fixture.id} was expected to exercise errors but parsed cleanly`,
+    );
   }
 }
 
@@ -164,14 +171,18 @@ function buildEdit(source, tree, edit, sequenceId, step) {
     throw new Error(`${sequenceId} step ${step}: unsupported op ${edit.op}`);
   }
   if (typeof edit.old !== "string" || edit.old.length === 0) {
-    throw new Error(`${sequenceId} step ${step}: old must be a non-empty string`);
+    throw new Error(
+      `${sequenceId} step ${step}: old must be a non-empty string`,
+    );
   }
   if (typeof edit.new !== "string") {
     throw new Error(`${sequenceId} step ${step}: new must be a string`);
   }
   const occurrence = edit.occurrence === undefined ? 0 : edit.occurrence;
   if (!Number.isInteger(occurrence) || occurrence < 0) {
-    throw new Error(`${sequenceId} step ${step}: occurrence must be a non-negative integer`);
+    throw new Error(
+      `${sequenceId} step ${step}: occurrence must be a non-negative integer`,
+    );
   }
 
   const positions = matches(source, edit.old);
@@ -185,7 +196,8 @@ function buildEdit(source, tree, edit, sequenceId, step) {
   const startIndex = Buffer.byteLength(source.slice(0, charIndex));
   const oldCharEnd = charIndex + edit.old.length;
   const oldEndIndex = startIndex + Buffer.byteLength(edit.old);
-  const updated = source.slice(0, charIndex) + edit.new + source.slice(oldCharEnd);
+  const updated =
+    source.slice(0, charIndex) + edit.new + source.slice(oldCharEnd);
   const newCharEnd = charIndex + edit.new.length;
   const newEndIndex = startIndex + Buffer.byteLength(edit.new);
   tree.edit({
@@ -199,7 +211,12 @@ function buildEdit(source, tree, edit, sequenceId, step) {
   return updated;
 }
 
-function loadIncrementalCatalog(catalogPath, benchmarkFixtures, sequenceFilter, categoryFilter) {
+function loadIncrementalCatalog(
+  catalogPath,
+  benchmarkFixtures,
+  sequenceFilter,
+  categoryFilter,
+) {
   const catalog = JSON.parse(fs.readFileSync(catalogPath, "utf8"));
   if (catalog.version !== 1) {
     throw new Error("unsupported incremental catalog version");
@@ -220,7 +237,9 @@ function loadIncrementalCatalog(catalogPath, benchmarkFixtures, sequenceFilter, 
     const normalized = path.relative(ROOT, absolutePath);
     const fixture = benchmarkByPath.get(normalized);
     if (!fixture) {
-      throw new Error(`incremental fixture ${name} is not in the benchmark manifest: ${relativePath}`);
+      throw new Error(
+        `incremental fixture ${name} is not in the benchmark manifest: ${relativePath}`,
+      );
     }
     catalogFixtures.set(name, fixture);
   }
@@ -244,7 +263,10 @@ function loadIncrementalCatalog(catalogPath, benchmarkFixtures, sequenceFilter, 
     if (sequenceFilter && sequence.id !== sequenceFilter) {
       continue;
     }
-    if (categoryFilter && !(sequence.categories || []).includes(categoryFilter)) {
+    if (
+      categoryFilter &&
+      !(sequence.categories || []).includes(categoryFilter)
+    ) {
       continue;
     }
     sequences.push({

@@ -57,9 +57,7 @@ def as_paths(value: object) -> list[str] | None:
 
 def covers(path: str, patterns: object) -> bool:
     return isinstance(patterns, list) and any(
-        fnmatch.fnmatchcase(path, pattern)
-        for pattern in patterns
-        if isinstance(pattern, str)
+        fnmatch.fnmatchcase(path, pattern) for pattern in patterns if isinstance(pattern, str)
     )
 
 
@@ -96,9 +94,7 @@ def query_files(check: Checker) -> dict[str, str]:
     return inventory
 
 
-def check_metadata(
-    inventory: dict[str, str], label: str, entries: object, check: Checker
-) -> None:
+def check_metadata(inventory: dict[str, str], label: str, entries: object, check: Checker) -> None:
     entry = single_entry(entries, label, check)
     for kind, filename in inventory.items():
         paths = as_paths(entry.get(kind, []))
@@ -177,13 +173,11 @@ def check_bindings(inventory: dict[str, str], check: Checker) -> None:
             f"Python __all__ does not include {constant}",
         )
         check.require(
-            re.search(rf"^{constant}: Final\[str\]$", python_stub, re.MULTILINE)
-            is not None,
+            re.search(rf"^{constant}: Final\[str\]$", python_stub, re.MULTILINE) is not None,
             f"Python stub does not declare {constant}",
         )
         check.require(
-            f'pub const {constant}: &str = include_str!("../../queries/{filename}");'
-            in rust,
+            f'pub const {constant}: &str = include_str!("../../queries/{filename}");' in rust,
             f"Rust binding does not export {constant}",
         )
 
@@ -192,8 +186,7 @@ def check_bindings(inventory: dict[str, str], check: Checker) -> None:
             continue
         constant = f"{kind.upper()}_QUERY"
         check.require(
-            re.search(rf"^\s*if name == \"{constant}\":", python_init, re.MULTILINE)
-            is None,
+            re.search(rf"^\s*if name == \"{constant}\":", python_init, re.MULTILINE) is None,
             f"Python binding exports absent {kind} query",
         )
         check.require(

@@ -27,10 +27,14 @@ TEST_DIR := test/corpus
 DOCS_DIR := docs
 BUILD_DIR ?= build
 
-# Tools. Prefer the CLI pinned in devDependencies when it is installed; use
-# `make TS=tree-sitter ...` to select a system binary instead.
+# Tools. Prefer pinned local binaries when installed; use variable overrides
+# such as `make TS=tree-sitter ...` to select system binaries instead.
 TS_LOCAL := node_modules/.bin/tree-sitter
 TS ?= $(shell if [ -x '$(TS_LOCAL)' ]; then printf '%s' '$(TS_LOCAL)'; else printf 'tree-sitter'; fi)
+PRETTIER_LOCAL := node_modules/.bin/prettier
+PRETTIER ?= $(shell if [ -x '$(PRETTIER_LOCAL)' ]; then printf '%s' '$(PRETTIER_LOCAL)'; else printf 'prettier'; fi)
+RUFF_LOCAL := .venv/bin/ruff
+RUFF ?= $(shell if [ -x '$(RUFF_LOCAL)' ]; then printf '%s' '$(RUFF_LOCAL)'; else printf 'ruff'; fi)
 NPM ?= npm
 NODE ?= node
 HOST_OS := $(shell uname -s)
@@ -115,8 +119,8 @@ D = $(shell tput sgr0 2>/dev/null)
 _SUCCESS = [$(GRN)SUCCESS$(D)]
 _INFO    = [$(BLU)INFO$(D)]
 
-.PHONY: all build generate test test-recovery test-incremental test-query-compile test-query-execution test-query-registration test-query test-node test-package test-regressions benchmark-fixtures check-benchmark-fixtures bench-fresh bench-incremental bench-memory build-benchmark-baseline check-benchmark-baseline compare-benchmark-baseline build-benchmark-budgets check-benchmark-budgets parse playground wasm \
-	local-install install uninstall clean check-generated verify verify-all ci \
+.PHONY: all build generate test test-recovery test-incremental test-query-compile test-query-execution test-query-registration test-query test-node test-package test-regressions benchmark-fixtures check-benchmark-fixtures bench-fresh bench-incremental bench-memory build-benchmark-baseline check-benchmark-baseline compare-benchmark-baseline build-benchmark-budgets check-benchmark-budgets format check-format check-static parse playground wasm \
+	local-install install-dev install uninstall clean check-generated verify verify-all ci \
 	docs docs-open help
 
 #==============================================================================#
@@ -297,6 +301,25 @@ check-benchmark-budgets:	## Validate committed budget provenance and observed ma
 	@$(NODE) scripts/benchmark_budgets.js check --budget $(BENCH_BUDGETS)
 	@echo "$(YEL)* $(_SUCCESS) Benchmark budgets are structurally valid$(D)"
 
+format:	## Apply Prettier and Ruff formatting plus safe Ruff fixes
+	@echo "$(YEL)Formatting source files...$(D)"
+	@$(PRETTIER) --write .
+	@$(RUFF) check --fix .
+	@$(RUFF) format .
+	@echo "$(YEL)* $(_SUCCESS) Source files formatted$(D)"
+
+check-format:	## Verify Prettier and Ruff formatting
+	@echo "$(YEL)Checking source formatting...$(D)"
+	@$(PRETTIER) --check .
+	@$(RUFF) format --check .
+	@echo "$(YEL)* $(_SUCCESS) Source formatting is clean$(D)"
+
+check-static:	## Run Ruff static analysis and shell syntax checks
+	@echo "$(YEL)Running static checks...$(D)"
+	@$(RUFF) check .
+	@sh -n scripts/local_install.sh
+	@echo "$(YEL)* $(_SUCCESS) Static checks completed$(D)"
+
 ##@ Verification ✅
 
 check-generated:	## Verify committed parser artifacts match grammar.js
@@ -308,11 +331,11 @@ check-generated:	## Verify committed parser artifacts match grammar.js
 	}
 	@echo "$(YEL)* $(_SUCCESS) Generated artifacts are in sync$(D)"
 
-verify: check-generated test test-incremental test-query test-regressions check-benchmark-fixtures check-benchmark-baseline check-benchmark-budgets	## Run the core CI gate (artifacts, corpus, incremental equivalence, queries, regressions, fixtures, baseline, budgets)
+verify: check-generated check-format check-static test test-incremental test-query test-regressions check-benchmark-fixtures check-benchmark-baseline check-benchmark-budgets	## Run the core CI gate (artifacts, formatting, static checks, corpus, incremental equivalence, queries, regressions, fixtures, baseline, budgets)
 
 verify-all: verify test-node test-package	## Run the core gate plus Node.js binding and package checks
 
-ci: verify-all build	## Run the complete CI gate locally (requires npm ci first)
+ci: verify-all build	## Run the complete CI gate locally (requires make install-dev first)
 
 ##@ Utility Rules 🛠
 
@@ -324,6 +347,13 @@ wasm:	## Build the WebAssembly parser
 
 local-install:	## Install official queries into the local nvim-treesitter directory
 	@$(NPM) run local_install
+
+install-dev:	## Install pinned development tools used by formatting and static checks
+	@echo "$(YEL)Installing development tools...$(D)"
+	@$(NPM) ci
+	@python3 -m venv .venv
+	@.venv/bin/pip install -r requirements-dev.txt
+	@echo "$(YEL)* $(_SUCCESS) Development tools installed$(D)"
 
 install: all	## Install libraries, header, pkg-config file and queries
 	install -d '$(DESTDIR)$(DATADIR)'/tree-sitter/queries/strudel '$(DESTDIR)$(INCLUDEDIR)'/tree_sitter '$(DESTDIR)$(PCLIBDIR)' '$(DESTDIR)$(LIBDIR)'

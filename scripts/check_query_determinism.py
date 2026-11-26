@@ -71,9 +71,7 @@ def main(argv: list[str]) -> int:
         print("query determinism check failed: no captures were produced", file=sys.stderr)
         return 1
 
-    duplicates = {
-        location: names for location, names in captures.items() if len(names) > 1
-    }
+    duplicates = {location: names for location, names in captures.items() if len(names) > 1}
     if duplicates:
         print("query determinism check failed: duplicate captures found", file=sys.stderr)
         for (filename, start_row, start_column, end_row, end_column), names in sorted(
@@ -81,8 +79,7 @@ def main(argv: list[str]) -> int:
         ):
             joined = ", ".join(names)
             print(
-                f"  {filename}:{start_row}:{start_column}-{end_row}:{end_column} "
-                f"-> {joined}",
+                f"  {filename}:{start_row}:{start_column}-{end_row}:{end_column} -> {joined}",
                 file=sys.stderr,
             )
         return 1

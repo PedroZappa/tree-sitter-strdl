@@ -99,7 +99,13 @@ test("matches a fresh parse after an incremental edit", () => {
   parser.setLanguage(Language);
   const oldTree = parser.parse(source);
   const startIndex = source.indexOf("0.9");
-  const updated = replaceRange(oldTree, source, startIndex, startIndex + 3, "1.2");
+  const updated = replaceRange(
+    oldTree,
+    source,
+    startIndex,
+    startIndex + 3,
+    "1.2",
+  );
 
   const incremental = parser.parse(updated, oldTree);
   const fresh = parser.parse(updated);
@@ -116,7 +122,9 @@ test("executes a grammar-derived query through the binding", () => {
   );
 
   assert.deepEqual(
-    query.captures(rootNode).map((capture) => [capture.name, capture.node.text]),
+    query
+      .captures(rootNode)
+      .map((capture) => [capture.name, capture.node.text]),
     [["function.call", "s"]],
   );
 });

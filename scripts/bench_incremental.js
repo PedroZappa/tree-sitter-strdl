@@ -123,7 +123,9 @@ function replaySequence(sequence, parser, record, stepSamples) {
     const started = process.hrtime.bigint();
     const updated = buildEdit(source, tree, edit, sequence.id, index + 1);
     tree = parser.parse(updated, tree);
-    const elapsedMs = round(Number(process.hrtime.bigint() - started) / 1_000_000);
+    const elapsedMs = round(
+      Number(process.hrtime.bigint() - started) / 1_000_000,
+    );
 
     const fresh = parser.parse(updated);
     const incrementalTree = tree.rootNode.toString();
@@ -210,7 +212,8 @@ function buildReport(options, fixtures, sequences, results) {
 }
 
 function printSummary(report) {
-  const { node, treeSitterRuntime, platform, arch, cpuCount } = report.environment;
+  const { node, treeSitterRuntime, platform, arch, cpuCount } =
+    report.environment;
   console.log(
     `incremental parse latency: ${report.config.sequenceCount} sequences, ` +
       `${report.config.iterations} measured replays, ${report.config.warmup} warmup replays`,
@@ -259,7 +262,11 @@ function main() {
     options.sequence,
     options.category,
   );
-  const results = measureSequences(sequences, options.iterations, options.warmup);
+  const results = measureSequences(
+    sequences,
+    options.iterations,
+    options.warmup,
+  );
   const report = buildReport(options, fixtures, sequences, results);
   writeReport({ ...options, printSummary }, report);
 }

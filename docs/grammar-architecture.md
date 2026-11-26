@@ -22,62 +22,62 @@ The refactor replaces the Phase 2 wrapper-heavy hierarchy with composable, JavaS
 
 [src/node-types.json](../src/node-types.json) contains 40 named node types and 31 field names. Fields are recorded on the node types below; `?` marks an optional field.
 
-| Area | Named nodes |
-| --- | --- |
-| Root and statements | `source_file`, `block`, `expression_statement`, `labeled_statement`, `return_statement`, `try_statement`, `comment` |
+| Area                        | Named nodes                                                                                                                                                                                                        |
+| --------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Root and statements         | `source_file`, `block`, `expression_statement`, `labeled_statement`, `return_statement`, `try_statement`, `comment`                                                                                                |
 | Declarations and parameters | `variable_declaration`, `variable_declarator`, `function_declaration`, `formal_parameters`, `import_declaration`, `named_imports`, `import_specifier`, `export_declaration`, `array_pattern`, `assignment_pattern` |
-| Calls and access | `call_expression`, `arguments`, `member_expression`, `subscript_expression`, `new_expression`, `tagged_template_expression` |
-| Operators and control flow | `assignment_expression`, `binary_expression`, `unary_expression`, `await_expression`, `conditional_expression`, `arrow_function` |
-| Values and containers | `object`, `pair`, `computed_property_name`, `spread_element`, `array`, `string`, `template_string`, `template_substitution`, `number`, `identifier`, `parenthesized_expression` |
+| Calls and access            | `call_expression`, `arguments`, `member_expression`, `subscript_expression`, `new_expression`, `tagged_template_expression`                                                                                        |
+| Operators and control flow  | `assignment_expression`, `binary_expression`, `unary_expression`, `await_expression`, `conditional_expression`, `arrow_function`                                                                                   |
+| Values and containers       | `object`, `pair`, `computed_property_name`, `spread_element`, `array`, `string`, `template_string`, `template_substitution`, `number`, `identifier`, `parenthesized_expression`                                    |
 
 ### Fields
 
-| Node | Fields |
-| --- | --- |
-| `arguments` | `argument?` |
-| `array` | `element?` |
-| `array_pattern` | `element?` |
-| `arrow_function` | `parameters`, `body` |
-| `assignment_expression` | `left`, `right` |
-| `assignment_pattern` | `left`, `right` |
-| `await_expression` | `argument` |
-| `binary_expression` | `left`, `operator`, `right` |
-| `call_expression` | `function`, `arguments` |
-| `computed_property_name` | `expression` |
-| `conditional_expression` | `condition`, `consequence`, `alternative` |
-| `export_declaration` | `declaration?`, `value?` |
-| `formal_parameters` | `parameter?` |
-| `function_declaration` | `name`, `parameters`, `body` |
-| `import_declaration` | `specifiers`, `source` |
-| `import_specifier` | `name`, `alias?` |
-| `labeled_statement` | `label`, `body` |
-| `member_expression` | `object`, `property` |
-| `new_expression` | `constructor`, `arguments?` |
-| `pair` | `key`, `value` |
-| `parenthesized_expression` | `expression` |
-| `return_statement` | `value?` |
-| `spread_element` | `value` |
-| `subscript_expression` | `object`, `index` |
-| `tagged_template_expression` | `tag`, `template` |
-| `template_substitution` | `expression` |
-| `try_statement` | `body`, `parameter?`, `handler` |
-| `unary_expression` | `operator`, `argument` |
-| `variable_declaration` | `kind`, `declarator` |
-| `variable_declarator` | `name`, `value?` |
+| Node                         | Fields                                    |
+| ---------------------------- | ----------------------------------------- |
+| `arguments`                  | `argument?`                               |
+| `array`                      | `element?`                                |
+| `array_pattern`              | `element?`                                |
+| `arrow_function`             | `parameters`, `body`                      |
+| `assignment_expression`      | `left`, `right`                           |
+| `assignment_pattern`         | `left`, `right`                           |
+| `await_expression`           | `argument`                                |
+| `binary_expression`          | `left`, `operator`, `right`               |
+| `call_expression`            | `function`, `arguments`                   |
+| `computed_property_name`     | `expression`                              |
+| `conditional_expression`     | `condition`, `consequence`, `alternative` |
+| `export_declaration`         | `declaration?`, `value?`                  |
+| `formal_parameters`          | `parameter?`                              |
+| `function_declaration`       | `name`, `parameters`, `body`              |
+| `import_declaration`         | `specifiers`, `source`                    |
+| `import_specifier`           | `name`, `alias?`                          |
+| `labeled_statement`          | `label`, `body`                           |
+| `member_expression`          | `object`, `property`                      |
+| `new_expression`             | `constructor`, `arguments?`               |
+| `pair`                       | `key`, `value`                            |
+| `parenthesized_expression`   | `expression`                              |
+| `return_statement`           | `value?`                                  |
+| `spread_element`             | `value`                                   |
+| `subscript_expression`       | `object`, `index`                         |
+| `tagged_template_expression` | `tag`, `template`                         |
+| `template_substitution`      | `expression`                              |
+| `try_statement`              | `body`, `parameter?`, `handler`           |
+| `unary_expression`           | `operator`, `argument`                    |
+| `variable_declaration`       | `kind`, `declarator`                      |
+| `variable_declarator`        | `name`, `value?`                          |
 
 ### API changes from the Phase 2 baseline
 
-| Phase 2 | Phase 3 | Reason |
-| --- | --- | --- |
-| `expression` wrapper | Removed; expression nodes are direct children | The wrapper obscured call, member, and operator structure. |
-| `assignment` | `labeled_statement` for `label:`; `assignment_expression` for `x = y` | The two forms have different syntax and behavior. |
-| `lexical_declaration` | Folded into `variable_declaration` with a `kind` field | `var`, `let`, and `const` share one declaration structure. |
-| `additive_expression`, `multiplicative_expression` | `binary_expression` with an `operator` field | one node type supports all binary operators and precedence levels. |
-| `function_call` | `call_expression` with `function` and `arguments` fields | Aligns with standard JavaScript grammar conventions. |
-| `chained_method`, `method_call` | Nested `call_expression` and `member_expression` | Chains now expose receiver and callee relationships explicitly. |
-| `arrow_function.parameter` | `arrow_function.parameters` | Supports zero, one, multiple, and destructured parameters. |
-| No parenthesized node | `parenthesized_expression` | Preserves grouping explicitly. |
-| Opaque backtick strings | `template_string` with `template_substitution` | Exposes interpolation expressions while leaving literal text opaque. |
+| Phase 2                                            | Phase 3                                                               | Reason                                                               |
+| -------------------------------------------------- | --------------------------------------------------------------------- | -------------------------------------------------------------------- |
+| `expression` wrapper                               | Removed; expression nodes are direct children                         | The wrapper obscured call, member, and operator structure.           |
+| `assignment`                                       | `labeled_statement` for `label:`; `assignment_expression` for `x = y` | The two forms have different syntax and behavior.                    |
+| `lexical_declaration`                              | Folded into `variable_declaration` with a `kind` field                | `var`, `let`, and `const` share one declaration structure.           |
+| `additive_expression`, `multiplicative_expression` | `binary_expression` with an `operator` field                          | one node type supports all binary operators and precedence levels.   |
+| `function_call`                                    | `call_expression` with `function` and `arguments` fields              | Aligns with standard JavaScript grammar conventions.                 |
+| `chained_method`, `method_call`                    | Nested `call_expression` and `member_expression`                      | Chains now expose receiver and callee relationships explicitly.      |
+| `arrow_function.parameter`                         | `arrow_function.parameters`                                           | Supports zero, one, multiple, and destructured parameters.           |
+| No parenthesized node                              | `parenthesized_expression`                                            | Preserves grouping explicitly.                                       |
+| Opaque backtick strings                            | `template_string` with `template_substitution`                        | Exposes interpolation expressions while leaving literal text opaque. |
 
 Consumers should treat this as a breaking CST API change and update queries or normalization logic accordingly.
 
@@ -113,17 +113,17 @@ member > call > new > unary > multiplicative > additive
 
 An earlier declaration used ascending order, which inverted mixed-operator trees. The corrected order makes `a + b * c` parse as `a + (b * c)` and `a > b ? c : d` parse as a conditional expression with a comparison condition.
 
-| Rule | Declaration | Effect |
-| --- | --- | --- |
-| `assignment_expression` | `prec.right("assignment", ...)` | Right-associative assignment at the lowest named level. |
-| `conditional_expression` | `prec.right("ternary", ...)` | Right-associative ternary. |
-| `binary_expression` alternatives | `prec.left(level, ...)` | Left-associative operators at their named levels. |
-| `unary_expression`, `await_expression` | `prec("unary", ...)` | Bind tighter than binary operators. |
-| `new_expression` | `prec.right("new", ...)` | Supports `new new Foo()` and argument-list continuation. |
-| `call_expression`, `tagged_template_expression` | `prec("call", ...)` | Bind tighter than `new` and unary forms. |
-| `member_expression`, `subscript_expression` | `prec("member", ...)` | Bind tightest, including optional chaining. |
-| `expression_statement`, `return_statement`, `variable_declarator`, `export default`, `_arrow_body` | `prec.right(-1, ...)` | Prefer postfix continuation (calls and members) over reducing a surrounding statement or body. |
-| `block` | `prec(1, ...)` | Prefers block interpretation over empty object literal in statement position. |
+| Rule                                                                                               | Declaration                     | Effect                                                                                         |
+| -------------------------------------------------------------------------------------------------- | ------------------------------- | ---------------------------------------------------------------------------------------------- |
+| `assignment_expression`                                                                            | `prec.right("assignment", ...)` | Right-associative assignment at the lowest named level.                                        |
+| `conditional_expression`                                                                           | `prec.right("ternary", ...)`    | Right-associative ternary.                                                                     |
+| `binary_expression` alternatives                                                                   | `prec.left(level, ...)`         | Left-associative operators at their named levels.                                              |
+| `unary_expression`, `await_expression`                                                             | `prec("unary", ...)`            | Bind tighter than binary operators.                                                            |
+| `new_expression`                                                                                   | `prec.right("new", ...)`        | Supports `new new Foo()` and argument-list continuation.                                       |
+| `call_expression`, `tagged_template_expression`                                                    | `prec("call", ...)`             | Bind tighter than `new` and unary forms.                                                       |
+| `member_expression`, `subscript_expression`                                                        | `prec("member", ...)`           | Bind tightest, including optional chaining.                                                    |
+| `expression_statement`, `return_statement`, `variable_declarator`, `export default`, `_arrow_body` | `prec.right(-1, ...)`           | Prefer postfix continuation (calls and members) over reducing a surrounding statement or body. |
+| `block`                                                                                            | `prec(1, ...)`                  | Prefers block interpretation over empty object literal in statement position.                  |
 
 Verified precedence behavior is covered in [test/corpus/precedence.txt](../test/corpus/precedence.txt), [test/corpus/operators.txt](../test/corpus/operators.txt), and the ternary interpolation regression in [test/corpus/valid_syntax_expansions.txt](../test/corpus/valid_syntax_expansions.txt).
 

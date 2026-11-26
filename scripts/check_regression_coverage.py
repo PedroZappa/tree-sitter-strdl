@@ -45,9 +45,7 @@ def load_inventory(path: Path) -> dict[str, Any]:
     return value
 
 
-def resolve_artifact(
-    raw: object, where: str, check: Checker
-) -> Path | None:
+def resolve_artifact(raw: object, where: str, check: Checker) -> Path | None:
     if not non_empty_string(raw):
         check.require(False, f"{where} has no artifact path")
         return None
@@ -76,9 +74,7 @@ def corpus_case_names(path: Path) -> list[str]:
     return names
 
 
-def check_regression(
-    regression: object, where: str, check: Checker
-) -> None:
+def check_regression(regression: object, where: str, check: Checker) -> None:
     if not isinstance(regression, dict):
         check.require(False, f"{where} must be an object")
         return
@@ -162,9 +158,7 @@ def check_inventory(inventory: dict[str, Any], check: Checker) -> tuple[int, int
         "inventory lacks a non-empty entries array",
     )
     exclusions = inventory.get("exclusions", [])
-    check.require(
-        isinstance(exclusions, list), "inventory exclusions must be an array"
-    )
+    check.require(isinstance(exclusions, list), "inventory exclusions must be an array")
     if not isinstance(entries, list):
         entries = []
     if not isinstance(exclusions, list):
