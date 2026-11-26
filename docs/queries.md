@@ -53,4 +53,4 @@ See [CI](ci.md) for where these targets run and [query audit](query-audit.md) fo
 
 ## Compatibility and stability
 
-A query file is part of this package's public API. Renaming a capture, changing its syntactic meaning, removing a registration, or introducing Strudel API-name-specific captures is a breaking query API change and must be documented in the relevant capture reference and the roadmap. Query changes must remain aligned with the public CST documented in [grammar architecture](grammar-architecture.md).
+A query file is part of this package's public API. Renaming a capture, changing its syntactic meaning, removing a registration, or introducing Strudel API-name-specific captures is a breaking query API change. The complete [breaking-change policy](compatibility.md#breaking-change-policy-for-cst-and-queries) defines versioning and migration requirements. Query changes must remain aligned with the public CST documented in [grammar architecture](grammar-architecture.md).

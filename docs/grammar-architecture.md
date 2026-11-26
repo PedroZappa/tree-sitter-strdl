@@ -16,7 +16,7 @@ The refactor replaces the Phase 2 wrapper-heavy hierarchy with composable, JavaS
 - Fields describe structural relationships: `function`, `arguments`, `object`, `property`, `left`, `right`, `body`, and similar.
 - List helpers are local JavaScript functions, not grammar rules: `commaSep`, `commaSep1`, and `commaSepTrailing`.
 - Names follow established JavaScript grammar conventions where they improve downstream compatibility. The rule bodies remain Strudel-oriented and are not a full ECMAScript grammar.
-- Renaming a named node, field, or changing whether a rule is hidden is a public syntax-tree API change and requires a deliberate versioned decision.
+- Renaming a named node, field, or changing whether a rule is hidden is a public syntax-tree API change and requires a deliberate versioned decision under the [breaking-change policy](compatibility.md#breaking-change-policy-for-cst-and-queries).
 
 ## Public syntax-tree API
 

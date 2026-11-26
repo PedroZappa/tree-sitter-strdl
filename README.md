@@ -102,7 +102,7 @@ Not supported: mini-notation semantics, object shorthand, object destructuring d
 
 ## Syntax tree
 
-The public CST API is documented in [grammar architecture](docs/grammar-architecture.md). The Phase 3 structured refactor changed node and field names; consumers upgrading from the Phase 2 baseline must update their queries and tree-walking code.
+The public CST API is documented in [grammar architecture](docs/grammar-architecture.md), and its stability rules are defined in the [breaking-change policy](docs/compatibility.md#breaking-change-policy-for-cst-and-queries). The Phase 3 structured refactor changed node and field names; consumers upgrading from the Phase 2 baseline must update their queries and tree-walking code.
 
 Generated parser artifacts and `src/node-types.json` are committed. Do not hand-edit generated files.
 

@@ -58,7 +58,7 @@ Promoting Go to a first-class binding requires explicit approval for module meta
 
 ## Syntax coverage compatibility
 
-The [syntax coverage matrix](syntax-coverage-matrix.md) is the source of truth for the syntax this grammar currently accepts. The [syntax evidence](syntax-evidence.md) records why each construct is in scope. This section defines what consumers can rely on across releases; it does not redefine the public CST naming policy or query compatibility rules.
+The [syntax coverage matrix](syntax-coverage-matrix.md) is the source of truth for the syntax this grammar currently accepts. The [syntax evidence](syntax-evidence.md) records why each construct is in scope. This section defines what syntax consumers can rely on across releases. CST node names, fields, and query captures follow the separate [breaking-change policy](#breaking-change-policy-for-cst-and-queries).
 
 | Matrix status                 | Compatibility meaning                                                                                                                                                                                                                       |
 | ----------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -76,6 +76,26 @@ Syntax additions are compatible when they accept previously unsupported input wi
 Error recovery is best-effort for actively edited and malformed input. The stable compatibility contract applies to valid source using constructs recorded as `Implemented`. Malformed-input trees may improve or change without being treated as a syntax compatibility break.
 
 Mini-notation remains opaque string content. This grammar exposes the surrounding JavaScript call and literal structure only; it does not parse pattern semantics, and no Strudel API function name is hardcoded into grammar rules.
+
+## Breaking-change policy for CST and queries
+
+The public compatibility surface consists of:
+
+- named node types and field names in [`src/node-types.json`](../src/node-types.json), as explained in [grammar architecture](grammar-architecture.md);
+- the concrete tree shape of valid, supported syntax, including parent/child relationships, field assignments, precedence, and associativity;
+- official query files, their registration keys and binding constants, and the capture names and meanings documented in [highlight captures](highlight-captures.md) and [locals captures](locals-captures.md).
+
+Anonymous tokens are part of the concrete tree but have no project-specific node name. Hidden grammar rules, local helper functions, named precedence identifiers, probe queries under `test/query/`, and editor-specific capture-priority behavior are implementation details. Changes to them are not breaking when the public surface above is unchanged. Error-recovery trees for malformed input are best-effort and are not part of this stability promise.
+
+Version numbering follows `MAJOR.MINOR.PATCH`:
+
+- **Patch:** fixes, documentation changes, tests, and query refinements that do not change the CST or capture behavior for valid, supported syntax.
+- **Minor:** additive coverage that accepts new source without changing existing trees, a new named node type or field used only by newly supported syntax, a new capture name, or a new official query/registration that does not alter existing consumers.
+- **Major:** renaming or removing a named node type or field; changing the parent, field, precedence, or associativity of previously valid syntax; narrowing supported syntax; adding a node or field to previously valid trees; renaming or removing a capture; changing a capture's syntactic meaning; changing an official query registration key or binding constant; reintroducing Strudel API-name-specific captures; or raising the ABI/runtime floor.
+
+A major change requires explicit approval, a major version bump, release notes describing the migration, updates to the authoritative API documents and roadmap, and regenerated parser artifacts. Corpus cases, query assertions, and registration checks must be updated in the same change. Additive changes must demonstrate that previously valid parses remain unchanged.
+
+Consumers should pin an exact grammar version and treat `node-types.json`, the grammar architecture document, the capture references, and registry metadata as the compatibility contract. Runtime and ABI compatibility are defined in [Parser ABI](#parser-abi); syntax status compatibility is defined in [Syntax coverage compatibility](#syntax-coverage-compatibility).
 
 ## Package compatibility expectations
 
