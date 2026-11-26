@@ -10,6 +10,7 @@ This folder contains project-level planning and developer documentation for `tre
 - [Strudel syntax evidence](syntax-evidence.md) — Phase 3 examples from official documentation, runtime source, official examples/tutorials, and maintained community sources, with source paths and rendered URLs.
 - [Syntax coverage matrix](syntax-coverage-matrix.md) — Phase 3 comparison of each significant requirement with current grammar and corpus coverage.
 - [Compatibility](compatibility.md) — supported CLI, parser ABI, runtime floor, and binding validation matrix.
+- [Binding audit](binding-audit.md) — per-binding implementation, build, test, distribution evidence, and retention decisions.
 - [CI](ci.md) — GitHub Actions triggers, validation commands, pinned tooling, local reproduction, and deferred checks.
 - [Test strategy](test-strategy.md) — index of test layers, `make` command map, fixtures, scripts, extension procedures, and current coverage gaps.
 - [Regression coverage](regression-coverage.md) — authoritative inventory of discovered bugs, their permanent regression artifacts, and documented exclusions.

@@ -10,6 +10,7 @@ compilation failures are detectable.
 
 from __future__ import annotations
 
+import os
 import re
 import subprocess
 import sys
@@ -36,9 +37,16 @@ def clean(text: str) -> str:
     return ANSI_RE.sub("", text).strip()
 
 
+def grammar_args() -> list[str]:
+    lib_path = os.environ.get("TREE_SITTER_LIB_PATH")
+    if lib_path:
+        return ["--lib-path", lib_path, "--lang-name", "strudel"]
+    return ["--grammar-path", "."]
+
+
 def compile_query(tree_sitter: str, query: str, source: str) -> subprocess.CompletedProcess[str]:
     return subprocess.run(
-        [tree_sitter, "query", "--quiet", "--grammar-path", ".", query, source],
+        [tree_sitter, "query", "--quiet", *grammar_args(), query, source],
         capture_output=True,
         text=True,
         stdin=subprocess.DEVNULL,

@@ -7,10 +7,10 @@ GitHub Actions validates the grammar in [`.github/workflows/ci.yml`](../.github/
 - **Triggers:** `pull_request` and `push` to `main`.
 - **Permissions:** `contents: read` only.
 - **Concurrency:** superseded runs on the same ref are cancelled.
-- **Matrix:** Node.js 22 and 24 on `ubuntu-latest`.
+- **Matrix:** Node.js 22 and 24 on pinned `ubuntu-24.04` runners.
 - **Actions:** pinned to commit SHAs with version comments.
 
-Each matrix job installs the locked dependencies with `npm ci`, then runs `make ci`.
+Each matrix job installs Swift.org's documented Ubuntu 24.04 system dependencies, selects Swift 6.2.1, installs the locked Node.js dependencies with `npm ci`, then runs `make ci`.
 
 ## What `make ci` runs
 
@@ -25,15 +25,23 @@ Each matrix job installs the locked dependencies with `npm ci`, then runs `make 
 7. `make check-benchmark-budgets` — validates the [committed budgets](benchmarking.md#performance-budgets) provenance, environment/configuration agreement, fixture/catalog coverage, and observed maxima by recomputation. It does not gate current timings.
 8. `make test` — runs all corpus cases, including incomplete-call, incomplete-argument-list, incomplete-expression, and missing-delimiter cases.
 9. `make test-incremental` — replays the complete [incremental edit catalog](incremental-equivalence-procedure.md) through the pinned Tree-sitter CLI and requires every incremental tree to equal a fresh parse, including malformed intermediate steps and final sources.
-10. `make test-query` — runs `make test-query-compile` to compile every query in `queries/` and reject negative controls with invalid node and field names, runs `make test-query-execution` to assert every official capture name on grammar-derived roles in the representative fixtures and reject a wrong-capture negative control, and runs `make test-query-registration` to verify metadata registration, packaged query rules, and Python/Rust query exports. It also executes each official query against the committed fixtures, checks that `highlights.scm` emits no duplicate captures for the same source range, and verifies that call identifiers and object keys selected by probe queries receive no locals definition capture.
+10. `make test-query` — builds the shared C library and runs every CLI query through `--lib-path` instead of the global parser cache. It runs `make test-query-compile` to compile every query in `queries/` and reject negative controls with invalid node and field names, runs `make test-query-execution` to assert every official capture name on grammar-derived roles in the representative fixtures and reject a wrong-capture negative control, and runs `make test-query-registration` to verify metadata registration, packaged query rules, and Python/Rust query exports. It also executes each official query against the committed fixtures, checks that `highlights.scm` emits no duplicate captures for the same source range, and verifies that call identifiers and object keys selected by probe queries receive no locals definition capture.
 11. `make test-regressions` — validates the [regression inventory](regression-coverage.md), ensuring every recorded bug still has an existing, wired regression artifact.
 12. `make test-node` — runs the Node.js binding tests with the tree-sitter runtime resolved from `package-lock.json`, covering load, generated metadata, CST fields, error recovery, query execution, and incremental/fresh equivalence through the native addon.
-13. `make test-package` — runs `npm pack --dry-run --json --ignore-scripts` and checks metadata consistency, required files, forbidden artifacts, and packed file sizes.
-14. `make build` — builds the static and shared C libraries and the pkg-config metadata.
+13. `make test-node-clean-build` — copies tracked sources to a temporary clean directory, runs `npm ci --offline`, requires the native addon to compile without parser regeneration, and runs `npm test` there.
+14. `make test-generated-runtime` — copies only runtime sources and committed generated artifacts into a temporary directory without `grammar.js` or `tree-sitter-cli`, installs the pinned tree-sitter runtime offline, verifies the generated files remain byte-identical, and parses both representative fixtures through the compiled addon.
+15. `make test-c` — compiles the public C header and a test program against the generated parser, links the `tree_sitter_strudel()` symbol, and verifies that it returns a non-null language pointer.
+16. `make test-python` — builds the CPython extension in a temporary tree with unsupported `-Wl,-z,pack-relative-relocs` linker flags removed for `ld.gold` compatibility, verifies that `language()` returns a `tree_sitter.Language` capsule with a non-null pointer, and loads both official query exports from the built package.
+17. `make test-rust` — statically verifies the Rust manifest, dependency declarations, `Cargo.lock`, Cargo include coverage, build script, public API constants, npm exclusion, and crates publish configuration, then runs `cargo test --locked` in a temporary tracked-source copy with an isolated target directory. On Linux, the checker appends GNU `ld.bfd` flags to Cargo compiler and doc-test flags so an ambient `ld.lld` selection cannot break the gate.
+18. `make test-swift` — statically verifies the SwiftPM manifest, public C symbol, XCTest load wiring, `tree-sitter.json` enablement, and npm exclusion, then runs `swift build` and `swift test` in a clean tracked-source copy.
+19. `make check-version` — verifies that all package metadata agrees on the release version, including npm, Tree-sitter, Cargo, Python, Makefile, CMake, and generated pkg-config metadata.
+20. `make test-package` — runs `npm pack --dry-run --json --ignore-scripts`, requires explicit `package.json` allowlist entries for grammar, generated sources, Node bindings, queries, and Tree-sitter metadata, then checks that npm metadata matches the canonical `tree-sitter.json` metadata, validates required files, rejects forbidden artifacts, and compares packed file sizes.
+21. `make test-tarball-install` — creates an npm tarball from tracked sources, installs it offline into a clean consumer, verifies the packed file list and installed generated artifacts, requires a freshly compiled native addon, installs the pinned `tree-sitter` runtime separately, and parses a representative tracked composition through the installed package without parser regeneration.
+22. `make build` — builds the static and shared C libraries and the pkg-config metadata.
 
-The pinned versions used by CI come from `package-lock.json` (Tree-sitter CLI `0.27.2`, tree-sitter Node runtime `0.25.1`, Prettier `3.10.1`) and `requirements-dev.txt` (Ruff `0.17.6`).
+The pinned versions used by CI come from `package-lock.json` (Tree-sitter CLI `0.27.2`, tree-sitter Node runtime `0.25.1`, Prettier `3.10.1`), `requirements-dev.txt` (Ruff `0.17.6`, setuptools `84.2.1`, wheel `0.48.0`), and the pinned `setup-swift` action (Swift `6.2.1`).
 
-All `make ci` checks above are correctness gates: a failure produces a nonzero exit status. These gates cover every required Phase 6 test layer; only Phase 7 non-Node binding validation is outside the gate, as listed in [Not yet covered](#not-yet-covered). Latency and memory observations are outside CI; comparison reports explicitly mark timing deltas and comparability mismatches as [non-gating performance warnings](benchmarking.md#correctness-failures-versus-performance-warnings). A correctness failure is never reported as a performance warning.
+All `make ci` checks above are correctness gates: a failure produces a nonzero exit status. These gates cover every required Phase 6 test layer, the clean Node.js binding build, the generated parser runtime check, the C binding symbol check, the Python binding capsule check, the Rust binding surface and `cargo test --locked` checks, the Swift binding surface and `swift build`/`swift test` checks, cross-file version consistency, offline tarball installation into a clean consumer, and parsing a representative composition through that installation; remaining Phase 7 work, especially Go binding validation, is listed in [Not yet covered](#not-yet-covered). Latency and memory observations are outside CI; comparison reports explicitly mark timing deltas and comparability mismatches as [non-gating performance warnings](benchmarking.md#correctness-failures-versus-performance-warnings). A correctness failure is never reported as a performance warning.
 
 ## Performance reporting
 
@@ -50,12 +58,13 @@ python3 -m venv .venv
 make ci
 ```
 
-Alternatively, `make install-dev` performs both dependency installs. `make ci` expects dependencies to be installed first: the Node binding test loads the native addon built by `npm ci`, the incremental equivalence harness uses the pinned Tree-sitter CLI installed there, and formatting/static checks use the pinned Prettier and Ruff binaries. `make format` is the local auto-fix command and is deliberately not part of CI.
+Alternatively, `make install-dev` performs both dependency installs. `make ci` expects dependencies to be installed first: the Node binding test loads the native addon built by `npm ci`, the incremental equivalence harness uses the pinned Tree-sitter CLI installed there, formatting/static checks use the pinned Prettier and Ruff binaries, and the Python checks use `.venv/bin/python` when present so `setup.py` sees the pinned setuptools and wheel build dependencies. Override `PYTHON` to use a different interpreter. `make test-swift` needs a Swift toolchain and its system libraries on `PATH` (CI selects Swift 6.2.1 on Ubuntu 24.04). `make format` is the local auto-fix command and is deliberately not part of CI.
 
 ## Not yet covered
 
 The following checks are required by the project roadmap but are not yet part of `make ci`:
 
-- non-Node binding builds and their package-content checks (Phase 7).
+- Go binding build and package-content checks (Phase 7).
+- representative Rust parse, query, recovery, and incremental-equivalence tests; the existing gate validates structure and runs the shallow load/doc tests (Phase 7).
 
 Performance budgets and reports are committed or published observations, not gates: `make ci` validates their structure, while `make performance-report` reports comparability and envelope status without failing the build.

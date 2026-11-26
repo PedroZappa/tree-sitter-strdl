@@ -8,6 +8,7 @@ not receive more than one highlight capture.
 
 from __future__ import annotations
 
+import os
 import re
 import subprocess
 import sys
@@ -24,6 +25,13 @@ CAPTURE_RE = re.compile(
 )
 
 
+def grammar_args() -> list[str]:
+    lib_path = os.environ.get("TREE_SITTER_LIB_PATH")
+    if lib_path:
+        return ["--lib-path", lib_path, "--lang-name", "strudel"]
+    return ["--grammar-path", "."]
+
+
 def main(argv: list[str]) -> int:
     if len(argv) < 3:
         print(
@@ -36,7 +44,7 @@ def main(argv: list[str]) -> int:
     fixture_names = {Path(fixture).name for fixture in fixtures}
 
     result = subprocess.run(
-        [tree_sitter, "query", "--grammar-path", ".", query, *fixtures],
+        [tree_sitter, "query", *grammar_args(), query, *fixtures],
         capture_output=True,
         text=True,
         check=False,

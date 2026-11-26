@@ -2,8 +2,8 @@
   "name": "tree-sitter-strudel",
   "type": "commonjs",
   "version": "1.5.0",
-  "description": "Parser for Strudel, a Tidal Cycles base live coding tool",
-  "repository": "https://github.com/pedrozappa/tree-sitter-strdl",
+  "description": "Parser for Strudel, a Tidal Cycles based live coding tool",
+  "repository": "https://github.com/PedroZappa/tree-sitter-strdl",
   "license": "AGPL-3.0-only",
   "author": {
     "name": "Zedro",

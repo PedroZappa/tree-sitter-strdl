@@ -11,7 +11,7 @@ The audit covers structural validity, scope coverage, definition patterns, and r
 
    ```sh
    node_modules/.bin/tree-sitter query queries/locals.scm \
-     test.strdl test-local.strdl test/query/determinism.strdl
+     test/fixtures/test.strdl test/fixtures/test-local.strdl test/query/determinism.strdl
    make test-query
    ```
 
@@ -38,7 +38,7 @@ All referenced node types and fields exist in the current CST. The query compile
 
 ## Fixture execution evidence
 
-Across `test.strdl`, `test-local.strdl`, and `test/query/determinism.strdl`, the query produced:
+Across `test/fixtures/test.strdl`, `test/fixtures/test-local.strdl`, and `test/query/determinism.strdl`, the query produced:
 
 | Capture                      | Matches |
 | ---------------------------- | ------: |
@@ -96,7 +96,7 @@ The following object-key roadmap item removed `@local.definition.property` from 
 ## Verification log
 
 - Initial audit enumerated all 12 top-level `locals.scm` patterns and checked their node types and fields against `src/node-types.json`; after removing the object-key definition rule, the query has 11 patterns.
-- `node_modules/.bin/tree-sitter query queries/locals.scm test.strdl test-local.strdl test/query/determinism.strdl` — compiled and executed successfully.
+- `node_modules/.bin/tree-sitter query queries/locals.scm test/fixtures/test.strdl test/fixtures/test-local.strdl test/query/determinism.strdl` — compiled and executed successfully.
 - `make test-query` — passed.
 - `node_modules/.bin/tree-sitter parse test/query/determinism.strdl` — no `ERROR` or `MISSING` nodes.
 - Initial capture output inspection — confirmed call identifiers are reference-only and object keys receive both definition and reference captures.

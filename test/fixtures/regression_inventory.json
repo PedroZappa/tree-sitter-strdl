@@ -35,17 +35,17 @@
       "regressions": [
         {
           "kind": "path",
-          "path": "test.strdl"
+          "path": "test/fixtures/test.strdl"
         },
         {
           "kind": "contains",
-          "path": "test.strdl",
+          "path": "test/fixtures/test.strdl",
           "text": "setCps("
         },
         {
           "kind": "contains",
           "path": "Makefile",
-          "text": "FIXTURES := test.strdl test-local.strdl"
+          "text": "FIXTURES := test/fixtures/test.strdl test/fixtures/test-local.strdl"
         }
       ]
     },

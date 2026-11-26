@@ -10,12 +10,12 @@ The check is about tree equivalence only. It does not judge whether error recove
 
 ## Inputs
 
-| File                                                                                      | Role                                                         |
-| ----------------------------------------------------------------------------------------- | ------------------------------------------------------------ |
-| [`test/fixtures/incremental_sequences.json`](../test/fixtures/incremental_sequences.json) | Authoritative catalog of sequences and edits.                |
-| [`test.strdl`](../test.strdl), [`test-local.strdl`](../test-local.strdl)                  | The source fixtures edited by the sequences.                 |
-| [`scripts/test_incremental.py`](../scripts/test_incremental.py)                           | Harness that replays edits and compares trees.               |
-| [`Makefile`](../Makefile)                                                                 | `test-incremental` target and `INCREMENTAL_FILTER` variable. |
+| File                                                                                                                             | Role                                                         |
+| -------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------ |
+| [`test/fixtures/incremental_sequences.json`](../test/fixtures/incremental_sequences.json)                                        | Authoritative catalog of sequences and edits.                |
+| [`test/fixtures/test.strdl`](../test/fixtures/test.strdl), [`test/fixtures/test-local.strdl`](../test/fixtures/test-local.strdl) | The source fixtures edited by the sequences.                 |
+| [`scripts/test_incremental.py`](../scripts/test_incremental.py)                                                                  | Harness that replays edits and compares trees.               |
+| [`Makefile`](../Makefile)                                                                                                        | `test-incremental` target and `INCREMENTAL_FILTER` variable. |
 
 The sequence catalog and fixtures are the sources of truth for what is tested. The harness is the source of truth for how the comparison is performed. See [incremental editing sequences](incremental-editing-sequences.md) for the catalog itself.
 

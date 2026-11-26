@@ -12,7 +12,7 @@ The audit used three independent checks:
 2. Compiled and executed the query against the committed fixtures:
 
    ```sh
-   node_modules/.bin/tree-sitter query queries/highlights.scm test.strdl test-local.strdl
+   node_modules/.bin/tree-sitter query queries/highlights.scm test/fixtures/test.strdl test/fixtures/test-local.strdl
    make test-query
    ```
 
@@ -62,7 +62,7 @@ The `.` and `?` punctuation patterns do not match `?.` because it is a single an
 
 ## Fixture execution evidence
 
-Executing the full highlight query against `test.strdl` and `test-local.strdl` produced these capture counts:
+Executing the full highlight query against `test/fixtures/test.strdl` and `test/fixtures/test-local.strdl` produced these capture counts:
 
 | Capture                 | Matches |
 | ----------------------- | ------: |
@@ -99,7 +99,7 @@ Several structurally valid patterns produced no captures on these fixtures: `fun
 
 5. **Some syntax tokens lack punctuation coverage.** Optional chaining and template-substitution delimiters are not currently captured. This is a syntax-highlighting completeness gap, not a query-compilation error.
 
-6. **Fixture coverage is uneven.** Several valid patterns are unexercised by `test.strdl` and `test-local.strdl`. Query execution tests should use additional representative fixtures.
+6. **Fixture coverage is uneven.** Several valid patterns are unexercised by `test/fixtures/test.strdl` and `test/fixtures/test-local.strdl`. Query execution tests should use additional representative fixtures.
 
 ## Decision
 
@@ -135,7 +135,7 @@ A source range must receive at most one capture. Nested captures on different no
 
 ### Before and after evidence
 
-Before the specificity changes, executing `highlights.scm` against `test.strdl` and `test-local.strdl` produced 1,099 capture events over 917 ranges, with 164 ranges receiving multiple captures. The dominant overlap was `property` plus `variable` (122 ranges); API-name aliases also overlapped `function.call` and `variable`.
+Before the specificity changes, executing `highlights.scm` against `test/fixtures/test.strdl` and `test/fixtures/test-local.strdl` produced 1,099 capture events over 917 ranges, with 164 ranges receiving multiple captures. The dominant overlap was `property` plus `variable` (122 ranges); API-name aliases also overlapped `function.call` and `variable`.
 
 After the changes, the two original fixtures produce 901 captures across 901 ranges, with zero duplicate ranges. Final capture counts for those two fixtures are:
 
@@ -176,12 +176,12 @@ The Python binding exposes `HIGHLIGHTS_QUERY` and `LOCALS_QUERY` through `__geta
 
 ## Verification log
 
-- `node_modules/.bin/tree-sitter query queries/highlights.scm test.strdl test-local.strdl` — compiled and executed successfully; all initial patterns reached output.
+- `node_modules/.bin/tree-sitter query queries/highlights.scm test/fixtures/test.strdl test/fixtures/test-local.strdl` — compiled and executed successfully; all initial patterns reached output.
 - Negative controls for unknown node type and unknown field name — both failed as expected, confirming that successful compilation validates names.
 - `make test-query` — passed after the specificity changes, including the new duplicate-capture check: 901 captures across 901 ranges for the two original fixtures.
 - Duplicate-capture negative control — rejected as expected with `exit=1`.
 - Template-substitution probe — exposed a `variable`/`expression` overlap, prompting the explicit template expression list; `tree-sitter parse test/query/determinism.strdl` now reports no `ERROR` or `MISSING` nodes.
-- Final `make test-query` — 1,096 captures across 1,096 ranges with zero duplicate captures across `test.strdl`, `test-local.strdl`, and `test/query/determinism.strdl`.
+- Final `make test-query` — 1,096 captures across 1,096 ranges with zero duplicate captures across `test/fixtures/test.strdl`, `test/fixtures/test-local.strdl`, and `test/query/determinism.strdl`.
 - `make test-query-compile` — automated the earlier negative controls: both official queries compile, and invalid node type and invalid field name queries are rejected for the expected reasons.
 - `make test-query-execution` — asserted expected highlight captures on nine grammar-derived roles: call identifiers, member-expression callees, declaration names, arrow parameters, identifier object keys, labels, substitution identifiers, strings, and numbers. A wrong expected capture on call identifiers failed with `exit=1`.
 - `make test-query-registration` — verified both official queries in `tree-sitter.json`, `package.json`, all query-carrying packaging rules, and the Python/Rust binding exports; absent injection and tag queries are not registered or exported.

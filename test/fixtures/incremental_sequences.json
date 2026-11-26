@@ -1,8 +1,8 @@
 {
   "version": 1,
   "fixtures": {
-    "representative": "test.strdl",
-    "compact": "test-local.strdl"
+    "representative": "test/fixtures/test.strdl",
+    "compact": "test/fixtures/test-local.strdl"
   },
   "editFormat": {
     "op": "replace",

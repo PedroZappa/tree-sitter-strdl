@@ -15,6 +15,21 @@ Requirements:
 - Tree-sitter runtime 0.25 or newer (ABI 15 parser)
 - Tree-sitter CLI 0.27.2 when regenerating artifacts
 
+Package contents, native-addon installation behavior, and binding-specific distribution expectations are documented in the [compatibility policy](docs/compatibility.md#package-compatibility-expectations).
+
+## Bindings
+
+| Binding | Status                        | Distribution                       |
+| ------- | ----------------------------- | ---------------------------------- |
+| Node.js | Primary                       | npm package                        |
+| Python  | Retained, published and gated | PyPI                               |
+| Rust    | Retained, published and gated | crates.io                          |
+| C       | Retained, gated source        | Repository, Make/CMake, pkg-config |
+| Swift   | Retained, gated source        | Repository, SwiftPM                |
+| Go      | Retained, source-only         | Repository source                  |
+
+No binding is deprecated. Support tiers and commitments are defined in the [compatibility policy](docs/compatibility.md#binding-support-policy); evidence and rationale are in the [binding audit](docs/binding-audit.md#aggregate-non-node-binding-decision--decided-2026-11-26).
+
 ## Usage
 
 ```js
@@ -83,11 +98,11 @@ Current coverage includes:
 - named imports, `export const`, and `export default`
 - `try`/`catch`, blocks, `return`, and line/block comments
 
-Not supported: mini-notation semantics, object shorthand, object destructuring declarations, spread arguments, default imports, logical operators, nullish coalescing, and general ECMAScript syntax. See the [coverage matrix](docs/syntax-coverage-matrix.md) for the exact status and evidence for each construct.
+Not supported: mini-notation semantics, object shorthand, object destructuring declarations, spread arguments, default imports, logical operators, nullish coalescing, and general ECMAScript syntax. See the [coverage matrix](docs/syntax-coverage-matrix.md) for the exact status and evidence for each construct, and the [compatibility policy](docs/compatibility.md#syntax-coverage-compatibility) for what each status promises across releases.
 
 ## Syntax tree
 
-The public CST API is documented in [grammar architecture](docs/grammar-architecture.md). The Phase 3 structured refactor changed node and field names; consumers upgrading from the Phase 2 baseline must update their queries and tree-walking code.
+The public CST API is documented in [grammar architecture](docs/grammar-architecture.md), and its stability rules are defined in the [breaking-change policy](docs/compatibility.md#breaking-change-policy-for-cst-and-queries). The Phase 3 structured refactor changed node and field names; consumers upgrading from the Phase 2 baseline must update their queries and tree-walking code.
 
 Generated parser artifacts and `src/node-types.json` are committed. Do not hand-edit generated files.
 
@@ -98,7 +113,7 @@ npm ci
 make ci
 ```
 
-`make ci` checks generated artifacts and benchmark fixture reproducibility, runs corpus, query, regression-coverage, Node.js binding, and npm package integrity checks, and builds the C libraries. GitHub Actions runs the same gate on pull requests and pushes to `main`; see [CI](docs/ci.md).
+`make ci` expects a Swift toolchain on `PATH` (GitHub Actions selects Swift 6.2.1 on Ubuntu 24.04). It checks generated artifacts and benchmark fixture reproducibility, runs corpus, query, regression-coverage, Node.js binding, clean Node.js addon build, generated parser runtime, C binding symbol, Python binding, Rust binding structure and cargo tests, Swift binding structure and build/tests, version consistency, and npm package integrity checks, and builds the C libraries. GitHub Actions runs the same gate on pull requests and pushes to `main`; see [CI](docs/ci.md).
 
 To regenerate artifacts or run a single layer directly:
 

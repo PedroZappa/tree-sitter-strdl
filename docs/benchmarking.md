@@ -47,8 +47,8 @@ git rev-parse --short HEAD
 
 | ID                     | Role                               | Path                                                                              | Parameters           | Expected parse         |
 | ---------------------- | ---------------------------------- | --------------------------------------------------------------------------------- | -------------------- | ---------------------- |
-| `representative-main`  | Representative Strudel composition | [`test.strdl`](../test.strdl)                                                     | committed source     | clean                  |
-| `representative-local` | Representative Strudel composition | [`test-local.strdl`](../test-local.strdl)                                         | committed source     | clean                  |
+| `representative-main`  | Representative Strudel composition | [`test/fixtures/test.strdl`](../test/fixtures/test.strdl)                         | committed source     | clean                  |
+| `representative-local` | Representative Strudel composition | [`test/fixtures/test-local.strdl`](../test/fixtures/test-local.strdl)             | committed source     | clean                  |
 | `synthetic-large`      | Synthetic large document           | [`synthetic-large.strdl`](../benchmarks/fixtures/generated/synthetic-large.strdl) | 2,000 declarations   | clean                  |
 | `deeply-nested`        | Deeply nested expression           | [`deeply-nested.strdl`](../benchmarks/fixtures/generated/deeply-nested.strdl)     | call depth 512       | clean                  |
 | `pathological`         | Pathological stress input          | [`pathological.strdl`](../benchmarks/fixtures/generated/pathological.strdl)       | 300 malformed blocks | `ERROR` nodes expected |
