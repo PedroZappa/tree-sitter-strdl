@@ -32,7 +32,8 @@ make check-benchmark-fixtures  # verify sizes, hashes, and exact regeneration
 - A temporary manifest negative control that changed the synthetic declaration count to 1,999 failed with exit 1 because the committed fixture no longer regenerated from the manifest parameters.
 - The deeply nested fixture is 1,639 bytes and contains a 512-level `s(` call chain around `note("c3")`; it parses cleanly with `tree-sitter parse --quiet`.
 - A temporary manifest negative control that changed the nested depth to 511 failed with exit 1 because the committed fixture no longer regenerated from the manifest parameters.
-- The pathological fixture exits nonzero and produces 498 `ERROR` nodes, as intended for stress testing.
+- The pathological fixture is 7,447 bytes, contains exactly 300 malformed blocks, exits nonzero, and produces 498 `ERROR` nodes with no `MISSING` nodes, as intended for stress testing.
+- A temporary manifest negative control that changed the pathological block count to 299 failed with exit 1 because the committed fixture no longer regenerated from the manifest parameters.
 - A negative control appended a newline to `deeply-nested.strdl`; the checker failed with exit 1 on size, SHA-256, and regeneration mismatch, then passed after restoration.
 - The committed set contains five fixtures and 107,480 bytes in total.
 
