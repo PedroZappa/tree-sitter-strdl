@@ -45,7 +45,11 @@ All `make ci` checks above are correctness gates: a failure produces a nonzero e
 
 ## Release generation gate
 
-Tag pushes are handled by the [publish workflow](../.github/workflows/publish.yml). Its `verify-generated` job checks out the exact tagged commit, installs locked dependencies with `npm ci`, and runs `make check-generated` with the pinned Tree-sitter CLI. The check regenerates the committed parser artifacts and requires them to match `HEAD`. The GitHub release, npm, crates, and PyPI jobs all declare `needs: verify-generated`, so no publication job starts when `grammar.js` and the committed generated artifacts are out of sync. This gate complements the same check on pull requests and pushes to `main`. The downstream reusable workflows still run with `generate: true`; the project preflight validates the tagged source before those jobs regenerate their build copies.
+Tag pushes are handled by the [publish workflow](../.github/workflows/publish.yml). Its `verify-generated` job checks out the exact tagged commit, installs locked dependencies with `npm ci`, and runs `make check-generated` with the pinned Tree-sitter CLI. The check regenerates the committed parser artifacts and requires them to match `HEAD`. The GitHub release, npm, crates, and PyPI jobs all wait for this gate and the [package gate](#release-package-gate), so no publication job starts when `grammar.js` and the committed generated artifacts are out of sync. This gate complements the same check on pull requests and pushes to `main`. The downstream reusable workflows still run with `generate: true`; the project preflight validates the tagged source before those jobs regenerate their build copies.
+
+## Release package gate
+
+After the generated-artifact preflight, tag-triggered publishing runs a `verify-package` job against the same checkout. It installs locked dependencies and runs `make test-package` plus `make test-tarball-install`. The first check validates npm's dry-run file list, explicit allowlist categories, forbidden patterns, packed-size agreement, and metadata against `tree-sitter.json`; the second packs real sources, installs the tarball offline in a clean consumer, and parses a representative composition with the pinned runtime. All four publication jobs wait for both preflight jobs, so a bad package surface or a failed installed-package parse prevents publication.
 
 ## AGENTS.md validation coverage
 
