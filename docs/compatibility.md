@@ -19,6 +19,8 @@ This is a compatibility-breaking change for consumers on pre-0.25 runtimes.
 | Generated artifacts | Committed under `src/`                     | Never hand-edit generated files.                               |
 | Prettier            | `3.10.1`, pinned in `devDependencies`      | Formatting gate for non-generated JS/JSON/YAML/Markdown files. |
 | Ruff                | `0.17.6`, pinned in `requirements-dev.txt` | Formatting and lint gate for Python sources.                   |
+| setuptools          | `84.2.1`, pinned in `requirements-dev.txt` | Build backend for the Python binding check.                    |
+| wheel               | `0.48.0`, pinned in `requirements-dev.txt` | bdist wheel support required by `setup.py`.                    |
 
 Regenerate with:
 

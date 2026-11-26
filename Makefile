@@ -35,6 +35,8 @@ PRETTIER_LOCAL := node_modules/.bin/prettier
 PRETTIER ?= $(shell if [ -x '$(PRETTIER_LOCAL)' ]; then printf '%s' '$(PRETTIER_LOCAL)'; else printf 'prettier'; fi)
 RUFF_LOCAL := .venv/bin/ruff
 RUFF ?= $(shell if [ -x '$(RUFF_LOCAL)' ]; then printf '%s' '$(RUFF_LOCAL)'; else printf 'ruff'; fi)
+PYTHON_LOCAL := .venv/bin/python
+PYTHON ?= $(shell if [ -x '$(PYTHON_LOCAL)' ]; then printf '%s' '$(PYTHON_LOCAL)'; else printf 'python3'; fi)
 NPM ?= npm
 NODE ?= node
 HOST_OS := $(shell uname -s)
@@ -186,42 +188,42 @@ test-recovery:	## Run error-recovery corpus cases
 
 test-incremental:	## Compare incremental and fresh parses (INCREMENTAL_FILTER=id/category)
 	@echo "$(YEL)Running incremental equivalence tests...$(D)"
-	@python3 scripts/test_incremental.py $(INCREMENTAL_FILTER)
+	@$(PYTHON) scripts/test_incremental.py $(INCREMENTAL_FILTER)
 	@echo "$(YEL)* $(_SUCCESS) Incremental equivalence tests completed$(D)"
 
 test-query-compile: lib$(LANGUAGE_NAME).$(SOEXT)	## Compile official queries and verify invalid queries are rejected
 	@echo "$(YEL)Running query compilation checks...$(D)"
-	@python3 scripts/check_query_compilation.py $(TS) $(QUERIES)
+	@$(PYTHON) scripts/check_query_compilation.py $(TS) $(QUERIES)
 	@echo "$(YEL)* $(_SUCCESS) Query compilation checks completed$(D)"
 
 test-query-execution: lib$(LANGUAGE_NAME).$(SOEXT)	## Assert query captures on representative compositions
 	@echo "$(YEL)Running query execution tests...$(D)"
-	@python3 scripts/check_query_captures.py $(TS) $(QUERY_DIR)/highlights.scm test/query/call_identifiers.scm function.call "call identifiers" $(QUERY_EXECUTION_FIXTURES)
-	@python3 scripts/check_query_captures.py $(TS) $(QUERY_DIR)/highlights.scm test/query/call_methods.scm function.method "method callees" $(QUERY_EXECUTION_FIXTURES)
-	@python3 scripts/check_query_captures.py $(TS) $(QUERY_DIR)/highlights.scm test/query/declaration_names.scm variable "declaration names" $(QUERY_EXECUTION_FIXTURES)
-	@python3 scripts/check_query_captures.py $(TS) $(QUERY_DIR)/highlights.scm test/query/arrow_parameters.scm variable.parameter "arrow parameters" $(QUERY_EXECUTION_FIXTURES)
-	@python3 scripts/check_query_captures.py $(TS) $(QUERY_DIR)/highlights.scm test/query/identifier_pair_keys.scm property "identifier object keys" $(QUERY_EXECUTION_FIXTURES)
-	@python3 scripts/check_query_captures.py $(TS) $(QUERY_DIR)/highlights.scm test/query/label_names.scm label "labels" $(QUERY_EXECUTION_FIXTURES)
-	@python3 scripts/check_query_captures.py $(TS) $(QUERY_DIR)/highlights.scm test/query/template_substitution_identifiers.scm variable "substitution identifiers" $(QUERY_EXECUTION_FIXTURES)
-	@python3 scripts/check_query_captures.py $(TS) $(QUERY_DIR)/highlights.scm test/query/string_literals.scm string "strings" $(QUERY_EXECUTION_FIXTURES)
-	@python3 scripts/check_query_captures.py $(TS) $(QUERY_DIR)/highlights.scm test/query/number_literals.scm number "numbers" $(QUERY_EXECUTION_FIXTURES)
-	@python3 scripts/check_query_captures.py $(TS) $(QUERY_DIR)/locals.scm test/query/declaration_names.scm local.definition.var "variable declarations" $(QUERY_EXECUTION_FIXTURES)
-	@python3 scripts/check_query_captures.py $(TS) $(QUERY_DIR)/locals.scm test/query/arrow_parameters.scm local.definition.parameter "arrow parameters" $(QUERY_EXECUTION_FIXTURES)
-	@python3 scripts/check_query_captures.py $(TS) $(QUERY_DIR)/locals.scm test/query/call_identifiers.scm local.reference "call identifiers" $(QUERY_EXECUTION_FIXTURES)
-	@python3 scripts/check_query_captures.py $(TS) $(QUERY_DIR)/highlights.scm test/query/keywords.scm keyword "keyword tokens" $(QUERY_EXECUTION_FIXTURES)
-	@python3 scripts/check_query_captures.py $(TS) $(QUERY_DIR)/highlights.scm test/query/punctuation_delimiters.scm punctuation.delimiter "punctuation delimiters" $(QUERY_EXECUTION_FIXTURES)
-	@python3 scripts/check_query_captures.py $(TS) $(QUERY_DIR)/highlights.scm test/query/punctuation_brackets.scm punctuation.bracket "punctuation brackets" $(QUERY_EXECUTION_FIXTURES)
-	@python3 scripts/check_query_captures.py $(TS) $(QUERY_DIR)/highlights.scm test/query/operators.scm operator "operators" $(QUERY_EXECUTION_FIXTURES)
-	@python3 scripts/check_query_captures.py $(TS) $(QUERY_DIR)/highlights.scm test/query/comments.scm comment "comments" $(QUERY_EXECUTION_FIXTURES)
-	@python3 scripts/check_query_captures.py $(TS) $(QUERY_DIR)/highlights.scm test/query/function_declaration_names.scm function.declaration "function declaration names" $(QUERY_EXECUTION_FIXTURES)
-	@python3 scripts/check_query_captures.py $(TS) $(QUERY_DIR)/highlights.scm test/query/member_properties.scm property "member properties" $(QUERY_EXECUTION_FIXTURES)
-	@python3 scripts/check_query_captures.py $(TS) $(QUERY_DIR)/highlights.scm test/query/expression_nodes.scm expression "expression nodes" $(QUERY_EXECUTION_FIXTURES)
-	@python3 scripts/check_query_captures.py $(TS) $(QUERY_DIR)/highlights.scm test/query/constructors.scm constructor "constructors" $(QUERY_EXECUTION_FIXTURES)
-	@python3 scripts/check_query_captures.py $(TS) $(QUERY_DIR)/locals.scm test/query/scopes.scm local.scope "scopes" $(QUERY_EXECUTION_FIXTURES)
-	@python3 scripts/check_query_captures.py $(TS) $(QUERY_DIR)/locals.scm test/query/function_declaration_names.scm local.definition.function "function declarations" $(QUERY_EXECUTION_FIXTURES)
-	@python3 scripts/check_query_captures.py $(TS) $(QUERY_DIR)/locals.scm test/query/assignment_definitions.scm local.definition.var "assignment definitions" $(QUERY_EXECUTION_FIXTURES)
-	@python3 scripts/check_query_captures.py $(TS) $(QUERY_DIR)/locals.scm test/query/catch_parameters.scm local.definition.parameter "catch parameters" $(QUERY_EXECUTION_FIXTURES)
-	@if python3 scripts/check_query_captures.py $(TS) $(QUERY_DIR)/highlights.scm test/query/call_identifiers.scm not.a.capture "wrong capture negative control" $(QUERY_EXECUTION_FIXTURES) >/dev/null 2>&1; then \
+	@$(PYTHON) scripts/check_query_captures.py $(TS) $(QUERY_DIR)/highlights.scm test/query/call_identifiers.scm function.call "call identifiers" $(QUERY_EXECUTION_FIXTURES)
+	@$(PYTHON) scripts/check_query_captures.py $(TS) $(QUERY_DIR)/highlights.scm test/query/call_methods.scm function.method "method callees" $(QUERY_EXECUTION_FIXTURES)
+	@$(PYTHON) scripts/check_query_captures.py $(TS) $(QUERY_DIR)/highlights.scm test/query/declaration_names.scm variable "declaration names" $(QUERY_EXECUTION_FIXTURES)
+	@$(PYTHON) scripts/check_query_captures.py $(TS) $(QUERY_DIR)/highlights.scm test/query/arrow_parameters.scm variable.parameter "arrow parameters" $(QUERY_EXECUTION_FIXTURES)
+	@$(PYTHON) scripts/check_query_captures.py $(TS) $(QUERY_DIR)/highlights.scm test/query/identifier_pair_keys.scm property "identifier object keys" $(QUERY_EXECUTION_FIXTURES)
+	@$(PYTHON) scripts/check_query_captures.py $(TS) $(QUERY_DIR)/highlights.scm test/query/label_names.scm label "labels" $(QUERY_EXECUTION_FIXTURES)
+	@$(PYTHON) scripts/check_query_captures.py $(TS) $(QUERY_DIR)/highlights.scm test/query/template_substitution_identifiers.scm variable "substitution identifiers" $(QUERY_EXECUTION_FIXTURES)
+	@$(PYTHON) scripts/check_query_captures.py $(TS) $(QUERY_DIR)/highlights.scm test/query/string_literals.scm string "strings" $(QUERY_EXECUTION_FIXTURES)
+	@$(PYTHON) scripts/check_query_captures.py $(TS) $(QUERY_DIR)/highlights.scm test/query/number_literals.scm number "numbers" $(QUERY_EXECUTION_FIXTURES)
+	@$(PYTHON) scripts/check_query_captures.py $(TS) $(QUERY_DIR)/locals.scm test/query/declaration_names.scm local.definition.var "variable declarations" $(QUERY_EXECUTION_FIXTURES)
+	@$(PYTHON) scripts/check_query_captures.py $(TS) $(QUERY_DIR)/locals.scm test/query/arrow_parameters.scm local.definition.parameter "arrow parameters" $(QUERY_EXECUTION_FIXTURES)
+	@$(PYTHON) scripts/check_query_captures.py $(TS) $(QUERY_DIR)/locals.scm test/query/call_identifiers.scm local.reference "call identifiers" $(QUERY_EXECUTION_FIXTURES)
+	@$(PYTHON) scripts/check_query_captures.py $(TS) $(QUERY_DIR)/highlights.scm test/query/keywords.scm keyword "keyword tokens" $(QUERY_EXECUTION_FIXTURES)
+	@$(PYTHON) scripts/check_query_captures.py $(TS) $(QUERY_DIR)/highlights.scm test/query/punctuation_delimiters.scm punctuation.delimiter "punctuation delimiters" $(QUERY_EXECUTION_FIXTURES)
+	@$(PYTHON) scripts/check_query_captures.py $(TS) $(QUERY_DIR)/highlights.scm test/query/punctuation_brackets.scm punctuation.bracket "punctuation brackets" $(QUERY_EXECUTION_FIXTURES)
+	@$(PYTHON) scripts/check_query_captures.py $(TS) $(QUERY_DIR)/highlights.scm test/query/operators.scm operator "operators" $(QUERY_EXECUTION_FIXTURES)
+	@$(PYTHON) scripts/check_query_captures.py $(TS) $(QUERY_DIR)/highlights.scm test/query/comments.scm comment "comments" $(QUERY_EXECUTION_FIXTURES)
+	@$(PYTHON) scripts/check_query_captures.py $(TS) $(QUERY_DIR)/highlights.scm test/query/function_declaration_names.scm function.declaration "function declaration names" $(QUERY_EXECUTION_FIXTURES)
+	@$(PYTHON) scripts/check_query_captures.py $(TS) $(QUERY_DIR)/highlights.scm test/query/member_properties.scm property "member properties" $(QUERY_EXECUTION_FIXTURES)
+	@$(PYTHON) scripts/check_query_captures.py $(TS) $(QUERY_DIR)/highlights.scm test/query/expression_nodes.scm expression "expression nodes" $(QUERY_EXECUTION_FIXTURES)
+	@$(PYTHON) scripts/check_query_captures.py $(TS) $(QUERY_DIR)/highlights.scm test/query/constructors.scm constructor "constructors" $(QUERY_EXECUTION_FIXTURES)
+	@$(PYTHON) scripts/check_query_captures.py $(TS) $(QUERY_DIR)/locals.scm test/query/scopes.scm local.scope "scopes" $(QUERY_EXECUTION_FIXTURES)
+	@$(PYTHON) scripts/check_query_captures.py $(TS) $(QUERY_DIR)/locals.scm test/query/function_declaration_names.scm local.definition.function "function declarations" $(QUERY_EXECUTION_FIXTURES)
+	@$(PYTHON) scripts/check_query_captures.py $(TS) $(QUERY_DIR)/locals.scm test/query/assignment_definitions.scm local.definition.var "assignment definitions" $(QUERY_EXECUTION_FIXTURES)
+	@$(PYTHON) scripts/check_query_captures.py $(TS) $(QUERY_DIR)/locals.scm test/query/catch_parameters.scm local.definition.parameter "catch parameters" $(QUERY_EXECUTION_FIXTURES)
+	@if $(PYTHON) scripts/check_query_captures.py $(TS) $(QUERY_DIR)/highlights.scm test/query/call_identifiers.scm not.a.capture "wrong capture negative control" $(QUERY_EXECUTION_FIXTURES) >/dev/null 2>&1; then \
 		echo "query execution check failed: wrong-capture negative control was accepted"; exit 1; \
 	else \
 		echo "rejected: wrong-capture negative control"; \
@@ -230,7 +232,7 @@ test-query-execution: lib$(LANGUAGE_NAME).$(SOEXT)	## Assert query captures on r
 
 test-query-registration:	## Verify official queries are registered, packaged, and exported
 	@echo "$(YEL)Running query registration checks...$(D)"
-	@python3 scripts/check_query_registration.py
+	@$(PYTHON) scripts/check_query_registration.py
 	@echo "$(YEL)* $(_SUCCESS) Query registration checks completed$(D)"
 
 test-query: test-query-compile test-query-execution test-query-registration	## Compile, run, and check official queries against the fixtures
@@ -238,9 +240,9 @@ test-query: test-query-compile test-query-execution test-query-registration	## C
 	@for query in $(QUERIES); do \
 		$(TS) query --quiet --lib-path "$(QUERY_LIB)" --lang-name strudel "$$query" $(FIXTURES) || exit 1; \
 	done
-	@python3 scripts/check_query_determinism.py $(TS) $(QUERY_DIR)/highlights.scm $(FIXTURES) $(QUERY_DETERMINISM_FIXTURES)
-	@python3 scripts/check_locals_definitions_absent.py $(TS) $(QUERY_DIR)/locals.scm test/query/call_identifiers.scm "call identifier" $(FIXTURES) $(QUERY_DETERMINISM_FIXTURES)
-	@python3 scripts/check_locals_definitions_absent.py $(TS) $(QUERY_DIR)/locals.scm test/query/object_keys.scm "object key" $(FIXTURES) $(QUERY_DETERMINISM_FIXTURES)
+	@$(PYTHON) scripts/check_query_determinism.py $(TS) $(QUERY_DIR)/highlights.scm $(FIXTURES) $(QUERY_DETERMINISM_FIXTURES)
+	@$(PYTHON) scripts/check_locals_definitions_absent.py $(TS) $(QUERY_DIR)/locals.scm test/query/call_identifiers.scm "call identifier" $(FIXTURES) $(QUERY_DETERMINISM_FIXTURES)
+	@$(PYTHON) scripts/check_locals_definitions_absent.py $(TS) $(QUERY_DIR)/locals.scm test/query/object_keys.scm "object key" $(FIXTURES) $(QUERY_DETERMINISM_FIXTURES)
 	@echo "$(YEL)* $(_SUCCESS) Queries compiled, executed, and deterministic$(D)"
 
 test-node:	## Run Node.js binding tests (requires a matching native ABI)
@@ -250,37 +252,37 @@ test-node:	## Run Node.js binding tests (requires a matching native ABI)
 
 test-node-clean-build:	## Build and test the Node.js binding from clean tracked sources
 	@echo "$(YEL)Building Node.js binding from clean tracked sources...$(D)"
-	@python3 scripts/check_node_clean_build.py $(NPM)
+	@$(PYTHON) scripts/check_node_clean_build.py $(NPM)
 	@echo "$(YEL)* $(_SUCCESS) Node.js binding clean build completed$(D)"
 
 test-generated-runtime:	## Verify committed generated parser files work without regeneration
 	@echo "$(YEL)Verifying generated parser runtime...$(D)"
-	@python3 scripts/check_generated_runtime.py $(NPM) $(NODE)
+	@$(PYTHON) scripts/check_generated_runtime.py $(NPM) $(NODE)
 	@echo "$(YEL)* $(_SUCCESS) Generated parser runtime verified$(D)"
 
 test-c:	## Verify the C binding header links to the generated parser
 	@echo "$(YEL)Verifying C binding...$(D)"
-	@python3 scripts/check_c_binding.py $(CC)
+	@$(PYTHON) scripts/check_c_binding.py $(CC)
 	@echo "$(YEL)* $(_SUCCESS) C binding verified$(D)"
 
 test-python:	## Build and verify the Python binding extension
 	@echo "$(YEL)Verifying Python binding...$(D)"
-	@python3 scripts/check_python_binding.py
+	@$(PYTHON) scripts/check_python_binding.py
 	@echo "$(YEL)* $(_SUCCESS) Python binding verified$(D)"
 
 test-rust:	## Verify Rust binding metadata, packaging, public API, and cargo tests
 	@echo "$(YEL)Verifying Rust binding...$(D)"
-	@python3 scripts/check_rust_binding.py
+	@$(PYTHON) scripts/check_rust_binding.py
 	@echo "$(YEL)* $(_SUCCESS) Rust binding verified$(D)"
 
 test-swift:	## Verify Swift binding metadata, packaging, public API, and swift build/test
 	@echo "$(YEL)Verifying Swift binding...$(D)"
-	@python3 scripts/check_swift_binding.py
+	@$(PYTHON) scripts/check_swift_binding.py
 	@echo "$(YEL)* $(_SUCCESS) Swift binding verified$(D)"
 
 test-package:	## Verify npm package contents and metadata
 	@echo "$(YEL)Checking npm package integrity...$(D)"
-	@python3 scripts/check_package_integrity.py $(NPM)
+	@$(PYTHON) scripts/check_package_integrity.py $(NPM)
 	@echo "$(YEL)* $(_SUCCESS) npm package integrity check completed$(D)"
 
 test-tarball-install:	## Install the npm tarball and parse a fixture in a clean consumer
@@ -290,7 +292,7 @@ test-tarball-install:	## Install the npm tarball and parse a fixture in a clean 
 
 test-regressions:	## Verify recorded bugs have permanent regression artifacts
 	@echo "$(YEL)Checking regression coverage...$(D)"
-	@python3 scripts/check_regression_coverage.py $(REGRESSION_INVENTORY)
+	@$(PYTHON) scripts/check_regression_coverage.py $(REGRESSION_INVENTORY)
 	@echo "$(YEL)* $(_SUCCESS) Regression coverage check completed$(D)"
 
 parse:	## Parse files with the current parser (FILES=..., PARSE_FLAGS=...)
@@ -300,12 +302,12 @@ parse:	## Parse files with the current parser (FILES=..., PARSE_FLAGS=...)
 
 benchmark-fixtures:	## Regenerate synthetic benchmark fixtures from the manifest
 	@echo "$(YEL)Generating benchmark fixtures...$(D)"
-	@python3 scripts/generate_benchmark_fixtures.py
+	@$(PYTHON) scripts/generate_benchmark_fixtures.py
 	@echo "$(YEL)* $(_SUCCESS) Benchmark fixtures generated$(D)"
 
 check-benchmark-fixtures:	## Verify benchmark fixtures match the manifest and regenerate exactly
 	@echo "$(YEL)Checking benchmark fixtures...$(D)"
-	@python3 scripts/generate_benchmark_fixtures.py --check $(BENCHMARK_MANIFEST)
+	@$(PYTHON) scripts/generate_benchmark_fixtures.py --check $(BENCHMARK_MANIFEST)
 	@echo "$(YEL)* $(_SUCCESS) Benchmark fixtures are reproducible$(D)"
 
 bench-fresh:	## Measure fresh parsing latency (ITERATIONS, WARMUP, FIXTURE, OUTPUT overrides)
@@ -395,7 +397,7 @@ check-generated:	## Verify committed parser artifacts match grammar.js
 
 check-version:	## Verify version numbers are aligned across package metadata
 	@echo "$(YEL)Checking version consistency...$(D)"
-	@python3 scripts/check_version_consistency.py
+	@$(PYTHON) scripts/check_version_consistency.py
 	@echo "$(YEL)* $(_SUCCESS) Package versions are aligned$(D)"
 
 verify: check-generated check-format check-static test test-incremental test-query test-regressions check-benchmark-fixtures check-benchmark-baseline reproduce-benchmark-baseline check-benchmark-budgets	## Run the core CI gate (artifacts, formatting, static checks, corpus, incremental equivalence, queries, regressions, fixtures, baseline reproduction, budgets)

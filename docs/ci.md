@@ -39,7 +39,7 @@ Each matrix job installs Swift.org's documented Ubuntu 24.04 system dependencies
 21. `make test-tarball-install` — creates an npm tarball from tracked sources, installs it offline into a clean consumer, verifies the packed file list and installed generated artifacts, requires a freshly compiled native addon, installs the pinned `tree-sitter` runtime separately, and parses a representative tracked composition through the installed package without parser regeneration.
 22. `make build` — builds the static and shared C libraries and the pkg-config metadata.
 
-The pinned versions used by CI come from `package-lock.json` (Tree-sitter CLI `0.27.2`, tree-sitter Node runtime `0.25.1`, Prettier `3.10.1`), `requirements-dev.txt` (Ruff `0.17.6`), and the pinned `setup-swift` action (Swift `6.2.1`).
+The pinned versions used by CI come from `package-lock.json` (Tree-sitter CLI `0.27.2`, tree-sitter Node runtime `0.25.1`, Prettier `3.10.1`), `requirements-dev.txt` (Ruff `0.17.6`, setuptools `84.2.1`, wheel `0.48.0`), and the pinned `setup-swift` action (Swift `6.2.1`).
 
 All `make ci` checks above are correctness gates: a failure produces a nonzero exit status. These gates cover every required Phase 6 test layer, the clean Node.js binding build, the generated parser runtime check, the C binding symbol check, the Python binding capsule check, the Rust binding surface and `cargo test --locked` checks, the Swift binding surface and `swift build`/`swift test` checks, cross-file version consistency, offline tarball installation into a clean consumer, and parsing a representative composition through that installation; remaining Phase 7 work, especially Go binding validation, is listed in [Not yet covered](#not-yet-covered). Latency and memory observations are outside CI; comparison reports explicitly mark timing deltas and comparability mismatches as [non-gating performance warnings](benchmarking.md#correctness-failures-versus-performance-warnings). A correctness failure is never reported as a performance warning.
 
@@ -58,7 +58,7 @@ python3 -m venv .venv
 make ci
 ```
 
-Alternatively, `make install-dev` performs both dependency installs. `make ci` expects dependencies to be installed first: the Node binding test loads the native addon built by `npm ci`, the incremental equivalence harness uses the pinned Tree-sitter CLI installed there, formatting/static checks use the pinned Prettier and Ruff binaries, and `make test-swift` needs a Swift toolchain and its system libraries on `PATH` (CI selects Swift 6.2.1 on Ubuntu 24.04). `make format` is the local auto-fix command and is deliberately not part of CI.
+Alternatively, `make install-dev` performs both dependency installs. `make ci` expects dependencies to be installed first: the Node binding test loads the native addon built by `npm ci`, the incremental equivalence harness uses the pinned Tree-sitter CLI installed there, formatting/static checks use the pinned Prettier and Ruff binaries, and the Python checks use `.venv/bin/python` when present so `setup.py` sees the pinned setuptools and wheel build dependencies. Override `PYTHON` to use a different interpreter. `make test-swift` needs a Swift toolchain and its system libraries on `PATH` (CI selects Swift 6.2.1 on Ubuntu 24.04). `make format` is the local auto-fix command and is deliberately not part of CI.
 
 ## Not yet covered
 
