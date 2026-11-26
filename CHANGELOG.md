@@ -6,6 +6,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+## [2.0.1] - 2026-11-26
+
+### Fixed
+
+- CI/publish `test-generated-runtime`: allow network installs in the generated-runtime check script (removed forced offline npm install) so `node-addon-api` and related deps can be fetched when not present in a restricted cache.
+
 ## [2.0.0] - 2026-11-26
 
 ### Added

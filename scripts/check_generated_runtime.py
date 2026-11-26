@@ -175,7 +175,6 @@ def generated_hashes(root: Path) -> dict[str, str]:
 
 def npm_env() -> dict[str, str]:
     env = os.environ.copy()
-    env["npm_config_offline"] = "true"
     env["npm_config_audit"] = "false"
     env["npm_config_fund"] = "false"
     return env
@@ -195,7 +194,7 @@ def main(argv: list[str]) -> int:
             env = npm_env()
 
             run(
-                [npm, "install", "--offline", "--no-audit", "--no-fund"],
+                [npm, "install", "--no-audit", "--no-fund"],
                 root,
                 "npm install",
                 env,

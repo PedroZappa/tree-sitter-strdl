@@ -17,7 +17,7 @@ endif
 # Project metadata
 LANGUAGE_NAME := tree-sitter-strudel
 HOMEPAGE_URL := https://github.com/pedrozappa/tree-sitter-strdl
-VERSION := 2.0.0
+VERSION := 2.0.1
 DESCRIPTION := Parser for Strudel, a Tidal Cycles based live coding tool
 
 # Directories
