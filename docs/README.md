@@ -13,6 +13,7 @@ This folder contains project-level planning and developer documentation for `tre
 - [CI](ci.md) — GitHub Actions triggers, validation commands, pinned tooling, local reproduction, and deferred checks.
 - [Test strategy](test-strategy.md) — index of test layers, `make` command map, fixtures, scripts, extension procedures, and current coverage gaps.
 - [Regression coverage](regression-coverage.md) — authoritative inventory of discovered bugs, their permanent regression artifacts, and documented exclusions.
+- [Benchmarking](benchmarking.md) — benchmark fixture inventory, deterministic regeneration, validation evidence, and remaining performance work.
 - [Incremental editing sequences](incremental-editing-sequences.md) — fixtures, edit format, and recorded editing sequences for incremental-parsing equivalence tests.
 - [Incremental equivalence test procedure](incremental-equivalence-procedure.md) — how the harness replays edits, compares trees, handles malformed steps, and reports results.
 - [Queries](queries.md) — official query inventory, capture conventions, registration, execution, and stability policy.

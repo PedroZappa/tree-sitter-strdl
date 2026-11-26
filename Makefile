@@ -51,6 +51,7 @@ FIXTURES := test.strdl test-local.strdl
 QUERY_DETERMINISM_FIXTURES := test/query/determinism.strdl
 QUERY_EXECUTION_FIXTURES := $(FIXTURES) $(QUERY_DETERMINISM_FIXTURES)
 REGRESSION_INVENTORY := test/fixtures/regression_inventory.json
+BENCHMARK_MANIFEST := benchmarks/fixtures/manifest.json
 RECOVERY_FILES := $(wildcard $(TEST_DIR)/incomplete_*.txt $(TEST_DIR)/malformed_*.txt $(TEST_DIR)/missing_*.txt $(TEST_DIR)/noncascading_*.txt $(TEST_DIR)/recovery_*.txt $(TEST_DIR)/unfinished_*.txt $(TEST_DIR)/valid_*.txt)
 
 # Test inputs (override on the command line)
@@ -98,7 +99,7 @@ D = $(shell tput sgr0 2>/dev/null)
 _SUCCESS = [$(GRN)SUCCESS$(D)]
 _INFO    = [$(BLU)INFO$(D)]
 
-.PHONY: all build generate test test-recovery test-incremental test-query-compile test-query-execution test-query-registration test-query test-node test-package test-regressions parse playground wasm \
+.PHONY: all build generate test test-recovery test-incremental test-query-compile test-query-execution test-query-registration test-query test-node test-package test-regressions benchmark-fixtures check-benchmark-fixtures parse playground wasm \
 	local-install install uninstall clean check-generated verify verify-all ci \
 	docs docs-open help
 
@@ -228,6 +229,18 @@ test-regressions:	## Verify recorded bugs have permanent regression artifacts
 parse:	## Parse files with the current parser (FILES=..., PARSE_FLAGS=...)
 	@$(TS) parse $(PARSE_FLAGS) $(FILES)
 
+##@ Benchmarking 📊
+
+benchmark-fixtures:	## Regenerate synthetic benchmark fixtures from the manifest
+	@echo "$(YEL)Generating benchmark fixtures...$(D)"
+	@python3 scripts/generate_benchmark_fixtures.py
+	@echo "$(YEL)* $(_SUCCESS) Benchmark fixtures generated$(D)"
+
+check-benchmark-fixtures:	## Verify benchmark fixtures match the manifest and regenerate exactly
+	@echo "$(YEL)Checking benchmark fixtures...$(D)"
+	@python3 scripts/generate_benchmark_fixtures.py --check $(BENCHMARK_MANIFEST)
+	@echo "$(YEL)* $(_SUCCESS) Benchmark fixtures are reproducible$(D)"
+
 ##@ Verification ✅
 
 check-generated:	## Verify committed parser artifacts match grammar.js
@@ -239,7 +252,7 @@ check-generated:	## Verify committed parser artifacts match grammar.js
 	}
 	@echo "$(YEL)* $(_SUCCESS) Generated artifacts are in sync$(D)"
 
-verify: check-generated test test-query test-regressions	## Run the core CI gate (artifacts, corpus, queries, regressions)
+verify: check-generated test test-query test-regressions check-benchmark-fixtures	## Run the core CI gate (artifacts, corpus, queries, regressions, fixtures)
 
 verify-all: verify test-node test-package	## Run the core gate plus Node.js binding and package checks
 

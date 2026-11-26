@@ -1,0 +1,65 @@
+{
+  "version": 1,
+  "seed": "strdl-bench-2026-11-26",
+  "fixtures": [
+    {
+      "id": "representative-main",
+      "kind": "representative",
+      "role": "representative-composition",
+      "description": "Committed representative Strudel composition used by query and incremental harnesses.",
+      "path": "test.strdl",
+      "expected_clean": true,
+      "bytes": 2854,
+      "sha256": "2ecf5cc379a062280bcfcb30720f5bdd5e367fa4ab61e2f7acea229cd3b92f5d"
+    },
+    {
+      "id": "representative-local",
+      "kind": "representative",
+      "role": "representative-composition",
+      "description": "Committed small local Strudel composition used by query and incremental harnesses.",
+      "path": "test-local.strdl",
+      "expected_clean": true,
+      "bytes": 147,
+      "sha256": "959ac693b9bc4b6ab815769e04f3d7e68f12822257c8c698ae2e2774e1b48d3b"
+    },
+    {
+      "id": "synthetic-large",
+      "kind": "synthetic-large",
+      "role": "synthetic-large-document",
+      "description": "Deterministic large document with repeated declarations, calls, arrays, objects, and operators.",
+      "path": "benchmarks/fixtures/generated/synthetic-large.strdl",
+      "expected_clean": true,
+      "params": {
+        "declarations": 2000
+      },
+      "bytes": 95393,
+      "sha256": "66eba064a6a307a76b0a5288672e18e358330c3f08469b63b8fe300dcdadffcc"
+    },
+    {
+      "id": "deeply-nested",
+      "kind": "deeply-nested",
+      "role": "deeply-nested-expression",
+      "description": "Deterministic deeply nested call-expression chain with a string literal at its center.",
+      "path": "benchmarks/fixtures/generated/deeply-nested.strdl",
+      "expected_clean": true,
+      "params": {
+        "depth": 512
+      },
+      "bytes": 1639,
+      "sha256": "b5a35909c3ace2d7a06303a93e125cbb0378d59c9a0bfcef94875a19daa6563b"
+    },
+    {
+      "id": "pathological",
+      "kind": "pathological",
+      "role": "pathological-input",
+      "description": "Deterministic malformed input that exercises localized and cascading error recovery.",
+      "path": "benchmarks/fixtures/generated/pathological.strdl",
+      "expected_clean": false,
+      "params": {
+        "blocks": 300
+      },
+      "bytes": 7447,
+      "sha256": "869c9ed0b4d22e5596f9cefe1e1a8839343996c60bb7422782ba7edd73a7a247"
+    }
+  ]
+}

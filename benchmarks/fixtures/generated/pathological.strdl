@@ -1,0 +1,304 @@
+// generated benchmark fixture: pathological
+// seed: strdl-bench-2026-11-26
+// blocks: 300
+// expected: ERROR and MISSING nodes from intentional malformed input
+const broken_0000 = s("bd sd".phaser(0
+let broken_0001 = {a: 1,, b: 2}
+s("hh"[2
+note("c3 e3").add(3
+const broken_0004 = [1, 2,, 4
+s("bd".fast(0
+const broken_0006 = s("bd sd".phaser(6
+let broken_0007 = {a: 7,, b: 2}
+s("hh"[0
+note("c3 e3").add(3
+const broken_0010 = [1, 2,, 1
+s("bd".fast(1
+const broken_0012 = s("bd sd".phaser(1
+let broken_0013 = {a: 13,, b: 2}
+s("hh"[2
+note("c3 e3").add(3
+const broken_0016 = [1, 2,, 7
+s("bd".fast(2
+const broken_0018 = s("bd sd".phaser(7
+let broken_0019 = {a: 19,, b: 2}
+s("hh"[0
+note("c3 e3").add(3
+const broken_0022 = [1, 2,, 4
+s("bd".fast(3
+const broken_0024 = s("bd sd".phaser(2
+let broken_0025 = {a: 25,, b: 2}
+s("hh"[2
+note("c3 e3").add(3
+const broken_0028 = [1, 2,, 1
+s("bd".fast(4
+const broken_0030 = s("bd sd".phaser(8
+let broken_0031 = {a: 31,, b: 2}
+s("hh"[0
+note("c3 e3").add(3
+const broken_0034 = [1, 2,, 7
+s("bd".fast(0
+const broken_0036 = s("bd sd".phaser(3
+let broken_0037 = {a: 37,, b: 2}
+s("hh"[2
+note("c3 e3").add(3
+const broken_0040 = [1, 2,, 4
+s("bd".fast(1
+const broken_0042 = s("bd sd".phaser(9
+let broken_0043 = {a: 43,, b: 2}
+s("hh"[0
+note("c3 e3").add(3
+const broken_0046 = [1, 2,, 1
+s("bd".fast(2
+const broken_0048 = s("bd sd".phaser(4
+let broken_0049 = {a: 49,, b: 2}
+s("hh"[2
+note("c3 e3").add(3
+const broken_0052 = [1, 2,, 7
+s("bd".fast(3
+const broken_0054 = s("bd sd".phaser(10
+let broken_0055 = {a: 55,, b: 2}
+s("hh"[0
+note("c3 e3").add(3
+const broken_0058 = [1, 2,, 4
+s("bd".fast(4
+const broken_0060 = s("bd sd".phaser(5
+let broken_0061 = {a: 61,, b: 2}
+s("hh"[2
+note("c3 e3").add(3
+const broken_0064 = [1, 2,, 1
+s("bd".fast(0
+const broken_0066 = s("bd sd".phaser(0
+let broken_0067 = {a: 67,, b: 2}
+s("hh"[0
+note("c3 e3").add(3
+const broken_0070 = [1, 2,, 7
+s("bd".fast(1
+const broken_0072 = s("bd sd".phaser(6
+let broken_0073 = {a: 73,, b: 2}
+s("hh"[2
+note("c3 e3").add(3
+const broken_0076 = [1, 2,, 4
+s("bd".fast(2
+const broken_0078 = s("bd sd".phaser(1
+let broken_0079 = {a: 79,, b: 2}
+s("hh"[0
+note("c3 e3").add(3
+const broken_0082 = [1, 2,, 1
+s("bd".fast(3
+const broken_0084 = s("bd sd".phaser(7
+let broken_0085 = {a: 85,, b: 2}
+s("hh"[2
+note("c3 e3").add(3
+const broken_0088 = [1, 2,, 7
+s("bd".fast(4
+const broken_0090 = s("bd sd".phaser(2
+let broken_0091 = {a: 91,, b: 2}
+s("hh"[0
+note("c3 e3").add(3
+const broken_0094 = [1, 2,, 4
+s("bd".fast(0
+const broken_0096 = s("bd sd".phaser(8
+let broken_0097 = {a: 97,, b: 2}
+s("hh"[2
+note("c3 e3").add(3
+const broken_0100 = [1, 2,, 1
+s("bd".fast(1
+const broken_0102 = s("bd sd".phaser(3
+let broken_0103 = {a: 103,, b: 2}
+s("hh"[0
+note("c3 e3").add(3
+const broken_0106 = [1, 2,, 7
+s("bd".fast(2
+const broken_0108 = s("bd sd".phaser(9
+let broken_0109 = {a: 109,, b: 2}
+s("hh"[2
+note("c3 e3").add(3
+const broken_0112 = [1, 2,, 4
+s("bd".fast(3
+const broken_0114 = s("bd sd".phaser(4
+let broken_0115 = {a: 115,, b: 2}
+s("hh"[0
+note("c3 e3").add(3
+const broken_0118 = [1, 2,, 1
+s("bd".fast(4
+const broken_0120 = s("bd sd".phaser(10
+let broken_0121 = {a: 121,, b: 2}
+s("hh"[2
+note("c3 e3").add(3
+const broken_0124 = [1, 2,, 7
+s("bd".fast(0
+const broken_0126 = s("bd sd".phaser(5
+let broken_0127 = {a: 127,, b: 2}
+s("hh"[0
+note("c3 e3").add(3
+const broken_0130 = [1, 2,, 4
+s("bd".fast(1
+const broken_0132 = s("bd sd".phaser(0
+let broken_0133 = {a: 133,, b: 2}
+s("hh"[2
+note("c3 e3").add(3
+const broken_0136 = [1, 2,, 1
+s("bd".fast(2
+const broken_0138 = s("bd sd".phaser(6
+let broken_0139 = {a: 139,, b: 2}
+s("hh"[0
+note("c3 e3").add(3
+const broken_0142 = [1, 2,, 7
+s("bd".fast(3
+const broken_0144 = s("bd sd".phaser(1
+let broken_0145 = {a: 145,, b: 2}
+s("hh"[2
+note("c3 e3").add(3
+const broken_0148 = [1, 2,, 4
+s("bd".fast(4
+const broken_0150 = s("bd sd".phaser(7
+let broken_0151 = {a: 151,, b: 2}
+s("hh"[0
+note("c3 e3").add(3
+const broken_0154 = [1, 2,, 1
+s("bd".fast(0
+const broken_0156 = s("bd sd".phaser(2
+let broken_0157 = {a: 157,, b: 2}
+s("hh"[2
+note("c3 e3").add(3
+const broken_0160 = [1, 2,, 7
+s("bd".fast(1
+const broken_0162 = s("bd sd".phaser(8
+let broken_0163 = {a: 163,, b: 2}
+s("hh"[0
+note("c3 e3").add(3
+const broken_0166 = [1, 2,, 4
+s("bd".fast(2
+const broken_0168 = s("bd sd".phaser(3
+let broken_0169 = {a: 169,, b: 2}
+s("hh"[2
+note("c3 e3").add(3
+const broken_0172 = [1, 2,, 1
+s("bd".fast(3
+const broken_0174 = s("bd sd".phaser(9
+let broken_0175 = {a: 175,, b: 2}
+s("hh"[0
+note("c3 e3").add(3
+const broken_0178 = [1, 2,, 7
+s("bd".fast(4
+const broken_0180 = s("bd sd".phaser(4
+let broken_0181 = {a: 181,, b: 2}
+s("hh"[2
+note("c3 e3").add(3
+const broken_0184 = [1, 2,, 4
+s("bd".fast(0
+const broken_0186 = s("bd sd".phaser(10
+let broken_0187 = {a: 187,, b: 2}
+s("hh"[0
+note("c3 e3").add(3
+const broken_0190 = [1, 2,, 1
+s("bd".fast(1
+const broken_0192 = s("bd sd".phaser(5
+let broken_0193 = {a: 193,, b: 2}
+s("hh"[2
+note("c3 e3").add(3
+const broken_0196 = [1, 2,, 7
+s("bd".fast(2
+const broken_0198 = s("bd sd".phaser(0
+let broken_0199 = {a: 199,, b: 2}
+s("hh"[0
+note("c3 e3").add(3
+const broken_0202 = [1, 2,, 4
+s("bd".fast(3
+const broken_0204 = s("bd sd".phaser(6
+let broken_0205 = {a: 205,, b: 2}
+s("hh"[2
+note("c3 e3").add(3
+const broken_0208 = [1, 2,, 1
+s("bd".fast(4
+const broken_0210 = s("bd sd".phaser(1
+let broken_0211 = {a: 211,, b: 2}
+s("hh"[0
+note("c3 e3").add(3
+const broken_0214 = [1, 2,, 7
+s("bd".fast(0
+const broken_0216 = s("bd sd".phaser(7
+let broken_0217 = {a: 217,, b: 2}
+s("hh"[2
+note("c3 e3").add(3
+const broken_0220 = [1, 2,, 4
+s("bd".fast(1
+const broken_0222 = s("bd sd".phaser(2
+let broken_0223 = {a: 223,, b: 2}
+s("hh"[0
+note("c3 e3").add(3
+const broken_0226 = [1, 2,, 1
+s("bd".fast(2
+const broken_0228 = s("bd sd".phaser(8
+let broken_0229 = {a: 229,, b: 2}
+s("hh"[2
+note("c3 e3").add(3
+const broken_0232 = [1, 2,, 7
+s("bd".fast(3
+const broken_0234 = s("bd sd".phaser(3
+let broken_0235 = {a: 235,, b: 2}
+s("hh"[0
+note("c3 e3").add(3
+const broken_0238 = [1, 2,, 4
+s("bd".fast(4
+const broken_0240 = s("bd sd".phaser(9
+let broken_0241 = {a: 241,, b: 2}
+s("hh"[2
+note("c3 e3").add(3
+const broken_0244 = [1, 2,, 1
+s("bd".fast(0
+const broken_0246 = s("bd sd".phaser(4
+let broken_0247 = {a: 247,, b: 2}
+s("hh"[0
+note("c3 e3").add(3
+const broken_0250 = [1, 2,, 7
+s("bd".fast(1
+const broken_0252 = s("bd sd".phaser(10
+let broken_0253 = {a: 253,, b: 2}
+s("hh"[2
+note("c3 e3").add(3
+const broken_0256 = [1, 2,, 4
+s("bd".fast(2
+const broken_0258 = s("bd sd".phaser(5
+let broken_0259 = {a: 259,, b: 2}
+s("hh"[0
+note("c3 e3").add(3
+const broken_0262 = [1, 2,, 1
+s("bd".fast(3
+const broken_0264 = s("bd sd".phaser(0
+let broken_0265 = {a: 265,, b: 2}
+s("hh"[2
+note("c3 e3").add(3
+const broken_0268 = [1, 2,, 7
+s("bd".fast(4
+const broken_0270 = s("bd sd".phaser(6
+let broken_0271 = {a: 271,, b: 2}
+s("hh"[0
+note("c3 e3").add(3
+const broken_0274 = [1, 2,, 4
+s("bd".fast(0
+const broken_0276 = s("bd sd".phaser(1
+let broken_0277 = {a: 277,, b: 2}
+s("hh"[2
+note("c3 e3").add(3
+const broken_0280 = [1, 2,, 1
+s("bd".fast(1
+const broken_0282 = s("bd sd".phaser(7
+let broken_0283 = {a: 283,, b: 2}
+s("hh"[0
+note("c3 e3").add(3
+const broken_0286 = [1, 2,, 7
+s("bd".fast(2
+const broken_0288 = s("bd sd".phaser(2
+let broken_0289 = {a: 289,, b: 2}
+s("hh"[2
+note("c3 e3").add(3
+const broken_0292 = [1, 2,, 4
+s("bd".fast(3
+const broken_0294 = s("bd sd".phaser(8
+let broken_0295 = {a: 295,, b: 2}
+s("hh"[0
+note("c3 e3").add(3
+const broken_0298 = [1, 2,, 1
+s("bd".fast(4

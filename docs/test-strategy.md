@@ -29,6 +29,7 @@ The tests cover syntax recognition and the public concrete syntax tree (CST). Th
 | Node.js binding | `make test-node` | `bindings/node/*_test.js` | The native addon loads, exports generated metadata, exposes CST fields, recovers from incomplete input, executes a query, and matches a fresh parse after an incremental edit. |
 | Package integrity | `make test-package` | `package.json`, `tree-sitter.json`, `npm pack --dry-run --json --ignore-scripts` | Package metadata is consistent; required runtime files are present; forbidden build artifacts are absent; packed file sizes match local files. |
 | Regression inventory | `make test-regressions` | `test/fixtures/regression_inventory.json` | Every recorded bug resolves to an existing, wired corpus case, binding test, fixture, or gate artifact; documented exclusions remain rationale-only. See [regression coverage](regression-coverage.md). |
+| Benchmark fixture consistency | `make check-benchmark-fixtures` | `benchmarks/fixtures/manifest.json`, generated and representative fixtures | Fixture sizes, hashes, and generated content match the manifest exactly. See [benchmarking](benchmarking.md). |
 | C library build | `make build` (included in `make ci`) | `bindings/c/`, generated sources | Static/shared libraries and pkg-config metadata build from generated artifacts. Build validation is distinct from behavioral testing. |
 
 ## Command map
@@ -45,8 +46,10 @@ The tests cover syntax recognition and the public concrete syntax tree (CST). Th
 | `make test-node` | Native Node.js binding behavior tests. |
 | `make test-package` | npm package contents, metadata, and file-size checks. |
 | `make test-regressions` | Regression inventory integrity and artifact wiring. |
+| `make benchmark-fixtures` | Regenerate synthetic benchmark fixtures. |
+| `make check-benchmark-fixtures` | Benchmark fixture size, hash, and regeneration consistency. |
 | `make check-generated` | Generated-file consistency against `HEAD`. |
-| `make verify` | Generated-file consistency, corpus, query, and regression-inventory layers. |
+| `make verify` | Generated-file, benchmark-fixture, corpus, query, and regression-inventory layers. |
 | `make verify-all` | `verify` plus Node.js binding and package checks. |
 | `make ci` | `verify-all` plus the C library build. |
 
@@ -60,6 +63,7 @@ Run `make help` for the authoritative target list and parameter names.
 - `test/query/*.scm`: probe queries that identify syntactic roles for `scripts/check_query_captures.py` and `scripts/check_locals_definitions_absent.py`.
 - `test/fixtures/incremental_sequences.json`: recorded edit sequences for `scripts/test_incremental.py`.
 - `test/fixtures/regression_inventory.json`: authoritative bug-to-regression inventory for `scripts/check_regression_coverage.py`.
+- `benchmarks/fixtures/manifest.json`: authoritative benchmark fixture inventory, parameters, sizes, and hashes.
 - `scripts/check_query_compilation.py`: compiles official queries and runs two built-in negative controls.
 - `scripts/check_query_captures.py`: asserts expected captures for a probe role.
 - `scripts/check_query_determinism.py`: rejects multiple highlight captures for one source range.
@@ -67,6 +71,7 @@ Run `make help` for the authoritative target list and parameter names.
 - `scripts/check_query_registration.py`: checks official query registration, packaging, and binding exports.
 - `scripts/check_package_integrity.py`: checks packed metadata, required files, forbidden artifacts, and file sizes.
 - `scripts/check_regression_coverage.py`: validates the regression inventory and its referenced artifacts.
+- `scripts/generate_benchmark_fixtures.py`: generates and verifies deterministic benchmark fixtures.
 - `scripts/test_incremental.py`: replays edits and compares incremental and fresh CSTs.
 
 Temporary negative controls used while developing the determinism, locals-definition, registration, and capture checks are recorded in the [roadmap verification log](roadmap.md#verification-log). The query compilation checker contains built-in negative controls, and `test-query-execution` includes a permanent wrong-capture negative control.
@@ -81,14 +86,15 @@ Temporary negative controls used while developing the determinism, locals-defini
 6. **Node.js binding behavior:** extend `bindings/node/binding_test.js` when native export shape, parser behavior, query execution, or incremental parsing through the primary binding needs coverage.
 7. **Package contents:** update `scripts/check_package_integrity.py` and the `package.json` `files` allowlist when the published surface changes; keep generated sources explicit rather than using broad `src/**` patterns.
 8. **Discovered bug:** add a `BUG-*` entry to the [regression inventory](regression-coverage.md) in the same change as the fix. Use an `EXC-*` entry only when no behavior changed.
-9. **New test layer:** add a `make` target, include it in the appropriate aggregate target, link it here and from [CI](ci.md), and update the roadmap.
+9. **Benchmark fixture:** update `benchmarks/fixtures/manifest.json`, regenerate with `make benchmark-fixtures`, and check with `make check-benchmark-fixtures`.
+10. **New test layer:** add a `make` target, include it in the appropriate aggregate target, link it here and from [CI](ci.md), and update the roadmap.
 
 Do not weaken or delete an existing test to make a change pass without an explicit, sound rationale recorded in the roadmap.
 
 ## Current coverage and gaps
 
-Covered by `make ci` today: generated-file consistency, corpus behavior, all query layers, regression-inventory integrity, Node.js binding load/metadata/CST/recovery/query/incremental behavior, npm package integrity, and the C library build. Recovery cases run inside the full corpus suite; `make test-recovery` is the dedicated local subset.
+Covered by `make ci` today: generated-file and benchmark-fixture consistency, corpus behavior, all query layers, regression-inventory integrity, Node.js binding load/metadata/CST/recovery/query/incremental behavior, npm package integrity, and the C library build. Recovery cases run inside the full corpus suite; `make test-recovery` is the dedicated local subset.
 
 Local-only: incremental/fresh equivalence.
 
-Not yet implemented: reproducible benchmark fixtures and baselines, performance-regression reporting, formatting/static checks, and non-Node binding validation. These are tracked in the [Phase 6](roadmap.md#phase-6--testing-and-performance) and [Phase 7](roadmap.md#phase-7--packaging-and-compatibility) checklists. CI gaps are also summarized in [CI](ci.md#not-yet-covered).
+Not yet implemented: benchmark baselines and performance-regression reporting, formatting/static checks, and non-Node binding validation. These are tracked in the [Phase 6](roadmap.md#phase-6--testing-and-performance) and [Phase 7](roadmap.md#phase-7--packaging-and-compatibility) checklists. CI gaps are also summarized in [CI](ci.md#not-yet-covered).

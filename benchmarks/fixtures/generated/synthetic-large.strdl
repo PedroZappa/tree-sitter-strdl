@@ -1,0 +1,2003 @@
+// generated benchmark fixture: synthetic-large
+// seed: strdl-bench-2026-11-26
+// declarations: 2000
+const pattern_0000 = note("c3 e3 g3").s("bd sd").gain(0.0)
+let layer_0001 = stack([0, 1, 2], {step: 1}).fast(2)
+s("bd sd bd sd bd sd").note("c3").room(0.2)
+const tempo_0003 = slider(3, 5, 12) + 3
+const pattern_0004 = note("c3 e3 g3").s("bd sd").gain(0.4)
+let layer_0005 = stack([0, 1, 2], {step: 5}).fast(2)
+s("bd sd").note("c3").room(0.6)
+const tempo_0007 = slider(7, 5, 12) + 0
+const pattern_0008 = note("c3 e3 g3").s("bd sd").gain(0.8)
+let layer_0009 = stack([0, 1, 2], {step: 9}).fast(2)
+s("bd sd bd sd").note("c3").room(0.0)
+const tempo_0011 = slider(11, 5, 12) + 4
+const pattern_0012 = note("c3 e3 g3").s("bd sd").gain(0.2)
+let layer_0013 = stack([0, 1, 2], {step: 13}).fast(2)
+s("bd sd bd sd bd sd").note("c3").room(0.4)
+const tempo_0015 = slider(3, 5, 12) + 1
+const pattern_0016 = note("c3 e3 g3").s("bd sd").gain(0.6)
+let layer_0017 = stack([0, 1, 2], {step: 1}).fast(2)
+s("bd sd").note("c3").room(0.8)
+const tempo_0019 = slider(7, 5, 12) + 5
+const pattern_0020 = note("c3 e3 g3").s("bd sd").gain(0.0)
+let layer_0021 = stack([0, 1, 2], {step: 5}).fast(2)
+s("bd sd bd sd").note("c3").room(0.2)
+const tempo_0023 = slider(11, 5, 12) + 2
+const pattern_0024 = note("c3 e3 g3").s("bd sd").gain(0.4)
+let layer_0025 = stack([0, 1, 2], {step: 9}).fast(2)
+s("bd sd bd sd bd sd").note("c3").room(0.6)
+const tempo_0027 = slider(3, 5, 12) + 6
+const pattern_0028 = note("c3 e3 g3").s("bd sd").gain(0.8)
+let layer_0029 = stack([0, 1, 2], {step: 13}).fast(2)
+s("bd sd").note("c3").room(0.0)
+const tempo_0031 = slider(7, 5, 12) + 3
+const pattern_0032 = note("c3 e3 g3").s("bd sd").gain(0.2)
+let layer_0033 = stack([0, 1, 2], {step: 1}).fast(2)
+s("bd sd bd sd").note("c3").room(0.4)
+const tempo_0035 = slider(11, 5, 12) + 0
+const pattern_0036 = note("c3 e3 g3").s("bd sd").gain(0.6)
+let layer_0037 = stack([0, 1, 2], {step: 5}).fast(2)
+s("bd sd bd sd bd sd").note("c3").room(0.8)
+const tempo_0039 = slider(3, 5, 12) + 4
+const pattern_0040 = note("c3 e3 g3").s("bd sd").gain(0.0)
+let layer_0041 = stack([0, 1, 2], {step: 9}).fast(2)
+s("bd sd").note("c3").room(0.2)
+const tempo_0043 = slider(7, 5, 12) + 1
+const pattern_0044 = note("c3 e3 g3").s("bd sd").gain(0.4)
+let layer_0045 = stack([0, 1, 2], {step: 13}).fast(2)
+s("bd sd bd sd").note("c3").room(0.6)
+const tempo_0047 = slider(11, 5, 12) + 5
+const pattern_0048 = note("c3 e3 g3").s("bd sd").gain(0.8)
+let layer_0049 = stack([0, 1, 2], {step: 1}).fast(2)
+s("bd sd bd sd bd sd").note("c3").room(0.0)
+const tempo_0051 = slider(3, 5, 12) + 2
+const pattern_0052 = note("c3 e3 g3").s("bd sd").gain(0.2)
+let layer_0053 = stack([0, 1, 2], {step: 5}).fast(2)
+s("bd sd").note("c3").room(0.4)
+const tempo_0055 = slider(7, 5, 12) + 6
+const pattern_0056 = note("c3 e3 g3").s("bd sd").gain(0.6)
+let layer_0057 = stack([0, 1, 2], {step: 9}).fast(2)
+s("bd sd bd sd").note("c3").room(0.8)
+const tempo_0059 = slider(11, 5, 12) + 3
+const pattern_0060 = note("c3 e3 g3").s("bd sd").gain(0.0)
+let layer_0061 = stack([0, 1, 2], {step: 13}).fast(2)
+s("bd sd bd sd bd sd").note("c3").room(0.2)
+const tempo_0063 = slider(3, 5, 12) + 0
+const pattern_0064 = note("c3 e3 g3").s("bd sd").gain(0.4)
+let layer_0065 = stack([0, 1, 2], {step: 1}).fast(2)
+s("bd sd").note("c3").room(0.6)
+const tempo_0067 = slider(7, 5, 12) + 4
+const pattern_0068 = note("c3 e3 g3").s("bd sd").gain(0.8)
+let layer_0069 = stack([0, 1, 2], {step: 5}).fast(2)
+s("bd sd bd sd").note("c3").room(0.0)
+const tempo_0071 = slider(11, 5, 12) + 1
+const pattern_0072 = note("c3 e3 g3").s("bd sd").gain(0.2)
+let layer_0073 = stack([0, 1, 2], {step: 9}).fast(2)
+s("bd sd bd sd bd sd").note("c3").room(0.4)
+const tempo_0075 = slider(3, 5, 12) + 5
+const pattern_0076 = note("c3 e3 g3").s("bd sd").gain(0.6)
+let layer_0077 = stack([0, 1, 2], {step: 13}).fast(2)
+s("bd sd").note("c3").room(0.8)
+const tempo_0079 = slider(7, 5, 12) + 2
+const pattern_0080 = note("c3 e3 g3").s("bd sd").gain(0.0)
+let layer_0081 = stack([0, 1, 2], {step: 1}).fast(2)
+s("bd sd bd sd").note("c3").room(0.2)
+const tempo_0083 = slider(11, 5, 12) + 6
+const pattern_0084 = note("c3 e3 g3").s("bd sd").gain(0.4)
+let layer_0085 = stack([0, 1, 2], {step: 5}).fast(2)
+s("bd sd bd sd bd sd").note("c3").room(0.6)
+const tempo_0087 = slider(3, 5, 12) + 3
+const pattern_0088 = note("c3 e3 g3").s("bd sd").gain(0.8)
+let layer_0089 = stack([0, 1, 2], {step: 9}).fast(2)
+s("bd sd").note("c3").room(0.0)
+const tempo_0091 = slider(7, 5, 12) + 0
+const pattern_0092 = note("c3 e3 g3").s("bd sd").gain(0.2)
+let layer_0093 = stack([0, 1, 2], {step: 13}).fast(2)
+s("bd sd bd sd").note("c3").room(0.4)
+const tempo_0095 = slider(11, 5, 12) + 4
+const pattern_0096 = note("c3 e3 g3").s("bd sd").gain(0.6)
+let layer_0097 = stack([0, 1, 2], {step: 1}).fast(2)
+s("bd sd bd sd bd sd").note("c3").room(0.8)
+const tempo_0099 = slider(3, 5, 12) + 1
+const pattern_0100 = note("c3 e3 g3").s("bd sd").gain(0.0)
+let layer_0101 = stack([0, 1, 2], {step: 5}).fast(2)
+s("bd sd").note("c3").room(0.2)
+const tempo_0103 = slider(7, 5, 12) + 5
+const pattern_0104 = note("c3 e3 g3").s("bd sd").gain(0.4)
+let layer_0105 = stack([0, 1, 2], {step: 9}).fast(2)
+s("bd sd bd sd").note("c3").room(0.6)
+const tempo_0107 = slider(11, 5, 12) + 2
+const pattern_0108 = note("c3 e3 g3").s("bd sd").gain(0.8)
+let layer_0109 = stack([0, 1, 2], {step: 13}).fast(2)
+s("bd sd bd sd bd sd").note("c3").room(0.0)
+const tempo_0111 = slider(3, 5, 12) + 6
+const pattern_0112 = note("c3 e3 g3").s("bd sd").gain(0.2)
+let layer_0113 = stack([0, 1, 2], {step: 1}).fast(2)
+s("bd sd").note("c3").room(0.4)
+const tempo_0115 = slider(7, 5, 12) + 3
+const pattern_0116 = note("c3 e3 g3").s("bd sd").gain(0.6)
+let layer_0117 = stack([0, 1, 2], {step: 5}).fast(2)
+s("bd sd bd sd").note("c3").room(0.8)
+const tempo_0119 = slider(11, 5, 12) + 0
+const pattern_0120 = note("c3 e3 g3").s("bd sd").gain(0.0)
+let layer_0121 = stack([0, 1, 2], {step: 9}).fast(2)
+s("bd sd bd sd bd sd").note("c3").room(0.2)
+const tempo_0123 = slider(3, 5, 12) + 4
+const pattern_0124 = note("c3 e3 g3").s("bd sd").gain(0.4)
+let layer_0125 = stack([0, 1, 2], {step: 13}).fast(2)
+s("bd sd").note("c3").room(0.6)
+const tempo_0127 = slider(7, 5, 12) + 1
+const pattern_0128 = note("c3 e3 g3").s("bd sd").gain(0.8)
+let layer_0129 = stack([0, 1, 2], {step: 1}).fast(2)
+s("bd sd bd sd").note("c3").room(0.0)
+const tempo_0131 = slider(11, 5, 12) + 5
+const pattern_0132 = note("c3 e3 g3").s("bd sd").gain(0.2)
+let layer_0133 = stack([0, 1, 2], {step: 5}).fast(2)
+s("bd sd bd sd bd sd").note("c3").room(0.4)
+const tempo_0135 = slider(3, 5, 12) + 2
+const pattern_0136 = note("c3 e3 g3").s("bd sd").gain(0.6)
+let layer_0137 = stack([0, 1, 2], {step: 9}).fast(2)
+s("bd sd").note("c3").room(0.8)
+const tempo_0139 = slider(7, 5, 12) + 6
+const pattern_0140 = note("c3 e3 g3").s("bd sd").gain(0.0)
+let layer_0141 = stack([0, 1, 2], {step: 13}).fast(2)
+s("bd sd bd sd").note("c3").room(0.2)
+const tempo_0143 = slider(11, 5, 12) + 3
+const pattern_0144 = note("c3 e3 g3").s("bd sd").gain(0.4)
+let layer_0145 = stack([0, 1, 2], {step: 1}).fast(2)
+s("bd sd bd sd bd sd").note("c3").room(0.6)
+const tempo_0147 = slider(3, 5, 12) + 0
+const pattern_0148 = note("c3 e3 g3").s("bd sd").gain(0.8)
+let layer_0149 = stack([0, 1, 2], {step: 5}).fast(2)
+s("bd sd").note("c3").room(0.0)
+const tempo_0151 = slider(7, 5, 12) + 4
+const pattern_0152 = note("c3 e3 g3").s("bd sd").gain(0.2)
+let layer_0153 = stack([0, 1, 2], {step: 9}).fast(2)
+s("bd sd bd sd").note("c3").room(0.4)
+const tempo_0155 = slider(11, 5, 12) + 1
+const pattern_0156 = note("c3 e3 g3").s("bd sd").gain(0.6)
+let layer_0157 = stack([0, 1, 2], {step: 13}).fast(2)
+s("bd sd bd sd bd sd").note("c3").room(0.8)
+const tempo_0159 = slider(3, 5, 12) + 5
+const pattern_0160 = note("c3 e3 g3").s("bd sd").gain(0.0)
+let layer_0161 = stack([0, 1, 2], {step: 1}).fast(2)
+s("bd sd").note("c3").room(0.2)
+const tempo_0163 = slider(7, 5, 12) + 2
+const pattern_0164 = note("c3 e3 g3").s("bd sd").gain(0.4)
+let layer_0165 = stack([0, 1, 2], {step: 5}).fast(2)
+s("bd sd bd sd").note("c3").room(0.6)
+const tempo_0167 = slider(11, 5, 12) + 6
+const pattern_0168 = note("c3 e3 g3").s("bd sd").gain(0.8)
+let layer_0169 = stack([0, 1, 2], {step: 9}).fast(2)
+s("bd sd bd sd bd sd").note("c3").room(0.0)
+const tempo_0171 = slider(3, 5, 12) + 3
+const pattern_0172 = note("c3 e3 g3").s("bd sd").gain(0.2)
+let layer_0173 = stack([0, 1, 2], {step: 13}).fast(2)
+s("bd sd").note("c3").room(0.4)
+const tempo_0175 = slider(7, 5, 12) + 0
+const pattern_0176 = note("c3 e3 g3").s("bd sd").gain(0.6)
+let layer_0177 = stack([0, 1, 2], {step: 1}).fast(2)
+s("bd sd bd sd").note("c3").room(0.8)
+const tempo_0179 = slider(11, 5, 12) + 4
+const pattern_0180 = note("c3 e3 g3").s("bd sd").gain(0.0)
+let layer_0181 = stack([0, 1, 2], {step: 5}).fast(2)
+s("bd sd bd sd bd sd").note("c3").room(0.2)
+const tempo_0183 = slider(3, 5, 12) + 1
+const pattern_0184 = note("c3 e3 g3").s("bd sd").gain(0.4)
+let layer_0185 = stack([0, 1, 2], {step: 9}).fast(2)
+s("bd sd").note("c3").room(0.6)
+const tempo_0187 = slider(7, 5, 12) + 5
+const pattern_0188 = note("c3 e3 g3").s("bd sd").gain(0.8)
+let layer_0189 = stack([0, 1, 2], {step: 13}).fast(2)
+s("bd sd bd sd").note("c3").room(0.0)
+const tempo_0191 = slider(11, 5, 12) + 2
+const pattern_0192 = note("c3 e3 g3").s("bd sd").gain(0.2)
+let layer_0193 = stack([0, 1, 2], {step: 1}).fast(2)
+s("bd sd bd sd bd sd").note("c3").room(0.4)
+const tempo_0195 = slider(3, 5, 12) + 6
+const pattern_0196 = note("c3 e3 g3").s("bd sd").gain(0.6)
+let layer_0197 = stack([0, 1, 2], {step: 5}).fast(2)
+s("bd sd").note("c3").room(0.8)
+const tempo_0199 = slider(7, 5, 12) + 3
+const pattern_0200 = note("c3 e3 g3").s("bd sd").gain(0.0)
+let layer_0201 = stack([0, 1, 2], {step: 9}).fast(2)
+s("bd sd bd sd").note("c3").room(0.2)
+const tempo_0203 = slider(11, 5, 12) + 0
+const pattern_0204 = note("c3 e3 g3").s("bd sd").gain(0.4)
+let layer_0205 = stack([0, 1, 2], {step: 13}).fast(2)
+s("bd sd bd sd bd sd").note("c3").room(0.6)
+const tempo_0207 = slider(3, 5, 12) + 4
+const pattern_0208 = note("c3 e3 g3").s("bd sd").gain(0.8)
+let layer_0209 = stack([0, 1, 2], {step: 1}).fast(2)
+s("bd sd").note("c3").room(0.0)
+const tempo_0211 = slider(7, 5, 12) + 1
+const pattern_0212 = note("c3 e3 g3").s("bd sd").gain(0.2)
+let layer_0213 = stack([0, 1, 2], {step: 5}).fast(2)
+s("bd sd bd sd").note("c3").room(0.4)
+const tempo_0215 = slider(11, 5, 12) + 5
+const pattern_0216 = note("c3 e3 g3").s("bd sd").gain(0.6)
+let layer_0217 = stack([0, 1, 2], {step: 9}).fast(2)
+s("bd sd bd sd bd sd").note("c3").room(0.8)
+const tempo_0219 = slider(3, 5, 12) + 2
+const pattern_0220 = note("c3 e3 g3").s("bd sd").gain(0.0)
+let layer_0221 = stack([0, 1, 2], {step: 13}).fast(2)
+s("bd sd").note("c3").room(0.2)
+const tempo_0223 = slider(7, 5, 12) + 6
+const pattern_0224 = note("c3 e3 g3").s("bd sd").gain(0.4)
+let layer_0225 = stack([0, 1, 2], {step: 1}).fast(2)
+s("bd sd bd sd").note("c3").room(0.6)
+const tempo_0227 = slider(11, 5, 12) + 3
+const pattern_0228 = note("c3 e3 g3").s("bd sd").gain(0.8)
+let layer_0229 = stack([0, 1, 2], {step: 5}).fast(2)
+s("bd sd bd sd bd sd").note("c3").room(0.0)
+const tempo_0231 = slider(3, 5, 12) + 0
+const pattern_0232 = note("c3 e3 g3").s("bd sd").gain(0.2)
+let layer_0233 = stack([0, 1, 2], {step: 9}).fast(2)
+s("bd sd").note("c3").room(0.4)
+const tempo_0235 = slider(7, 5, 12) + 4
+const pattern_0236 = note("c3 e3 g3").s("bd sd").gain(0.6)
+let layer_0237 = stack([0, 1, 2], {step: 13}).fast(2)
+s("bd sd bd sd").note("c3").room(0.8)
+const tempo_0239 = slider(11, 5, 12) + 1
+const pattern_0240 = note("c3 e3 g3").s("bd sd").gain(0.0)
+let layer_0241 = stack([0, 1, 2], {step: 1}).fast(2)
+s("bd sd bd sd bd sd").note("c3").room(0.2)
+const tempo_0243 = slider(3, 5, 12) + 5
+const pattern_0244 = note("c3 e3 g3").s("bd sd").gain(0.4)
+let layer_0245 = stack([0, 1, 2], {step: 5}).fast(2)
+s("bd sd").note("c3").room(0.6)
+const tempo_0247 = slider(7, 5, 12) + 2
+const pattern_0248 = note("c3 e3 g3").s("bd sd").gain(0.8)
+let layer_0249 = stack([0, 1, 2], {step: 9}).fast(2)
+s("bd sd bd sd").note("c3").room(0.0)
+const tempo_0251 = slider(11, 5, 12) + 6
+const pattern_0252 = note("c3 e3 g3").s("bd sd").gain(0.2)
+let layer_0253 = stack([0, 1, 2], {step: 13}).fast(2)
+s("bd sd bd sd bd sd").note("c3").room(0.4)
+const tempo_0255 = slider(3, 5, 12) + 3
+const pattern_0256 = note("c3 e3 g3").s("bd sd").gain(0.6)
+let layer_0257 = stack([0, 1, 2], {step: 1}).fast(2)
+s("bd sd").note("c3").room(0.8)
+const tempo_0259 = slider(7, 5, 12) + 0
+const pattern_0260 = note("c3 e3 g3").s("bd sd").gain(0.0)
+let layer_0261 = stack([0, 1, 2], {step: 5}).fast(2)
+s("bd sd bd sd").note("c3").room(0.2)
+const tempo_0263 = slider(11, 5, 12) + 4
+const pattern_0264 = note("c3 e3 g3").s("bd sd").gain(0.4)
+let layer_0265 = stack([0, 1, 2], {step: 9}).fast(2)
+s("bd sd bd sd bd sd").note("c3").room(0.6)
+const tempo_0267 = slider(3, 5, 12) + 1
+const pattern_0268 = note("c3 e3 g3").s("bd sd").gain(0.8)
+let layer_0269 = stack([0, 1, 2], {step: 13}).fast(2)
+s("bd sd").note("c3").room(0.0)
+const tempo_0271 = slider(7, 5, 12) + 5
+const pattern_0272 = note("c3 e3 g3").s("bd sd").gain(0.2)
+let layer_0273 = stack([0, 1, 2], {step: 1}).fast(2)
+s("bd sd bd sd").note("c3").room(0.4)
+const tempo_0275 = slider(11, 5, 12) + 2
+const pattern_0276 = note("c3 e3 g3").s("bd sd").gain(0.6)
+let layer_0277 = stack([0, 1, 2], {step: 5}).fast(2)
+s("bd sd bd sd bd sd").note("c3").room(0.8)
+const tempo_0279 = slider(3, 5, 12) + 6
+const pattern_0280 = note("c3 e3 g3").s("bd sd").gain(0.0)
+let layer_0281 = stack([0, 1, 2], {step: 9}).fast(2)
+s("bd sd").note("c3").room(0.2)
+const tempo_0283 = slider(7, 5, 12) + 3
+const pattern_0284 = note("c3 e3 g3").s("bd sd").gain(0.4)
+let layer_0285 = stack([0, 1, 2], {step: 13}).fast(2)
+s("bd sd bd sd").note("c3").room(0.6)
+const tempo_0287 = slider(11, 5, 12) + 0
+const pattern_0288 = note("c3 e3 g3").s("bd sd").gain(0.8)
+let layer_0289 = stack([0, 1, 2], {step: 1}).fast(2)
+s("bd sd bd sd bd sd").note("c3").room(0.0)
+const tempo_0291 = slider(3, 5, 12) + 4
+const pattern_0292 = note("c3 e3 g3").s("bd sd").gain(0.2)
+let layer_0293 = stack([0, 1, 2], {step: 5}).fast(2)
+s("bd sd").note("c3").room(0.4)
+const tempo_0295 = slider(7, 5, 12) + 1
+const pattern_0296 = note("c3 e3 g3").s("bd sd").gain(0.6)
+let layer_0297 = stack([0, 1, 2], {step: 9}).fast(2)
+s("bd sd bd sd").note("c3").room(0.8)
+const tempo_0299 = slider(11, 5, 12) + 5
+const pattern_0300 = note("c3 e3 g3").s("bd sd").gain(0.0)
+let layer_0301 = stack([0, 1, 2], {step: 13}).fast(2)
+s("bd sd bd sd bd sd").note("c3").room(0.2)
+const tempo_0303 = slider(3, 5, 12) + 2
+const pattern_0304 = note("c3 e3 g3").s("bd sd").gain(0.4)
+let layer_0305 = stack([0, 1, 2], {step: 1}).fast(2)
+s("bd sd").note("c3").room(0.6)
+const tempo_0307 = slider(7, 5, 12) + 6
+const pattern_0308 = note("c3 e3 g3").s("bd sd").gain(0.8)
+let layer_0309 = stack([0, 1, 2], {step: 5}).fast(2)
+s("bd sd bd sd").note("c3").room(0.0)
+const tempo_0311 = slider(11, 5, 12) + 3
+const pattern_0312 = note("c3 e3 g3").s("bd sd").gain(0.2)
+let layer_0313 = stack([0, 1, 2], {step: 9}).fast(2)
+s("bd sd bd sd bd sd").note("c3").room(0.4)
+const tempo_0315 = slider(3, 5, 12) + 0
+const pattern_0316 = note("c3 e3 g3").s("bd sd").gain(0.6)
+let layer_0317 = stack([0, 1, 2], {step: 13}).fast(2)
+s("bd sd").note("c3").room(0.8)
+const tempo_0319 = slider(7, 5, 12) + 4
+const pattern_0320 = note("c3 e3 g3").s("bd sd").gain(0.0)
+let layer_0321 = stack([0, 1, 2], {step: 1}).fast(2)
+s("bd sd bd sd").note("c3").room(0.2)
+const tempo_0323 = slider(11, 5, 12) + 1
+const pattern_0324 = note("c3 e3 g3").s("bd sd").gain(0.4)
+let layer_0325 = stack([0, 1, 2], {step: 5}).fast(2)
+s("bd sd bd sd bd sd").note("c3").room(0.6)
+const tempo_0327 = slider(3, 5, 12) + 5
+const pattern_0328 = note("c3 e3 g3").s("bd sd").gain(0.8)
+let layer_0329 = stack([0, 1, 2], {step: 9}).fast(2)
+s("bd sd").note("c3").room(0.0)
+const tempo_0331 = slider(7, 5, 12) + 2
+const pattern_0332 = note("c3 e3 g3").s("bd sd").gain(0.2)
+let layer_0333 = stack([0, 1, 2], {step: 13}).fast(2)
+s("bd sd bd sd").note("c3").room(0.4)
+const tempo_0335 = slider(11, 5, 12) + 6
+const pattern_0336 = note("c3 e3 g3").s("bd sd").gain(0.6)
+let layer_0337 = stack([0, 1, 2], {step: 1}).fast(2)
+s("bd sd bd sd bd sd").note("c3").room(0.8)
+const tempo_0339 = slider(3, 5, 12) + 3
+const pattern_0340 = note("c3 e3 g3").s("bd sd").gain(0.0)
+let layer_0341 = stack([0, 1, 2], {step: 5}).fast(2)
+s("bd sd").note("c3").room(0.2)
+const tempo_0343 = slider(7, 5, 12) + 0
+const pattern_0344 = note("c3 e3 g3").s("bd sd").gain(0.4)
+let layer_0345 = stack([0, 1, 2], {step: 9}).fast(2)
+s("bd sd bd sd").note("c3").room(0.6)
+const tempo_0347 = slider(11, 5, 12) + 4
+const pattern_0348 = note("c3 e3 g3").s("bd sd").gain(0.8)
+let layer_0349 = stack([0, 1, 2], {step: 13}).fast(2)
+s("bd sd bd sd bd sd").note("c3").room(0.0)
+const tempo_0351 = slider(3, 5, 12) + 1
+const pattern_0352 = note("c3 e3 g3").s("bd sd").gain(0.2)
+let layer_0353 = stack([0, 1, 2], {step: 1}).fast(2)
+s("bd sd").note("c3").room(0.4)
+const tempo_0355 = slider(7, 5, 12) + 5
+const pattern_0356 = note("c3 e3 g3").s("bd sd").gain(0.6)
+let layer_0357 = stack([0, 1, 2], {step: 5}).fast(2)
+s("bd sd bd sd").note("c3").room(0.8)
+const tempo_0359 = slider(11, 5, 12) + 2
+const pattern_0360 = note("c3 e3 g3").s("bd sd").gain(0.0)
+let layer_0361 = stack([0, 1, 2], {step: 9}).fast(2)
+s("bd sd bd sd bd sd").note("c3").room(0.2)
+const tempo_0363 = slider(3, 5, 12) + 6
+const pattern_0364 = note("c3 e3 g3").s("bd sd").gain(0.4)
+let layer_0365 = stack([0, 1, 2], {step: 13}).fast(2)
+s("bd sd").note("c3").room(0.6)
+const tempo_0367 = slider(7, 5, 12) + 3
+const pattern_0368 = note("c3 e3 g3").s("bd sd").gain(0.8)
+let layer_0369 = stack([0, 1, 2], {step: 1}).fast(2)
+s("bd sd bd sd").note("c3").room(0.0)
+const tempo_0371 = slider(11, 5, 12) + 0
+const pattern_0372 = note("c3 e3 g3").s("bd sd").gain(0.2)
+let layer_0373 = stack([0, 1, 2], {step: 5}).fast(2)
+s("bd sd bd sd bd sd").note("c3").room(0.4)
+const tempo_0375 = slider(3, 5, 12) + 4
+const pattern_0376 = note("c3 e3 g3").s("bd sd").gain(0.6)
+let layer_0377 = stack([0, 1, 2], {step: 9}).fast(2)
+s("bd sd").note("c3").room(0.8)
+const tempo_0379 = slider(7, 5, 12) + 1
+const pattern_0380 = note("c3 e3 g3").s("bd sd").gain(0.0)
+let layer_0381 = stack([0, 1, 2], {step: 13}).fast(2)
+s("bd sd bd sd").note("c3").room(0.2)
+const tempo_0383 = slider(11, 5, 12) + 5
+const pattern_0384 = note("c3 e3 g3").s("bd sd").gain(0.4)
+let layer_0385 = stack([0, 1, 2], {step: 1}).fast(2)
+s("bd sd bd sd bd sd").note("c3").room(0.6)
+const tempo_0387 = slider(3, 5, 12) + 2
+const pattern_0388 = note("c3 e3 g3").s("bd sd").gain(0.8)
+let layer_0389 = stack([0, 1, 2], {step: 5}).fast(2)
+s("bd sd").note("c3").room(0.0)
+const tempo_0391 = slider(7, 5, 12) + 6
+const pattern_0392 = note("c3 e3 g3").s("bd sd").gain(0.2)
+let layer_0393 = stack([0, 1, 2], {step: 9}).fast(2)
+s("bd sd bd sd").note("c3").room(0.4)
+const tempo_0395 = slider(11, 5, 12) + 3
+const pattern_0396 = note("c3 e3 g3").s("bd sd").gain(0.6)
+let layer_0397 = stack([0, 1, 2], {step: 13}).fast(2)
+s("bd sd bd sd bd sd").note("c3").room(0.8)
+const tempo_0399 = slider(3, 5, 12) + 0
+const pattern_0400 = note("c3 e3 g3").s("bd sd").gain(0.0)
+let layer_0401 = stack([0, 1, 2], {step: 1}).fast(2)
+s("bd sd").note("c3").room(0.2)
+const tempo_0403 = slider(7, 5, 12) + 4
+const pattern_0404 = note("c3 e3 g3").s("bd sd").gain(0.4)
+let layer_0405 = stack([0, 1, 2], {step: 5}).fast(2)
+s("bd sd bd sd").note("c3").room(0.6)
+const tempo_0407 = slider(11, 5, 12) + 1
+const pattern_0408 = note("c3 e3 g3").s("bd sd").gain(0.8)
+let layer_0409 = stack([0, 1, 2], {step: 9}).fast(2)
+s("bd sd bd sd bd sd").note("c3").room(0.0)
+const tempo_0411 = slider(3, 5, 12) + 5
+const pattern_0412 = note("c3 e3 g3").s("bd sd").gain(0.2)
+let layer_0413 = stack([0, 1, 2], {step: 13}).fast(2)
+s("bd sd").note("c3").room(0.4)
+const tempo_0415 = slider(7, 5, 12) + 2
+const pattern_0416 = note("c3 e3 g3").s("bd sd").gain(0.6)
+let layer_0417 = stack([0, 1, 2], {step: 1}).fast(2)
+s("bd sd bd sd").note("c3").room(0.8)
+const tempo_0419 = slider(11, 5, 12) + 6
+const pattern_0420 = note("c3 e3 g3").s("bd sd").gain(0.0)
+let layer_0421 = stack([0, 1, 2], {step: 5}).fast(2)
+s("bd sd bd sd bd sd").note("c3").room(0.2)
+const tempo_0423 = slider(3, 5, 12) + 3
+const pattern_0424 = note("c3 e3 g3").s("bd sd").gain(0.4)
+let layer_0425 = stack([0, 1, 2], {step: 9}).fast(2)
+s("bd sd").note("c3").room(0.6)
+const tempo_0427 = slider(7, 5, 12) + 0
+const pattern_0428 = note("c3 e3 g3").s("bd sd").gain(0.8)
+let layer_0429 = stack([0, 1, 2], {step: 13}).fast(2)
+s("bd sd bd sd").note("c3").room(0.0)
+const tempo_0431 = slider(11, 5, 12) + 4
+const pattern_0432 = note("c3 e3 g3").s("bd sd").gain(0.2)
+let layer_0433 = stack([0, 1, 2], {step: 1}).fast(2)
+s("bd sd bd sd bd sd").note("c3").room(0.4)
+const tempo_0435 = slider(3, 5, 12) + 1
+const pattern_0436 = note("c3 e3 g3").s("bd sd").gain(0.6)
+let layer_0437 = stack([0, 1, 2], {step: 5}).fast(2)
+s("bd sd").note("c3").room(0.8)
+const tempo_0439 = slider(7, 5, 12) + 5
+const pattern_0440 = note("c3 e3 g3").s("bd sd").gain(0.0)
+let layer_0441 = stack([0, 1, 2], {step: 9}).fast(2)
+s("bd sd bd sd").note("c3").room(0.2)
+const tempo_0443 = slider(11, 5, 12) + 2
+const pattern_0444 = note("c3 e3 g3").s("bd sd").gain(0.4)
+let layer_0445 = stack([0, 1, 2], {step: 13}).fast(2)
+s("bd sd bd sd bd sd").note("c3").room(0.6)
+const tempo_0447 = slider(3, 5, 12) + 6
+const pattern_0448 = note("c3 e3 g3").s("bd sd").gain(0.8)
+let layer_0449 = stack([0, 1, 2], {step: 1}).fast(2)
+s("bd sd").note("c3").room(0.0)
+const tempo_0451 = slider(7, 5, 12) + 3
+const pattern_0452 = note("c3 e3 g3").s("bd sd").gain(0.2)
+let layer_0453 = stack([0, 1, 2], {step: 5}).fast(2)
+s("bd sd bd sd").note("c3").room(0.4)
+const tempo_0455 = slider(11, 5, 12) + 0
+const pattern_0456 = note("c3 e3 g3").s("bd sd").gain(0.6)
+let layer_0457 = stack([0, 1, 2], {step: 9}).fast(2)
+s("bd sd bd sd bd sd").note("c3").room(0.8)
+const tempo_0459 = slider(3, 5, 12) + 4
+const pattern_0460 = note("c3 e3 g3").s("bd sd").gain(0.0)
+let layer_0461 = stack([0, 1, 2], {step: 13}).fast(2)
+s("bd sd").note("c3").room(0.2)
+const tempo_0463 = slider(7, 5, 12) + 1
+const pattern_0464 = note("c3 e3 g3").s("bd sd").gain(0.4)
+let layer_0465 = stack([0, 1, 2], {step: 1}).fast(2)
+s("bd sd bd sd").note("c3").room(0.6)
+const tempo_0467 = slider(11, 5, 12) + 5
+const pattern_0468 = note("c3 e3 g3").s("bd sd").gain(0.8)
+let layer_0469 = stack([0, 1, 2], {step: 5}).fast(2)
+s("bd sd bd sd bd sd").note("c3").room(0.0)
+const tempo_0471 = slider(3, 5, 12) + 2
+const pattern_0472 = note("c3 e3 g3").s("bd sd").gain(0.2)
+let layer_0473 = stack([0, 1, 2], {step: 9}).fast(2)
+s("bd sd").note("c3").room(0.4)
+const tempo_0475 = slider(7, 5, 12) + 6
+const pattern_0476 = note("c3 e3 g3").s("bd sd").gain(0.6)
+let layer_0477 = stack([0, 1, 2], {step: 13}).fast(2)
+s("bd sd bd sd").note("c3").room(0.8)
+const tempo_0479 = slider(11, 5, 12) + 3
+const pattern_0480 = note("c3 e3 g3").s("bd sd").gain(0.0)
+let layer_0481 = stack([0, 1, 2], {step: 1}).fast(2)
+s("bd sd bd sd bd sd").note("c3").room(0.2)
+const tempo_0483 = slider(3, 5, 12) + 0
+const pattern_0484 = note("c3 e3 g3").s("bd sd").gain(0.4)
+let layer_0485 = stack([0, 1, 2], {step: 5}).fast(2)
+s("bd sd").note("c3").room(0.6)
+const tempo_0487 = slider(7, 5, 12) + 4
+const pattern_0488 = note("c3 e3 g3").s("bd sd").gain(0.8)
+let layer_0489 = stack([0, 1, 2], {step: 9}).fast(2)
+s("bd sd bd sd").note("c3").room(0.0)
+const tempo_0491 = slider(11, 5, 12) + 1
+const pattern_0492 = note("c3 e3 g3").s("bd sd").gain(0.2)
+let layer_0493 = stack([0, 1, 2], {step: 13}).fast(2)
+s("bd sd bd sd bd sd").note("c3").room(0.4)
+const tempo_0495 = slider(3, 5, 12) + 5
+const pattern_0496 = note("c3 e3 g3").s("bd sd").gain(0.6)
+let layer_0497 = stack([0, 1, 2], {step: 1}).fast(2)
+s("bd sd").note("c3").room(0.8)
+const tempo_0499 = slider(7, 5, 12) + 2
+const pattern_0500 = note("c3 e3 g3").s("bd sd").gain(0.0)
+let layer_0501 = stack([0, 1, 2], {step: 5}).fast(2)
+s("bd sd bd sd").note("c3").room(0.2)
+const tempo_0503 = slider(11, 5, 12) + 6
+const pattern_0504 = note("c3 e3 g3").s("bd sd").gain(0.4)
+let layer_0505 = stack([0, 1, 2], {step: 9}).fast(2)
+s("bd sd bd sd bd sd").note("c3").room(0.6)
+const tempo_0507 = slider(3, 5, 12) + 3
+const pattern_0508 = note("c3 e3 g3").s("bd sd").gain(0.8)
+let layer_0509 = stack([0, 1, 2], {step: 13}).fast(2)
+s("bd sd").note("c3").room(0.0)
+const tempo_0511 = slider(7, 5, 12) + 0
+const pattern_0512 = note("c3 e3 g3").s("bd sd").gain(0.2)
+let layer_0513 = stack([0, 1, 2], {step: 1}).fast(2)
+s("bd sd bd sd").note("c3").room(0.4)
+const tempo_0515 = slider(11, 5, 12) + 4
+const pattern_0516 = note("c3 e3 g3").s("bd sd").gain(0.6)
+let layer_0517 = stack([0, 1, 2], {step: 5}).fast(2)
+s("bd sd bd sd bd sd").note("c3").room(0.8)
+const tempo_0519 = slider(3, 5, 12) + 1
+const pattern_0520 = note("c3 e3 g3").s("bd sd").gain(0.0)
+let layer_0521 = stack([0, 1, 2], {step: 9}).fast(2)
+s("bd sd").note("c3").room(0.2)
+const tempo_0523 = slider(7, 5, 12) + 5
+const pattern_0524 = note("c3 e3 g3").s("bd sd").gain(0.4)
+let layer_0525 = stack([0, 1, 2], {step: 13}).fast(2)
+s("bd sd bd sd").note("c3").room(0.6)
+const tempo_0527 = slider(11, 5, 12) + 2
+const pattern_0528 = note("c3 e3 g3").s("bd sd").gain(0.8)
+let layer_0529 = stack([0, 1, 2], {step: 1}).fast(2)
+s("bd sd bd sd bd sd").note("c3").room(0.0)
+const tempo_0531 = slider(3, 5, 12) + 6
+const pattern_0532 = note("c3 e3 g3").s("bd sd").gain(0.2)
+let layer_0533 = stack([0, 1, 2], {step: 5}).fast(2)
+s("bd sd").note("c3").room(0.4)
+const tempo_0535 = slider(7, 5, 12) + 3
+const pattern_0536 = note("c3 e3 g3").s("bd sd").gain(0.6)
+let layer_0537 = stack([0, 1, 2], {step: 9}).fast(2)
+s("bd sd bd sd").note("c3").room(0.8)
+const tempo_0539 = slider(11, 5, 12) + 0
+const pattern_0540 = note("c3 e3 g3").s("bd sd").gain(0.0)
+let layer_0541 = stack([0, 1, 2], {step: 13}).fast(2)
+s("bd sd bd sd bd sd").note("c3").room(0.2)
+const tempo_0543 = slider(3, 5, 12) + 4
+const pattern_0544 = note("c3 e3 g3").s("bd sd").gain(0.4)
+let layer_0545 = stack([0, 1, 2], {step: 1}).fast(2)
+s("bd sd").note("c3").room(0.6)
+const tempo_0547 = slider(7, 5, 12) + 1
+const pattern_0548 = note("c3 e3 g3").s("bd sd").gain(0.8)
+let layer_0549 = stack([0, 1, 2], {step: 5}).fast(2)
+s("bd sd bd sd").note("c3").room(0.0)
+const tempo_0551 = slider(11, 5, 12) + 5
+const pattern_0552 = note("c3 e3 g3").s("bd sd").gain(0.2)
+let layer_0553 = stack([0, 1, 2], {step: 9}).fast(2)
+s("bd sd bd sd bd sd").note("c3").room(0.4)
+const tempo_0555 = slider(3, 5, 12) + 2
+const pattern_0556 = note("c3 e3 g3").s("bd sd").gain(0.6)
+let layer_0557 = stack([0, 1, 2], {step: 13}).fast(2)
+s("bd sd").note("c3").room(0.8)
+const tempo_0559 = slider(7, 5, 12) + 6
+const pattern_0560 = note("c3 e3 g3").s("bd sd").gain(0.0)
+let layer_0561 = stack([0, 1, 2], {step: 1}).fast(2)
+s("bd sd bd sd").note("c3").room(0.2)
+const tempo_0563 = slider(11, 5, 12) + 3
+const pattern_0564 = note("c3 e3 g3").s("bd sd").gain(0.4)
+let layer_0565 = stack([0, 1, 2], {step: 5}).fast(2)
+s("bd sd bd sd bd sd").note("c3").room(0.6)
+const tempo_0567 = slider(3, 5, 12) + 0
+const pattern_0568 = note("c3 e3 g3").s("bd sd").gain(0.8)
+let layer_0569 = stack([0, 1, 2], {step: 9}).fast(2)
+s("bd sd").note("c3").room(0.0)
+const tempo_0571 = slider(7, 5, 12) + 4
+const pattern_0572 = note("c3 e3 g3").s("bd sd").gain(0.2)
+let layer_0573 = stack([0, 1, 2], {step: 13}).fast(2)
+s("bd sd bd sd").note("c3").room(0.4)
+const tempo_0575 = slider(11, 5, 12) + 1
+const pattern_0576 = note("c3 e3 g3").s("bd sd").gain(0.6)
+let layer_0577 = stack([0, 1, 2], {step: 1}).fast(2)
+s("bd sd bd sd bd sd").note("c3").room(0.8)
+const tempo_0579 = slider(3, 5, 12) + 5
+const pattern_0580 = note("c3 e3 g3").s("bd sd").gain(0.0)
+let layer_0581 = stack([0, 1, 2], {step: 5}).fast(2)
+s("bd sd").note("c3").room(0.2)
+const tempo_0583 = slider(7, 5, 12) + 2
+const pattern_0584 = note("c3 e3 g3").s("bd sd").gain(0.4)
+let layer_0585 = stack([0, 1, 2], {step: 9}).fast(2)
+s("bd sd bd sd").note("c3").room(0.6)
+const tempo_0587 = slider(11, 5, 12) + 6
+const pattern_0588 = note("c3 e3 g3").s("bd sd").gain(0.8)
+let layer_0589 = stack([0, 1, 2], {step: 13}).fast(2)
+s("bd sd bd sd bd sd").note("c3").room(0.0)
+const tempo_0591 = slider(3, 5, 12) + 3
+const pattern_0592 = note("c3 e3 g3").s("bd sd").gain(0.2)
+let layer_0593 = stack([0, 1, 2], {step: 1}).fast(2)
+s("bd sd").note("c3").room(0.4)
+const tempo_0595 = slider(7, 5, 12) + 0
+const pattern_0596 = note("c3 e3 g3").s("bd sd").gain(0.6)
+let layer_0597 = stack([0, 1, 2], {step: 5}).fast(2)
+s("bd sd bd sd").note("c3").room(0.8)
+const tempo_0599 = slider(11, 5, 12) + 4
+const pattern_0600 = note("c3 e3 g3").s("bd sd").gain(0.0)
+let layer_0601 = stack([0, 1, 2], {step: 9}).fast(2)
+s("bd sd bd sd bd sd").note("c3").room(0.2)
+const tempo_0603 = slider(3, 5, 12) + 1
+const pattern_0604 = note("c3 e3 g3").s("bd sd").gain(0.4)
+let layer_0605 = stack([0, 1, 2], {step: 13}).fast(2)
+s("bd sd").note("c3").room(0.6)
+const tempo_0607 = slider(7, 5, 12) + 5
+const pattern_0608 = note("c3 e3 g3").s("bd sd").gain(0.8)
+let layer_0609 = stack([0, 1, 2], {step: 1}).fast(2)
+s("bd sd bd sd").note("c3").room(0.0)
+const tempo_0611 = slider(11, 5, 12) + 2
+const pattern_0612 = note("c3 e3 g3").s("bd sd").gain(0.2)
+let layer_0613 = stack([0, 1, 2], {step: 5}).fast(2)
+s("bd sd bd sd bd sd").note("c3").room(0.4)
+const tempo_0615 = slider(3, 5, 12) + 6
+const pattern_0616 = note("c3 e3 g3").s("bd sd").gain(0.6)
+let layer_0617 = stack([0, 1, 2], {step: 9}).fast(2)
+s("bd sd").note("c3").room(0.8)
+const tempo_0619 = slider(7, 5, 12) + 3
+const pattern_0620 = note("c3 e3 g3").s("bd sd").gain(0.0)
+let layer_0621 = stack([0, 1, 2], {step: 13}).fast(2)
+s("bd sd bd sd").note("c3").room(0.2)
+const tempo_0623 = slider(11, 5, 12) + 0
+const pattern_0624 = note("c3 e3 g3").s("bd sd").gain(0.4)
+let layer_0625 = stack([0, 1, 2], {step: 1}).fast(2)
+s("bd sd bd sd bd sd").note("c3").room(0.6)
+const tempo_0627 = slider(3, 5, 12) + 4
+const pattern_0628 = note("c3 e3 g3").s("bd sd").gain(0.8)
+let layer_0629 = stack([0, 1, 2], {step: 5}).fast(2)
+s("bd sd").note("c3").room(0.0)
+const tempo_0631 = slider(7, 5, 12) + 1
+const pattern_0632 = note("c3 e3 g3").s("bd sd").gain(0.2)
+let layer_0633 = stack([0, 1, 2], {step: 9}).fast(2)
+s("bd sd bd sd").note("c3").room(0.4)
+const tempo_0635 = slider(11, 5, 12) + 5
+const pattern_0636 = note("c3 e3 g3").s("bd sd").gain(0.6)
+let layer_0637 = stack([0, 1, 2], {step: 13}).fast(2)
+s("bd sd bd sd bd sd").note("c3").room(0.8)
+const tempo_0639 = slider(3, 5, 12) + 2
+const pattern_0640 = note("c3 e3 g3").s("bd sd").gain(0.0)
+let layer_0641 = stack([0, 1, 2], {step: 1}).fast(2)
+s("bd sd").note("c3").room(0.2)
+const tempo_0643 = slider(7, 5, 12) + 6
+const pattern_0644 = note("c3 e3 g3").s("bd sd").gain(0.4)
+let layer_0645 = stack([0, 1, 2], {step: 5}).fast(2)
+s("bd sd bd sd").note("c3").room(0.6)
+const tempo_0647 = slider(11, 5, 12) + 3
+const pattern_0648 = note("c3 e3 g3").s("bd sd").gain(0.8)
+let layer_0649 = stack([0, 1, 2], {step: 9}).fast(2)
+s("bd sd bd sd bd sd").note("c3").room(0.0)
+const tempo_0651 = slider(3, 5, 12) + 0
+const pattern_0652 = note("c3 e3 g3").s("bd sd").gain(0.2)
+let layer_0653 = stack([0, 1, 2], {step: 13}).fast(2)
+s("bd sd").note("c3").room(0.4)
+const tempo_0655 = slider(7, 5, 12) + 4
+const pattern_0656 = note("c3 e3 g3").s("bd sd").gain(0.6)
+let layer_0657 = stack([0, 1, 2], {step: 1}).fast(2)
+s("bd sd bd sd").note("c3").room(0.8)
+const tempo_0659 = slider(11, 5, 12) + 1
+const pattern_0660 = note("c3 e3 g3").s("bd sd").gain(0.0)
+let layer_0661 = stack([0, 1, 2], {step: 5}).fast(2)
+s("bd sd bd sd bd sd").note("c3").room(0.2)
+const tempo_0663 = slider(3, 5, 12) + 5
+const pattern_0664 = note("c3 e3 g3").s("bd sd").gain(0.4)
+let layer_0665 = stack([0, 1, 2], {step: 9}).fast(2)
+s("bd sd").note("c3").room(0.6)
+const tempo_0667 = slider(7, 5, 12) + 2
+const pattern_0668 = note("c3 e3 g3").s("bd sd").gain(0.8)
+let layer_0669 = stack([0, 1, 2], {step: 13}).fast(2)
+s("bd sd bd sd").note("c3").room(0.0)
+const tempo_0671 = slider(11, 5, 12) + 6
+const pattern_0672 = note("c3 e3 g3").s("bd sd").gain(0.2)
+let layer_0673 = stack([0, 1, 2], {step: 1}).fast(2)
+s("bd sd bd sd bd sd").note("c3").room(0.4)
+const tempo_0675 = slider(3, 5, 12) + 3
+const pattern_0676 = note("c3 e3 g3").s("bd sd").gain(0.6)
+let layer_0677 = stack([0, 1, 2], {step: 5}).fast(2)
+s("bd sd").note("c3").room(0.8)
+const tempo_0679 = slider(7, 5, 12) + 0
+const pattern_0680 = note("c3 e3 g3").s("bd sd").gain(0.0)
+let layer_0681 = stack([0, 1, 2], {step: 9}).fast(2)
+s("bd sd bd sd").note("c3").room(0.2)
+const tempo_0683 = slider(11, 5, 12) + 4
+const pattern_0684 = note("c3 e3 g3").s("bd sd").gain(0.4)
+let layer_0685 = stack([0, 1, 2], {step: 13}).fast(2)
+s("bd sd bd sd bd sd").note("c3").room(0.6)
+const tempo_0687 = slider(3, 5, 12) + 1
+const pattern_0688 = note("c3 e3 g3").s("bd sd").gain(0.8)
+let layer_0689 = stack([0, 1, 2], {step: 1}).fast(2)
+s("bd sd").note("c3").room(0.0)
+const tempo_0691 = slider(7, 5, 12) + 5
+const pattern_0692 = note("c3 e3 g3").s("bd sd").gain(0.2)
+let layer_0693 = stack([0, 1, 2], {step: 5}).fast(2)
+s("bd sd bd sd").note("c3").room(0.4)
+const tempo_0695 = slider(11, 5, 12) + 2
+const pattern_0696 = note("c3 e3 g3").s("bd sd").gain(0.6)
+let layer_0697 = stack([0, 1, 2], {step: 9}).fast(2)
+s("bd sd bd sd bd sd").note("c3").room(0.8)
+const tempo_0699 = slider(3, 5, 12) + 6
+const pattern_0700 = note("c3 e3 g3").s("bd sd").gain(0.0)
+let layer_0701 = stack([0, 1, 2], {step: 13}).fast(2)
+s("bd sd").note("c3").room(0.2)
+const tempo_0703 = slider(7, 5, 12) + 3
+const pattern_0704 = note("c3 e3 g3").s("bd sd").gain(0.4)
+let layer_0705 = stack([0, 1, 2], {step: 1}).fast(2)
+s("bd sd bd sd").note("c3").room(0.6)
+const tempo_0707 = slider(11, 5, 12) + 0
+const pattern_0708 = note("c3 e3 g3").s("bd sd").gain(0.8)
+let layer_0709 = stack([0, 1, 2], {step: 5}).fast(2)
+s("bd sd bd sd bd sd").note("c3").room(0.0)
+const tempo_0711 = slider(3, 5, 12) + 4
+const pattern_0712 = note("c3 e3 g3").s("bd sd").gain(0.2)
+let layer_0713 = stack([0, 1, 2], {step: 9}).fast(2)
+s("bd sd").note("c3").room(0.4)
+const tempo_0715 = slider(7, 5, 12) + 1
+const pattern_0716 = note("c3 e3 g3").s("bd sd").gain(0.6)
+let layer_0717 = stack([0, 1, 2], {step: 13}).fast(2)
+s("bd sd bd sd").note("c3").room(0.8)
+const tempo_0719 = slider(11, 5, 12) + 5
+const pattern_0720 = note("c3 e3 g3").s("bd sd").gain(0.0)
+let layer_0721 = stack([0, 1, 2], {step: 1}).fast(2)
+s("bd sd bd sd bd sd").note("c3").room(0.2)
+const tempo_0723 = slider(3, 5, 12) + 2
+const pattern_0724 = note("c3 e3 g3").s("bd sd").gain(0.4)
+let layer_0725 = stack([0, 1, 2], {step: 5}).fast(2)
+s("bd sd").note("c3").room(0.6)
+const tempo_0727 = slider(7, 5, 12) + 6
+const pattern_0728 = note("c3 e3 g3").s("bd sd").gain(0.8)
+let layer_0729 = stack([0, 1, 2], {step: 9}).fast(2)
+s("bd sd bd sd").note("c3").room(0.0)
+const tempo_0731 = slider(11, 5, 12) + 3
+const pattern_0732 = note("c3 e3 g3").s("bd sd").gain(0.2)
+let layer_0733 = stack([0, 1, 2], {step: 13}).fast(2)
+s("bd sd bd sd bd sd").note("c3").room(0.4)
+const tempo_0735 = slider(3, 5, 12) + 0
+const pattern_0736 = note("c3 e3 g3").s("bd sd").gain(0.6)
+let layer_0737 = stack([0, 1, 2], {step: 1}).fast(2)
+s("bd sd").note("c3").room(0.8)
+const tempo_0739 = slider(7, 5, 12) + 4
+const pattern_0740 = note("c3 e3 g3").s("bd sd").gain(0.0)
+let layer_0741 = stack([0, 1, 2], {step: 5}).fast(2)
+s("bd sd bd sd").note("c3").room(0.2)
+const tempo_0743 = slider(11, 5, 12) + 1
+const pattern_0744 = note("c3 e3 g3").s("bd sd").gain(0.4)
+let layer_0745 = stack([0, 1, 2], {step: 9}).fast(2)
+s("bd sd bd sd bd sd").note("c3").room(0.6)
+const tempo_0747 = slider(3, 5, 12) + 5
+const pattern_0748 = note("c3 e3 g3").s("bd sd").gain(0.8)
+let layer_0749 = stack([0, 1, 2], {step: 13}).fast(2)
+s("bd sd").note("c3").room(0.0)
+const tempo_0751 = slider(7, 5, 12) + 2
+const pattern_0752 = note("c3 e3 g3").s("bd sd").gain(0.2)
+let layer_0753 = stack([0, 1, 2], {step: 1}).fast(2)
+s("bd sd bd sd").note("c3").room(0.4)
+const tempo_0755 = slider(11, 5, 12) + 6
+const pattern_0756 = note("c3 e3 g3").s("bd sd").gain(0.6)
+let layer_0757 = stack([0, 1, 2], {step: 5}).fast(2)
+s("bd sd bd sd bd sd").note("c3").room(0.8)
+const tempo_0759 = slider(3, 5, 12) + 3
+const pattern_0760 = note("c3 e3 g3").s("bd sd").gain(0.0)
+let layer_0761 = stack([0, 1, 2], {step: 9}).fast(2)
+s("bd sd").note("c3").room(0.2)
+const tempo_0763 = slider(7, 5, 12) + 0
+const pattern_0764 = note("c3 e3 g3").s("bd sd").gain(0.4)
+let layer_0765 = stack([0, 1, 2], {step: 13}).fast(2)
+s("bd sd bd sd").note("c3").room(0.6)
+const tempo_0767 = slider(11, 5, 12) + 4
+const pattern_0768 = note("c3 e3 g3").s("bd sd").gain(0.8)
+let layer_0769 = stack([0, 1, 2], {step: 1}).fast(2)
+s("bd sd bd sd bd sd").note("c3").room(0.0)
+const tempo_0771 = slider(3, 5, 12) + 1
+const pattern_0772 = note("c3 e3 g3").s("bd sd").gain(0.2)
+let layer_0773 = stack([0, 1, 2], {step: 5}).fast(2)
+s("bd sd").note("c3").room(0.4)
+const tempo_0775 = slider(7, 5, 12) + 5
+const pattern_0776 = note("c3 e3 g3").s("bd sd").gain(0.6)
+let layer_0777 = stack([0, 1, 2], {step: 9}).fast(2)
+s("bd sd bd sd").note("c3").room(0.8)
+const tempo_0779 = slider(11, 5, 12) + 2
+const pattern_0780 = note("c3 e3 g3").s("bd sd").gain(0.0)
+let layer_0781 = stack([0, 1, 2], {step: 13}).fast(2)
+s("bd sd bd sd bd sd").note("c3").room(0.2)
+const tempo_0783 = slider(3, 5, 12) + 6
+const pattern_0784 = note("c3 e3 g3").s("bd sd").gain(0.4)
+let layer_0785 = stack([0, 1, 2], {step: 1}).fast(2)
+s("bd sd").note("c3").room(0.6)
+const tempo_0787 = slider(7, 5, 12) + 3
+const pattern_0788 = note("c3 e3 g3").s("bd sd").gain(0.8)
+let layer_0789 = stack([0, 1, 2], {step: 5}).fast(2)
+s("bd sd bd sd").note("c3").room(0.0)
+const tempo_0791 = slider(11, 5, 12) + 0
+const pattern_0792 = note("c3 e3 g3").s("bd sd").gain(0.2)
+let layer_0793 = stack([0, 1, 2], {step: 9}).fast(2)
+s("bd sd bd sd bd sd").note("c3").room(0.4)
+const tempo_0795 = slider(3, 5, 12) + 4
+const pattern_0796 = note("c3 e3 g3").s("bd sd").gain(0.6)
+let layer_0797 = stack([0, 1, 2], {step: 13}).fast(2)
+s("bd sd").note("c3").room(0.8)
+const tempo_0799 = slider(7, 5, 12) + 1
+const pattern_0800 = note("c3 e3 g3").s("bd sd").gain(0.0)
+let layer_0801 = stack([0, 1, 2], {step: 1}).fast(2)
+s("bd sd bd sd").note("c3").room(0.2)
+const tempo_0803 = slider(11, 5, 12) + 5
+const pattern_0804 = note("c3 e3 g3").s("bd sd").gain(0.4)
+let layer_0805 = stack([0, 1, 2], {step: 5}).fast(2)
+s("bd sd bd sd bd sd").note("c3").room(0.6)
+const tempo_0807 = slider(3, 5, 12) + 2
+const pattern_0808 = note("c3 e3 g3").s("bd sd").gain(0.8)
+let layer_0809 = stack([0, 1, 2], {step: 9}).fast(2)
+s("bd sd").note("c3").room(0.0)
+const tempo_0811 = slider(7, 5, 12) + 6
+const pattern_0812 = note("c3 e3 g3").s("bd sd").gain(0.2)
+let layer_0813 = stack([0, 1, 2], {step: 13}).fast(2)
+s("bd sd bd sd").note("c3").room(0.4)
+const tempo_0815 = slider(11, 5, 12) + 3
+const pattern_0816 = note("c3 e3 g3").s("bd sd").gain(0.6)
+let layer_0817 = stack([0, 1, 2], {step: 1}).fast(2)
+s("bd sd bd sd bd sd").note("c3").room(0.8)
+const tempo_0819 = slider(3, 5, 12) + 0
+const pattern_0820 = note("c3 e3 g3").s("bd sd").gain(0.0)
+let layer_0821 = stack([0, 1, 2], {step: 5}).fast(2)
+s("bd sd").note("c3").room(0.2)
+const tempo_0823 = slider(7, 5, 12) + 4
+const pattern_0824 = note("c3 e3 g3").s("bd sd").gain(0.4)
+let layer_0825 = stack([0, 1, 2], {step: 9}).fast(2)
+s("bd sd bd sd").note("c3").room(0.6)
+const tempo_0827 = slider(11, 5, 12) + 1
+const pattern_0828 = note("c3 e3 g3").s("bd sd").gain(0.8)
+let layer_0829 = stack([0, 1, 2], {step: 13}).fast(2)
+s("bd sd bd sd bd sd").note("c3").room(0.0)
+const tempo_0831 = slider(3, 5, 12) + 5
+const pattern_0832 = note("c3 e3 g3").s("bd sd").gain(0.2)
+let layer_0833 = stack([0, 1, 2], {step: 1}).fast(2)
+s("bd sd").note("c3").room(0.4)
+const tempo_0835 = slider(7, 5, 12) + 2
+const pattern_0836 = note("c3 e3 g3").s("bd sd").gain(0.6)
+let layer_0837 = stack([0, 1, 2], {step: 5}).fast(2)
+s("bd sd bd sd").note("c3").room(0.8)
+const tempo_0839 = slider(11, 5, 12) + 6
+const pattern_0840 = note("c3 e3 g3").s("bd sd").gain(0.0)
+let layer_0841 = stack([0, 1, 2], {step: 9}).fast(2)
+s("bd sd bd sd bd sd").note("c3").room(0.2)
+const tempo_0843 = slider(3, 5, 12) + 3
+const pattern_0844 = note("c3 e3 g3").s("bd sd").gain(0.4)
+let layer_0845 = stack([0, 1, 2], {step: 13}).fast(2)
+s("bd sd").note("c3").room(0.6)
+const tempo_0847 = slider(7, 5, 12) + 0
+const pattern_0848 = note("c3 e3 g3").s("bd sd").gain(0.8)
+let layer_0849 = stack([0, 1, 2], {step: 1}).fast(2)
+s("bd sd bd sd").note("c3").room(0.0)
+const tempo_0851 = slider(11, 5, 12) + 4
+const pattern_0852 = note("c3 e3 g3").s("bd sd").gain(0.2)
+let layer_0853 = stack([0, 1, 2], {step: 5}).fast(2)
+s("bd sd bd sd bd sd").note("c3").room(0.4)
+const tempo_0855 = slider(3, 5, 12) + 1
+const pattern_0856 = note("c3 e3 g3").s("bd sd").gain(0.6)
+let layer_0857 = stack([0, 1, 2], {step: 9}).fast(2)
+s("bd sd").note("c3").room(0.8)
+const tempo_0859 = slider(7, 5, 12) + 5
+const pattern_0860 = note("c3 e3 g3").s("bd sd").gain(0.0)
+let layer_0861 = stack([0, 1, 2], {step: 13}).fast(2)
+s("bd sd bd sd").note("c3").room(0.2)
+const tempo_0863 = slider(11, 5, 12) + 2
+const pattern_0864 = note("c3 e3 g3").s("bd sd").gain(0.4)
+let layer_0865 = stack([0, 1, 2], {step: 1}).fast(2)
+s("bd sd bd sd bd sd").note("c3").room(0.6)
+const tempo_0867 = slider(3, 5, 12) + 6
+const pattern_0868 = note("c3 e3 g3").s("bd sd").gain(0.8)
+let layer_0869 = stack([0, 1, 2], {step: 5}).fast(2)
+s("bd sd").note("c3").room(0.0)
+const tempo_0871 = slider(7, 5, 12) + 3
+const pattern_0872 = note("c3 e3 g3").s("bd sd").gain(0.2)
+let layer_0873 = stack([0, 1, 2], {step: 9}).fast(2)
+s("bd sd bd sd").note("c3").room(0.4)
+const tempo_0875 = slider(11, 5, 12) + 0
+const pattern_0876 = note("c3 e3 g3").s("bd sd").gain(0.6)
+let layer_0877 = stack([0, 1, 2], {step: 13}).fast(2)
+s("bd sd bd sd bd sd").note("c3").room(0.8)
+const tempo_0879 = slider(3, 5, 12) + 4
+const pattern_0880 = note("c3 e3 g3").s("bd sd").gain(0.0)
+let layer_0881 = stack([0, 1, 2], {step: 1}).fast(2)
+s("bd sd").note("c3").room(0.2)
+const tempo_0883 = slider(7, 5, 12) + 1
+const pattern_0884 = note("c3 e3 g3").s("bd sd").gain(0.4)
+let layer_0885 = stack([0, 1, 2], {step: 5}).fast(2)
+s("bd sd bd sd").note("c3").room(0.6)
+const tempo_0887 = slider(11, 5, 12) + 5
+const pattern_0888 = note("c3 e3 g3").s("bd sd").gain(0.8)
+let layer_0889 = stack([0, 1, 2], {step: 9}).fast(2)
+s("bd sd bd sd bd sd").note("c3").room(0.0)
+const tempo_0891 = slider(3, 5, 12) + 2
+const pattern_0892 = note("c3 e3 g3").s("bd sd").gain(0.2)
+let layer_0893 = stack([0, 1, 2], {step: 13}).fast(2)
+s("bd sd").note("c3").room(0.4)
+const tempo_0895 = slider(7, 5, 12) + 6
+const pattern_0896 = note("c3 e3 g3").s("bd sd").gain(0.6)
+let layer_0897 = stack([0, 1, 2], {step: 1}).fast(2)
+s("bd sd bd sd").note("c3").room(0.8)
+const tempo_0899 = slider(11, 5, 12) + 3
+const pattern_0900 = note("c3 e3 g3").s("bd sd").gain(0.0)
+let layer_0901 = stack([0, 1, 2], {step: 5}).fast(2)
+s("bd sd bd sd bd sd").note("c3").room(0.2)
+const tempo_0903 = slider(3, 5, 12) + 0
+const pattern_0904 = note("c3 e3 g3").s("bd sd").gain(0.4)
+let layer_0905 = stack([0, 1, 2], {step: 9}).fast(2)
+s("bd sd").note("c3").room(0.6)
+const tempo_0907 = slider(7, 5, 12) + 4
+const pattern_0908 = note("c3 e3 g3").s("bd sd").gain(0.8)
+let layer_0909 = stack([0, 1, 2], {step: 13}).fast(2)
+s("bd sd bd sd").note("c3").room(0.0)
+const tempo_0911 = slider(11, 5, 12) + 1
+const pattern_0912 = note("c3 e3 g3").s("bd sd").gain(0.2)
+let layer_0913 = stack([0, 1, 2], {step: 1}).fast(2)
+s("bd sd bd sd bd sd").note("c3").room(0.4)
+const tempo_0915 = slider(3, 5, 12) + 5
+const pattern_0916 = note("c3 e3 g3").s("bd sd").gain(0.6)
+let layer_0917 = stack([0, 1, 2], {step: 5}).fast(2)
+s("bd sd").note("c3").room(0.8)
+const tempo_0919 = slider(7, 5, 12) + 2
+const pattern_0920 = note("c3 e3 g3").s("bd sd").gain(0.0)
+let layer_0921 = stack([0, 1, 2], {step: 9}).fast(2)
+s("bd sd bd sd").note("c3").room(0.2)
+const tempo_0923 = slider(11, 5, 12) + 6
+const pattern_0924 = note("c3 e3 g3").s("bd sd").gain(0.4)
+let layer_0925 = stack([0, 1, 2], {step: 13}).fast(2)
+s("bd sd bd sd bd sd").note("c3").room(0.6)
+const tempo_0927 = slider(3, 5, 12) + 3
+const pattern_0928 = note("c3 e3 g3").s("bd sd").gain(0.8)
+let layer_0929 = stack([0, 1, 2], {step: 1}).fast(2)
+s("bd sd").note("c3").room(0.0)
+const tempo_0931 = slider(7, 5, 12) + 0
+const pattern_0932 = note("c3 e3 g3").s("bd sd").gain(0.2)
+let layer_0933 = stack([0, 1, 2], {step: 5}).fast(2)
+s("bd sd bd sd").note("c3").room(0.4)
+const tempo_0935 = slider(11, 5, 12) + 4
+const pattern_0936 = note("c3 e3 g3").s("bd sd").gain(0.6)
+let layer_0937 = stack([0, 1, 2], {step: 9}).fast(2)
+s("bd sd bd sd bd sd").note("c3").room(0.8)
+const tempo_0939 = slider(3, 5, 12) + 1
+const pattern_0940 = note("c3 e3 g3").s("bd sd").gain(0.0)
+let layer_0941 = stack([0, 1, 2], {step: 13}).fast(2)
+s("bd sd").note("c3").room(0.2)
+const tempo_0943 = slider(7, 5, 12) + 5
+const pattern_0944 = note("c3 e3 g3").s("bd sd").gain(0.4)
+let layer_0945 = stack([0, 1, 2], {step: 1}).fast(2)
+s("bd sd bd sd").note("c3").room(0.6)
+const tempo_0947 = slider(11, 5, 12) + 2
+const pattern_0948 = note("c3 e3 g3").s("bd sd").gain(0.8)
+let layer_0949 = stack([0, 1, 2], {step: 5}).fast(2)
+s("bd sd bd sd bd sd").note("c3").room(0.0)
+const tempo_0951 = slider(3, 5, 12) + 6
+const pattern_0952 = note("c3 e3 g3").s("bd sd").gain(0.2)
+let layer_0953 = stack([0, 1, 2], {step: 9}).fast(2)
+s("bd sd").note("c3").room(0.4)
+const tempo_0955 = slider(7, 5, 12) + 3
+const pattern_0956 = note("c3 e3 g3").s("bd sd").gain(0.6)
+let layer_0957 = stack([0, 1, 2], {step: 13}).fast(2)
+s("bd sd bd sd").note("c3").room(0.8)
+const tempo_0959 = slider(11, 5, 12) + 0
+const pattern_0960 = note("c3 e3 g3").s("bd sd").gain(0.0)
+let layer_0961 = stack([0, 1, 2], {step: 1}).fast(2)
+s("bd sd bd sd bd sd").note("c3").room(0.2)
+const tempo_0963 = slider(3, 5, 12) + 4
+const pattern_0964 = note("c3 e3 g3").s("bd sd").gain(0.4)
+let layer_0965 = stack([0, 1, 2], {step: 5}).fast(2)
+s("bd sd").note("c3").room(0.6)
+const tempo_0967 = slider(7, 5, 12) + 1
+const pattern_0968 = note("c3 e3 g3").s("bd sd").gain(0.8)
+let layer_0969 = stack([0, 1, 2], {step: 9}).fast(2)
+s("bd sd bd sd").note("c3").room(0.0)
+const tempo_0971 = slider(11, 5, 12) + 5
+const pattern_0972 = note("c3 e3 g3").s("bd sd").gain(0.2)
+let layer_0973 = stack([0, 1, 2], {step: 13}).fast(2)
+s("bd sd bd sd bd sd").note("c3").room(0.4)
+const tempo_0975 = slider(3, 5, 12) + 2
+const pattern_0976 = note("c3 e3 g3").s("bd sd").gain(0.6)
+let layer_0977 = stack([0, 1, 2], {step: 1}).fast(2)
+s("bd sd").note("c3").room(0.8)
+const tempo_0979 = slider(7, 5, 12) + 6
+const pattern_0980 = note("c3 e3 g3").s("bd sd").gain(0.0)
+let layer_0981 = stack([0, 1, 2], {step: 5}).fast(2)
+s("bd sd bd sd").note("c3").room(0.2)
+const tempo_0983 = slider(11, 5, 12) + 3
+const pattern_0984 = note("c3 e3 g3").s("bd sd").gain(0.4)
+let layer_0985 = stack([0, 1, 2], {step: 9}).fast(2)
+s("bd sd bd sd bd sd").note("c3").room(0.6)
+const tempo_0987 = slider(3, 5, 12) + 0
+const pattern_0988 = note("c3 e3 g3").s("bd sd").gain(0.8)
+let layer_0989 = stack([0, 1, 2], {step: 13}).fast(2)
+s("bd sd").note("c3").room(0.0)
+const tempo_0991 = slider(7, 5, 12) + 4
+const pattern_0992 = note("c3 e3 g3").s("bd sd").gain(0.2)
+let layer_0993 = stack([0, 1, 2], {step: 1}).fast(2)
+s("bd sd bd sd").note("c3").room(0.4)
+const tempo_0995 = slider(11, 5, 12) + 1
+const pattern_0996 = note("c3 e3 g3").s("bd sd").gain(0.6)
+let layer_0997 = stack([0, 1, 2], {step: 5}).fast(2)
+s("bd sd bd sd bd sd").note("c3").room(0.8)
+const tempo_0999 = slider(3, 5, 12) + 5
+const pattern_1000 = note("c3 e3 g3").s("bd sd").gain(0.0)
+let layer_1001 = stack([0, 1, 2], {step: 9}).fast(2)
+s("bd sd").note("c3").room(0.2)
+const tempo_1003 = slider(7, 5, 12) + 2
+const pattern_1004 = note("c3 e3 g3").s("bd sd").gain(0.4)
+let layer_1005 = stack([0, 1, 2], {step: 13}).fast(2)
+s("bd sd bd sd").note("c3").room(0.6)
+const tempo_1007 = slider(11, 5, 12) + 6
+const pattern_1008 = note("c3 e3 g3").s("bd sd").gain(0.8)
+let layer_1009 = stack([0, 1, 2], {step: 1}).fast(2)
+s("bd sd bd sd bd sd").note("c3").room(0.0)
+const tempo_1011 = slider(3, 5, 12) + 3
+const pattern_1012 = note("c3 e3 g3").s("bd sd").gain(0.2)
+let layer_1013 = stack([0, 1, 2], {step: 5}).fast(2)
+s("bd sd").note("c3").room(0.4)
+const tempo_1015 = slider(7, 5, 12) + 0
+const pattern_1016 = note("c3 e3 g3").s("bd sd").gain(0.6)
+let layer_1017 = stack([0, 1, 2], {step: 9}).fast(2)
+s("bd sd bd sd").note("c3").room(0.8)
+const tempo_1019 = slider(11, 5, 12) + 4
+const pattern_1020 = note("c3 e3 g3").s("bd sd").gain(0.0)
+let layer_1021 = stack([0, 1, 2], {step: 13}).fast(2)
+s("bd sd bd sd bd sd").note("c3").room(0.2)
+const tempo_1023 = slider(3, 5, 12) + 1
+const pattern_1024 = note("c3 e3 g3").s("bd sd").gain(0.4)
+let layer_1025 = stack([0, 1, 2], {step: 1}).fast(2)
+s("bd sd").note("c3").room(0.6)
+const tempo_1027 = slider(7, 5, 12) + 5
+const pattern_1028 = note("c3 e3 g3").s("bd sd").gain(0.8)
+let layer_1029 = stack([0, 1, 2], {step: 5}).fast(2)
+s("bd sd bd sd").note("c3").room(0.0)
+const tempo_1031 = slider(11, 5, 12) + 2
+const pattern_1032 = note("c3 e3 g3").s("bd sd").gain(0.2)
+let layer_1033 = stack([0, 1, 2], {step: 9}).fast(2)
+s("bd sd bd sd bd sd").note("c3").room(0.4)
+const tempo_1035 = slider(3, 5, 12) + 6
+const pattern_1036 = note("c3 e3 g3").s("bd sd").gain(0.6)
+let layer_1037 = stack([0, 1, 2], {step: 13}).fast(2)
+s("bd sd").note("c3").room(0.8)
+const tempo_1039 = slider(7, 5, 12) + 3
+const pattern_1040 = note("c3 e3 g3").s("bd sd").gain(0.0)
+let layer_1041 = stack([0, 1, 2], {step: 1}).fast(2)
+s("bd sd bd sd").note("c3").room(0.2)
+const tempo_1043 = slider(11, 5, 12) + 0
+const pattern_1044 = note("c3 e3 g3").s("bd sd").gain(0.4)
+let layer_1045 = stack([0, 1, 2], {step: 5}).fast(2)
+s("bd sd bd sd bd sd").note("c3").room(0.6)
+const tempo_1047 = slider(3, 5, 12) + 4
+const pattern_1048 = note("c3 e3 g3").s("bd sd").gain(0.8)
+let layer_1049 = stack([0, 1, 2], {step: 9}).fast(2)
+s("bd sd").note("c3").room(0.0)
+const tempo_1051 = slider(7, 5, 12) + 1
+const pattern_1052 = note("c3 e3 g3").s("bd sd").gain(0.2)
+let layer_1053 = stack([0, 1, 2], {step: 13}).fast(2)
+s("bd sd bd sd").note("c3").room(0.4)
+const tempo_1055 = slider(11, 5, 12) + 5
+const pattern_1056 = note("c3 e3 g3").s("bd sd").gain(0.6)
+let layer_1057 = stack([0, 1, 2], {step: 1}).fast(2)
+s("bd sd bd sd bd sd").note("c3").room(0.8)
+const tempo_1059 = slider(3, 5, 12) + 2
+const pattern_1060 = note("c3 e3 g3").s("bd sd").gain(0.0)
+let layer_1061 = stack([0, 1, 2], {step: 5}).fast(2)
+s("bd sd").note("c3").room(0.2)
+const tempo_1063 = slider(7, 5, 12) + 6
+const pattern_1064 = note("c3 e3 g3").s("bd sd").gain(0.4)
+let layer_1065 = stack([0, 1, 2], {step: 9}).fast(2)
+s("bd sd bd sd").note("c3").room(0.6)
+const tempo_1067 = slider(11, 5, 12) + 3
+const pattern_1068 = note("c3 e3 g3").s("bd sd").gain(0.8)
+let layer_1069 = stack([0, 1, 2], {step: 13}).fast(2)
+s("bd sd bd sd bd sd").note("c3").room(0.0)
+const tempo_1071 = slider(3, 5, 12) + 0
+const pattern_1072 = note("c3 e3 g3").s("bd sd").gain(0.2)
+let layer_1073 = stack([0, 1, 2], {step: 1}).fast(2)
+s("bd sd").note("c3").room(0.4)
+const tempo_1075 = slider(7, 5, 12) + 4
+const pattern_1076 = note("c3 e3 g3").s("bd sd").gain(0.6)
+let layer_1077 = stack([0, 1, 2], {step: 5}).fast(2)
+s("bd sd bd sd").note("c3").room(0.8)
+const tempo_1079 = slider(11, 5, 12) + 1
+const pattern_1080 = note("c3 e3 g3").s("bd sd").gain(0.0)
+let layer_1081 = stack([0, 1, 2], {step: 9}).fast(2)
+s("bd sd bd sd bd sd").note("c3").room(0.2)
+const tempo_1083 = slider(3, 5, 12) + 5
+const pattern_1084 = note("c3 e3 g3").s("bd sd").gain(0.4)
+let layer_1085 = stack([0, 1, 2], {step: 13}).fast(2)
+s("bd sd").note("c3").room(0.6)
+const tempo_1087 = slider(7, 5, 12) + 2
+const pattern_1088 = note("c3 e3 g3").s("bd sd").gain(0.8)
+let layer_1089 = stack([0, 1, 2], {step: 1}).fast(2)
+s("bd sd bd sd").note("c3").room(0.0)
+const tempo_1091 = slider(11, 5, 12) + 6
+const pattern_1092 = note("c3 e3 g3").s("bd sd").gain(0.2)
+let layer_1093 = stack([0, 1, 2], {step: 5}).fast(2)
+s("bd sd bd sd bd sd").note("c3").room(0.4)
+const tempo_1095 = slider(3, 5, 12) + 3
+const pattern_1096 = note("c3 e3 g3").s("bd sd").gain(0.6)
+let layer_1097 = stack([0, 1, 2], {step: 9}).fast(2)
+s("bd sd").note("c3").room(0.8)
+const tempo_1099 = slider(7, 5, 12) + 0
+const pattern_1100 = note("c3 e3 g3").s("bd sd").gain(0.0)
+let layer_1101 = stack([0, 1, 2], {step: 13}).fast(2)
+s("bd sd bd sd").note("c3").room(0.2)
+const tempo_1103 = slider(11, 5, 12) + 4
+const pattern_1104 = note("c3 e3 g3").s("bd sd").gain(0.4)
+let layer_1105 = stack([0, 1, 2], {step: 1}).fast(2)
+s("bd sd bd sd bd sd").note("c3").room(0.6)
+const tempo_1107 = slider(3, 5, 12) + 1
+const pattern_1108 = note("c3 e3 g3").s("bd sd").gain(0.8)
+let layer_1109 = stack([0, 1, 2], {step: 5}).fast(2)
+s("bd sd").note("c3").room(0.0)
+const tempo_1111 = slider(7, 5, 12) + 5
+const pattern_1112 = note("c3 e3 g3").s("bd sd").gain(0.2)
+let layer_1113 = stack([0, 1, 2], {step: 9}).fast(2)
+s("bd sd bd sd").note("c3").room(0.4)
+const tempo_1115 = slider(11, 5, 12) + 2
+const pattern_1116 = note("c3 e3 g3").s("bd sd").gain(0.6)
+let layer_1117 = stack([0, 1, 2], {step: 13}).fast(2)
+s("bd sd bd sd bd sd").note("c3").room(0.8)
+const tempo_1119 = slider(3, 5, 12) + 6
+const pattern_1120 = note("c3 e3 g3").s("bd sd").gain(0.0)
+let layer_1121 = stack([0, 1, 2], {step: 1}).fast(2)
+s("bd sd").note("c3").room(0.2)
+const tempo_1123 = slider(7, 5, 12) + 3
+const pattern_1124 = note("c3 e3 g3").s("bd sd").gain(0.4)
+let layer_1125 = stack([0, 1, 2], {step: 5}).fast(2)
+s("bd sd bd sd").note("c3").room(0.6)
+const tempo_1127 = slider(11, 5, 12) + 0
+const pattern_1128 = note("c3 e3 g3").s("bd sd").gain(0.8)
+let layer_1129 = stack([0, 1, 2], {step: 9}).fast(2)
+s("bd sd bd sd bd sd").note("c3").room(0.0)
+const tempo_1131 = slider(3, 5, 12) + 4
+const pattern_1132 = note("c3 e3 g3").s("bd sd").gain(0.2)
+let layer_1133 = stack([0, 1, 2], {step: 13}).fast(2)
+s("bd sd").note("c3").room(0.4)
+const tempo_1135 = slider(7, 5, 12) + 1
+const pattern_1136 = note("c3 e3 g3").s("bd sd").gain(0.6)
+let layer_1137 = stack([0, 1, 2], {step: 1}).fast(2)
+s("bd sd bd sd").note("c3").room(0.8)
+const tempo_1139 = slider(11, 5, 12) + 5
+const pattern_1140 = note("c3 e3 g3").s("bd sd").gain(0.0)
+let layer_1141 = stack([0, 1, 2], {step: 5}).fast(2)
+s("bd sd bd sd bd sd").note("c3").room(0.2)
+const tempo_1143 = slider(3, 5, 12) + 2
+const pattern_1144 = note("c3 e3 g3").s("bd sd").gain(0.4)
+let layer_1145 = stack([0, 1, 2], {step: 9}).fast(2)
+s("bd sd").note("c3").room(0.6)
+const tempo_1147 = slider(7, 5, 12) + 6
+const pattern_1148 = note("c3 e3 g3").s("bd sd").gain(0.8)
+let layer_1149 = stack([0, 1, 2], {step: 13}).fast(2)
+s("bd sd bd sd").note("c3").room(0.0)
+const tempo_1151 = slider(11, 5, 12) + 3
+const pattern_1152 = note("c3 e3 g3").s("bd sd").gain(0.2)
+let layer_1153 = stack([0, 1, 2], {step: 1}).fast(2)
+s("bd sd bd sd bd sd").note("c3").room(0.4)
+const tempo_1155 = slider(3, 5, 12) + 0
+const pattern_1156 = note("c3 e3 g3").s("bd sd").gain(0.6)
+let layer_1157 = stack([0, 1, 2], {step: 5}).fast(2)
+s("bd sd").note("c3").room(0.8)
+const tempo_1159 = slider(7, 5, 12) + 4
+const pattern_1160 = note("c3 e3 g3").s("bd sd").gain(0.0)
+let layer_1161 = stack([0, 1, 2], {step: 9}).fast(2)
+s("bd sd bd sd").note("c3").room(0.2)
+const tempo_1163 = slider(11, 5, 12) + 1
+const pattern_1164 = note("c3 e3 g3").s("bd sd").gain(0.4)
+let layer_1165 = stack([0, 1, 2], {step: 13}).fast(2)
+s("bd sd bd sd bd sd").note("c3").room(0.6)
+const tempo_1167 = slider(3, 5, 12) + 5
+const pattern_1168 = note("c3 e3 g3").s("bd sd").gain(0.8)
+let layer_1169 = stack([0, 1, 2], {step: 1}).fast(2)
+s("bd sd").note("c3").room(0.0)
+const tempo_1171 = slider(7, 5, 12) + 2
+const pattern_1172 = note("c3 e3 g3").s("bd sd").gain(0.2)
+let layer_1173 = stack([0, 1, 2], {step: 5}).fast(2)
+s("bd sd bd sd").note("c3").room(0.4)
+const tempo_1175 = slider(11, 5, 12) + 6
+const pattern_1176 = note("c3 e3 g3").s("bd sd").gain(0.6)
+let layer_1177 = stack([0, 1, 2], {step: 9}).fast(2)
+s("bd sd bd sd bd sd").note("c3").room(0.8)
+const tempo_1179 = slider(3, 5, 12) + 3
+const pattern_1180 = note("c3 e3 g3").s("bd sd").gain(0.0)
+let layer_1181 = stack([0, 1, 2], {step: 13}).fast(2)
+s("bd sd").note("c3").room(0.2)
+const tempo_1183 = slider(7, 5, 12) + 0
+const pattern_1184 = note("c3 e3 g3").s("bd sd").gain(0.4)
+let layer_1185 = stack([0, 1, 2], {step: 1}).fast(2)
+s("bd sd bd sd").note("c3").room(0.6)
+const tempo_1187 = slider(11, 5, 12) + 4
+const pattern_1188 = note("c3 e3 g3").s("bd sd").gain(0.8)
+let layer_1189 = stack([0, 1, 2], {step: 5}).fast(2)
+s("bd sd bd sd bd sd").note("c3").room(0.0)
+const tempo_1191 = slider(3, 5, 12) + 1
+const pattern_1192 = note("c3 e3 g3").s("bd sd").gain(0.2)
+let layer_1193 = stack([0, 1, 2], {step: 9}).fast(2)
+s("bd sd").note("c3").room(0.4)
+const tempo_1195 = slider(7, 5, 12) + 5
+const pattern_1196 = note("c3 e3 g3").s("bd sd").gain(0.6)
+let layer_1197 = stack([0, 1, 2], {step: 13}).fast(2)
+s("bd sd bd sd").note("c3").room(0.8)
+const tempo_1199 = slider(11, 5, 12) + 2
+const pattern_1200 = note("c3 e3 g3").s("bd sd").gain(0.0)
+let layer_1201 = stack([0, 1, 2], {step: 1}).fast(2)
+s("bd sd bd sd bd sd").note("c3").room(0.2)
+const tempo_1203 = slider(3, 5, 12) + 6
+const pattern_1204 = note("c3 e3 g3").s("bd sd").gain(0.4)
+let layer_1205 = stack([0, 1, 2], {step: 5}).fast(2)
+s("bd sd").note("c3").room(0.6)
+const tempo_1207 = slider(7, 5, 12) + 3
+const pattern_1208 = note("c3 e3 g3").s("bd sd").gain(0.8)
+let layer_1209 = stack([0, 1, 2], {step: 9}).fast(2)
+s("bd sd bd sd").note("c3").room(0.0)
+const tempo_1211 = slider(11, 5, 12) + 0
+const pattern_1212 = note("c3 e3 g3").s("bd sd").gain(0.2)
+let layer_1213 = stack([0, 1, 2], {step: 13}).fast(2)
+s("bd sd bd sd bd sd").note("c3").room(0.4)
+const tempo_1215 = slider(3, 5, 12) + 4
+const pattern_1216 = note("c3 e3 g3").s("bd sd").gain(0.6)
+let layer_1217 = stack([0, 1, 2], {step: 1}).fast(2)
+s("bd sd").note("c3").room(0.8)
+const tempo_1219 = slider(7, 5, 12) + 1
+const pattern_1220 = note("c3 e3 g3").s("bd sd").gain(0.0)
+let layer_1221 = stack([0, 1, 2], {step: 5}).fast(2)
+s("bd sd bd sd").note("c3").room(0.2)
+const tempo_1223 = slider(11, 5, 12) + 5
+const pattern_1224 = note("c3 e3 g3").s("bd sd").gain(0.4)
+let layer_1225 = stack([0, 1, 2], {step: 9}).fast(2)
+s("bd sd bd sd bd sd").note("c3").room(0.6)
+const tempo_1227 = slider(3, 5, 12) + 2
+const pattern_1228 = note("c3 e3 g3").s("bd sd").gain(0.8)
+let layer_1229 = stack([0, 1, 2], {step: 13}).fast(2)
+s("bd sd").note("c3").room(0.0)
+const tempo_1231 = slider(7, 5, 12) + 6
+const pattern_1232 = note("c3 e3 g3").s("bd sd").gain(0.2)
+let layer_1233 = stack([0, 1, 2], {step: 1}).fast(2)
+s("bd sd bd sd").note("c3").room(0.4)
+const tempo_1235 = slider(11, 5, 12) + 3
+const pattern_1236 = note("c3 e3 g3").s("bd sd").gain(0.6)
+let layer_1237 = stack([0, 1, 2], {step: 5}).fast(2)
+s("bd sd bd sd bd sd").note("c3").room(0.8)
+const tempo_1239 = slider(3, 5, 12) + 0
+const pattern_1240 = note("c3 e3 g3").s("bd sd").gain(0.0)
+let layer_1241 = stack([0, 1, 2], {step: 9}).fast(2)
+s("bd sd").note("c3").room(0.2)
+const tempo_1243 = slider(7, 5, 12) + 4
+const pattern_1244 = note("c3 e3 g3").s("bd sd").gain(0.4)
+let layer_1245 = stack([0, 1, 2], {step: 13}).fast(2)
+s("bd sd bd sd").note("c3").room(0.6)
+const tempo_1247 = slider(11, 5, 12) + 1
+const pattern_1248 = note("c3 e3 g3").s("bd sd").gain(0.8)
+let layer_1249 = stack([0, 1, 2], {step: 1}).fast(2)
+s("bd sd bd sd bd sd").note("c3").room(0.0)
+const tempo_1251 = slider(3, 5, 12) + 5
+const pattern_1252 = note("c3 e3 g3").s("bd sd").gain(0.2)
+let layer_1253 = stack([0, 1, 2], {step: 5}).fast(2)
+s("bd sd").note("c3").room(0.4)
+const tempo_1255 = slider(7, 5, 12) + 2
+const pattern_1256 = note("c3 e3 g3").s("bd sd").gain(0.6)
+let layer_1257 = stack([0, 1, 2], {step: 9}).fast(2)
+s("bd sd bd sd").note("c3").room(0.8)
+const tempo_1259 = slider(11, 5, 12) + 6
+const pattern_1260 = note("c3 e3 g3").s("bd sd").gain(0.0)
+let layer_1261 = stack([0, 1, 2], {step: 13}).fast(2)
+s("bd sd bd sd bd sd").note("c3").room(0.2)
+const tempo_1263 = slider(3, 5, 12) + 3
+const pattern_1264 = note("c3 e3 g3").s("bd sd").gain(0.4)
+let layer_1265 = stack([0, 1, 2], {step: 1}).fast(2)
+s("bd sd").note("c3").room(0.6)
+const tempo_1267 = slider(7, 5, 12) + 0
+const pattern_1268 = note("c3 e3 g3").s("bd sd").gain(0.8)
+let layer_1269 = stack([0, 1, 2], {step: 5}).fast(2)
+s("bd sd bd sd").note("c3").room(0.0)
+const tempo_1271 = slider(11, 5, 12) + 4
+const pattern_1272 = note("c3 e3 g3").s("bd sd").gain(0.2)
+let layer_1273 = stack([0, 1, 2], {step: 9}).fast(2)
+s("bd sd bd sd bd sd").note("c3").room(0.4)
+const tempo_1275 = slider(3, 5, 12) + 1
+const pattern_1276 = note("c3 e3 g3").s("bd sd").gain(0.6)
+let layer_1277 = stack([0, 1, 2], {step: 13}).fast(2)
+s("bd sd").note("c3").room(0.8)
+const tempo_1279 = slider(7, 5, 12) + 5
+const pattern_1280 = note("c3 e3 g3").s("bd sd").gain(0.0)
+let layer_1281 = stack([0, 1, 2], {step: 1}).fast(2)
+s("bd sd bd sd").note("c3").room(0.2)
+const tempo_1283 = slider(11, 5, 12) + 2
+const pattern_1284 = note("c3 e3 g3").s("bd sd").gain(0.4)
+let layer_1285 = stack([0, 1, 2], {step: 5}).fast(2)
+s("bd sd bd sd bd sd").note("c3").room(0.6)
+const tempo_1287 = slider(3, 5, 12) + 6
+const pattern_1288 = note("c3 e3 g3").s("bd sd").gain(0.8)
+let layer_1289 = stack([0, 1, 2], {step: 9}).fast(2)
+s("bd sd").note("c3").room(0.0)
+const tempo_1291 = slider(7, 5, 12) + 3
+const pattern_1292 = note("c3 e3 g3").s("bd sd").gain(0.2)
+let layer_1293 = stack([0, 1, 2], {step: 13}).fast(2)
+s("bd sd bd sd").note("c3").room(0.4)
+const tempo_1295 = slider(11, 5, 12) + 0
+const pattern_1296 = note("c3 e3 g3").s("bd sd").gain(0.6)
+let layer_1297 = stack([0, 1, 2], {step: 1}).fast(2)
+s("bd sd bd sd bd sd").note("c3").room(0.8)
+const tempo_1299 = slider(3, 5, 12) + 4
+const pattern_1300 = note("c3 e3 g3").s("bd sd").gain(0.0)
+let layer_1301 = stack([0, 1, 2], {step: 5}).fast(2)
+s("bd sd").note("c3").room(0.2)
+const tempo_1303 = slider(7, 5, 12) + 1
+const pattern_1304 = note("c3 e3 g3").s("bd sd").gain(0.4)
+let layer_1305 = stack([0, 1, 2], {step: 9}).fast(2)
+s("bd sd bd sd").note("c3").room(0.6)
+const tempo_1307 = slider(11, 5, 12) + 5
+const pattern_1308 = note("c3 e3 g3").s("bd sd").gain(0.8)
+let layer_1309 = stack([0, 1, 2], {step: 13}).fast(2)
+s("bd sd bd sd bd sd").note("c3").room(0.0)
+const tempo_1311 = slider(3, 5, 12) + 2
+const pattern_1312 = note("c3 e3 g3").s("bd sd").gain(0.2)
+let layer_1313 = stack([0, 1, 2], {step: 1}).fast(2)
+s("bd sd").note("c3").room(0.4)
+const tempo_1315 = slider(7, 5, 12) + 6
+const pattern_1316 = note("c3 e3 g3").s("bd sd").gain(0.6)
+let layer_1317 = stack([0, 1, 2], {step: 5}).fast(2)
+s("bd sd bd sd").note("c3").room(0.8)
+const tempo_1319 = slider(11, 5, 12) + 3
+const pattern_1320 = note("c3 e3 g3").s("bd sd").gain(0.0)
+let layer_1321 = stack([0, 1, 2], {step: 9}).fast(2)
+s("bd sd bd sd bd sd").note("c3").room(0.2)
+const tempo_1323 = slider(3, 5, 12) + 0
+const pattern_1324 = note("c3 e3 g3").s("bd sd").gain(0.4)
+let layer_1325 = stack([0, 1, 2], {step: 13}).fast(2)
+s("bd sd").note("c3").room(0.6)
+const tempo_1327 = slider(7, 5, 12) + 4
+const pattern_1328 = note("c3 e3 g3").s("bd sd").gain(0.8)
+let layer_1329 = stack([0, 1, 2], {step: 1}).fast(2)
+s("bd sd bd sd").note("c3").room(0.0)
+const tempo_1331 = slider(11, 5, 12) + 1
+const pattern_1332 = note("c3 e3 g3").s("bd sd").gain(0.2)
+let layer_1333 = stack([0, 1, 2], {step: 5}).fast(2)
+s("bd sd bd sd bd sd").note("c3").room(0.4)
+const tempo_1335 = slider(3, 5, 12) + 5
+const pattern_1336 = note("c3 e3 g3").s("bd sd").gain(0.6)
+let layer_1337 = stack([0, 1, 2], {step: 9}).fast(2)
+s("bd sd").note("c3").room(0.8)
+const tempo_1339 = slider(7, 5, 12) + 2
+const pattern_1340 = note("c3 e3 g3").s("bd sd").gain(0.0)
+let layer_1341 = stack([0, 1, 2], {step: 13}).fast(2)
+s("bd sd bd sd").note("c3").room(0.2)
+const tempo_1343 = slider(11, 5, 12) + 6
+const pattern_1344 = note("c3 e3 g3").s("bd sd").gain(0.4)
+let layer_1345 = stack([0, 1, 2], {step: 1}).fast(2)
+s("bd sd bd sd bd sd").note("c3").room(0.6)
+const tempo_1347 = slider(3, 5, 12) + 3
+const pattern_1348 = note("c3 e3 g3").s("bd sd").gain(0.8)
+let layer_1349 = stack([0, 1, 2], {step: 5}).fast(2)
+s("bd sd").note("c3").room(0.0)
+const tempo_1351 = slider(7, 5, 12) + 0
+const pattern_1352 = note("c3 e3 g3").s("bd sd").gain(0.2)
+let layer_1353 = stack([0, 1, 2], {step: 9}).fast(2)
+s("bd sd bd sd").note("c3").room(0.4)
+const tempo_1355 = slider(11, 5, 12) + 4
+const pattern_1356 = note("c3 e3 g3").s("bd sd").gain(0.6)
+let layer_1357 = stack([0, 1, 2], {step: 13}).fast(2)
+s("bd sd bd sd bd sd").note("c3").room(0.8)
+const tempo_1359 = slider(3, 5, 12) + 1
+const pattern_1360 = note("c3 e3 g3").s("bd sd").gain(0.0)
+let layer_1361 = stack([0, 1, 2], {step: 1}).fast(2)
+s("bd sd").note("c3").room(0.2)
+const tempo_1363 = slider(7, 5, 12) + 5
+const pattern_1364 = note("c3 e3 g3").s("bd sd").gain(0.4)
+let layer_1365 = stack([0, 1, 2], {step: 5}).fast(2)
+s("bd sd bd sd").note("c3").room(0.6)
+const tempo_1367 = slider(11, 5, 12) + 2
+const pattern_1368 = note("c3 e3 g3").s("bd sd").gain(0.8)
+let layer_1369 = stack([0, 1, 2], {step: 9}).fast(2)
+s("bd sd bd sd bd sd").note("c3").room(0.0)
+const tempo_1371 = slider(3, 5, 12) + 6
+const pattern_1372 = note("c3 e3 g3").s("bd sd").gain(0.2)
+let layer_1373 = stack([0, 1, 2], {step: 13}).fast(2)
+s("bd sd").note("c3").room(0.4)
+const tempo_1375 = slider(7, 5, 12) + 3
+const pattern_1376 = note("c3 e3 g3").s("bd sd").gain(0.6)
+let layer_1377 = stack([0, 1, 2], {step: 1}).fast(2)
+s("bd sd bd sd").note("c3").room(0.8)
+const tempo_1379 = slider(11, 5, 12) + 0
+const pattern_1380 = note("c3 e3 g3").s("bd sd").gain(0.0)
+let layer_1381 = stack([0, 1, 2], {step: 5}).fast(2)
+s("bd sd bd sd bd sd").note("c3").room(0.2)
+const tempo_1383 = slider(3, 5, 12) + 4
+const pattern_1384 = note("c3 e3 g3").s("bd sd").gain(0.4)
+let layer_1385 = stack([0, 1, 2], {step: 9}).fast(2)
+s("bd sd").note("c3").room(0.6)
+const tempo_1387 = slider(7, 5, 12) + 1
+const pattern_1388 = note("c3 e3 g3").s("bd sd").gain(0.8)
+let layer_1389 = stack([0, 1, 2], {step: 13}).fast(2)
+s("bd sd bd sd").note("c3").room(0.0)
+const tempo_1391 = slider(11, 5, 12) + 5
+const pattern_1392 = note("c3 e3 g3").s("bd sd").gain(0.2)
+let layer_1393 = stack([0, 1, 2], {step: 1}).fast(2)
+s("bd sd bd sd bd sd").note("c3").room(0.4)
+const tempo_1395 = slider(3, 5, 12) + 2
+const pattern_1396 = note("c3 e3 g3").s("bd sd").gain(0.6)
+let layer_1397 = stack([0, 1, 2], {step: 5}).fast(2)
+s("bd sd").note("c3").room(0.8)
+const tempo_1399 = slider(7, 5, 12) + 6
+const pattern_1400 = note("c3 e3 g3").s("bd sd").gain(0.0)
+let layer_1401 = stack([0, 1, 2], {step: 9}).fast(2)
+s("bd sd bd sd").note("c3").room(0.2)
+const tempo_1403 = slider(11, 5, 12) + 3
+const pattern_1404 = note("c3 e3 g3").s("bd sd").gain(0.4)
+let layer_1405 = stack([0, 1, 2], {step: 13}).fast(2)
+s("bd sd bd sd bd sd").note("c3").room(0.6)
+const tempo_1407 = slider(3, 5, 12) + 0
+const pattern_1408 = note("c3 e3 g3").s("bd sd").gain(0.8)
+let layer_1409 = stack([0, 1, 2], {step: 1}).fast(2)
+s("bd sd").note("c3").room(0.0)
+const tempo_1411 = slider(7, 5, 12) + 4
+const pattern_1412 = note("c3 e3 g3").s("bd sd").gain(0.2)
+let layer_1413 = stack([0, 1, 2], {step: 5}).fast(2)
+s("bd sd bd sd").note("c3").room(0.4)
+const tempo_1415 = slider(11, 5, 12) + 1
+const pattern_1416 = note("c3 e3 g3").s("bd sd").gain(0.6)
+let layer_1417 = stack([0, 1, 2], {step: 9}).fast(2)
+s("bd sd bd sd bd sd").note("c3").room(0.8)
+const tempo_1419 = slider(3, 5, 12) + 5
+const pattern_1420 = note("c3 e3 g3").s("bd sd").gain(0.0)
+let layer_1421 = stack([0, 1, 2], {step: 13}).fast(2)
+s("bd sd").note("c3").room(0.2)
+const tempo_1423 = slider(7, 5, 12) + 2
+const pattern_1424 = note("c3 e3 g3").s("bd sd").gain(0.4)
+let layer_1425 = stack([0, 1, 2], {step: 1}).fast(2)
+s("bd sd bd sd").note("c3").room(0.6)
+const tempo_1427 = slider(11, 5, 12) + 6
+const pattern_1428 = note("c3 e3 g3").s("bd sd").gain(0.8)
+let layer_1429 = stack([0, 1, 2], {step: 5}).fast(2)
+s("bd sd bd sd bd sd").note("c3").room(0.0)
+const tempo_1431 = slider(3, 5, 12) + 3
+const pattern_1432 = note("c3 e3 g3").s("bd sd").gain(0.2)
+let layer_1433 = stack([0, 1, 2], {step: 9}).fast(2)
+s("bd sd").note("c3").room(0.4)
+const tempo_1435 = slider(7, 5, 12) + 0
+const pattern_1436 = note("c3 e3 g3").s("bd sd").gain(0.6)
+let layer_1437 = stack([0, 1, 2], {step: 13}).fast(2)
+s("bd sd bd sd").note("c3").room(0.8)
+const tempo_1439 = slider(11, 5, 12) + 4
+const pattern_1440 = note("c3 e3 g3").s("bd sd").gain(0.0)
+let layer_1441 = stack([0, 1, 2], {step: 1}).fast(2)
+s("bd sd bd sd bd sd").note("c3").room(0.2)
+const tempo_1443 = slider(3, 5, 12) + 1
+const pattern_1444 = note("c3 e3 g3").s("bd sd").gain(0.4)
+let layer_1445 = stack([0, 1, 2], {step: 5}).fast(2)
+s("bd sd").note("c3").room(0.6)
+const tempo_1447 = slider(7, 5, 12) + 5
+const pattern_1448 = note("c3 e3 g3").s("bd sd").gain(0.8)
+let layer_1449 = stack([0, 1, 2], {step: 9}).fast(2)
+s("bd sd bd sd").note("c3").room(0.0)
+const tempo_1451 = slider(11, 5, 12) + 2
+const pattern_1452 = note("c3 e3 g3").s("bd sd").gain(0.2)
+let layer_1453 = stack([0, 1, 2], {step: 13}).fast(2)
+s("bd sd bd sd bd sd").note("c3").room(0.4)
+const tempo_1455 = slider(3, 5, 12) + 6
+const pattern_1456 = note("c3 e3 g3").s("bd sd").gain(0.6)
+let layer_1457 = stack([0, 1, 2], {step: 1}).fast(2)
+s("bd sd").note("c3").room(0.8)
+const tempo_1459 = slider(7, 5, 12) + 3
+const pattern_1460 = note("c3 e3 g3").s("bd sd").gain(0.0)
+let layer_1461 = stack([0, 1, 2], {step: 5}).fast(2)
+s("bd sd bd sd").note("c3").room(0.2)
+const tempo_1463 = slider(11, 5, 12) + 0
+const pattern_1464 = note("c3 e3 g3").s("bd sd").gain(0.4)
+let layer_1465 = stack([0, 1, 2], {step: 9}).fast(2)
+s("bd sd bd sd bd sd").note("c3").room(0.6)
+const tempo_1467 = slider(3, 5, 12) + 4
+const pattern_1468 = note("c3 e3 g3").s("bd sd").gain(0.8)
+let layer_1469 = stack([0, 1, 2], {step: 13}).fast(2)
+s("bd sd").note("c3").room(0.0)
+const tempo_1471 = slider(7, 5, 12) + 1
+const pattern_1472 = note("c3 e3 g3").s("bd sd").gain(0.2)
+let layer_1473 = stack([0, 1, 2], {step: 1}).fast(2)
+s("bd sd bd sd").note("c3").room(0.4)
+const tempo_1475 = slider(11, 5, 12) + 5
+const pattern_1476 = note("c3 e3 g3").s("bd sd").gain(0.6)
+let layer_1477 = stack([0, 1, 2], {step: 5}).fast(2)
+s("bd sd bd sd bd sd").note("c3").room(0.8)
+const tempo_1479 = slider(3, 5, 12) + 2
+const pattern_1480 = note("c3 e3 g3").s("bd sd").gain(0.0)
+let layer_1481 = stack([0, 1, 2], {step: 9}).fast(2)
+s("bd sd").note("c3").room(0.2)
+const tempo_1483 = slider(7, 5, 12) + 6
+const pattern_1484 = note("c3 e3 g3").s("bd sd").gain(0.4)
+let layer_1485 = stack([0, 1, 2], {step: 13}).fast(2)
+s("bd sd bd sd").note("c3").room(0.6)
+const tempo_1487 = slider(11, 5, 12) + 3
+const pattern_1488 = note("c3 e3 g3").s("bd sd").gain(0.8)
+let layer_1489 = stack([0, 1, 2], {step: 1}).fast(2)
+s("bd sd bd sd bd sd").note("c3").room(0.0)
+const tempo_1491 = slider(3, 5, 12) + 0
+const pattern_1492 = note("c3 e3 g3").s("bd sd").gain(0.2)
+let layer_1493 = stack([0, 1, 2], {step: 5}).fast(2)
+s("bd sd").note("c3").room(0.4)
+const tempo_1495 = slider(7, 5, 12) + 4
+const pattern_1496 = note("c3 e3 g3").s("bd sd").gain(0.6)
+let layer_1497 = stack([0, 1, 2], {step: 9}).fast(2)
+s("bd sd bd sd").note("c3").room(0.8)
+const tempo_1499 = slider(11, 5, 12) + 1
+const pattern_1500 = note("c3 e3 g3").s("bd sd").gain(0.0)
+let layer_1501 = stack([0, 1, 2], {step: 13}).fast(2)
+s("bd sd bd sd bd sd").note("c3").room(0.2)
+const tempo_1503 = slider(3, 5, 12) + 5
+const pattern_1504 = note("c3 e3 g3").s("bd sd").gain(0.4)
+let layer_1505 = stack([0, 1, 2], {step: 1}).fast(2)
+s("bd sd").note("c3").room(0.6)
+const tempo_1507 = slider(7, 5, 12) + 2
+const pattern_1508 = note("c3 e3 g3").s("bd sd").gain(0.8)
+let layer_1509 = stack([0, 1, 2], {step: 5}).fast(2)
+s("bd sd bd sd").note("c3").room(0.0)
+const tempo_1511 = slider(11, 5, 12) + 6
+const pattern_1512 = note("c3 e3 g3").s("bd sd").gain(0.2)
+let layer_1513 = stack([0, 1, 2], {step: 9}).fast(2)
+s("bd sd bd sd bd sd").note("c3").room(0.4)
+const tempo_1515 = slider(3, 5, 12) + 3
+const pattern_1516 = note("c3 e3 g3").s("bd sd").gain(0.6)
+let layer_1517 = stack([0, 1, 2], {step: 13}).fast(2)
+s("bd sd").note("c3").room(0.8)
+const tempo_1519 = slider(7, 5, 12) + 0
+const pattern_1520 = note("c3 e3 g3").s("bd sd").gain(0.0)
+let layer_1521 = stack([0, 1, 2], {step: 1}).fast(2)
+s("bd sd bd sd").note("c3").room(0.2)
+const tempo_1523 = slider(11, 5, 12) + 4
+const pattern_1524 = note("c3 e3 g3").s("bd sd").gain(0.4)
+let layer_1525 = stack([0, 1, 2], {step: 5}).fast(2)
+s("bd sd bd sd bd sd").note("c3").room(0.6)
+const tempo_1527 = slider(3, 5, 12) + 1
+const pattern_1528 = note("c3 e3 g3").s("bd sd").gain(0.8)
+let layer_1529 = stack([0, 1, 2], {step: 9}).fast(2)
+s("bd sd").note("c3").room(0.0)
+const tempo_1531 = slider(7, 5, 12) + 5
+const pattern_1532 = note("c3 e3 g3").s("bd sd").gain(0.2)
+let layer_1533 = stack([0, 1, 2], {step: 13}).fast(2)
+s("bd sd bd sd").note("c3").room(0.4)
+const tempo_1535 = slider(11, 5, 12) + 2
+const pattern_1536 = note("c3 e3 g3").s("bd sd").gain(0.6)
+let layer_1537 = stack([0, 1, 2], {step: 1}).fast(2)
+s("bd sd bd sd bd sd").note("c3").room(0.8)
+const tempo_1539 = slider(3, 5, 12) + 6
+const pattern_1540 = note("c3 e3 g3").s("bd sd").gain(0.0)
+let layer_1541 = stack([0, 1, 2], {step: 5}).fast(2)
+s("bd sd").note("c3").room(0.2)
+const tempo_1543 = slider(7, 5, 12) + 3
+const pattern_1544 = note("c3 e3 g3").s("bd sd").gain(0.4)
+let layer_1545 = stack([0, 1, 2], {step: 9}).fast(2)
+s("bd sd bd sd").note("c3").room(0.6)
+const tempo_1547 = slider(11, 5, 12) + 0
+const pattern_1548 = note("c3 e3 g3").s("bd sd").gain(0.8)
+let layer_1549 = stack([0, 1, 2], {step: 13}).fast(2)
+s("bd sd bd sd bd sd").note("c3").room(0.0)
+const tempo_1551 = slider(3, 5, 12) + 4
+const pattern_1552 = note("c3 e3 g3").s("bd sd").gain(0.2)
+let layer_1553 = stack([0, 1, 2], {step: 1}).fast(2)
+s("bd sd").note("c3").room(0.4)
+const tempo_1555 = slider(7, 5, 12) + 1
+const pattern_1556 = note("c3 e3 g3").s("bd sd").gain(0.6)
+let layer_1557 = stack([0, 1, 2], {step: 5}).fast(2)
+s("bd sd bd sd").note("c3").room(0.8)
+const tempo_1559 = slider(11, 5, 12) + 5
+const pattern_1560 = note("c3 e3 g3").s("bd sd").gain(0.0)
+let layer_1561 = stack([0, 1, 2], {step: 9}).fast(2)
+s("bd sd bd sd bd sd").note("c3").room(0.2)
+const tempo_1563 = slider(3, 5, 12) + 2
+const pattern_1564 = note("c3 e3 g3").s("bd sd").gain(0.4)
+let layer_1565 = stack([0, 1, 2], {step: 13}).fast(2)
+s("bd sd").note("c3").room(0.6)
+const tempo_1567 = slider(7, 5, 12) + 6
+const pattern_1568 = note("c3 e3 g3").s("bd sd").gain(0.8)
+let layer_1569 = stack([0, 1, 2], {step: 1}).fast(2)
+s("bd sd bd sd").note("c3").room(0.0)
+const tempo_1571 = slider(11, 5, 12) + 3
+const pattern_1572 = note("c3 e3 g3").s("bd sd").gain(0.2)
+let layer_1573 = stack([0, 1, 2], {step: 5}).fast(2)
+s("bd sd bd sd bd sd").note("c3").room(0.4)
+const tempo_1575 = slider(3, 5, 12) + 0
+const pattern_1576 = note("c3 e3 g3").s("bd sd").gain(0.6)
+let layer_1577 = stack([0, 1, 2], {step: 9}).fast(2)
+s("bd sd").note("c3").room(0.8)
+const tempo_1579 = slider(7, 5, 12) + 4
+const pattern_1580 = note("c3 e3 g3").s("bd sd").gain(0.0)
+let layer_1581 = stack([0, 1, 2], {step: 13}).fast(2)
+s("bd sd bd sd").note("c3").room(0.2)
+const tempo_1583 = slider(11, 5, 12) + 1
+const pattern_1584 = note("c3 e3 g3").s("bd sd").gain(0.4)
+let layer_1585 = stack([0, 1, 2], {step: 1}).fast(2)
+s("bd sd bd sd bd sd").note("c3").room(0.6)
+const tempo_1587 = slider(3, 5, 12) + 5
+const pattern_1588 = note("c3 e3 g3").s("bd sd").gain(0.8)
+let layer_1589 = stack([0, 1, 2], {step: 5}).fast(2)
+s("bd sd").note("c3").room(0.0)
+const tempo_1591 = slider(7, 5, 12) + 2
+const pattern_1592 = note("c3 e3 g3").s("bd sd").gain(0.2)
+let layer_1593 = stack([0, 1, 2], {step: 9}).fast(2)
+s("bd sd bd sd").note("c3").room(0.4)
+const tempo_1595 = slider(11, 5, 12) + 6
+const pattern_1596 = note("c3 e3 g3").s("bd sd").gain(0.6)
+let layer_1597 = stack([0, 1, 2], {step: 13}).fast(2)
+s("bd sd bd sd bd sd").note("c3").room(0.8)
+const tempo_1599 = slider(3, 5, 12) + 3
+const pattern_1600 = note("c3 e3 g3").s("bd sd").gain(0.0)
+let layer_1601 = stack([0, 1, 2], {step: 1}).fast(2)
+s("bd sd").note("c3").room(0.2)
+const tempo_1603 = slider(7, 5, 12) + 0
+const pattern_1604 = note("c3 e3 g3").s("bd sd").gain(0.4)
+let layer_1605 = stack([0, 1, 2], {step: 5}).fast(2)
+s("bd sd bd sd").note("c3").room(0.6)
+const tempo_1607 = slider(11, 5, 12) + 4
+const pattern_1608 = note("c3 e3 g3").s("bd sd").gain(0.8)
+let layer_1609 = stack([0, 1, 2], {step: 9}).fast(2)
+s("bd sd bd sd bd sd").note("c3").room(0.0)
+const tempo_1611 = slider(3, 5, 12) + 1
+const pattern_1612 = note("c3 e3 g3").s("bd sd").gain(0.2)
+let layer_1613 = stack([0, 1, 2], {step: 13}).fast(2)
+s("bd sd").note("c3").room(0.4)
+const tempo_1615 = slider(7, 5, 12) + 5
+const pattern_1616 = note("c3 e3 g3").s("bd sd").gain(0.6)
+let layer_1617 = stack([0, 1, 2], {step: 1}).fast(2)
+s("bd sd bd sd").note("c3").room(0.8)
+const tempo_1619 = slider(11, 5, 12) + 2
+const pattern_1620 = note("c3 e3 g3").s("bd sd").gain(0.0)
+let layer_1621 = stack([0, 1, 2], {step: 5}).fast(2)
+s("bd sd bd sd bd sd").note("c3").room(0.2)
+const tempo_1623 = slider(3, 5, 12) + 6
+const pattern_1624 = note("c3 e3 g3").s("bd sd").gain(0.4)
+let layer_1625 = stack([0, 1, 2], {step: 9}).fast(2)
+s("bd sd").note("c3").room(0.6)
+const tempo_1627 = slider(7, 5, 12) + 3
+const pattern_1628 = note("c3 e3 g3").s("bd sd").gain(0.8)
+let layer_1629 = stack([0, 1, 2], {step: 13}).fast(2)
+s("bd sd bd sd").note("c3").room(0.0)
+const tempo_1631 = slider(11, 5, 12) + 0
+const pattern_1632 = note("c3 e3 g3").s("bd sd").gain(0.2)
+let layer_1633 = stack([0, 1, 2], {step: 1}).fast(2)
+s("bd sd bd sd bd sd").note("c3").room(0.4)
+const tempo_1635 = slider(3, 5, 12) + 4
+const pattern_1636 = note("c3 e3 g3").s("bd sd").gain(0.6)
+let layer_1637 = stack([0, 1, 2], {step: 5}).fast(2)
+s("bd sd").note("c3").room(0.8)
+const tempo_1639 = slider(7, 5, 12) + 1
+const pattern_1640 = note("c3 e3 g3").s("bd sd").gain(0.0)
+let layer_1641 = stack([0, 1, 2], {step: 9}).fast(2)
+s("bd sd bd sd").note("c3").room(0.2)
+const tempo_1643 = slider(11, 5, 12) + 5
+const pattern_1644 = note("c3 e3 g3").s("bd sd").gain(0.4)
+let layer_1645 = stack([0, 1, 2], {step: 13}).fast(2)
+s("bd sd bd sd bd sd").note("c3").room(0.6)
+const tempo_1647 = slider(3, 5, 12) + 2
+const pattern_1648 = note("c3 e3 g3").s("bd sd").gain(0.8)
+let layer_1649 = stack([0, 1, 2], {step: 1}).fast(2)
+s("bd sd").note("c3").room(0.0)
+const tempo_1651 = slider(7, 5, 12) + 6
+const pattern_1652 = note("c3 e3 g3").s("bd sd").gain(0.2)
+let layer_1653 = stack([0, 1, 2], {step: 5}).fast(2)
+s("bd sd bd sd").note("c3").room(0.4)
+const tempo_1655 = slider(11, 5, 12) + 3
+const pattern_1656 = note("c3 e3 g3").s("bd sd").gain(0.6)
+let layer_1657 = stack([0, 1, 2], {step: 9}).fast(2)
+s("bd sd bd sd bd sd").note("c3").room(0.8)
+const tempo_1659 = slider(3, 5, 12) + 0
+const pattern_1660 = note("c3 e3 g3").s("bd sd").gain(0.0)
+let layer_1661 = stack([0, 1, 2], {step: 13}).fast(2)
+s("bd sd").note("c3").room(0.2)
+const tempo_1663 = slider(7, 5, 12) + 4
+const pattern_1664 = note("c3 e3 g3").s("bd sd").gain(0.4)
+let layer_1665 = stack([0, 1, 2], {step: 1}).fast(2)
+s("bd sd bd sd").note("c3").room(0.6)
+const tempo_1667 = slider(11, 5, 12) + 1
+const pattern_1668 = note("c3 e3 g3").s("bd sd").gain(0.8)
+let layer_1669 = stack([0, 1, 2], {step: 5}).fast(2)
+s("bd sd bd sd bd sd").note("c3").room(0.0)
+const tempo_1671 = slider(3, 5, 12) + 5
+const pattern_1672 = note("c3 e3 g3").s("bd sd").gain(0.2)
+let layer_1673 = stack([0, 1, 2], {step: 9}).fast(2)
+s("bd sd").note("c3").room(0.4)
+const tempo_1675 = slider(7, 5, 12) + 2
+const pattern_1676 = note("c3 e3 g3").s("bd sd").gain(0.6)
+let layer_1677 = stack([0, 1, 2], {step: 13}).fast(2)
+s("bd sd bd sd").note("c3").room(0.8)
+const tempo_1679 = slider(11, 5, 12) + 6
+const pattern_1680 = note("c3 e3 g3").s("bd sd").gain(0.0)
+let layer_1681 = stack([0, 1, 2], {step: 1}).fast(2)
+s("bd sd bd sd bd sd").note("c3").room(0.2)
+const tempo_1683 = slider(3, 5, 12) + 3
+const pattern_1684 = note("c3 e3 g3").s("bd sd").gain(0.4)
+let layer_1685 = stack([0, 1, 2], {step: 5}).fast(2)
+s("bd sd").note("c3").room(0.6)
+const tempo_1687 = slider(7, 5, 12) + 0
+const pattern_1688 = note("c3 e3 g3").s("bd sd").gain(0.8)
+let layer_1689 = stack([0, 1, 2], {step: 9}).fast(2)
+s("bd sd bd sd").note("c3").room(0.0)
+const tempo_1691 = slider(11, 5, 12) + 4
+const pattern_1692 = note("c3 e3 g3").s("bd sd").gain(0.2)
+let layer_1693 = stack([0, 1, 2], {step: 13}).fast(2)
+s("bd sd bd sd bd sd").note("c3").room(0.4)
+const tempo_1695 = slider(3, 5, 12) + 1
+const pattern_1696 = note("c3 e3 g3").s("bd sd").gain(0.6)
+let layer_1697 = stack([0, 1, 2], {step: 1}).fast(2)
+s("bd sd").note("c3").room(0.8)
+const tempo_1699 = slider(7, 5, 12) + 5
+const pattern_1700 = note("c3 e3 g3").s("bd sd").gain(0.0)
+let layer_1701 = stack([0, 1, 2], {step: 5}).fast(2)
+s("bd sd bd sd").note("c3").room(0.2)
+const tempo_1703 = slider(11, 5, 12) + 2
+const pattern_1704 = note("c3 e3 g3").s("bd sd").gain(0.4)
+let layer_1705 = stack([0, 1, 2], {step: 9}).fast(2)
+s("bd sd bd sd bd sd").note("c3").room(0.6)
+const tempo_1707 = slider(3, 5, 12) + 6
+const pattern_1708 = note("c3 e3 g3").s("bd sd").gain(0.8)
+let layer_1709 = stack([0, 1, 2], {step: 13}).fast(2)
+s("bd sd").note("c3").room(0.0)
+const tempo_1711 = slider(7, 5, 12) + 3
+const pattern_1712 = note("c3 e3 g3").s("bd sd").gain(0.2)
+let layer_1713 = stack([0, 1, 2], {step: 1}).fast(2)
+s("bd sd bd sd").note("c3").room(0.4)
+const tempo_1715 = slider(11, 5, 12) + 0
+const pattern_1716 = note("c3 e3 g3").s("bd sd").gain(0.6)
+let layer_1717 = stack([0, 1, 2], {step: 5}).fast(2)
+s("bd sd bd sd bd sd").note("c3").room(0.8)
+const tempo_1719 = slider(3, 5, 12) + 4
+const pattern_1720 = note("c3 e3 g3").s("bd sd").gain(0.0)
+let layer_1721 = stack([0, 1, 2], {step: 9}).fast(2)
+s("bd sd").note("c3").room(0.2)
+const tempo_1723 = slider(7, 5, 12) + 1
+const pattern_1724 = note("c3 e3 g3").s("bd sd").gain(0.4)
+let layer_1725 = stack([0, 1, 2], {step: 13}).fast(2)
+s("bd sd bd sd").note("c3").room(0.6)
+const tempo_1727 = slider(11, 5, 12) + 5
+const pattern_1728 = note("c3 e3 g3").s("bd sd").gain(0.8)
+let layer_1729 = stack([0, 1, 2], {step: 1}).fast(2)
+s("bd sd bd sd bd sd").note("c3").room(0.0)
+const tempo_1731 = slider(3, 5, 12) + 2
+const pattern_1732 = note("c3 e3 g3").s("bd sd").gain(0.2)
+let layer_1733 = stack([0, 1, 2], {step: 5}).fast(2)
+s("bd sd").note("c3").room(0.4)
+const tempo_1735 = slider(7, 5, 12) + 6
+const pattern_1736 = note("c3 e3 g3").s("bd sd").gain(0.6)
+let layer_1737 = stack([0, 1, 2], {step: 9}).fast(2)
+s("bd sd bd sd").note("c3").room(0.8)
+const tempo_1739 = slider(11, 5, 12) + 3
+const pattern_1740 = note("c3 e3 g3").s("bd sd").gain(0.0)
+let layer_1741 = stack([0, 1, 2], {step: 13}).fast(2)
+s("bd sd bd sd bd sd").note("c3").room(0.2)
+const tempo_1743 = slider(3, 5, 12) + 0
+const pattern_1744 = note("c3 e3 g3").s("bd sd").gain(0.4)
+let layer_1745 = stack([0, 1, 2], {step: 1}).fast(2)
+s("bd sd").note("c3").room(0.6)
+const tempo_1747 = slider(7, 5, 12) + 4
+const pattern_1748 = note("c3 e3 g3").s("bd sd").gain(0.8)
+let layer_1749 = stack([0, 1, 2], {step: 5}).fast(2)
+s("bd sd bd sd").note("c3").room(0.0)
+const tempo_1751 = slider(11, 5, 12) + 1
+const pattern_1752 = note("c3 e3 g3").s("bd sd").gain(0.2)
+let layer_1753 = stack([0, 1, 2], {step: 9}).fast(2)
+s("bd sd bd sd bd sd").note("c3").room(0.4)
+const tempo_1755 = slider(3, 5, 12) + 5
+const pattern_1756 = note("c3 e3 g3").s("bd sd").gain(0.6)
+let layer_1757 = stack([0, 1, 2], {step: 13}).fast(2)
+s("bd sd").note("c3").room(0.8)
+const tempo_1759 = slider(7, 5, 12) + 2
+const pattern_1760 = note("c3 e3 g3").s("bd sd").gain(0.0)
+let layer_1761 = stack([0, 1, 2], {step: 1}).fast(2)
+s("bd sd bd sd").note("c3").room(0.2)
+const tempo_1763 = slider(11, 5, 12) + 6
+const pattern_1764 = note("c3 e3 g3").s("bd sd").gain(0.4)
+let layer_1765 = stack([0, 1, 2], {step: 5}).fast(2)
+s("bd sd bd sd bd sd").note("c3").room(0.6)
+const tempo_1767 = slider(3, 5, 12) + 3
+const pattern_1768 = note("c3 e3 g3").s("bd sd").gain(0.8)
+let layer_1769 = stack([0, 1, 2], {step: 9}).fast(2)
+s("bd sd").note("c3").room(0.0)
+const tempo_1771 = slider(7, 5, 12) + 0
+const pattern_1772 = note("c3 e3 g3").s("bd sd").gain(0.2)
+let layer_1773 = stack([0, 1, 2], {step: 13}).fast(2)
+s("bd sd bd sd").note("c3").room(0.4)
+const tempo_1775 = slider(11, 5, 12) + 4
+const pattern_1776 = note("c3 e3 g3").s("bd sd").gain(0.6)
+let layer_1777 = stack([0, 1, 2], {step: 1}).fast(2)
+s("bd sd bd sd bd sd").note("c3").room(0.8)
+const tempo_1779 = slider(3, 5, 12) + 1
+const pattern_1780 = note("c3 e3 g3").s("bd sd").gain(0.0)
+let layer_1781 = stack([0, 1, 2], {step: 5}).fast(2)
+s("bd sd").note("c3").room(0.2)
+const tempo_1783 = slider(7, 5, 12) + 5
+const pattern_1784 = note("c3 e3 g3").s("bd sd").gain(0.4)
+let layer_1785 = stack([0, 1, 2], {step: 9}).fast(2)
+s("bd sd bd sd").note("c3").room(0.6)
+const tempo_1787 = slider(11, 5, 12) + 2
+const pattern_1788 = note("c3 e3 g3").s("bd sd").gain(0.8)
+let layer_1789 = stack([0, 1, 2], {step: 13}).fast(2)
+s("bd sd bd sd bd sd").note("c3").room(0.0)
+const tempo_1791 = slider(3, 5, 12) + 6
+const pattern_1792 = note("c3 e3 g3").s("bd sd").gain(0.2)
+let layer_1793 = stack([0, 1, 2], {step: 1}).fast(2)
+s("bd sd").note("c3").room(0.4)
+const tempo_1795 = slider(7, 5, 12) + 3
+const pattern_1796 = note("c3 e3 g3").s("bd sd").gain(0.6)
+let layer_1797 = stack([0, 1, 2], {step: 5}).fast(2)
+s("bd sd bd sd").note("c3").room(0.8)
+const tempo_1799 = slider(11, 5, 12) + 0
+const pattern_1800 = note("c3 e3 g3").s("bd sd").gain(0.0)
+let layer_1801 = stack([0, 1, 2], {step: 9}).fast(2)
+s("bd sd bd sd bd sd").note("c3").room(0.2)
+const tempo_1803 = slider(3, 5, 12) + 4
+const pattern_1804 = note("c3 e3 g3").s("bd sd").gain(0.4)
+let layer_1805 = stack([0, 1, 2], {step: 13}).fast(2)
+s("bd sd").note("c3").room(0.6)
+const tempo_1807 = slider(7, 5, 12) + 1
+const pattern_1808 = note("c3 e3 g3").s("bd sd").gain(0.8)
+let layer_1809 = stack([0, 1, 2], {step: 1}).fast(2)
+s("bd sd bd sd").note("c3").room(0.0)
+const tempo_1811 = slider(11, 5, 12) + 5
+const pattern_1812 = note("c3 e3 g3").s("bd sd").gain(0.2)
+let layer_1813 = stack([0, 1, 2], {step: 5}).fast(2)
+s("bd sd bd sd bd sd").note("c3").room(0.4)
+const tempo_1815 = slider(3, 5, 12) + 2
+const pattern_1816 = note("c3 e3 g3").s("bd sd").gain(0.6)
+let layer_1817 = stack([0, 1, 2], {step: 9}).fast(2)
+s("bd sd").note("c3").room(0.8)
+const tempo_1819 = slider(7, 5, 12) + 6
+const pattern_1820 = note("c3 e3 g3").s("bd sd").gain(0.0)
+let layer_1821 = stack([0, 1, 2], {step: 13}).fast(2)
+s("bd sd bd sd").note("c3").room(0.2)
+const tempo_1823 = slider(11, 5, 12) + 3
+const pattern_1824 = note("c3 e3 g3").s("bd sd").gain(0.4)
+let layer_1825 = stack([0, 1, 2], {step: 1}).fast(2)
+s("bd sd bd sd bd sd").note("c3").room(0.6)
+const tempo_1827 = slider(3, 5, 12) + 0
+const pattern_1828 = note("c3 e3 g3").s("bd sd").gain(0.8)
+let layer_1829 = stack([0, 1, 2], {step: 5}).fast(2)
+s("bd sd").note("c3").room(0.0)
+const tempo_1831 = slider(7, 5, 12) + 4
+const pattern_1832 = note("c3 e3 g3").s("bd sd").gain(0.2)
+let layer_1833 = stack([0, 1, 2], {step: 9}).fast(2)
+s("bd sd bd sd").note("c3").room(0.4)
+const tempo_1835 = slider(11, 5, 12) + 1
+const pattern_1836 = note("c3 e3 g3").s("bd sd").gain(0.6)
+let layer_1837 = stack([0, 1, 2], {step: 13}).fast(2)
+s("bd sd bd sd bd sd").note("c3").room(0.8)
+const tempo_1839 = slider(3, 5, 12) + 5
+const pattern_1840 = note("c3 e3 g3").s("bd sd").gain(0.0)
+let layer_1841 = stack([0, 1, 2], {step: 1}).fast(2)
+s("bd sd").note("c3").room(0.2)
+const tempo_1843 = slider(7, 5, 12) + 2
+const pattern_1844 = note("c3 e3 g3").s("bd sd").gain(0.4)
+let layer_1845 = stack([0, 1, 2], {step: 5}).fast(2)
+s("bd sd bd sd").note("c3").room(0.6)
+const tempo_1847 = slider(11, 5, 12) + 6
+const pattern_1848 = note("c3 e3 g3").s("bd sd").gain(0.8)
+let layer_1849 = stack([0, 1, 2], {step: 9}).fast(2)
+s("bd sd bd sd bd sd").note("c3").room(0.0)
+const tempo_1851 = slider(3, 5, 12) + 3
+const pattern_1852 = note("c3 e3 g3").s("bd sd").gain(0.2)
+let layer_1853 = stack([0, 1, 2], {step: 13}).fast(2)
+s("bd sd").note("c3").room(0.4)
+const tempo_1855 = slider(7, 5, 12) + 0
+const pattern_1856 = note("c3 e3 g3").s("bd sd").gain(0.6)
+let layer_1857 = stack([0, 1, 2], {step: 1}).fast(2)
+s("bd sd bd sd").note("c3").room(0.8)
+const tempo_1859 = slider(11, 5, 12) + 4
+const pattern_1860 = note("c3 e3 g3").s("bd sd").gain(0.0)
+let layer_1861 = stack([0, 1, 2], {step: 5}).fast(2)
+s("bd sd bd sd bd sd").note("c3").room(0.2)
+const tempo_1863 = slider(3, 5, 12) + 1
+const pattern_1864 = note("c3 e3 g3").s("bd sd").gain(0.4)
+let layer_1865 = stack([0, 1, 2], {step: 9}).fast(2)
+s("bd sd").note("c3").room(0.6)
+const tempo_1867 = slider(7, 5, 12) + 5
+const pattern_1868 = note("c3 e3 g3").s("bd sd").gain(0.8)
+let layer_1869 = stack([0, 1, 2], {step: 13}).fast(2)
+s("bd sd bd sd").note("c3").room(0.0)
+const tempo_1871 = slider(11, 5, 12) + 2
+const pattern_1872 = note("c3 e3 g3").s("bd sd").gain(0.2)
+let layer_1873 = stack([0, 1, 2], {step: 1}).fast(2)
+s("bd sd bd sd bd sd").note("c3").room(0.4)
+const tempo_1875 = slider(3, 5, 12) + 6
+const pattern_1876 = note("c3 e3 g3").s("bd sd").gain(0.6)
+let layer_1877 = stack([0, 1, 2], {step: 5}).fast(2)
+s("bd sd").note("c3").room(0.8)
+const tempo_1879 = slider(7, 5, 12) + 3
+const pattern_1880 = note("c3 e3 g3").s("bd sd").gain(0.0)
+let layer_1881 = stack([0, 1, 2], {step: 9}).fast(2)
+s("bd sd bd sd").note("c3").room(0.2)
+const tempo_1883 = slider(11, 5, 12) + 0
+const pattern_1884 = note("c3 e3 g3").s("bd sd").gain(0.4)
+let layer_1885 = stack([0, 1, 2], {step: 13}).fast(2)
+s("bd sd bd sd bd sd").note("c3").room(0.6)
+const tempo_1887 = slider(3, 5, 12) + 4
+const pattern_1888 = note("c3 e3 g3").s("bd sd").gain(0.8)
+let layer_1889 = stack([0, 1, 2], {step: 1}).fast(2)
+s("bd sd").note("c3").room(0.0)
+const tempo_1891 = slider(7, 5, 12) + 1
+const pattern_1892 = note("c3 e3 g3").s("bd sd").gain(0.2)
+let layer_1893 = stack([0, 1, 2], {step: 5}).fast(2)
+s("bd sd bd sd").note("c3").room(0.4)
+const tempo_1895 = slider(11, 5, 12) + 5
+const pattern_1896 = note("c3 e3 g3").s("bd sd").gain(0.6)
+let layer_1897 = stack([0, 1, 2], {step: 9}).fast(2)
+s("bd sd bd sd bd sd").note("c3").room(0.8)
+const tempo_1899 = slider(3, 5, 12) + 2
+const pattern_1900 = note("c3 e3 g3").s("bd sd").gain(0.0)
+let layer_1901 = stack([0, 1, 2], {step: 13}).fast(2)
+s("bd sd").note("c3").room(0.2)
+const tempo_1903 = slider(7, 5, 12) + 6
+const pattern_1904 = note("c3 e3 g3").s("bd sd").gain(0.4)
+let layer_1905 = stack([0, 1, 2], {step: 1}).fast(2)
+s("bd sd bd sd").note("c3").room(0.6)
+const tempo_1907 = slider(11, 5, 12) + 3
+const pattern_1908 = note("c3 e3 g3").s("bd sd").gain(0.8)
+let layer_1909 = stack([0, 1, 2], {step: 5}).fast(2)
+s("bd sd bd sd bd sd").note("c3").room(0.0)
+const tempo_1911 = slider(3, 5, 12) + 0
+const pattern_1912 = note("c3 e3 g3").s("bd sd").gain(0.2)
+let layer_1913 = stack([0, 1, 2], {step: 9}).fast(2)
+s("bd sd").note("c3").room(0.4)
+const tempo_1915 = slider(7, 5, 12) + 4
+const pattern_1916 = note("c3 e3 g3").s("bd sd").gain(0.6)
+let layer_1917 = stack([0, 1, 2], {step: 13}).fast(2)
+s("bd sd bd sd").note("c3").room(0.8)
+const tempo_1919 = slider(11, 5, 12) + 1
+const pattern_1920 = note("c3 e3 g3").s("bd sd").gain(0.0)
+let layer_1921 = stack([0, 1, 2], {step: 1}).fast(2)
+s("bd sd bd sd bd sd").note("c3").room(0.2)
+const tempo_1923 = slider(3, 5, 12) + 5
+const pattern_1924 = note("c3 e3 g3").s("bd sd").gain(0.4)
+let layer_1925 = stack([0, 1, 2], {step: 5}).fast(2)
+s("bd sd").note("c3").room(0.6)
+const tempo_1927 = slider(7, 5, 12) + 2
+const pattern_1928 = note("c3 e3 g3").s("bd sd").gain(0.8)
+let layer_1929 = stack([0, 1, 2], {step: 9}).fast(2)
+s("bd sd bd sd").note("c3").room(0.0)
+const tempo_1931 = slider(11, 5, 12) + 6
+const pattern_1932 = note("c3 e3 g3").s("bd sd").gain(0.2)
+let layer_1933 = stack([0, 1, 2], {step: 13}).fast(2)
+s("bd sd bd sd bd sd").note("c3").room(0.4)
+const tempo_1935 = slider(3, 5, 12) + 3
+const pattern_1936 = note("c3 e3 g3").s("bd sd").gain(0.6)
+let layer_1937 = stack([0, 1, 2], {step: 1}).fast(2)
+s("bd sd").note("c3").room(0.8)
+const tempo_1939 = slider(7, 5, 12) + 0
+const pattern_1940 = note("c3 e3 g3").s("bd sd").gain(0.0)
+let layer_1941 = stack([0, 1, 2], {step: 5}).fast(2)
+s("bd sd bd sd").note("c3").room(0.2)
+const tempo_1943 = slider(11, 5, 12) + 4
+const pattern_1944 = note("c3 e3 g3").s("bd sd").gain(0.4)
+let layer_1945 = stack([0, 1, 2], {step: 9}).fast(2)
+s("bd sd bd sd bd sd").note("c3").room(0.6)
+const tempo_1947 = slider(3, 5, 12) + 1
+const pattern_1948 = note("c3 e3 g3").s("bd sd").gain(0.8)
+let layer_1949 = stack([0, 1, 2], {step: 13}).fast(2)
+s("bd sd").note("c3").room(0.0)
+const tempo_1951 = slider(7, 5, 12) + 5
+const pattern_1952 = note("c3 e3 g3").s("bd sd").gain(0.2)
+let layer_1953 = stack([0, 1, 2], {step: 1}).fast(2)
+s("bd sd bd sd").note("c3").room(0.4)
+const tempo_1955 = slider(11, 5, 12) + 2
+const pattern_1956 = note("c3 e3 g3").s("bd sd").gain(0.6)
+let layer_1957 = stack([0, 1, 2], {step: 5}).fast(2)
+s("bd sd bd sd bd sd").note("c3").room(0.8)
+const tempo_1959 = slider(3, 5, 12) + 6
+const pattern_1960 = note("c3 e3 g3").s("bd sd").gain(0.0)
+let layer_1961 = stack([0, 1, 2], {step: 9}).fast(2)
+s("bd sd").note("c3").room(0.2)
+const tempo_1963 = slider(7, 5, 12) + 3
+const pattern_1964 = note("c3 e3 g3").s("bd sd").gain(0.4)
+let layer_1965 = stack([0, 1, 2], {step: 13}).fast(2)
+s("bd sd bd sd").note("c3").room(0.6)
+const tempo_1967 = slider(11, 5, 12) + 0
+const pattern_1968 = note("c3 e3 g3").s("bd sd").gain(0.8)
+let layer_1969 = stack([0, 1, 2], {step: 1}).fast(2)
+s("bd sd bd sd bd sd").note("c3").room(0.0)
+const tempo_1971 = slider(3, 5, 12) + 4
+const pattern_1972 = note("c3 e3 g3").s("bd sd").gain(0.2)
+let layer_1973 = stack([0, 1, 2], {step: 5}).fast(2)
+s("bd sd").note("c3").room(0.4)
+const tempo_1975 = slider(7, 5, 12) + 1
+const pattern_1976 = note("c3 e3 g3").s("bd sd").gain(0.6)
+let layer_1977 = stack([0, 1, 2], {step: 9}).fast(2)
+s("bd sd bd sd").note("c3").room(0.8)
+const tempo_1979 = slider(11, 5, 12) + 5
+const pattern_1980 = note("c3 e3 g3").s("bd sd").gain(0.0)
+let layer_1981 = stack([0, 1, 2], {step: 13}).fast(2)
+s("bd sd bd sd bd sd").note("c3").room(0.2)
+const tempo_1983 = slider(3, 5, 12) + 2
+const pattern_1984 = note("c3 e3 g3").s("bd sd").gain(0.4)
+let layer_1985 = stack([0, 1, 2], {step: 1}).fast(2)
+s("bd sd").note("c3").room(0.6)
+const tempo_1987 = slider(7, 5, 12) + 6
+const pattern_1988 = note("c3 e3 g3").s("bd sd").gain(0.8)
+let layer_1989 = stack([0, 1, 2], {step: 5}).fast(2)
+s("bd sd bd sd").note("c3").room(0.0)
+const tempo_1991 = slider(11, 5, 12) + 3
+const pattern_1992 = note("c3 e3 g3").s("bd sd").gain(0.2)
+let layer_1993 = stack([0, 1, 2], {step: 9}).fast(2)
+s("bd sd bd sd bd sd").note("c3").room(0.4)
+const tempo_1995 = slider(3, 5, 12) + 0
+const pattern_1996 = note("c3 e3 g3").s("bd sd").gain(0.6)
+let layer_1997 = stack([0, 1, 2], {step: 13}).fast(2)
+s("bd sd").note("c3").room(0.8)
+const tempo_1999 = slider(7, 5, 12) + 4
