@@ -110,7 +110,7 @@ Consumers can expect:
 - `package-lock.json` is not published. Published dependency ranges are resolved by the consumer's package manager; `node-addon-api` and `node-gyp-build` are runtime dependencies.
 - The npm package contains no C, Go, Python, Rust, or Swift binding. Those integrations are distributed or consumed through the channels defined in the [binding support policy](#binding-support-policy).
 - `grammar.js` and the two official query files are packaged for editor/tooling consumers. Their presence is intentional, but consumers should prefer the committed generated artifacts at runtime.
-- Version `1.5.0` is aligned across the npm and Tree-sitter metadata and checked by `make check-version`. A version alone does not imply a different runtime floor; ABI and runtime compatibility are defined at the top of this document.
+- Version `1.5.0` is aligned across the npm and Tree-sitter metadata and checked by `make check-version`. `make test-package` additionally requires the npm description, version, license, author, repository, scope, and file types to match the canonical `tree-sitter.json` metadata; official query registrations are checked separately by `make test-query-registration`. A version alone does not imply a different runtime floor; ABI and runtime compatibility are defined at the top of this document.
 
 This section describes the expected package contract. Separate roadmap items cover end-to-end tarball installation, parsing from an installed package, and final publication-content validation; those checks are not implied by this documentation.
 

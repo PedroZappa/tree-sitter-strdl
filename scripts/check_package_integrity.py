@@ -106,6 +106,97 @@ def non_empty_string(value: object) -> bool:
     return isinstance(value, str) and bool(value.strip())
 
 
+def stripped_string(value: object) -> str | None:
+    if not isinstance(value, str):
+        return None
+    return value.strip() or None
+
+
+def author_key(value: object) -> tuple[str, str, str] | None:
+    if not isinstance(value, dict):
+        return None
+    name = stripped_string(value.get("name"))
+    email = stripped_string(value.get("email"))
+    url = stripped_string(value.get("url"))
+    if name is None or email is None or url is None:
+        return None
+    return name, email, url
+
+
+def check_metadata_alignment(
+    package: dict[str, Any],
+    tree_sitter: dict[str, Any],
+    check: Checker,
+) -> None:
+    metadata = tree_sitter.get("metadata")
+    if not isinstance(metadata, dict):
+        return
+
+    package_description = stripped_string(package.get("description"))
+    tree_description = stripped_string(metadata.get("description"))
+    check.require(package_description is not None, "package.json lacks a description")
+    check.require(tree_description is not None, "tree-sitter.json metadata lacks a description")
+    check.require(
+        package_description == tree_description,
+        "description does not match tree-sitter.json metadata",
+    )
+
+    links = metadata.get("links")
+    tree_repository = stripped_string(links.get("repository")) if isinstance(links, dict) else None
+    package_repository = stripped_string(package.get("repository"))
+    check.require(package_repository is not None, "package.json lacks a repository")
+    check.require(tree_repository is not None, "tree-sitter.json metadata lacks a repository link")
+    check.require(
+        package_repository == tree_repository,
+        "repository does not match tree-sitter.json metadata",
+    )
+
+    package_author = author_key(package.get("author"))
+    authors = metadata.get("authors")
+    tree_author = (
+        author_key(authors[0]) if isinstance(authors, list) and len(authors) == 1 else None
+    )
+    check.require(package_author is not None, "package.json author lacks name, email, or url")
+    check.require(
+        tree_author is not None,
+        "tree-sitter.json metadata must contain exactly one complete author",
+    )
+    check.require(
+        package_author == tree_author,
+        "author does not match tree-sitter.json metadata",
+    )
+
+    grammars = tree_sitter.get("grammars")
+    package_configs = package.get("tree-sitter")
+    check.require(
+        isinstance(grammars, list) and len(grammars) == 1,
+        "tree-sitter.json must contain exactly one grammar",
+    )
+    check.require(
+        isinstance(package_configs, list) and len(package_configs) == 1,
+        "package.json tree-sitter must contain exactly one grammar",
+    )
+    if isinstance(grammars, list) and isinstance(package_configs, list):
+        if grammars and package_configs:
+            grammar = grammars[0]
+            config = package_configs[0]
+            check.require(
+                isinstance(grammar, dict), "tree-sitter.json grammar entry must be an object"
+            )
+            check.require(
+                isinstance(config, dict), "package.json tree-sitter entry must be an object"
+            )
+            if isinstance(grammar, dict) and isinstance(config, dict):
+                for key in ("scope", "file-types"):
+                    check.require(key in config, f"package.json tree-sitter lacks {key}")
+                    check.require(key in grammar, f"tree-sitter.json grammar lacks {key}")
+                    if key in config and key in grammar:
+                        check.require(
+                            config[key] == grammar[key],
+                            f"{key} does not match tree-sitter.json grammar",
+                        )
+
+
 def check_metadata(
     package: dict[str, Any],
     tree_sitter: dict[str, Any],
@@ -222,6 +313,7 @@ def main(argv: list[str]) -> int:
         check_metadata(package, tree_sitter, entries[0], check)
     else:
         check.require(False, "npm pack produced no metadata entry")
+    check_metadata_alignment(package, tree_sitter, check)
     paths = check_files(entries, check)
 
     if check.failures:
@@ -237,6 +329,7 @@ def main(argv: list[str]) -> int:
         f"package integrity: {len(paths)} files verified; "
         f"required {len(REQUIRED_FILES)}; "
         f"allowlist entries {required_entries}; "
+        f"metadata aligned; "
         f"forbidden patterns {len(FORBIDDEN_PATTERNS)}"
     )
     print_terminal_status(
@@ -246,6 +339,7 @@ def main(argv: list[str]) -> int:
             f"{len(paths)} files",
             f"{len(REQUIRED_FILES)} required",
             f"{required_entries} allowlist entries",
+            "metadata aligned",
             f"{len(FORBIDDEN_PATTERNS)} forbidden patterns",
         ],
     )
