@@ -85,6 +85,21 @@ Query gates now build the shared C library and pass it to the CLI with `--lib-pa
 
 The Python binding check removes `-Wl,-z,pack-relative-relocs` from the target interpreter's linker configuration because `ld.gold` rejects that flag; a forced `clang`/`ld.gold` reproduction now builds successfully. On Linux, the Rust gate appends GNU `ld.bfd` flags for Cargo compilation and doc tests; forced `ld.lld` configurations now pass.
 
+## Runtime compatibility verification
+
+On 2026-11-26, the committed generated parser was exercised through every currently gated runtime path. `make test-generated-runtime`, `make test-node`, `make test-node-clean-build`, `make test-c`, `make test-python`, `make test-rust`, and `make test-swift` all exited `0`; no grammar regeneration or generated-artifact modification was required.
+
+| Surface                    | Runtime evidence in this verification                                                                                                       | Result                                                                      |
+| -------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------- |
+| Committed generated parser | Node.js 26.13.1 with locked `tree-sitter` 0.25.1; two representative fixtures parsed without `grammar.js` or the Tree-sitter CLI            | Passed; generated files remained byte-identical                             |
+| Node.js binding            | Node.js 26.13.1 with locked `tree-sitter` 0.25.1; direct tests plus a clean tracked-source addon build                                      | Passed all binding tests and the clean build                                |
+| C                          | C11 with GCC 16.2.1; ABI 15 `tree_sitter_strudel()` symbol linked and loaded                                                                | Passed; C has no separate runtime dependency                                |
+| Python                     | Python 3.14.10 extension build, language capsule validation, and official query export check                                                | Passed; this path does not import the optional Python `tree-sitter` runtime |
+| Rust                       | Cargo 1.100.0 with `Cargo.lock` resolving `tree-sitter` 0.25.10; locked load and doc tests                                                  | Passed                                                                      |
+| Swift                      | Swift 6.4.3 and the CI-pinned Swift 6.2.1, resolving `SwiftTreeSitter` 0.25.0 and `tree-sitter` 0.25.10; SwiftPM build and XCTest load test | Passed on both toolchains                                                   |
+
+Go remains source-only: its earlier Go 1.27.4 / `go-tree-sitter` v0.25.0 temporary-module test is retained as evidence, but no Go gate or module metadata exists in this repository. The exact minimum `tree-sitter` 0.25.0 runtime is not separately installed in this environment; the tested paths use 0.25.1 or newer runtimes and the documented ABI 15 floor. GitHub Actions continues to validate the primary Node.js path on Node.js 22 and 24 and Swift on 6.2.1 using pinned Ubuntu 24.04 runners.
+
 ## Known limitations
 
 - npm 11 in this environment blocks dependency install scripts for `tree-sitter` and `tree-sitter-cli` by default; the project's own install script still compiled the addon, and the clean build's `npm test` run loaded the runtime successfully.
