@@ -35,7 +35,7 @@ The query commands establish that both query files compile and execute against `
 
 Phase 7 follow-up: gated query checks now build the shared C library and pass it with `--lib-path ... --lang-name strudel`. This avoids the global parser cache, which once supplied a symbol-less `strudel.so` and caused an intermediate CI failure.
 
-An attempted explicit scope variant, `tree-sitter query --quiet --grammar-path . --scope source.strdl ...`, failed with `Unknown scope 'source.strdl'`. This appears to be a CLI configuration issue rather than a query failure; it needs a follow-up using the project's supported CLI version.
+An attempted explicit scope variant, `tree-sitter query --quiet --grammar-path . --scope source.strdl ...`, failed with `Unknown scope 'source.strdl'`. That experiment was superseded by the supported `--lib-path`/`--lang-name` query gate described above; no separate follow-up remains.
 
 ### Generated artifact changes
 
@@ -57,7 +57,7 @@ The repository adopted the newer generator path:
 - Generated artifacts were regenerated with the pinned CLI. A second generation produced byte-identical `src/parser.c`, `src/grammar.json`, `src/node-types.json`, and `src/tree_sitter/array.h`.
 - Node.js, Python, Go, Rust, and Swift binding tests passed; the Swift gate now runs both `swift build` and `swift test`.
 
-See [compatibility.md](compatibility.md) for the version matrix and validation details. Query compilation succeeds, but capture behavior still needs explicit tests.
+See [compatibility.md](compatibility.md) for the version matrix and validation details. Automated query compilation, execution/capture assertions, and registration checks now cover the official queries.
 
 ## Syntax coverage inventory
 

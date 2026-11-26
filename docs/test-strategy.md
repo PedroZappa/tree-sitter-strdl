@@ -1,6 +1,6 @@
 # Test strategy
 
-This document is the index for how `tree-sitter-strdl` is tested. It owns the Phase 6 roadmap item “Create a documented test strategy index.” The [Makefile](../Makefile) is the canonical command entry point; authoritative details for individual layers live in the linked documents rather than being duplicated here.
+This document is the index for how `tree-sitter-strdl` is tested. It owns the Phase 6 roadmap item “Create a documented test strategy index.” The [Makefile](../Makefile) is the canonical command entry point; authoritative details for individual layers live in the linked documents rather than being duplicated here. For step-by-step execution, filters, result interpretation, and troubleshooting, see [testing procedures](testing-procedures.md).
 
 The tests cover syntax recognition and the public concrete syntax tree (CST). They do not perform semantic analysis, resolve symbols, or parse mini-notation contents.
 
@@ -53,43 +53,43 @@ Fresh and incremental latency reports keep P50, P95, and P99 in separate modes; 
 
 ## Command map
 
-| Target                              | Scope                                                                                                                                                          |
-| ----------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `make test`                         | Full corpus suite.                                                                                                                                             |
-| `make test-recovery`                | Recovery-focused corpus subset.                                                                                                                                |
-| `make test-incremental`             | Incremental/fresh equivalence harness; gated by `make verify` and `make ci`.                                                                                   |
-| `make test-query-compile`           | Query syntax, node types, and field names.                                                                                                                     |
-| `make test-query-execution`         | Expected captures on grammar-derived roles.                                                                                                                    |
-| `make test-query-registration`      | Metadata, packaging rules, and binding exports.                                                                                                                |
-| `make test-query`                   | All query layers plus execution and invariant checks.                                                                                                          |
-| `make test-node`                    | Native Node.js binding behavior tests.                                                                                                                         |
-| `make test-node-clean-build`        | Clean tracked-source Node.js addon build and test; gated by `make verify-all` and `make ci`.                                                                   |
-| `make test-generated-runtime`       | Verify committed generated parser files work without `grammar.js` or the CLI; gated by `make verify-all` and `make ci`.                                        |
-| `make test-c`                       | Compile and link the public C binding symbol against the generated parser; gated by `make verify-all` and `make ci`.                                           |
-| `make test-python`                  | Build and verify the Python binding capsule and packaged query exports; gated by `make verify-all` and `make ci`.                                              |
-| `make test-rust`                    | Verify the Rust binding structure and run `cargo test --locked`; gated by `make verify-all` and `make ci`.                                                     |
-| `make test-swift`                   | Verify the Swift binding structure and run `swift build`/`swift test`; gated by `make verify-all` and `make ci`.                                               |
-| `make check-version`                | Verify release-version alignment across all package metadata; gated by `make verify-all` and `make ci`.                                                        |
-| `make test-package`                 | npm allowlist categories, canonical metadata alignment, package contents, and file-size checks.                                                                |
-| `make test-tarball-install`         | Offline tarball install, packed-file verification, native addon build, package load, and representative fixture parse; gated by `make ci`.                     |
-| `make test-regressions`             | Regression inventory integrity and artifact wiring.                                                                                                            |
-| `make benchmark-fixtures`           | Regenerate synthetic benchmark fixtures.                                                                                                                       |
-| `make check-benchmark-fixtures`     | Benchmark fixture size, hash, and regeneration consistency.                                                                                                    |
-| `make bench-fresh`                  | Fresh parse latency measurement with configurable iterations, warmup, fixture filter, and JSON output.                                                         |
-| `make bench-incremental`            | Incremental parse latency measurement with configurable iterations, warmup, sequence/category filters, and JSON output.                                        |
-| `make bench-memory`                 | Fresh/incremental parse-tree memory measurement with mode, iteration, warmup, fixture, sequence/category, and JSON overrides.                                  |
-| `make build-benchmark-baseline`     | Build the committed baseline from fresh/incremental/memory JSON reports.                                                                                       |
-| `make check-benchmark-baseline`     | Validate baseline structure and coverage without a performance gate.                                                                                           |
-| `make reproduce-benchmark-baseline` | Rebuild the baseline from committed source reports and require exact equality.                                                                                 |
-| `make compare-benchmark-baseline`   | Compare three current reports with the committed baseline and produce investigation data without gating.                                                       |
-| `make build-benchmark-budgets`      | Build observed-envelope budgets from a session manifest (`BENCH_BUDGET_INPUTS`).                                                                               |
-| `make check-benchmark-budgets`      | Validate budget provenance and observed maxima without a performance gate.                                                                                     |
-| `make check-generated`              | Generated-file consistency against `HEAD`.                                                                                                                     |
-| `make verify`                       | Generated-file, benchmark-fixture, baseline-integrity/reproduction, budget-integrity, corpus, incremental-equivalence, query, and regression-inventory layers. |
-| `make verify-all`                   | `verify` plus Node.js binding, C/Python/Rust/Swift binding, version, and package checks.                                                                       |
-| `make ci`                           | `verify-all` plus the C library build.                                                                                                                         |
+| Target                              | Scope                                                                                                                                                                                       |
+| ----------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `make test`                         | Full corpus suite.                                                                                                                                                                          |
+| `make test-recovery`                | Recovery-focused corpus subset.                                                                                                                                                             |
+| `make test-incremental`             | Incremental/fresh equivalence harness; gated by `make verify` and `make ci`.                                                                                                                |
+| `make test-query-compile`           | Query syntax, node types, and field names.                                                                                                                                                  |
+| `make test-query-execution`         | Expected captures on grammar-derived roles.                                                                                                                                                 |
+| `make test-query-registration`      | Metadata, packaging rules, and binding exports.                                                                                                                                             |
+| `make test-query`                   | All query layers plus execution and invariant checks.                                                                                                                                       |
+| `make test-node`                    | Native Node.js binding behavior tests.                                                                                                                                                      |
+| `make test-node-clean-build`        | Clean tracked-source Node.js addon build and test; gated by `make verify-all` and `make ci`.                                                                                                |
+| `make test-generated-runtime`       | Verify committed generated parser files work without `grammar.js` or the CLI; gated by `make verify-all` and `make ci`.                                                                     |
+| `make test-c`                       | Compile and link the public C binding symbol against the generated parser; gated by `make verify-all` and `make ci`.                                                                        |
+| `make test-python`                  | Build and verify the Python binding capsule and packaged query exports; gated by `make verify-all` and `make ci`.                                                                           |
+| `make test-rust`                    | Verify the Rust binding structure and run `cargo test --locked`; gated by `make verify-all` and `make ci`.                                                                                  |
+| `make test-swift`                   | Verify the Swift binding structure and run `swift build`/`swift test`; gated by `make verify-all` and `make ci`.                                                                            |
+| `make check-version`                | Verify release-version alignment across all package metadata; gated by `make verify-all` and `make ci`.                                                                                     |
+| `make test-package`                 | npm allowlist categories, canonical metadata alignment, package contents, and file-size checks.                                                                                             |
+| `make test-tarball-install`         | Offline tarball install, packed-file verification, native addon build, package load, and representative fixture parse; gated by `make ci`.                                                  |
+| `make test-regressions`             | Regression inventory integrity and artifact wiring.                                                                                                                                         |
+| `make benchmark-fixtures`           | Regenerate synthetic benchmark fixtures.                                                                                                                                                    |
+| `make check-benchmark-fixtures`     | Benchmark fixture size, hash, and regeneration consistency.                                                                                                                                 |
+| `make bench-fresh`                  | Fresh parse latency measurement with configurable iterations, warmup, fixture filter, and JSON output.                                                                                      |
+| `make bench-incremental`            | Incremental parse latency measurement with configurable iterations, warmup, sequence/category filters, and JSON output.                                                                     |
+| `make bench-memory`                 | Fresh/incremental parse-tree memory measurement with mode, iteration, warmup, fixture, sequence/category, and JSON overrides.                                                               |
+| `make build-benchmark-baseline`     | Build the committed baseline from fresh/incremental/memory JSON reports.                                                                                                                    |
+| `make check-benchmark-baseline`     | Validate baseline structure and coverage without a performance gate.                                                                                                                        |
+| `make reproduce-benchmark-baseline` | Rebuild the baseline from committed source reports and require exact equality.                                                                                                              |
+| `make compare-benchmark-baseline`   | Compare three current reports with the committed baseline and produce investigation data without gating.                                                                                    |
+| `make build-benchmark-budgets`      | Build observed-envelope budgets from a session manifest (`BENCH_BUDGET_INPUTS`).                                                                                                            |
+| `make check-benchmark-budgets`      | Validate budget provenance and observed maxima without a performance gate.                                                                                                                  |
+| `make check-generated`              | Generated-file consistency against `HEAD`.                                                                                                                                                  |
+| `make verify`                       | Generated-file, formatting, static-analysis, corpus, incremental-equivalence, query, regression-inventory, benchmark-fixture, baseline-integrity/reproduction, and budget-integrity layers. |
+| `make verify-all`                   | `verify` plus Node.js binding, C/Python/Rust/Swift binding, version, and package checks.                                                                                                    |
+| `make ci`                           | `verify-all` plus the C library build.                                                                                                                                                      |
 
-Run `make help` for the authoritative target list and parameter names.
+Run `make help` for the target list and common override hints; the [Makefile](../Makefile) is authoritative for exact variable names.
 
 ## Fixtures and scripts
 
@@ -145,7 +145,7 @@ Do not weaken or delete an existing test to make a change pass without an explic
 
 ## Current coverage and gaps
 
-Covered by `make ci` today: generated-file, formatting, static-analysis, benchmark-fixture, benchmark-baseline structure and reproduction, and benchmark-budget structural consistency; corpus behavior; CLI-level incremental/fresh equivalence; all query layers against a locally built shared parser library; regression-inventory integrity; Node.js binding load/metadata/CST/recovery/query/incremental behavior; a clean tracked-source Node.js addon build; committed generated parser runtime use without regeneration; C and Python binding checks; Rust binding structure plus `cargo test --locked`; Swift binding structure plus `swift build`/`swift test`; cross-file version consistency; and npm package integrity. All Phase 6 test layers in this index run automatically in both CI matrix legs through `make ci`. Recovery cases run inside the full corpus suite; `make test-recovery` is the dedicated local subset.
+Covered by `make ci` today: generated-file, formatting, static-analysis, and corpus behavior; CLI-level incremental/fresh equivalence; all query layers against a locally built shared parser library; regression-inventory integrity; benchmark-fixture, benchmark-baseline structure and reproduction, and benchmark-budget structural consistency; Node.js binding load/metadata/CST/recovery/query/incremental behavior; a clean tracked-source Node.js addon build; committed generated parser runtime use without regeneration; C and Python binding checks; Rust binding structure plus `cargo test --locked`; Swift binding structure plus `swift build`/`swift test`; cross-file version consistency; and npm package integrity. All Phase 6 test layers in this index run automatically in both CI matrix legs through `make ci`. Recovery cases run inside the full corpus suite; `make test-recovery` is the dedicated local subset.
 
 Local-only: `make format` auto-fixes formatting and safe Ruff issues, filtered incremental-equivalence runs through `INCREMENTAL_FILTER`, fresh/incremental latency and memory measurement, baseline regeneration, baseline comparison, and budget regeneration. CI runs the complete equivalence catalog without a filter, validates the committed artifacts, and prints a hardware-variance-aware performance report on the Node 24 leg; no timing is compared as a pass/fail gate.
 

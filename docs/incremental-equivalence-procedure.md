@@ -51,7 +51,7 @@ The CLI exits nonzero when a parse contains `ERROR` or `MISSING` nodes, but it s
 make test-incremental
 ```
 
-Run a subset by category, sequence ID, or any term contained in either:
+Run a subset by exact category name or a substring of a sequence ID:
 
 ```sh
 make test-incremental INCREMENTAL_FILTER=insertion

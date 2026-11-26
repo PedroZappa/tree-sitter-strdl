@@ -2,35 +2,21 @@
 
 [![CI](https://github.com/pedrozappa/tree-sitter-strdl/actions/workflows/ci.yml/badge.svg)](https://github.com/pedrozappa/tree-sitter-strdl/actions/workflows/ci.yml)
 
-Tree-sitter parser for Strudel, a Tidal Cycles based live coding tool.
+A Tree-sitter grammar for the JavaScript subset used in Strudel compositions. It exposes a concrete syntax tree (CST) for editors, language servers, and other Tree-sitter consumers.
 
-The grammar targets the JavaScript subset used in Strudel compositions. It is independent of Strudel runtime evaluation and does not parse mini-notation: `s("bd sd")` is a function call with one opaque string argument.
+The parser is syntax-only. Mini-notation stays opaque string content; semantic analysis, symbol resolution, runtime evaluation, and Strudel API metadata belong in downstream tools. See [grammar architecture](docs/grammar-architecture.md#scope).
 
-## Installation
+## Install
 
-The parser is distributed as a conventional Tree-sitter grammar package with committed generated artifacts in `src/`. Consumers do not need to run the generator.
+```sh
+npm install tree-sitter-strdl tree-sitter@^0.25.0
+```
 
-Requirements:
+The generated parser is committed under `src/`, so consumers do not need to run the generator. A Tree-sitter runtime 0.25 or newer is required because the parser uses ABI 15. See [compatibility](docs/compatibility.md#parser-abi).
 
-- Tree-sitter runtime 0.25 or newer (ABI 15 parser)
-- Tree-sitter CLI 0.27.2 when regenerating artifacts
+Node.js is the primary distribution target. Python, Rust, C, Swift, and Go bindings are retained with different support tiers; see the [binding support policy](docs/compatibility.md#binding-support-policy).
 
-Package contents, native-addon installation behavior, and binding-specific distribution expectations are documented in the [compatibility policy](docs/compatibility.md#package-compatibility-expectations).
-
-## Bindings
-
-| Binding | Status                        | Distribution                       |
-| ------- | ----------------------------- | ---------------------------------- |
-| Node.js | Primary                       | npm package                        |
-| Python  | Retained, published and gated | PyPI                               |
-| Rust    | Retained, published and gated | crates.io                          |
-| C       | Retained, gated source        | Repository, Make/CMake, pkg-config |
-| Swift   | Retained, gated source        | Repository, SwiftPM                |
-| Go      | Retained, source-only         | Repository source                  |
-
-No binding is deprecated. Support tiers and commitments are defined in the [compatibility policy](docs/compatibility.md#binding-support-policy); evidence and rationale are in the [binding audit](docs/binding-audit.md#aggregate-non-node-binding-decision--decided-2026-11-26).
-
-## Usage
+## Use
 
 ```js
 const Parser = require("tree-sitter");
@@ -43,115 +29,36 @@ const tree = parser.parse('$: s("bd sd").gain(0.8)');
 console.log(tree.rootNode.toString());
 ```
 
-### Neovim
+The registered scope is `source.strdl`, with file types `strdl` and `strudel`. Official queries provide syntax highlighting and locals. See [queries](docs/queries.md) for registration and usage.
 
-Create `~/.config/nvim/lua/strudel-integration.lua`:
+## Coverage and limits
 
-```lua
----@class ParserConfig
-local parser_config = require("nvim-treesitter.parsers").get_parser_configs()
-parser_config.strudel = {
-  install_info = {
-    -- url = "https://github.com/pedrozappa/tree-sitter-strdl", -- local path or git repo
-    url = "~/tree-sitter-strdl/", -- local path to this repo
-    files = { "src/parser.c" }, -- note that some parsers also require src/scanner.c or src/scanner.cc
-    -- optional entries:
-    branch = "main", -- default branch in case of git repo if different from master
-    generate_requires_npm = false, -- if stand-alone parser without npm dependencies
-    requires_generate_from_grammar = false, -- if folder contains pre-generated src/parser.c
-  },
-  filetype = "strdl", -- if filetype does not match the parser name
-}
+Covers the evidenced Strudel JavaScript subset: declarations and assignments, calls and method chains, member access, arrow and named functions, arrays and objects, arithmetic and comparison expressions, template literals, imports and exports, blocks, and comments.
 
-vim.api.nvim_create_autocmd("BufRead", {
-  pattern = { "*.strdl", "*.strudel" },
-  callback = function()
-    vim.bo.filetype = "strdl"
-  end,
-})
-```
+This is not a complete ECMAScript parser. Mini-notation is not parsed, and current gaps include object shorthand, object destructuring, rest and spread arguments, default imports, logical operators, and nullish coalescing. See the [syntax coverage matrix](docs/syntax-coverage-matrix.md) for exact status.
 
-Then add this to `~/.config/nvim/init.lua`:
-
-```lua
-require("strudel-integration")
-```
-
-Run the following to install the parser schemas:
-
-```bash
-npm run local_install
-```
-
-## Supported syntax
-
-Current coverage includes:
-
-- `var`, `let`, and `const` declarations
-- labeled Strudel assignments such as `$:` and assignment expressions
-- direct calls, nested calls, method chains, plain and computed member access
-- arrow functions with zero, one, multiple, destructured, and block-bodied forms
-- named functions with default parameters
-- arrays, objects, object spread, and hexadecimal numbers
-- arithmetic, comparison, unary, and conditional expressions
-- template literals with interpolation, tagged templates, and `await`
-- named imports, `export const`, and `export default`
-- `try`/`catch`, blocks, `return`, and line/block comments
-
-Not supported: mini-notation semantics, object shorthand, object destructuring declarations, spread arguments, default imports, logical operators, nullish coalescing, and general ECMAScript syntax. See the [coverage matrix](docs/syntax-coverage-matrix.md) for the exact status and evidence for each construct, and the [compatibility policy](docs/compatibility.md#syntax-coverage-compatibility) for what each status promises across releases.
-
-## Syntax tree
-
-The public CST API is documented in [grammar architecture](docs/grammar-architecture.md), and its stability rules are defined in the [breaking-change policy](docs/compatibility.md#breaking-change-policy-for-cst-and-queries). The Phase 3 structured refactor changed node and field names; consumers upgrading from the Phase 2 baseline must update their queries and tree-walking code.
-
-Generated parser artifacts and `src/node-types.json` are committed. Do not hand-edit generated files.
+The public CST API is documented in [grammar architecture](docs/grammar-architecture.md#public-syntax-tree-api). Node and field names are stable subject to the [breaking-change policy](docs/compatibility.md#breaking-change-policy-for-cst-and-queries); generated files under `src/` must not be hand-edited.
 
 ## Development
 
-```bash
+```sh
 npm ci
+python3 -m venv .venv
+.venv/bin/pip install -r requirements-dev.txt
 make ci
 ```
 
-`make ci` expects a Swift toolchain on `PATH` (GitHub Actions selects Swift 6.2.1 on Ubuntu 24.04). It checks generated artifacts and benchmark fixture reproducibility, runs corpus, query, regression-coverage, Node.js binding, clean Node.js addon build, generated parser runtime, C binding symbol, Python binding, Rust binding structure and cargo tests, Swift binding structure and build/tests, version consistency, and npm package integrity checks, and builds the C libraries. GitHub Actions runs the same gate on pull requests and pushes to `main`; see [CI](docs/ci.md).
-
-To regenerate artifacts or run a single layer directly:
-
-```bash
-make generate
-make test
-make test-query
-```
-
-Official queries live in `queries/`:
-
-- `highlights.scm` — syntax highlighting
-- `locals.scm` — scopes, definitions, and references
-
-See [query documentation](docs/queries.md) for the official inventory, capture conventions, registration, usage, and stability policy. There is no `injections.scm`: no current construct justifies reparsing part of a Strudel source file with another language. See the [injection evaluation](docs/injections-evaluation.md) for the evidence and decision.
+`make install-dev` performs both dependency installs. Use `make help` for the full target list. See [development environment](docs/development-environment.md) for setup and platform notes, and [CI](docs/ci.md#what-make-ci-runs) for what the full gate checks.
 
 ## Documentation
 
-- [Repository assessment](docs/repository-assessment.md)
-- [Grammar architecture](docs/grammar-architecture.md)
-- [Syntax evidence](docs/syntax-evidence.md)
-- [Syntax coverage matrix](docs/syntax-coverage-matrix.md)
-- [Compatibility](docs/compatibility.md)
-- [CI](docs/ci.md)
-- [Test strategy](docs/test-strategy.md)
-- [Regression coverage](docs/regression-coverage.md)
-- [Benchmarking](docs/benchmarking.md)
-- [Queries](docs/queries.md)
-- [Highlight captures](docs/highlight-captures.md)
-- [Locals captures](docs/locals-captures.md)
-- [Locals audit](docs/locals-audit.md)
-- [Injection evaluation](docs/injections-evaluation.md)
+- [Documentation index](docs/README.md) — full document inventory and ownership
+- [Contributing](CONTRIBUTING.md) — change workflow, validation, commits, and release boundaries
+- [Syntax evidence](docs/syntax-evidence.md) and [coverage matrix](docs/syntax-coverage-matrix.md)
+- [Grammar architecture](docs/grammar-architecture.md), [queries](docs/queries.md), and [compatibility](docs/compatibility.md)
+- [Build and generation](docs/build-and-generation.md), [testing procedures](docs/testing-procedures.md), and [benchmarking](docs/benchmarking.md)
 - [Development roadmap](docs/roadmap.md)
-- [Documentation index](docs/README.md)
 
-## External resources
+## License
 
-- [Tree-sitter](https://tree-sitter.github.io/tree-sitter/)
-- [Strudel](https://strudel.cc/)
-- [Tidal Cycles](https://tidalcycles.org/)
-- [Crafting Interpreters](https://www.craftinginterpreters.com/)
+AGPL-3.0-only. See [LICENSE](LICENSE).

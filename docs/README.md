@@ -5,16 +5,20 @@ This folder contains project-level planning and developer documentation for `tre
 ## Documents
 
 - [Roadmap](roadmap.md) — phased implementation plan with checkable tasks and acceptance criteria.
+- [Contribution workflow](../CONTRIBUTING.md) — setup, sources of truth, change workflow, validation, commit and pull-request conventions, and release boundaries.
 - [Repository assessment](repository-assessment.md) — completed Phase 1 findings, grammar/CST audit, functional and performance baselines, ABI 15 upgrade resolution, syntax coverage inventory, repository inventory, cleanup candidates, prioritized gaps, and AGPL-3.0 license decision.
-- [Grammar architecture](grammar-architecture.md) — naming conventions, public syntax-tree API, expression hierarchy, precedence, and conflict policy.
+- [Grammar architecture](grammar-architecture.md) — naming conventions, important node types, public fields, syntax-tree API, expression hierarchy, precedence, associativity, conflict policy, and error recovery considerations.
 - [Strudel syntax evidence](syntax-evidence.md) — Phase 3 examples from official documentation, runtime source, official examples/tutorials, and maintained community sources, with source paths and rendered URLs.
 - [Syntax coverage matrix](syntax-coverage-matrix.md) — Phase 3 comparison of each significant requirement with current grammar and corpus coverage.
 - [Compatibility](compatibility.md) — supported CLI, parser ABI, runtime floor, and binding validation matrix.
 - [Binding audit](binding-audit.md) — per-binding implementation, build, test, distribution evidence, and retention decisions.
 - [CI](ci.md) — GitHub Actions triggers, validation commands, pinned tooling, local reproduction, and deferred checks.
+- [Development environment](development-environment.md) — supported platforms, pinned toolchain, initial setup, verification commands, and environment caveats.
+- [Build and generation](build-and-generation.md) — artifact ownership, parser regeneration, C/Node/WASM builds, installation, cleanup, and build verification.
 - [Test strategy](test-strategy.md) — index of test layers, `make` command map, fixtures, scripts, extension procedures, and current coverage gaps.
+- [Testing procedures](testing-procedures.md) — execution workflows, filters, result interpretation, failure responses, negative controls, and regression practice.
 - [Regression coverage](regression-coverage.md) — authoritative inventory of discovered bugs, their permanent regression artifacts, and documented exclusions.
-- [Benchmarking](benchmarking.md) — benchmark fixture inventory, deterministic regeneration, validation evidence, and remaining performance work.
+- [Benchmarking](benchmarking.md) — fixture inventory, measurement procedures, baselines, budgets, regression investigation, validation evidence, and remaining performance work.
 - [Incremental editing sequences](incremental-editing-sequences.md) — fixtures, edit format, and recorded editing sequences for incremental-parsing equivalence tests.
 - [Incremental equivalence test procedure](incremental-equivalence-procedure.md) — how the harness replays edits, compares trees, handles malformed steps, and reports results.
 - [Queries](queries.md) — official query inventory, capture conventions, registration, execution, and stability policy.

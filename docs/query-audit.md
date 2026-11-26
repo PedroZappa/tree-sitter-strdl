@@ -53,12 +53,12 @@ Wildcard children in `subscript_expression` and `template_substitution` expressi
 
 Keyword, punctuation, and operator token spellings used by the query were checked against `grammar.js`. All referenced tokens exist.
 
-The grammar also contains tokens that the current query does not capture:
+At the time of the initial audit, the grammar also contained tokens that the query did not capture:
 
 - `?.` — optional-chaining operator token.
 - `${` and the closing `}` of template substitutions — template-delimiter tokens.
 
-The `.` and `?` punctuation patterns do not match `?.` because it is a single anonymous token.
+The `.` and `?` punctuation patterns did not match `?.` because it is a single anonymous token. [Query changes](#query-changes) record the later `?.` and `${` additions; the closing `}` remains uncaptured.
 
 ## Fixture execution evidence
 

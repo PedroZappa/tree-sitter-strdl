@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.13)
 
 project(tree-sitter-strudel
-        VERSION "1.5.0"
+        VERSION "2.0.0"
         DESCRIPTION "Parser for Strudel, a Tidal Cycles base live coding tool"
         HOMEPAGE_URL "https://github.com/pedrozappa/tree-sitter-strdl"
         LANGUAGES C)
