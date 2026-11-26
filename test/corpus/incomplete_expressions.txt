@@ -44,10 +44,10 @@ a + b *
 (source_file
   (expression_statement
     (binary_expression
+      (identifier)
       (binary_expression
         (identifier)
-        (identifier))
-      (MISSING number))))
+        (MISSING number)))))
 
 ==================
 incomplete member property

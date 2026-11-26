@@ -1,0 +1,120 @@
+==================
+quoted and computed object keys
+==================
+
+const options = {
+  "attack": 0.1,
+  'release': 0.2,
+  [note.length]: 4,
+  envelope: { decay: 0.06 },
+}
+
+---
+
+(source_file
+  (variable_declaration
+    (variable_declarator
+      (identifier)
+      (object
+        (pair
+          (string)
+          (number))
+        (pair
+          (string)
+          (number))
+        (pair
+          (computed_property_name
+            (member_expression
+              (identifier)
+              (identifier)))
+          (number))
+        (pair
+          (identifier)
+          (object
+            (pair
+              (identifier)
+              (number))))))))
+
+==================
+nested arrays as call arguments
+==================
+
+timeCat([3, c3], [1, stack(eb3, g3, seq(c4, d4).slow(2))])
+
+---
+
+(source_file
+  (expression_statement
+    (call_expression
+      (identifier)
+      (arguments
+        (array
+          (number)
+          (identifier))
+        (array
+          (number)
+          (call_expression
+            (identifier)
+            (arguments
+              (identifier)
+              (identifier)
+              (call_expression
+                (member_expression
+                  (call_expression
+                    (identifier)
+                    (arguments
+                      (identifier)
+                      (identifier)))
+                  (identifier))
+                (arguments
+                  (number))))))))))
+
+==================
+optional subscript chaining
+==================
+
+const first = a?.b[0]
+const second = a?.[0]
+
+---
+
+(source_file
+  (variable_declaration
+    (variable_declarator
+      (identifier)
+      (subscript_expression
+        (member_expression
+          (identifier)
+          (identifier))
+        (number))))
+  (variable_declaration
+    (variable_declarator
+      (identifier)
+      (subscript_expression
+        (identifier)
+        (number)))))
+
+==================
+ternary in template interpolation
+==================
+
+const drumPat = `${Math.random() > 0.5 ? "b" : "s"}d`
+
+---
+
+(source_file
+  (variable_declaration
+    (variable_declarator
+      (identifier)
+      (template_string
+        (template_substitution
+          (conditional_expression
+            (binary_expression
+              (call_expression
+                (member_expression
+                  (identifier)
+                  (identifier))
+                (arguments))
+              (number))
+            (string)
+            (string)))))))

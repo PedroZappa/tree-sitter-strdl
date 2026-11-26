@@ -1980,31 +1980,7 @@
     [
       {
         "type": "STRING",
-        "value": "assignment"
-      },
-      {
-        "type": "STRING",
-        "value": "ternary"
-      },
-      {
-        "type": "STRING",
-        "value": "comparison"
-      },
-      {
-        "type": "STRING",
-        "value": "additive"
-      },
-      {
-        "type": "STRING",
-        "value": "multiplicative"
-      },
-      {
-        "type": "STRING",
-        "value": "unary"
-      },
-      {
-        "type": "STRING",
-        "value": "new"
+        "value": "member"
       },
       {
         "type": "STRING",
@@ -2012,7 +1988,31 @@
       },
       {
         "type": "STRING",
-        "value": "member"
+        "value": "new"
+      },
+      {
+        "type": "STRING",
+        "value": "unary"
+      },
+      {
+        "type": "STRING",
+        "value": "multiplicative"
+      },
+      {
+        "type": "STRING",
+        "value": "additive"
+      },
+      {
+        "type": "STRING",
+        "value": "comparison"
+      },
+      {
+        "type": "STRING",
+        "value": "ternary"
+      },
+      {
+        "type": "STRING",
+        "value": "assignment"
       }
     ]
   ],

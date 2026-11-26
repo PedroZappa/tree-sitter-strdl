@@ -17,15 +17,15 @@ module.exports = grammar({
 
   precedences: () => [
     [
-      "assignment",
-      "ternary",
-      "comparison",
-      "additive",
-      "multiplicative",
-      "unary",
-      "new",
-      "call",
       "member",
+      "call",
+      "new",
+      "unary",
+      "multiplicative",
+      "additive",
+      "comparison",
+      "ternary",
+      "assignment",
     ],
   ],
 

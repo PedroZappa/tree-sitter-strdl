@@ -100,12 +100,14 @@ Binding patterns are `identifier` and `array_pattern`. Formal parameters additio
 
 ## Precedence and associativity
 
-Named precedence levels are declared from lowest to highest:
+Named precedence levels are declared from highest to lowest, as required by Tree-sitter:
 
 ```text
-assignment < ternary < comparison < additive < multiplicative
-           < unary < new < call < member
+member > call > new > unary > multiplicative > additive
+       > comparison > ternary > assignment
 ```
+
+An earlier declaration used ascending order, which inverted mixed-operator trees. The corrected order makes `a + b * c` parse as `a + (b * c)` and `a > b ? c : d` parse as a conditional expression with a comparison condition.
 
 | Rule | Declaration | Effect |
 | --- | --- | --- |
@@ -119,7 +121,7 @@ assignment < ternary < comparison < additive < multiplicative
 | `expression_statement`, `return_statement`, `variable_declarator`, `export default`, `_arrow_body` | `prec.right(-1, ...)` | Prefer postfix continuation (calls and members) over reducing a surrounding statement or body. |
 | `block` | `prec(1, ...)` | Prefers block interpretation over empty object literal in statement position. |
 
-Verified precedence behavior is covered in [test/corpus/precedence.txt](../test/corpus/precedence.txt) and new operator tests in [test/corpus/operators.txt](../test/corpus/operators.txt).
+Verified precedence behavior is covered in [test/corpus/precedence.txt](../test/corpus/precedence.txt), [test/corpus/operators.txt](../test/corpus/operators.txt), and the ternary interpolation regression in [test/corpus/valid_syntax_expansions.txt](../test/corpus/valid_syntax_expansions.txt).
 
 ## Conflict policy
 
