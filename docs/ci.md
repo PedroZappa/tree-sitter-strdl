@@ -35,7 +35,7 @@ Each matrix job installs Swift.org's documented Ubuntu 24.04 system dependencies
 17. `make test-rust` — statically verifies the Rust manifest, dependency declarations, `Cargo.lock`, Cargo include coverage, build script, public API constants, npm exclusion, and crates publish configuration, then runs `cargo test --locked` in a temporary tracked-source copy with an isolated target directory. On Linux, the checker appends GNU `ld.bfd` flags to Cargo compiler and doc-test flags so an ambient `ld.lld` selection cannot break the gate.
 18. `make test-swift` — statically verifies the SwiftPM manifest, public C symbol, XCTest load wiring, `tree-sitter.json` enablement, and npm exclusion, then runs `swift build` and `swift test` in a clean tracked-source copy.
 19. `make check-version` — verifies that all package metadata agrees on the release version, including npm, Tree-sitter, Cargo, Python, Makefile, CMake, and generated pkg-config metadata.
-20. `make test-package` — runs `npm pack --dry-run --json --ignore-scripts` and checks metadata consistency, required files, forbidden artifacts, and packed file sizes.
+20. `make test-package` — runs `npm pack --dry-run --json --ignore-scripts`, requires explicit `package.json` allowlist entries for grammar, generated sources, Node bindings, queries, and Tree-sitter metadata, then checks metadata consistency, required files, forbidden artifacts, and packed file sizes.
 21. `make build` — builds the static and shared C libraries and the pkg-config metadata.
 
 The pinned versions used by CI come from `package-lock.json` (Tree-sitter CLI `0.27.2`, tree-sitter Node runtime `0.25.1`, Prettier `3.10.1`), `requirements-dev.txt` (Ruff `0.17.6`), and the pinned `setup-swift` action (Swift `6.2.1`).

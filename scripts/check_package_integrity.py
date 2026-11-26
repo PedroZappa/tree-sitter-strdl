@@ -56,6 +56,16 @@ EXPLICIT_SRC_FILES = (
     "src/tree_sitter/",
 )
 
+# npm always includes package.json, README, and LICENSE. Every other packaged
+# category must be explicitly admitted by the files allowlist.
+REQUIRED_FILE_ENTRIES = {
+    "grammar": ("grammar.js",),
+    "generated sources": EXPLICIT_SRC_FILES,
+    "bindings": ("binding.gyp", "bindings/node/*"),
+    "queries": ("queries/*",),
+    "metadata": ("tree-sitter.json",),
+}
+
 
 class Checker:
     def __init__(self) -> None:
@@ -130,11 +140,19 @@ def check_metadata(
     check.require(isinstance(files, list), "package.json lacks a files array")
     if isinstance(files, list):
         check.require(
+            all(non_empty_string(entry) for entry in files),
+            "package.json files contains a non-string or empty entry",
+        )
+        check.require(
             "src/**" not in files,
             "package.json uses src/**, which admits build artifacts",
         )
-        for path in EXPLICIT_SRC_FILES:
-            check.require(path in files, f"package.json files lacks {path}")
+        for category, entries in REQUIRED_FILE_ENTRIES.items():
+            for entry in entries:
+                check.require(
+                    entry in files,
+                    f"package.json files lacks {category} entry {entry!r}",
+                )
 
 
 def check_files(entries: list[dict[str, Any]], check: Checker) -> list[str]:
@@ -214,9 +232,11 @@ def main(argv: list[str]) -> int:
         )
         return 1
 
+    required_entries = sum(len(entries) for entries in REQUIRED_FILE_ENTRIES.values())
     print(
         f"package integrity: {len(paths)} files verified; "
         f"required {len(REQUIRED_FILES)}; "
+        f"allowlist entries {required_entries}; "
         f"forbidden patterns {len(FORBIDDEN_PATTERNS)}"
     )
     print_terminal_status(
@@ -225,6 +245,7 @@ def main(argv: list[str]) -> int:
         [
             f"{len(paths)} files",
             f"{len(REQUIRED_FILES)} required",
+            f"{required_entries} allowlist entries",
             f"{len(FORBIDDEN_PATTERNS)} forbidden patterns",
         ],
     )

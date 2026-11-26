@@ -99,7 +99,7 @@ Consumers should pin an exact grammar version and treat `node-types.json`, the g
 
 ## Package compatibility expectations
 
-The npm package is the primary distribution artifact. Its file contract is the `files` allowlist in `package.json`, and `make test-package` checks the actual `npm pack --dry-run --json --ignore-scripts` output against that contract. At version `1.5.0`, the packed artifact contains 18 files: license and README, `binding.gyp`, Node binding sources and its test, `grammar.js`, `package.json`, both official queries, the committed generated parser artifacts and headers, and `tree-sitter.json`.
+The npm package is the primary distribution artifact. Its file contract is the `files` allowlist in `package.json`, and `make test-package` checks that allowlist for explicit grammar, generated-source, Node-binding, query, and Tree-sitter-metadata entries before checking the actual `npm pack --dry-run --json --ignore-scripts` output against that contract. At version `1.5.0`, the packed artifact contains 18 files: license and README, `binding.gyp`, Node binding sources and its test, `grammar.js`, `package.json`, both official queries, the committed generated parser artifacts and headers, and `tree-sitter.json`.
 
 Consumers can expect:
 
