@@ -6,20 +6,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+## [2.0.0] - 2026-11-26
+
 ### Added
 
 - Changelog and release notes maintenance guidance for the project.
-
-## [1.5.0] - 2026-11-26
-
-### Added
-
 - Documentation for Phase 8 procedures, including build/generation, testing, benchmarking, contribution workflow, and CI validation coverage.
 - Release workflow gates that verify generated artifacts and package contents before publication jobs run.
 
 ### Changed
 
-- Documentation and roadmap verified to match the current implementation state for Phase 8 readiness work.
+- Documentation, roadmap, and release process verified/documented for Phase 8 readiness (tag-only publishing, publish gates, changelog process).
 
 ## [1.4.0] - 2025-11-25
 

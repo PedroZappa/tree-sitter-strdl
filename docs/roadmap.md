@@ -401,7 +401,7 @@ See [CI](ci.md) for the workflow, commands, and remaining gaps.
 - [x] Ensure generated files are checked before release.
 - [x] Validate package contents before publishing.
 - [x] Maintain release notes and a changelog.
-- [x] Use versioned releases. Tags use annotated `vMAJOR.MINOR.PATCH` (e.g., latest annotated tag `v1.1.8` history present; current tracked version is `1.5.0` in `package.json`/manifests). Policy documented in `docs/roadmap.md` and `CONTRIBUTING.md`.
+- [x] Use versioned releases. Tags use annotated `vMAJOR.MINOR.PATCH` (e.g., latest annotated tag `v1.1.8` history present; current tracked version is `2.0.0` in `package.json`/manifests). Policy documented in `docs/roadmap.md` and `CONTRIBUTING.md`.
 - [x] Keep publishing controlled by explicit release authorization. `.github/workflows/publish.yml` triggers only on `push.tags` (`tags: ["*"]`) and gates run before publisher jobs; tagging/pushing tags is documented as requiring explicit authorization.
 - [x] Verify that ordinary commits cannot publish packages. `publish.yml` does not run on `push` to `main` or pull requests (those use `ci.yml`); no other workflow publishes.
 - [x] Perform a release-readiness review. Reviewed on 2026-11-26: `CHANGELOG.md` present with `Unreleased` + versioned entries; publish gates (`verify-generated`, `verify-package`) in place; `package.json` version `1.5.0`; `CONTRIBUTING.md` documents releases/tags and changelog updates; `ci.yml` covers push/PR validation; no publish workflow on non-tag pushes. No unresolved correctness gate failures are recorded in the current branch state from recent work.

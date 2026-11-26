@@ -5,6 +5,6 @@ includedir=${prefix}/include
 Name: tree-sitter-strudel
 Description: Parser for Strudel, a Tidal Cycles based live coding tool
 URL: https://github.com/pedrozappa/tree-sitter-strdl
-Version: 1.5.0
+Version: 2.0.0
 Libs: -L${libdir} -ltree-sitter-strudel
 Cflags: -I${includedir}
