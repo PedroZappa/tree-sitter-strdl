@@ -34,6 +34,39 @@ Retain the C binding. It is a small, source-level integration with a correct pub
 - The CMake custom command can regenerate `src/parser.c` inside the source tree when timestamps require it and discovers an arbitrary `tree-sitter` CLI from `PATH`. CI therefore validates the pinned Makefile generation path instead of invoking CMake.
 - `cmake --install --prefix` does not rewrite the configured `prefix` in the generated pkg-config file, because `bindings/c/tree-sitter-strudel.pc.in` uses `CMAKE_INSTALL_PREFIX` at configure time. Configure with the intended installation prefix until release packaging addresses this.
 
+## Go binding — audited 2026-11-26
+
+### Implementation and build reachability
+
+| Area            | Evidence                                                                                                                                                                                                                                               | Assessment                                                                                                                            |
+| --------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------- |
+| Public API      | `bindings/go/binding.go` declares `package tree_sitter_strudel`, sets cgo `CFLAGS` to `-std=c11 -fPIC`, includes `../../src/parser.c` with a conditional scanner include, and exposes `Language() unsafe.Pointer` returning `C.tree_sitter_strudel()`. | Standard cgo template shape; the library embeds the generated parser directly and declares no separate Go runtime dependency.         |
+| Test source     | `bindings/go/binding_test.go` is an external test package that imports `github.com/tree-sitter/go-tree-sitter` and this module path, then fails if `tree_sitter.NewLanguage(Language())` is nil.                                                       | Shallow load test only; it does not parse, execute queries, cover recovery, or compare incremental and fresh parses.                  |
+| Metadata        | `tree-sitter.json` declares `bindings.go: true`; `.gitattributes` marks `bindings/go/*`, `go.mod`, and `go.sum` as generated.                                                                                                                          | The binding is intentionally enabled, but the repository expects module metadata that is not present.                                 |
+| Module state    | `git ls-files` finds only `binding.go` and `binding_test.go`; `git log --all` shows no tracked `go.mod` or `go.sum` at any point.                                                                                                                      | `go test` is not reproducible from a normal checkout in module-aware mode; the recorded pass required a temporary synthesized module. |
+| ABI declaration | No tracked manifest encodes a `go-tree-sitter` version. The temporary validation module resolved `github.com/tree-sitter/go-tree-sitter` v0.25.0.                                                                                                      | ABI 15 compatibility was demonstrated once but is not declared or enforced by committed metadata.                                     |
+| Distribution    | npm `files` excludes non-Node bindings; there is no Go publish job and no tagged Go module release in this repository.                                                                                                                                 | Source-only integration through the repository; there is no packaged Go artifact or downstream consumer check.                        |
+
+### Verification performed
+
+- Inspected both tracked Go files, `tree-sitter.json`, `.gitattributes`, npm package contents, the CI workflow, and Makefile targets.
+- Confirmed that only `bindings/go/binding.go` and `bindings/go/binding_test.go` are tracked and that no `go.mod` or `go.sum` exists in the working tree or Git history.
+- The [compatibility record](compatibility.md#validation-performed) documents a 2026-11-25 pass of `go test` with Go 1.27.4 and `go-tree-sitter` v0.25.0 in a temporary module-aware copy.
+- That execution was not repeated in this audit: no `go` executable is available on `PATH` and no Go toolchain is installed under the usual local locations. Installing one would require explicit approval.
+- The C-level check confirms that `tree_sitter_strudel()` links from the generated parser, which is the symbol the cgo wrapper returns, but it does not exercise cgo or `go-tree-sitter`.
+
+### Decision
+
+Retain the Go binding as a source-level, source-only integration. Its metadata explicitly enables it, its source and test are tracked, and a compatible runtime previously passed. Removing it would break source consumers and discard useful validation without solving the packaging gap. This audit does not promote Go to a first-class distributed binding: adding `go.mod`/`go.sum`, wiring a Go CI leg, or disabling the binding would materially change compatibility and requires explicit approval. The aggregate non-Node binding decision remains pending until Python, Rust, and Swift audits are complete.
+
+### Known gaps and deferred work
+
+- Without `go.mod` and `go.sum`, standard Go tooling cannot import or test the binding reproducibly from a checkout.
+- The test is a nil-language load check only; parser behavior is covered by other layers, not by Go.
+- No committed metadata pins the ABI-compatible `go-tree-sitter` version.
+- No Go build or test is wired into `make ci`, and no Go publish job exists.
+- Installing a Go toolchain and adding module metadata are deferred pending an explicit compatibility and distribution decision.
+
 ## Other bindings
 
-Audits for Go, Python, Rust, and Swift are pending and tracked in the [roadmap](roadmap.md#phase-7--packaging-and-compatibility).
+Audits for Python, Rust, and Swift are pending and tracked in the [roadmap](roadmap.md#phase-7--packaging-and-compatibility).
