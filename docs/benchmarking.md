@@ -23,6 +23,18 @@ make check-benchmark-fixtures  # verify sizes, hashes, and exact regeneration
 
 [`generate_benchmark_fixtures.py`](../scripts/generate_benchmark_fixtures.py) uses the manifest seed and parameters to render every generated fixture. `make check-benchmark-fixtures` is part of `make verify` and therefore `make ci`; representative files are hashed but never rewritten.
 
+## Fresh parsing latency
+
+`make bench-fresh` measures fresh parse latency through the Node.js binding. It validates every fixture's byte size and SHA-256 from the manifest, runs two unmeasured warmup parses and 15 measured parses by default, and times only `Parser.parse` with no tree supplied from a previous edit. Each result reports min, mean, P50, P95, P99, and max in milliseconds. A parse whose `rootNode.hasError` disagrees with the manifest's `expected_clean` value fails the run.
+
+```sh
+make bench-fresh
+make bench-fresh BENCH_ITERATIONS=30 BENCH_WARMUP=5
+make bench-fresh BENCH_FIXTURE=synthetic-large BENCH_OUTPUT=benchmarks/results/fresh.json
+```
+
+`scripts/bench_fresh.js --json` prints the same report as structured output. This is a measurement tool, not a committed baseline or CI gate; results vary by hardware and concurrent load.
+
 ## Validation performed
 
 - All four `expected_clean: true` fixtures parse with `tree-sitter parse --quiet` and exit 0 using CLI 0.27.2.
@@ -36,7 +48,11 @@ make check-benchmark-fixtures  # verify sizes, hashes, and exact regeneration
 - A temporary manifest negative control that changed the pathological block count to 299 failed with exit 1 because the committed fixture no longer regenerated from the manifest parameters.
 - A negative control appended a newline to `deeply-nested.strdl`; the checker failed with exit 1 on size, SHA-256, and regeneration mismatch, then passed after restoration.
 - The committed set contains five fixtures and 107,480 bytes in total.
+- `make bench-fresh` with 15 measured and 2 warmup parses ran on Node v26.13.1, tree-sitter runtime 0.25.1, linux/x64 with 24 logical CPUs. P50/P95/P99 in milliseconds were: representative-main 0.492108/0.534366/0.549940, representative-local 0.017792/0.026397/0.039735, synthetic-large 10.310601/10.421912/10.427943, deeply-nested 0.372424/0.406146/0.415580, and pathological 1.995324/2.033064/2.034242.
+- A temporary manifest negative control that changed `synthetic-large` SHA-256 failed with exit 1 before timing any fixture.
+- A temporary manifest negative control that marked the pathological fixture `expected_clean: true` failed with exit 1 because its parse still contained an `ERROR` node.
+- A filtered JSON-report control wrote a one-fixture report with `mode: fresh`, two samples, and finite P99; `node --check` passed.
 
 ## Remaining work
 
-Latency measurement, incremental latency measurement, memory measurement, P50/P95/P99 reporting, hardware/software environment capture, committed baselines, and performance budgets remain separate roadmap items. This document will own those results as they are added.
+Incremental latency measurement, memory measurement, P50/P95/P99 reporting for incremental parsing, dedicated hardware/software environment capture, committed baselines, and performance budgets remain separate roadmap items. The fresh report includes basic runtime metadata but is not hardware-normalized. This document will own those results as they are added.

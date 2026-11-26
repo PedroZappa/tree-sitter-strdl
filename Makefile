@@ -32,6 +32,7 @@ BUILD_DIR ?= build
 TS_LOCAL := node_modules/.bin/tree-sitter
 TS ?= $(shell if [ -x '$(TS_LOCAL)' ]; then printf '%s' '$(TS_LOCAL)'; else printf 'tree-sitter'; fi)
 NPM ?= npm
+NODE ?= node
 HOST_OS := $(shell uname -s)
 BROWSER ?= $(if $(filter Darwin,$(HOST_OS)),open,xdg-open)
 
@@ -52,6 +53,10 @@ QUERY_DETERMINISM_FIXTURES := test/query/determinism.strdl
 QUERY_EXECUTION_FIXTURES := $(FIXTURES) $(QUERY_DETERMINISM_FIXTURES)
 REGRESSION_INVENTORY := test/fixtures/regression_inventory.json
 BENCHMARK_MANIFEST := benchmarks/fixtures/manifest.json
+BENCH_ITERATIONS ?= 15
+BENCH_WARMUP ?= 2
+BENCH_FIXTURE ?=
+BENCH_OUTPUT ?=
 RECOVERY_FILES := $(wildcard $(TEST_DIR)/incomplete_*.txt $(TEST_DIR)/malformed_*.txt $(TEST_DIR)/missing_*.txt $(TEST_DIR)/noncascading_*.txt $(TEST_DIR)/recovery_*.txt $(TEST_DIR)/unfinished_*.txt $(TEST_DIR)/valid_*.txt)
 
 # Test inputs (override on the command line)
@@ -99,7 +104,7 @@ D = $(shell tput sgr0 2>/dev/null)
 _SUCCESS = [$(GRN)SUCCESS$(D)]
 _INFO    = [$(BLU)INFO$(D)]
 
-.PHONY: all build generate test test-recovery test-incremental test-query-compile test-query-execution test-query-registration test-query test-node test-package test-regressions benchmark-fixtures check-benchmark-fixtures parse playground wasm \
+.PHONY: all build generate test test-recovery test-incremental test-query-compile test-query-execution test-query-registration test-query test-node test-package test-regressions benchmark-fixtures check-benchmark-fixtures bench-fresh parse playground wasm \
 	local-install install uninstall clean check-generated verify verify-all ci \
 	docs docs-open help
 
@@ -240,6 +245,11 @@ check-benchmark-fixtures:	## Verify benchmark fixtures match the manifest and re
 	@echo "$(YEL)Checking benchmark fixtures...$(D)"
 	@python3 scripts/generate_benchmark_fixtures.py --check $(BENCHMARK_MANIFEST)
 	@echo "$(YEL)* $(_SUCCESS) Benchmark fixtures are reproducible$(D)"
+
+bench-fresh:	## Measure fresh parsing latency (ITERATIONS, WARMUP, FIXTURE, OUTPUT overrides)
+	@echo "$(YEL)Measuring fresh parse latency...$(D)"
+	@$(NODE) scripts/bench_fresh.js --manifest $(BENCHMARK_MANIFEST) --iterations $(BENCH_ITERATIONS) --warmup $(BENCH_WARMUP) $(if $(BENCH_FIXTURE),--fixture $(BENCH_FIXTURE),) $(if $(BENCH_OUTPUT),--output $(BENCH_OUTPUT),)
+	@echo "$(YEL)* $(_SUCCESS) Fresh parsing latency measured$(D)"
 
 ##@ Verification ✅
 

@@ -30,6 +30,7 @@ The tests cover syntax recognition and the public concrete syntax tree (CST). Th
 | Package integrity | `make test-package` | `package.json`, `tree-sitter.json`, `npm pack --dry-run --json --ignore-scripts` | Package metadata is consistent; required runtime files are present; forbidden build artifacts are absent; packed file sizes match local files. |
 | Regression inventory | `make test-regressions` | `test/fixtures/regression_inventory.json` | Every recorded bug resolves to an existing, wired corpus case, binding test, fixture, or gate artifact; documented exclusions remain rationale-only. See [regression coverage](regression-coverage.md). |
 | Benchmark fixture consistency | `make check-benchmark-fixtures` | `benchmarks/fixtures/manifest.json`, generated and representative fixtures | Fixture sizes, hashes, and generated content match the manifest exactly. See [benchmarking](benchmarking.md). |
+| Fresh parse latency | `make bench-fresh` | `scripts/bench_fresh.js`, `benchmarks/fixtures/manifest.json`, Node.js binding | Measures `Parser.parse` latency with warmup, percentiles, fixture hash validation, and `expected_clean` guards. Not a CI gate. See [benchmarking](benchmarking.md#fresh-parsing-latency). |
 | C library build | `make build` (included in `make ci`) | `bindings/c/`, generated sources | Static/shared libraries and pkg-config metadata build from generated artifacts. Build validation is distinct from behavioral testing. |
 
 ## Command map
@@ -48,6 +49,7 @@ The tests cover syntax recognition and the public concrete syntax tree (CST). Th
 | `make test-regressions` | Regression inventory integrity and artifact wiring. |
 | `make benchmark-fixtures` | Regenerate synthetic benchmark fixtures. |
 | `make check-benchmark-fixtures` | Benchmark fixture size, hash, and regeneration consistency. |
+| `make bench-fresh` | Fresh parse latency measurement with configurable iterations, warmup, fixture filter, and JSON output. |
 | `make check-generated` | Generated-file consistency against `HEAD`. |
 | `make verify` | Generated-file, benchmark-fixture, corpus, query, and regression-inventory layers. |
 | `make verify-all` | `verify` plus Node.js binding and package checks. |
@@ -97,4 +99,4 @@ Covered by `make ci` today: generated-file and benchmark-fixture consistency, co
 
 Local-only: incremental/fresh equivalence.
 
-Not yet implemented: benchmark baselines and performance-regression reporting, formatting/static checks, and non-Node binding validation. These are tracked in the [Phase 6](roadmap.md#phase-6--testing-and-performance) and [Phase 7](roadmap.md#phase-7--packaging-and-compatibility) checklists. CI gaps are also summarized in [CI](ci.md#not-yet-covered).
+Not yet implemented: incremental latency and memory measurement, benchmark baselines and performance-regression reporting, formatting/static checks, and non-Node binding validation. These are tracked in the [Phase 6](roadmap.md#phase-6--testing-and-performance) and [Phase 7](roadmap.md#phase-7--packaging-and-compatibility) checklists. CI gaps are also summarized in [CI](ci.md#not-yet-covered).
