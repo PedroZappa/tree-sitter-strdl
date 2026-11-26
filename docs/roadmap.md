@@ -410,23 +410,23 @@ See [CI](ci.md) for the workflow, commands, and remaining gaps.
 
 - [x] Regenerate parser artifacts.
 - [x] Run corpus tests.
-- [ ] Run query tests.
+- [x] Run query tests.
 - [x] Run Node.js binding tests.
-- [ ] Run incremental parsing tests.
-- [ ] Run compatibility checks.
-- [ ] Run benchmarks and compare against baseline.
-- [ ] Review licensing and attribution.
-- [ ] Review package contents.
-- [ ] Review documentation consistency.
-- [ ] Record any unresolved limitations.
+- [x] Run incremental parsing tests.
+- [x] Run compatibility checks. Verified locally where toolchains available: `make verify` (including generated artifacts, format/static, corpus, incremental, query layers, regressions, benchmark fixture/baseline/budget checks) passed; `make test-package` and `make test-tarball-install` passed; `make check-version` passed; `make performance-report` generated informational report (non-comparable local env noted). `make verify-all` could not complete Rust binding checks in this environment due to missing `cargo` on PATH; CI runs Rust/Swift/Python/C/Node gates per `docs/ci.md`.
+- [x] Run benchmarks and compare against baseline. Reviewed via `make performance-report` on 2026-11-26: report generated (informational), session non-comparable to committed Linux/x64 baseline (different CPU/memory), no gating failures introduced; structural baseline/budget checks covered by `make verify`.
+- [x] Review licensing and attribution. `LICENSE` is GNU AGPL-3.0; `package.json`, `tree-sitter.json`, `Cargo.toml`, and `pyproject.toml` declare `AGPL-3.0-only` and are aligned. Authorship/attribution fields present in manifests; no conflicting third-party license notices introduced in this change set. See `docs/compatibility.md` and `docs/repository-assessment.md` for licensing notes.
+- [x] Review package contents. `make test-package` and `make test-tarball-install` passed (18 packed files verified, generated artifacts unchanged, installed tarball parses a representative composition with pinned runtime). `make verify` includes benchmark/baseline/budget structural checks as documented.
+- [x] Review documentation consistency. Prior Phase 8 documentation consistency audit recorded in Verification log; `make docs` lists docs, `make check-format` passes, and local Markdown link checks were performed previously. This review confirms roadmap/docs/CI/publish/changelog references are consistent with current files.
+- [x] Record any unresolved limitations. **Recorded (2026-11-26):** (1) Local `make verify-all` cannot fully run Rust binding verification if `cargo` is not on `PATH` (Rust gate runs in CI). (2) Local performance report is non-comparable to the committed Linux/x64 baseline due to different hardware/runtime; numbers are informational only (per `docs/benchmarking.md`/`docs/ci.md`). (3) Swift behavioral depth beyond current gates remains deferred (see Deferred work). (4) Remaining `locals.scm` semantic follow-ups deferred (see Deferred work). No known correctness failures in `make verify`, `make test-query`, `make test-incremental`, `make test-package`, `make test-tarball-install`, or `make check-version` on this branch.
 
 ### Phase 8 acceptance criteria
 
-- [ ] Documentation covers consumers, contributors, and maintainers.
-- [ ] CI validates generation, correctness, queries, bindings, compatibility, and performance as specified.
-- [ ] Release process is versioned, controlled, and documented.
-- [ ] Final validation has no unresolved correctness failures.
-- [ ] Known limitations are documented honestly.
+- [x] Documentation covers consumers, contributors, and maintainers. `README.md`, `docs/` (grammar, queries, testing, build, benchmarking, compatibility, contribution, etc.), and `CONTRIBUTING.md` present; see Phase 8 documentation checklist items marked complete.
+- [x] CI validates generation, correctness, queries, bindings, compatibility, and performance as specified. `.github/workflows/ci.yml` runs `make ci` on Node 22/24 with Swift/Python tooling setup and a non-gating performance report on Node 24; `docs/ci.md` maps checks; `publish.yml` gates releases.
+- [x] Release process is versioned, controlled, and documented. Versioning/tagging rules in `docs/roadmap.md`/`CONTRIBUTING.md`, tag-only publish with `verify-generated`/`verify-package`, `CHANGELOG.md` maintained.
+- [x] Final validation has no unresolved correctness failures. `make verify`, `make test-query`, `make test-incremental`, `make test-package`, `make test-tarball-install`, and `make check-version` passed locally; local `make verify-all` incomplete only due to missing `cargo` (Rust) while CI covers it.
+- [x] Known limitations are documented honestly. Recorded in Final validation unresolved limitations and in Deferred work (Swift behavioral depth, `locals.scm` follow-ups, local toolchain/benchmark comparability notes).
 
 ---
 
@@ -605,3 +605,4 @@ For checked items, add a short entry using this format:
 - Phase 8 — Release generated-file gate: added a `verify-generated` preflight to [publish.yml](../.github/workflows/publish.yml) that checks out the tagged commit, installs locked dependencies, and runs `make check-generated` with the pinned CLI; all four publication jobs now declare `needs: verify-generated`. Documented the gate in [ci.md](ci.md#release-generation-gate), [build-and-generation.md](build-and-generation.md#verify-generation-and-builds), and [CONTRIBUTING.md](../CONTRIBUTING.md#releases-and-tags). Parsed the workflow YAML and verified all four dependencies; `make check-generated` passed, while a stale-artifact negative control in an isolated `HEAD` copy failed with exit `2` and the expected out-of-sync diagnostic. `make docs`, `make check-format`, `make check-static`, `git diff --check`, and the 26-document link/anchor check passed. The upstream reusable publishing jobs retain `generate: true`; this gate validates the tagged source before their build copies are regenerated.
 - Phase 8 — Release package gate: added a `verify-package` preflight to [publish.yml](../.github/workflows/publish.yml) that runs after `verify-generated`, installs locked dependencies, and executes `make test-package` and `make test-tarball-install` on the tagged commit; all four publication jobs now wait for both gates. Documented the gate in [ci.md](ci.md#release-package-gate) and [CONTRIBUTING.md](../CONTRIBUTING.md#releases-and-tags). Parsed the workflow YAML and verified both dependencies on every publisher; `make test-package` verified 18 packed files and `make test-tarball-install` installed the tarball offline and parsed the representative fixture. An isolated negative control removing `src/parser.c` from the npm allowlist failed with exit `2`. `make docs`, `make check-format`, `make check-static`, `git diff --check`, and the 26-document link/anchor check passed. No package metadata or parser artifact changed.
 - Phase 8 — Release notes, changelog, and release-readiness checks: added `CHANGELOG.md` (Keep a Changelog) with `Unreleased` and versioned entries; updated `CONTRIBUTING.md` to require changelog updates and documented release/tag authorization and publish gates; verified `publish.yml` triggers only on `tags: ["*"]` and `ci.yml` runs for push/PR on `main` (no publish on ordinary commits); confirmed current version `1.5.0` in `package.json` and annotated tag history (`v1.0.0`–`v1.1.8`, plus legacy `1.1.5`/`v1.1.x`). Ran `make format`/`make check-format` on 2026-11-26; evidence: `CHANGELOG.md`, `CONTRIBUTING.md`, `.github/workflows/publish.yml`, `.github/workflows/ci.yml`, `docs/roadmap.md`.
+- Phase 8 — Final validation (query/incremental, compatibility/package/release review): ran `make test-query`, `make test-incremental`, `make verify` (passed through benchmark/baseline/budget checks), `make check-version`, `make test-package`, `make test-tarball-install`, `make performance-report` (informational, local env non-comparable), inspected `LICENSE` and manifest license fields; reviewed publish gates and CI mapping against `docs/ci.md`. `make verify-all` was blocked locally by missing `cargo` (Rust); CI remains authoritative for Rust/Swift gates. Updated `docs/roadmap.md` Final validation checkboxes, acceptance criteria, and recorded unresolved limitations on 2026-11-26.
