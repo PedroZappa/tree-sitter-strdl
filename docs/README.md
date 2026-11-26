@@ -12,6 +12,7 @@ This folder contains project-level planning and developer documentation for `tre
 - [Compatibility](compatibility.md) — supported CLI, parser ABI, runtime floor, and binding validation matrix.
 - [Binding audit](binding-audit.md) — per-binding implementation, build, test, distribution evidence, and retention decisions.
 - [CI](ci.md) — GitHub Actions triggers, validation commands, pinned tooling, local reproduction, and deferred checks.
+- [Development environment](development-environment.md) — supported platforms, pinned toolchain, initial setup, verification commands, and environment caveats.
 - [Test strategy](test-strategy.md) — index of test layers, `make` command map, fixtures, scripts, extension procedures, and current coverage gaps.
 - [Regression coverage](regression-coverage.md) — authoritative inventory of discovered bugs, their permanent regression artifacts, and documented exclusions.
 - [Benchmarking](benchmarking.md) — benchmark fixture inventory, deterministic regeneration, validation evidence, and remaining performance work.

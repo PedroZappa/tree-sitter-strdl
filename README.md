@@ -126,8 +126,12 @@ Generated parser artifacts and `src/node-types.json` are committed. Do not hand-
 
 ```bash
 npm ci
+python3 -m venv .venv
+.venv/bin/pip install -r requirements-dev.txt
 make ci
 ```
+
+`make install-dev` performs both dependency installs. See [development environment](docs/development-environment.md) for the pinned toolchain, platform notes, and setup verification.
 
 `make ci` expects a Swift toolchain on `PATH` (GitHub Actions selects Swift 6.2.1 on Ubuntu 24.04). It checks generated artifacts and benchmark fixture reproducibility, runs corpus, query, regression-coverage, Node.js binding, clean Node.js addon build, generated parser runtime, C binding symbol, Python binding, Rust binding structure and cargo tests, Swift binding structure and build/tests, version consistency, and npm package integrity checks, and builds the C libraries. GitHub Actions runs the same gate on pull requests and pushes to `main`; see [CI](docs/ci.md).
 
@@ -154,6 +158,7 @@ See [query documentation](docs/queries.md) for the official inventory, capture c
 - [Syntax coverage matrix](docs/syntax-coverage-matrix.md)
 - [Compatibility](docs/compatibility.md)
 - [CI](docs/ci.md)
+- [Development environment](docs/development-environment.md)
 - [Test strategy](docs/test-strategy.md)
 - [Regression coverage](docs/regression-coverage.md)
 - [Benchmarking](docs/benchmarking.md)
