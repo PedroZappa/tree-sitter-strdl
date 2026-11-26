@@ -143,6 +143,8 @@ make test
 make test-query
 ```
 
+See [build and generation](docs/build-and-generation.md) for artifact ownership, build targets, installation, and verification procedures.
+
 Official queries live in `queries/`:
 
 - `highlights.scm` — syntax highlighting
@@ -152,6 +154,7 @@ See [query documentation](docs/queries.md) for the official inventory, capture c
 
 ## Documentation
 
+- [Contributing](CONTRIBUTING.md)
 - [Repository assessment](docs/repository-assessment.md)
 - [Grammar architecture](docs/grammar-architecture.md)
 - [Syntax evidence](docs/syntax-evidence.md)
@@ -159,7 +162,9 @@ See [query documentation](docs/queries.md) for the official inventory, capture c
 - [Compatibility](docs/compatibility.md)
 - [CI](docs/ci.md)
 - [Development environment](docs/development-environment.md)
+- [Build and generation](docs/build-and-generation.md)
 - [Test strategy](docs/test-strategy.md)
+- [Testing procedures](docs/testing-procedures.md)
 - [Regression coverage](docs/regression-coverage.md)
 - [Benchmarking](docs/benchmarking.md)
 - [Queries](docs/queries.md)

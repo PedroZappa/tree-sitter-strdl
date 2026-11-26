@@ -1,6 +1,6 @@
 # Test strategy
 
-This document is the index for how `tree-sitter-strdl` is tested. It owns the Phase 6 roadmap item “Create a documented test strategy index.” The [Makefile](../Makefile) is the canonical command entry point; authoritative details for individual layers live in the linked documents rather than being duplicated here.
+This document is the index for how `tree-sitter-strdl` is tested. It owns the Phase 6 roadmap item “Create a documented test strategy index.” The [Makefile](../Makefile) is the canonical command entry point; authoritative details for individual layers live in the linked documents rather than being duplicated here. For step-by-step execution, filters, result interpretation, and troubleshooting, see [testing procedures](testing-procedures.md).
 
 The tests cover syntax recognition and the public concrete syntax tree (CST). They do not perform semantic analysis, resolve symbols, or parse mini-notation contents.
 

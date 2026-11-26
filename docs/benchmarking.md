@@ -4,6 +4,29 @@ This document owns the Phase 6 benchmark fixture inventory and fresh/incremental
 
 The measurement environment is recorded below. Individual JSON reports include a smaller runtime summary from `scripts/bench_common.js`; this section is the dedicated hardware and software record.
 
+## Procedure map
+
+Use this map to choose a workflow; the later sections own the detailed commands and interpretation rules. Benchmarks run through the Node.js binding against the committed generated parser. Grammar regeneration is not part of a measurement-only change.
+
+| Situation                      | Procedure                                                                                                                                                                                       | Result                                                                                                                                                                     |
+| ------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Routine artifact verification  | `make check-benchmark-fixtures check-benchmark-baseline reproduce-benchmark-baseline check-benchmark-budgets`                                                                                   | Validates the manifest, committed baseline, source reports, and budgets. These structural checks are in `make verify` and `make ci`; no timing value gates the build.      |
+| Fixture or generator change    | Run `make benchmark-fixtures`, inspect the `benchmarks/` diff, then run the structural checks above.                                                                                            | Regeneration must be reproducible from the [manifest](../benchmarks/fixtures/manifest.json). Intentional fixture changes require a deliberate baseline and budget refresh. |
+| Localized diagnosis            | Use `BENCH_FIXTURE`, `BENCH_SEQUENCE`, or `BENCH_CATEGORY` with reduced `BENCH_ITERATIONS` and `BENCH_WARMUP`, and save each report with `BENCH_OUTPUT`.                                        | A fast narrow check of one case. Filtered reports are not comparable with complete baseline sessions and must not be used as budget evidence.                              |
+| Suspected performance change   | Produce three complete default-configuration reports and run `make compare-benchmark-baseline`, then follow [regression investigation](#regression-investigation).                              | Establishes comparability before interpretation. Persistent increases are investigation candidates, not verdicts or CI failures.                                           |
+| Informational release snapshot | Run `make performance-report`.                                                                                                                                                                  | Measures the current tree and compares it with the committed baseline and observed-envelope budgets. The report never changes the exit status.                             |
+| Baseline or budget refresh     | Produce complete sessions that match the recorded environment and configuration, rebuild and check the artifact, then record the reason in the [verification log](roadmap.md#verification-log). | A deliberate artifact change, not ordinary validation. Follow [baseline results](#baseline-results) and [performance budgets](#performance-budgets).                       |
+
+### Standard measurement session
+
+1. Confirm the pinned toolchain and Node.js addon as described in [development environment](development-environment.md#initial-setup). Do not regenerate parser artifacts solely to run a benchmark.
+2. Run `make check-benchmark-fixtures` before timing. The harness also validates hashes and expected parse outcomes for every selected case.
+3. For a comparable session, keep the default 15 measured iterations and 2 warmups and omit case filters. Use filters and reduced counts only for diagnosis.
+4. Write fresh, incremental, and memory reports with `BENCH_OUTPUT` so comparability, configuration, and raw samples can be inspected later. The memory target supplies `--expose-gc` through the Makefile.
+5. Run a comparison or the [hardware-variance-aware report](#hardware-variance-aware-reporting) and check its comparability fields before reading numeric deltas.
+6. Treat nonzero exits as correctness failures and positive timing or memory deltas as non-gating warnings. Repeat an isolated spike before investigating source changes, and record the conclusion in the [verification log](roadmap.md#verification-log).
+7. Leave [baseline.json](../benchmarks/results/baseline.json) and [budgets.json](../benchmarks/results/budgets.json) unchanged for ordinary validation. Rebuild them only when the evidence and command sequence in their dedicated sections applies.
+
 ## Benchmark environment
 
 This environment was recorded on 2026-11-26 (UTC) at repository commit `362d5fd`, after the Phase 6 measurement work. It applies to the latency and memory observations in this document; the grammar, generated parser, and package metadata were unchanged across those measurement commits. The observations were taken under normal desktop load with no CPU affinity, frequency-governor locking, or workload isolation. The load average at capture was `1.79 1.60 1.54`; it is informational, not a controlled benchmark condition.

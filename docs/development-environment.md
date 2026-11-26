@@ -83,7 +83,9 @@ make format      # local auto-fix; deliberately not part of CI
 ## Where to go next
 
 - Commands and variables: `make help` and the [Makefile](../Makefile).
-- Generation and artifact consistency: [CI](ci.md#what-make-ci-runs) and [compatibility](compatibility.md#generator-tooling).
+- Regeneration and builds: [build and generation](build-and-generation.md).
+- Artifact consistency and the automated gate: [CI](ci.md#what-make-ci-runs) and [compatibility](compatibility.md#generator-tooling).
 - Test layers and how to add cases: [test strategy](test-strategy.md).
-- Benchmark fixtures, harnesses, and baselines: [benchmarking](benchmarking.md).
-- Project phases and contribution evidence: [roadmap](roadmap.md) and [AGENTS.md](../AGENTS.md).
+- Running tests, filters, and failure diagnosis: [testing procedures](testing-procedures.md).
+- Benchmark fixtures, measurement procedures, and baselines: [benchmarking](benchmarking.md#procedure-map).
+- Contribution workflow: [CONTRIBUTING.md](../CONTRIBUTING.md), with phase evidence in [roadmap](roadmap.md) and authoritative requirements in [AGENTS.md](../AGENTS.md).
