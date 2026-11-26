@@ -15,6 +15,19 @@ Requirements:
 - Tree-sitter runtime 0.25 or newer (ABI 15 parser)
 - Tree-sitter CLI 0.27.2 when regenerating artifacts
 
+## Bindings
+
+| Binding | Status                        | Distribution                       |
+| ------- | ----------------------------- | ---------------------------------- |
+| Node.js | Primary                       | npm package                        |
+| Python  | Retained, published and gated | PyPI                               |
+| Rust    | Retained, published and gated | crates.io                          |
+| C       | Retained, gated source        | Repository, Make/CMake, pkg-config |
+| Swift   | Retained, gated source        | Repository, SwiftPM                |
+| Go      | Retained, source-only         | Repository source                  |
+
+No binding is deprecated. Support tiers and commitments are defined in the [compatibility policy](docs/compatibility.md#binding-support-policy); evidence and rationale are in the [binding audit](docs/binding-audit.md#aggregate-non-node-binding-decision--decided-2026-11-26).
+
 ## Usage
 
 ```js

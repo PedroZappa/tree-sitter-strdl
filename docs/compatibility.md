@@ -41,6 +41,21 @@ GitHub Actions validates the Node.js binding on Node.js 22 and 24 and the Swift 
 
 `~=0.25.0` is used for Python because plain `~=0.25` permits any 0.x release up to 1.0.
 
+## Binding support policy
+
+The aggregate Phase 7 decision retains every existing non-Node binding and deprecates none. Node.js remains the primary npm distribution target; Zig remains disabled. The authoritative evidence and rationale are in the [binding audit](binding-audit.md#aggregate-non-node-binding-decision--decided-2026-11-26).
+
+| Tier                         | Bindings     | Distribution                    | Validation promise                                                                        |
+| ---------------------------- | ------------ | ------------------------------- | ----------------------------------------------------------------------------------------- |
+| Primary                      | Node.js      | npm package                     | Full CI gate, clean consumer build, generated-runtime parse, and behavioral binding tests |
+| Published and gated          | Python, Rust | PyPI and crates.io release jobs | Registry package builds, declared runtime floors, and `make ci` load/export gates         |
+| Gated source integration     | C, Swift     | Repository or source package    | `make ci` build/load gates; no registry artifact published by this repository             |
+| Source-only, not first-class | Go           | Repository source               | No CI gate, locked module metadata, or published Go artifact is promised                  |
+
+**Retained** means the integration and its enabling metadata stay in the repository, build or load regressions are fixed, and public-surface changes follow the compatibility policy. **Deprecated** means a documented intent to remove the binding in a future major release; no binding has that status. Source-only and gated-source tiers are support distinctions, not claims that the parser behaves differently.
+
+Promoting Go to a first-class binding requires explicit approval for module metadata, a Go CI leg, and a declared `go-tree-sitter` compatibility floor. Adding a Swift release path, committing `Package.resolved`, or removing any existing integration also requires explicit approval and a breaking-change entry.
+
 ## Validation performed
 
 On 2026-11-25:

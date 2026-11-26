@@ -25,7 +25,7 @@ This document accumulates the Phase 7 binding audits. It records implementation,
 
 ### Decision
 
-Retain the C binding. It is a small, source-level integration with a correct public symbol, two working build paths, and explicit installer rules. Removing it would break CMake/Make consumers and contradict the enabled `bindings.c` metadata without providing a distribution benefit, because npm does not publish the C binding anyway. This is a C-specific retention decision; the aggregate non-Node binding decision remains a separate roadmap item.
+Retain the C binding. It is a small, source-level integration with a correct public symbol, two working build paths, and explicit installer rules. Removing it would break CMake/Make consumers and contradict the enabled `bindings.c` metadata without providing a distribution benefit, because npm does not publish the C binding anyway. This decision is consistent with the [aggregate retention decision](#aggregate-non-node-binding-decision--decided-2026-11-26).
 
 ### Known gaps and deferred work
 
@@ -57,7 +57,7 @@ Retain the C binding. It is a small, source-level integration with a correct pub
 
 ### Decision
 
-Retain the Go binding as a source-level, source-only integration. Its metadata explicitly enables it, its source and test are tracked, and a compatible runtime previously passed. Removing it would break source consumers and discard useful validation without solving the packaging gap. This audit does not promote Go to a first-class distributed binding: adding `go.mod`/`go.sum`, wiring a Go CI leg, or disabling the binding would materially change compatibility and requires explicit approval. The aggregate non-Node binding decision remains a separate roadmap item.
+Retain the Go binding as a source-level, source-only integration. Its metadata explicitly enables it, its source and test are tracked, and a compatible runtime previously passed. Removing it would break source consumers and discard useful validation without solving the packaging gap. This audit does not promote Go to a first-class distributed binding: adding `go.mod`/`go.sum`, wiring a Go CI leg, or disabling the binding would materially change compatibility and requires explicit approval. The [aggregate retention decision](#aggregate-non-node-binding-decision--decided-2026-11-26) records that source-only status.
 
 ### Known gaps and deferred work
 
@@ -165,6 +165,41 @@ Retain the Swift binding as a source-level SwiftPM integration with a CI-gated l
 - No Swift publish job exists, and npm packaging intentionally excludes Swift sources.
 - On this host, the installed Swift toolchains needed local compatibility symlinks for system libraries. CI pins Ubuntu 24.04, installs Swift.org's documented Ubuntu 24.04 dependencies, and selects Swift 6.2.1 instead.
 
-## Aggregate non-Node binding decision
+## Aggregate non-Node binding decision — decided 2026-11-26
 
-The individual audits now cover C, Go, Python, Rust, and Swift. A single retention or deprecation decision is still tracked in the [roadmap](roadmap.md#phase-7--packaging-and-compatibility). No existing integration has been removed.
+### Decision
+
+Retain all five non-Node bindings. None is deprecated and none is removed. Node.js remains the primary npm distribution target, and Zig remains disabled.
+
+| Binding | Support tier                 | Evidence                                                                                      | Commitment                                                                                                                   |
+| ------- | ---------------------------- | --------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
+| C       | Gated source integration     | Correct public symbol, Make/CMake install paths, pkg-config metadata, and `make test-c`.      | Build/load regressions are fixed; consumers use a release or pinned source revision, not a registry artifact from this repo. |
+| Python  | Published and gated          | abi3 extension, typed query exports, PyPI publish job, runtime extra, and `make test-python`. | Package builds and official query exports are gated; the declared runtime floor is maintained.                               |
+| Rust    | Published and gated          | `LanguageFn` API, `Cargo.lock`, query constants, crates.io publish job, and `make test-rust`. | Locked builds and load/doc tests are gated; the crate surface is maintained.                                                 |
+| Swift   | Gated source integration     | `Package.swift`, official query resource, correct C symbol, and `make test-swift`.            | SwiftPM build and XCTest load path are gated; consumers use the repository, not a registry artifact from this repo.          |
+| Go      | Source-only, not first-class | Tracked cgo wrapper and test; no module metadata, CI gate, or publish job.                    | The source is kept for existing consumers; no reproducible import or published Go artifact is promised.                      |
+
+### Definitions
+
+- **Retained:** the binding files and enabling metadata remain; build or load regressions are fixed; any public-surface change follows the compatibility policy.
+- **Published and gated:** retained and distributed through a real registry job, with a build/load check in `make ci`.
+- **Gated source integration:** retained and validated in CI, but consumed from the repository or a source package rather than a registry artifact published by this repository.
+- **Source-only:** retained for source consumers without a CI gate, locked dependency metadata, or registry distribution promise.
+- **Deprecated:** documented intent to remove in a future major release. No binding is deprecated as part of this decision.
+
+### Rationale
+
+All five non-Node bindings expose the generated ABI 15 language symbol, are explicitly enabled in `tree-sitter.json`, and have at least build or load evidence. Four have CI gates and two have real registry publish jobs. Removing any of them would break existing consumers and contradict the canonical metadata without reducing npm package size, because npm already excludes non-Node bindings.
+
+Go has the weakest reachability: it lacks `go.mod`, `go.sum`, a CI gate, and a publish job. Those are promotion gaps, not evidence that the integration is obsolete. Deprecating Go would announce a future removal without offering a replacement path for source consumers. C and Swift are also source-oriented, but both have working build paths and CI gates, so removing them would discard validated functionality.
+
+Reducing the project to a Node.js-only binding would be a compatibility-breaking project-direction change. It would require evidence of consumer harm or unmaintainable upstream incompatibility and explicit approval; neither condition is present.
+
+### Consequences and review triggers
+
+- No source file, binding file, package rule, publish job, or `tree-sitter.json` binding flag is changed by this decision.
+- `make ci` continues to gate C, Python, Rust, and Swift; Go remains outside CI and is documented as source-only.
+- Promoting Go requires explicit approval for `go.mod`/`go.sum`, a Go toolchain in CI, and a declared `go-tree-sitter` compatibility floor.
+- Committing `Package.resolved`, adding a Swift release path, or adding deep behavioral tests remains deferred and separately approvable.
+- Any future deprecation or removal requires explicit approval, a changelog/breaking-change entry, and updates to this document, the compatibility policy, and the roadmap.
+- Shallow load coverage for Go, Rust, and Swift remains a known gap tracked in the [test strategy](test-strategy.md#current-coverage-and-gaps).
