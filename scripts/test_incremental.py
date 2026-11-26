@@ -10,6 +10,8 @@ import sys
 import tempfile
 from pathlib import Path
 
+from terminal_report import print_terminal_status
+
 REPO_ROOT = Path(__file__).resolve().parent.parent
 TREE_SITTER = REPO_ROOT / "node_modules" / ".bin" / "tree-sitter"
 SEQUENCES_PATH = REPO_ROOT / "test" / "fixtures" / "incremental_sequences.json"
@@ -221,6 +223,15 @@ def main() -> int:
         f"{total_steps} steps, {malformed_steps} malformed steps"
     )
     print(f"Final-source comparisons: {final_passed}/{total} passed")
+    print_terminal_status(
+        "incremental equivalence",
+        failures == 0,
+        [
+            f"{total - failures}/{total} sequences",
+            f"{total_steps} steps",
+            f"{final_passed}/{total} final matches",
+        ],
+    )
     return 1 if failures else 0
 
 

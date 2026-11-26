@@ -10,6 +10,8 @@ import sys
 from pathlib import Path
 from typing import Any
 
+from terminal_report import print_terminal_status
+
 ROOT = Path(__file__).resolve().parent.parent
 
 REQUIRED_FILES = {
@@ -193,6 +195,7 @@ def main(argv: list[str]) -> int:
         entries = run_pack(npm)
     except (OSError, RuntimeError, TypeError, json.JSONDecodeError) as error:
         print(f"package integrity check failed: {error}", file=sys.stderr)
+        print_terminal_status("package integrity", None, ["pack failure; see stderr"])
         return 1
 
     package = read_json("package.json")
@@ -204,12 +207,26 @@ def main(argv: list[str]) -> int:
     paths = check_files(entries, check)
 
     if check.failures:
+        print_terminal_status(
+            "package integrity",
+            False,
+            [f"{check.failures} failed assertion(s); see stderr diagnostics"],
+        )
         return 1
 
     print(
         f"package integrity: {len(paths)} files verified; "
         f"required {len(REQUIRED_FILES)}; "
         f"forbidden patterns {len(FORBIDDEN_PATTERNS)}"
+    )
+    print_terminal_status(
+        "package integrity",
+        True,
+        [
+            f"{len(paths)} files",
+            f"{len(REQUIRED_FILES)} required",
+            f"{len(FORBIDDEN_PATTERNS)} forbidden patterns",
+        ],
     )
     return 0
 

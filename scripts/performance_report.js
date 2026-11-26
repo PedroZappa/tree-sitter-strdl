@@ -20,6 +20,12 @@ const {
   configDifferences,
   buildComparison,
 } = require("./baseline_results");
+const {
+  terminalStyles,
+  terminalWidth,
+  clip,
+  pad,
+} = require("./terminal_format");
 
 const REPORT_VERSION = 1;
 const INPUT_FIELDS = ["baseline", "budgets", "fresh", "incremental", "memory"];
@@ -414,35 +420,6 @@ function renderReport(report) {
   return `${lines.join("\n")}\n`;
 }
 
-function terminalStyles() {
-  const enabled = Boolean(process.stdout.isTTY) && !process.env.NO_COLOR;
-  const paint = (code) => (text) =>
-    enabled ? `\x1b[${code}m${text}\x1b[0m` : text;
-  return {
-    bold: paint("1"),
-    dim: paint("2"),
-    green: paint("32"),
-    yellow: paint("33"),
-  };
-}
-
-function terminalWidth() {
-  const columns = process.stdout.columns;
-  return Math.max(
-    60,
-    Math.min(typeof columns === "number" ? columns : 100, 120),
-  );
-}
-
-function clip(text, width) {
-  const value = String(text);
-  return value.length <= width ? value : `${value.slice(0, width - 1)}…`;
-}
-
-function pad(value, width) {
-  return String(value).padEnd(width, " ");
-}
-
 function styleVerdict(style, verdict) {
   if (verdict === "within-observed-envelope") {
     return style.green("within");
@@ -457,8 +434,8 @@ function styleVerdict(style, verdict) {
 }
 
 function renderTerminal(report) {
-  const style = terminalStyles();
-  const width = terminalWidth();
+  const style = terminalStyles(process.stdout);
+  const width = terminalWidth(process.stdout);
   const lines = [];
 
   lines.push(style.bold("Performance check report"));

@@ -16,6 +16,7 @@ const {
   loadIncrementalCatalog,
   buildEdit,
   writeReport,
+  printCompactTable,
 } = require("./bench_common");
 
 function usage() {
@@ -345,14 +346,15 @@ function formatRow(values) {
   ].join(" ");
 }
 
-const MEMORY_HEADER = formatRow([
+const MEMORY_COLUMNS = [
   "case",
   "count",
   "heap/tree(B)",
   "rss/tree(B)",
   "peakHeap(B)",
   "peakRss(B)",
-]);
+];
+const MEMORY_HEADER = formatRow(MEMORY_COLUMNS);
 
 function printSummary(report) {
   const { node, treeSitterRuntime, platform, arch, cpuCount } =
@@ -366,6 +368,44 @@ function printSummary(report) {
     `environment: Node ${node}, tree-sitter ${treeSitterRuntime}, ` +
       `${platform}/${arch}, ${cpuCount} logical CPUs`,
   );
+  let compact = false;
+  if (report.fresh.length > 0) {
+    compact =
+      printCompactTable({
+        title:
+          `Fresh parse trees (${report.fresh.length} ` +
+          `${report.fresh.length === 1 ? "fixture" : "fixtures"})`,
+        headers: MEMORY_COLUMNS,
+        rows: report.fresh.map((result) => [
+          result.id,
+          integer(result.bytes),
+          integer(result.retained.heapUsedBytesPerTree),
+          integer(result.retained.rssBytesPerTree),
+          integer(result.sampledPeak.heapDeltaBytes),
+          integer(result.sampledPeak.rssDeltaBytes),
+        ]),
+      }) || compact;
+  }
+  if (report.incremental.length > 0) {
+    compact =
+      printCompactTable({
+        title:
+          `Incremental replay trees (${report.incremental.length} ` +
+          `${report.incremental.length === 1 ? "sequence" : "sequences"})`,
+        headers: MEMORY_COLUMNS,
+        rows: report.incremental.map((result) => [
+          result.id,
+          integer(result.editCount),
+          integer(result.retained.heapUsedBytesPerTree),
+          integer(result.retained.rssBytesPerTree),
+          integer(result.sampledPeak.heapDeltaBytes),
+          integer(result.sampledPeak.rssDeltaBytes),
+        ]),
+      }) || compact;
+  }
+  if (compact) {
+    return;
+  }
   if (report.fresh.length > 0) {
     console.log("fresh parse trees:");
     console.log(MEMORY_HEADER);

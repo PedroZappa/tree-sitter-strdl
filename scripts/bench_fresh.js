@@ -15,6 +15,8 @@ const {
   loadBenchmarkFixtures,
   writeReport,
   formatStatsRow,
+  printCompactTable,
+  STATS_COLUMNS,
   STATS_HEADER,
 } = require("./bench_common");
 
@@ -154,6 +156,25 @@ function printSummary(report) {
     `environment: Node ${node}, tree-sitter ${treeSitterRuntime}, ` +
       `${platform}/${arch}, ${cpuCount} logical CPUs`,
   );
+  if (
+    printCompactTable({
+      title:
+        `Fresh parse latency (${report.config.fixtureCount} ` +
+        `${report.config.fixtureCount === 1 ? "fixture" : "fixtures"})`,
+      headers: STATS_COLUMNS,
+      rows: report.fixtures.map((result) => [
+        result.id,
+        result.bytes,
+        result.stats.p50Ms.toFixed(6),
+        result.stats.p95Ms.toFixed(6),
+        result.stats.p99Ms.toFixed(6),
+        result.stats.meanMs.toFixed(6),
+        result.stats.maxMs.toFixed(6),
+      ]),
+    })
+  ) {
+    return;
+  }
   console.log(STATS_HEADER);
   for (const result of report.fixtures) {
     console.log(

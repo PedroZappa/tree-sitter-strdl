@@ -5,6 +5,7 @@ const fs = require("node:fs");
 const os = require("node:os");
 const path = require("node:path");
 
+const { isTerminal, renderCompactTable } = require("./terminal_format");
 const Parser = require("tree-sitter");
 const Language = require("../bindings/node");
 
@@ -313,7 +314,7 @@ function formatStatsRow(values) {
   ].join(" ");
 }
 
-const STATS_HEADER = formatStatsRow([
+const STATS_COLUMNS = [
   "fixture",
   "bytes",
   "p50(ms)",
@@ -321,7 +322,18 @@ const STATS_HEADER = formatStatsRow([
   "p99(ms)",
   "mean(ms)",
   "max(ms)",
-]);
+];
+const STATS_HEADER = formatStatsRow(STATS_COLUMNS);
+
+function printCompactTable(options) {
+  if (!isTerminal(process.stdout)) {
+    return false;
+  }
+  process.stdout.write(
+    renderCompactTable({ ...options, stream: process.stdout }),
+  );
+  return true;
+}
 
 module.exports = {
   ROOT,
@@ -338,5 +350,7 @@ module.exports = {
   buildEdit,
   writeReport,
   formatStatsRow,
+  printCompactTable,
+  STATS_COLUMNS,
   STATS_HEADER,
 };

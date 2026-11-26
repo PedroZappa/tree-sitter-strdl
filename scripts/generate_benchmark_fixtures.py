@@ -16,6 +16,8 @@ import sys
 from pathlib import Path
 from typing import Any
 
+from terminal_report import print_terminal_status
+
 ROOT = Path(__file__).resolve().parent.parent
 MANIFEST_PATH = ROOT / "benchmarks/fixtures/manifest.json"
 KINDS = {"representative", "synthetic-large", "deeply-nested", "pathological"}
@@ -250,13 +252,24 @@ def check(manifest: dict[str, Any], fixtures: list[dict[str, Any]], check_obj: C
         )
 
     check_obj.require(generated > 0, "manifest has no generated fixtures")
-    if check_obj.failures == 0:
-        representatives = len(fixtures) - generated
-        print(
-            f"benchmark fixtures: {len(fixtures)} fixtures "
-            f"({generated} generated, {representatives} representative), "
-            f"{total_bytes} bytes; all reproducible"
+    if check_obj.failures:
+        print_terminal_status(
+            "benchmark fixtures",
+            False,
+            [f"{check_obj.failures} failed assertion(s); see stderr diagnostics"],
         )
+        return
+    representatives = len(fixtures) - generated
+    print(
+        f"benchmark fixtures: {len(fixtures)} fixtures "
+        f"({generated} generated, {representatives} representative), "
+        f"{total_bytes} bytes; all reproducible"
+    )
+    print_terminal_status(
+        "benchmark fixtures",
+        True,
+        [f"{len(fixtures)} fixtures", f"{generated} generated", f"{total_bytes} bytes"],
+    )
 
 
 def parse_args(argv: list[str]) -> argparse.Namespace:
@@ -296,7 +309,18 @@ def main(argv: list[str]) -> int:
             generate(manifest, fixtures)
     except (OSError, UnicodeError, TypeError, ValueError, json.JSONDecodeError) as error:
         print(f"benchmark fixture check failed: {error}", file=sys.stderr)
+        print_terminal_status("benchmark fixtures", None, ["aborted; see stderr"])
         return 1
+    if not args.check:
+        generated = sum(1 for fixture in fixtures if fixture.get("kind") != "representative")
+        details = [f"{generated} generated fixture(s)"]
+        if args.update_manifest:
+            details.append("manifest updated")
+        print_terminal_status(
+            "benchmark fixtures",
+            not check_obj.failures,
+            details,
+        )
     return 1 if check_obj.failures else 0
 
 

@@ -14,6 +14,8 @@ import subprocess
 import sys
 from pathlib import Path
 
+from terminal_report import print_terminal_status
+
 ANSI_RE = re.compile(r"\x1b\[[0-9;]*m")
 CAPTURE_RE = re.compile(
     r"capture: (?:\d+ - )?(?P<name>[^,]+), "
@@ -36,6 +38,7 @@ def run_query(
     if result.returncode != 0:
         sys.stderr.write(result.stderr)
         sys.stdout.write(result.stdout)
+        print_terminal_status("query captures", None, ["CLI error; raw output above"])
         raise SystemExit(result.returncode)
 
     current_file: str | None = None
@@ -79,6 +82,7 @@ def main(argv: list[str]) -> int:
     probe_captures = run_query(tree_sitter, probe, fixtures, fixture_names)
     if not probe_captures:
         print(f"check failed: probe query selected no {label} ranges", file=sys.stderr)
+        print_terminal_status("query captures", False, [label, "no probe ranges"])
         return 1
 
     official_captures = run_query(tree_sitter, query, fixtures, fixture_names)
@@ -101,9 +105,19 @@ def main(argv: list[str]) -> int:
                 f"  {filename}:{start_row}:{start_column}-{end_row}:{end_column} text: `{text}`",
                 file=sys.stderr,
             )
+        print_terminal_status(
+            "query captures",
+            False,
+            [label, f"{len(missing)}/{len(probe_captures)} missing @{expected}"],
+        )
         return 1
 
     print(f"verified {len(probe_captures)} {label} ranges; all received @{expected}")
+    print_terminal_status(
+        "query captures",
+        True,
+        [label, f"{len(probe_captures)} ranges", f"@{expected}"],
+    )
     return 0
 
 

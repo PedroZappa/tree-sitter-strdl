@@ -16,6 +16,8 @@ import sys
 from pathlib import Path
 from typing import Any
 
+from terminal_report import print_terminal_status
+
 ROOT = Path(__file__).resolve().parent.parent
 DEFAULT_INVENTORY = "test/fixtures/regression_inventory.json"
 REGRESSION_KINDS = {"corpus_case", "node_test", "path", "contains", "absent"}
@@ -235,14 +237,25 @@ def main(argv: list[str]) -> int:
         bugs, assertions, exclusions = check_inventory(inventory, check)
     except (OSError, UnicodeError, TypeError, json.JSONDecodeError) as error:
         print(f"regression coverage check failed: {error}", file=sys.stderr)
+        print_terminal_status("regression coverage", None, ["invalid inventory; see stderr"])
         return 1
 
     if check.failures:
+        print_terminal_status(
+            "regression coverage",
+            False,
+            [f"{check.failures} failed assertion(s); see stderr diagnostics"],
+        )
         return 1
 
     print(
         f"regression coverage: {bugs} bugs, {assertions} regression assertions, "
         f"{exclusions} documented exclusions"
+    )
+    print_terminal_status(
+        "regression coverage",
+        True,
+        [f"{bugs} bugs", f"{assertions} assertions", f"{exclusions} exclusions"],
     )
     return 0
 

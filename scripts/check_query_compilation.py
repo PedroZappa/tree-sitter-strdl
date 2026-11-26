@@ -16,6 +16,8 @@ import sys
 import tempfile
 from pathlib import Path
 
+from terminal_report import print_terminal_status
+
 ANSI_RE = re.compile(r"\x1b\[[0-9;]*m")
 
 NEGATIVE_CONTROLS: dict[str, tuple[str, str]] = {
@@ -98,11 +100,21 @@ def main(argv: list[str]) -> int:
                 print(f"rejected: {label}")
 
     if failures:
+        print_terminal_status(
+            "query compilation",
+            False,
+            [f"{failures} issue(s); see stderr diagnostics"],
+        )
         return 1
 
     print(
         f"query compilation: {len(queries)} official queries compiled; "
         f"{len(NEGATIVE_CONTROLS)} negative controls rejected"
+    )
+    print_terminal_status(
+        "query compilation",
+        True,
+        [f"{len(queries)} queries", f"{len(NEGATIVE_CONTROLS)} controls"],
     )
     return 0
 

@@ -16,6 +16,8 @@ import sys
 import tomllib
 from pathlib import Path
 
+from terminal_report import print_terminal_status
+
 ROOT = Path(__file__).resolve().parent.parent
 QUERY_KINDS = {
     "highlights": "highlights.scm",
@@ -222,10 +224,16 @@ def main() -> int:
     check_bindings(inventory, check)
 
     if check.failures:
+        print_terminal_status(
+            "query registration",
+            False,
+            [f"{check.failures} failed assertion(s); see stderr diagnostics"],
+        )
         return 1
 
     names = ", ".join(f"queries/{filename}" for filename in files)
     print(f"query registration: {len(files)} official queries registered: {names}")
+    print_terminal_status("query registration", True, [f"{len(files)} queries"])
     return 0
 
 

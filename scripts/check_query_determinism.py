@@ -13,6 +13,8 @@ import subprocess
 import sys
 from pathlib import Path
 
+from terminal_report import print_terminal_status
+
 ANSI_RE = re.compile(r"\x1b\[[0-9;]*m")
 CAPTURE_RE = re.compile(
     r"capture: \d+ - (?P<name>[^,]+), "
@@ -42,6 +44,7 @@ def main(argv: list[str]) -> int:
     if result.returncode != 0:
         sys.stderr.write(result.stderr)
         sys.stdout.write(result.stdout)
+        print_terminal_status("query determinism", None, ["CLI error; raw output above"])
         return result.returncode
 
     current_file: str | None = None
@@ -69,6 +72,7 @@ def main(argv: list[str]) -> int:
 
     if not captures:
         print("query determinism check failed: no captures were produced", file=sys.stderr)
+        print_terminal_status("query determinism", False, ["no captures"])
         return 1
 
     duplicates = {location: names for location, names in captures.items() if len(names) > 1}
@@ -82,11 +86,19 @@ def main(argv: list[str]) -> int:
                 f"  {filename}:{start_row}:{start_column}-{end_row}:{end_column} -> {joined}",
                 file=sys.stderr,
             )
+        print_terminal_status(
+            "query determinism",
+            False,
+            [f"{len(duplicates)} duplicate range(s)"],
+        )
         return 1
 
-    print(
-        f"deterministic captures: {sum(len(names) for names in captures.values())} "
-        f"captures across {len(captures)} ranges"
+    capture_count = sum(len(names) for names in captures.values())
+    print(f"deterministic captures: {capture_count} captures across {len(captures)} ranges")
+    print_terminal_status(
+        "query determinism",
+        True,
+        [f"{capture_count} captures", f"{len(captures)} ranges"],
     )
     return 0
 

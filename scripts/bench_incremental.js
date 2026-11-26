@@ -18,6 +18,8 @@ const {
   buildEdit,
   writeReport,
   formatStatsRow,
+  printCompactTable,
+  STATS_COLUMNS,
 } = require("./bench_common");
 
 function usage() {
@@ -222,17 +224,27 @@ function printSummary(report) {
     `environment: Node ${node}, tree-sitter ${treeSitterRuntime}, ` +
       `${platform}/${arch}, ${cpuCount} logical CPUs`,
   );
-  console.log(
-    formatStatsRow([
-      "sequence",
-      "edits",
-      "p50(ms)",
-      "p95(ms)",
-      "p99(ms)",
-      "mean(ms)",
-      "max(ms)",
-    ]),
-  );
+  const headers = ["sequence", "edits", ...STATS_COLUMNS.slice(2)];
+  if (
+    printCompactTable({
+      title:
+        `Incremental parse latency (${report.config.sequenceCount} ` +
+        `${report.config.sequenceCount === 1 ? "sequence" : "sequences"})`,
+      headers,
+      rows: report.sequences.map((result) => [
+        result.id,
+        result.editCount,
+        result.stats.p50Ms.toFixed(6),
+        result.stats.p95Ms.toFixed(6),
+        result.stats.p99Ms.toFixed(6),
+        result.stats.meanMs.toFixed(6),
+        result.stats.maxMs.toFixed(6),
+      ]),
+    })
+  ) {
+    return;
+  }
+  console.log(formatStatsRow(headers));
   for (const result of report.sequences) {
     console.log(
       formatStatsRow([
