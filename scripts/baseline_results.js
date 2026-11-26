@@ -961,6 +961,42 @@ function compareMemoryResults(baselineResults, currentResults, increases) {
   };
 }
 
+function buildClassification(environmentDiffs, configDiffs, increases) {
+  return {
+    correctness: {
+      gates: true,
+      policy:
+        "Invalid inputs and benchmark correctness guards fail their command with a nonzero exit status; no timing observation can fail a correctness gate.",
+      guards: [
+        "baseline and current report validation",
+        "benchmark fixture and incremental catalog integrity",
+        "expected-clean parse assertions",
+        "fresh/incremental CST equivalence",
+        "committed baseline and budget structural checks",
+      ],
+    },
+    performance: {
+      gates: false,
+      policy:
+        "Environment/configuration mismatches and observed increases are non-gating warnings for investigation; a mismatch makes the session non-comparable rather than slower.",
+      warnings: {
+        environmentMismatch: {
+          present: environmentDiffs.length > 0,
+          fields: environmentDiffs.map((difference) => difference.field),
+        },
+        configurationMismatch: {
+          present: configDiffs.length > 0,
+          fields: configDiffs.map((difference) => difference.field),
+        },
+        observedIncreases: {
+          count: increases.length,
+          details: "increases[]",
+        },
+      },
+    },
+  };
+}
+
 function buildComparison(baseline, reports) {
   const currentEnvironment = combinedEnvironment(reports);
   const currentConfig = comparisonConfig(reports);
@@ -1011,6 +1047,7 @@ function buildComparison(baseline, reports) {
     },
     environmentComparison: { matches: environmentDiffs.length === 0, differences: environmentDiffs },
     configComparison: { matches: configDiffs.length === 0, differences: configDiffs },
+    classification: buildClassification(environmentDiffs, configDiffs, increases),
     observations,
     increases,
     interpretation: "Observed increases for investigation; no thresholds or pass/fail status.",
@@ -1079,6 +1116,12 @@ function runCompare(options) {
       `${comparison.observations.incremental.length} sequences, ${comparison.increases.length} increases, ` +
       `environment ${comparison.environmentComparison.matches ? "matches" : "differs"})`,
   );
+  const warnings = comparison.classification.performance.warnings;
+  const warningCount =
+    warnings.observedIncreases.count +
+    (warnings.environmentMismatch.present ? 1 : 0) +
+    (warnings.configurationMismatch.present ? 1 : 0);
+  console.log(`classification: correctness failures gating; ${warningCount} non-gating performance warnings`);
 }
 
 function main() {
