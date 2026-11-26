@@ -222,7 +222,7 @@ parse:	## Parse files with the current parser (FILES=..., PARSE_FLAGS=...)
 check-generated:	## Verify committed parser artifacts match grammar.js
 	@echo "$(YEL)Checking generated artifacts...$(D)"
 	@$(TS) generate
-	@git diff --exit-code -- $(PARSER) $(SRC_DIR)/grammar.json $(SRC_DIR)/node-types.json $(SRC_DIR)/tree_sitter || { \
+	@git diff --exit-code HEAD -- $(PARSER) $(SRC_DIR)/grammar.json $(SRC_DIR)/node-types.json $(SRC_DIR)/tree_sitter || { \
 		echo "$(RED)Generated artifacts are out of sync; run 'make generate'.$(D)"; \
 		exit 1; \
 	}

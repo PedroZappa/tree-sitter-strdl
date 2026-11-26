@@ -17,7 +17,7 @@ The tests cover syntax recognition and the public concrete syntax tree (CST). Th
 
 | Layer | Command | Inputs | What it verifies |
 | --- | --- | --- | --- |
-| Generated-artifact consistency | `make check-generated` | `grammar.js`, pinned Tree-sitter CLI, files under `src/` | Regeneration produces no changes to committed parser artifacts. |
+| Generated-artifact consistency | `make check-generated` | `grammar.js`, pinned Tree-sitter CLI, files under `src/` | Regeneration produces no differences from `HEAD` in committed parser artifacts, including staged changes. |
 | Corpus behavior | `make test` (`FILTER=regex` optional) | `test/corpus/*.txt` | All corpus cases produce their expected CSTs. The suite includes valid syntax, precedence, modules, templates, error recovery, and known-limitation regressions. |
 | Recovery subset | `make test-recovery` | `incomplete_*`, `malformed_*`, `missing_*`, `noncascading_*`, `recovery_*`, `unfinished_*`, and `valid_*` corpus files | Re-runs the recovery-focused corpus files as a dedicated subset. These cases also run under `make test`. |
 | Incremental equivalence | `make test-incremental` (`INCREMENTAL_FILTER=...` optional) | `test/fixtures/incremental_sequences.json`, `test.strdl`, `test-local.strdl` | Incremental parses equal fresh parses after every edit and at the final source; catalog IDs and fixture keys are validated, and final sources must be error-free. See [incremental equivalence](incremental-equivalence-procedure.md) and the [sequence catalog](incremental-editing-sequences.md). |
