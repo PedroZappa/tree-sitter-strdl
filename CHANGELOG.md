@@ -6,6 +6,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+## [2.0.2] - 2026-11-26
+
+### Fixed
+
+- Release publishing: removed the unsupported `attestations` input from the upstream GitHub release workflow. It caused every tag-triggered `Publish packages` run to fail at startup before the GitHub release, npm, crates.io, or PyPI jobs could start.
+- Release publishing: pass the correct `tree-sitter-strudel` package name to the npm, crates.io, and PyPI reusable workflows so their environment links point at the published artifacts.
+
 ## [2.0.1] - 2026-11-26
 
 ### Fixed

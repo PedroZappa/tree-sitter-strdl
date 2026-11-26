@@ -63,13 +63,13 @@ jobs:
     uses: tree-sitter/workflows/.github/workflows/release.yml@main
     with:
       generate: true
-      attestations: true
   npm:
     needs: [verify-generated, verify-package]
     uses: tree-sitter/workflows/.github/workflows/package-npm.yml@main
     secrets:
       NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
     with:
+      package-name: tree-sitter-strudel
       generate: true
   crates:
     needs: [verify-generated, verify-package]
@@ -77,6 +77,7 @@ jobs:
     secrets:
       CARGO_REGISTRY_TOKEN: ${{secrets.CARGO_REGISTRY_TOKEN}}
     with:
+      package-name: tree-sitter-strudel
       generate: true
   pypi:
     needs: [verify-generated, verify-package]
@@ -84,4 +85,5 @@ jobs:
     secrets:
       PYPI_API_TOKEN: ${{secrets.PYPI_API_TOKEN}}
     with:
+      package-name: tree-sitter-strudel
       generate: true
