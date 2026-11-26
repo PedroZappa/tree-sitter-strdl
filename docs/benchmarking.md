@@ -26,6 +26,8 @@ make check-benchmark-fixtures  # verify sizes, hashes, and exact regeneration
 ## Validation performed
 
 - All four `expected_clean: true` fixtures parse with `tree-sitter parse --quiet` and exit 0 using CLI 0.27.2.
+- The two representative compositions are the canonical fixtures already used by query execution (`Makefile` `FIXTURES`) and the incremental catalog (`test/fixtures/incremental_sequences.json`), so they are reused rather than duplicated.
+- A temporary manifest negative control that changed the `representative-main` SHA-256 failed with exit 1; the clean manifest passes.
 - The pathological fixture exits nonzero and produces 498 `ERROR` nodes, as intended for stress testing.
 - A negative control appended a newline to `deeply-nested.strdl`; the checker failed with exit 1 on size, SHA-256, and regeneration mismatch, then passed after restoration.
 - The committed set contains five fixtures and 107,480 bytes in total.
