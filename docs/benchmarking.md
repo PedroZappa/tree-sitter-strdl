@@ -1,6 +1,6 @@
 # Benchmarking
 
-This document owns the Phase 6 benchmark fixture inventory. The authoritative fixture metadata is [manifest.json](../benchmarks/fixtures/manifest.json); no latency, memory, or baseline results are recorded yet.
+This document owns the Phase 6 benchmark fixture inventory and fresh/incremental latency measurements. The authoritative fixture metadata is [manifest.json](../benchmarks/fixtures/manifest.json); no committed baselines or memory results are recorded yet.
 
 ## Fixture inventory
 
@@ -35,6 +35,21 @@ make bench-fresh BENCH_FIXTURE=synthetic-large BENCH_OUTPUT=benchmarks/results/f
 
 `scripts/bench_fresh.js --json` prints the same report as structured output. This is a measurement tool, not a committed baseline or CI gate; results vary by hardware and concurrent load.
 
+## Incremental parsing latency
+
+`make bench-incremental` measures incremental update latency through the Node.js binding. It reads the 21 edit sequences in [incremental_sequences.json](../test/fixtures/incremental_sequences.json), validates their fixtures against the benchmark manifest, and replays each sequence with two unmeasured warmup replays and 15 measured replays by default. Each timed step includes `tree.edit` and the subsequent `Parser.parse(updated, tree)` call. The initial fresh parse and the fresh comparison parse after each step are deliberately outside the measured interval.
+
+The harness compares every incremental tree with a fresh parse of the same intermediate source. A mismatch, an edit that cannot be applied, or a final tree whose `hasError` disagrees with the manifest fails the run. Results report min, mean, P50, P95, P99, and max in milliseconds both per edit step and per replay total.
+
+```sh
+make bench-incremental
+make bench-incremental BENCH_ITERATIONS=30 BENCH_WARMUP=5
+make bench-incremental BENCH_SEQUENCE=malformed-call-repair BENCH_OUTPUT=benchmarks/results/incremental.json
+make bench-incremental BENCH_CATEGORY=compact-fixture
+```
+
+`scripts/bench_incremental.js --json` prints the same report as structured output. Sequence totals are not directly comparable with fresh fixture totals because they replay different source sizes and edit counts; use the report's fixture path, edit count, and per-step values when interpreting results. This is a measurement tool, not a committed baseline or CI gate.
+
 ## Validation performed
 
 - All four `expected_clean: true` fixtures parse with `tree-sitter parse --quiet` and exit 0 using CLI 0.27.2.
@@ -52,7 +67,11 @@ make bench-fresh BENCH_FIXTURE=synthetic-large BENCH_OUTPUT=benchmarks/results/f
 - A temporary manifest negative control that changed `synthetic-large` SHA-256 failed with exit 1 before timing any fixture.
 - A temporary manifest negative control that marked the pathological fixture `expected_clean: true` failed with exit 1 because its parse still contained an `ERROR` node.
 - A filtered JSON-report control wrote a one-fixture report with `mode: fresh`, two samples, and finite P99; `node --check` passed.
+- `make bench-incremental` with 15 measured replays and 2 warmup replays ran on Node v26.13.1, tree-sitter runtime 0.25.1, linux/x64 with 24 logical CPUs. It covered all 21 sequences, 29 edit steps, and 435 fresh-comparison parses per measured pass. Observed replay-total P99 values in milliseconds were: method-chain-insertion 0.414387, pattern-string-replacement 0.124559, declaration-deletion 0.049974, nested-object-edits 0.091612, malformed-call-repair 0.078348, declaration-insertion 0.049517, arrow-parameter-rename 0.098679, method-deletion 0.064867, call-statement-insertion 0.043110, template-content-edit 0.062985, compact-set-cps 0.010771, compact-declaration-deletion 0.024841, compact-malformed-repair 0.042569, argument-deletion 0.033128, object-property-deletion 0.035529, method-name-replacement 0.037611, nested-call-edit 0.058675, nested-arrow-body-edit 0.094787, object-brace-repair 0.073458, string-quote-repair 0.087804, and array-bracket-repair 0.112255.
+- A temporary catalog negative control that changed the first edit's `occurrence` to 99 failed with exit 1 before producing a report.
+- A temporary manifest negative control that changed `representative-main` SHA-256 failed with exit 1 before replaying edits.
+- A filtered JSON-report control wrote a one-sequence report with `mode: incremental`, one step, two fresh comparisons, and finite P99; a `compact-fixture` category control selected four sequences; `node --check` passed for all three benchmark scripts.
 
 ## Remaining work
 
-Incremental latency measurement, memory measurement, P50/P95/P99 reporting for incremental parsing, dedicated hardware/software environment capture, committed baselines, and performance budgets remain separate roadmap items. The fresh report includes basic runtime metadata but is not hardware-normalized. This document will own those results as they are added.
+Memory measurement, committed fresh/incremental P50/P95/P99 baselines, dedicated hardware/software environment capture, and performance budgets remain separate roadmap items. Both reports include basic runtime metadata but are not hardware-normalized. This document will own those results as they are added.

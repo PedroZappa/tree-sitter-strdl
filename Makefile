@@ -53,9 +53,12 @@ QUERY_DETERMINISM_FIXTURES := test/query/determinism.strdl
 QUERY_EXECUTION_FIXTURES := $(FIXTURES) $(QUERY_DETERMINISM_FIXTURES)
 REGRESSION_INVENTORY := test/fixtures/regression_inventory.json
 BENCHMARK_MANIFEST := benchmarks/fixtures/manifest.json
+BENCH_CATALOG := test/fixtures/incremental_sequences.json
 BENCH_ITERATIONS ?= 15
 BENCH_WARMUP ?= 2
 BENCH_FIXTURE ?=
+BENCH_SEQUENCE ?=
+BENCH_CATEGORY ?=
 BENCH_OUTPUT ?=
 RECOVERY_FILES := $(wildcard $(TEST_DIR)/incomplete_*.txt $(TEST_DIR)/malformed_*.txt $(TEST_DIR)/missing_*.txt $(TEST_DIR)/noncascading_*.txt $(TEST_DIR)/recovery_*.txt $(TEST_DIR)/unfinished_*.txt $(TEST_DIR)/valid_*.txt)
 
@@ -104,7 +107,7 @@ D = $(shell tput sgr0 2>/dev/null)
 _SUCCESS = [$(GRN)SUCCESS$(D)]
 _INFO    = [$(BLU)INFO$(D)]
 
-.PHONY: all build generate test test-recovery test-incremental test-query-compile test-query-execution test-query-registration test-query test-node test-package test-regressions benchmark-fixtures check-benchmark-fixtures bench-fresh parse playground wasm \
+.PHONY: all build generate test test-recovery test-incremental test-query-compile test-query-execution test-query-registration test-query test-node test-package test-regressions benchmark-fixtures check-benchmark-fixtures bench-fresh bench-incremental parse playground wasm \
 	local-install install uninstall clean check-generated verify verify-all ci \
 	docs docs-open help
 
@@ -250,6 +253,11 @@ bench-fresh:	## Measure fresh parsing latency (ITERATIONS, WARMUP, FIXTURE, OUTP
 	@echo "$(YEL)Measuring fresh parse latency...$(D)"
 	@$(NODE) scripts/bench_fresh.js --manifest $(BENCHMARK_MANIFEST) --iterations $(BENCH_ITERATIONS) --warmup $(BENCH_WARMUP) $(if $(BENCH_FIXTURE),--fixture $(BENCH_FIXTURE),) $(if $(BENCH_OUTPUT),--output $(BENCH_OUTPUT),)
 	@echo "$(YEL)* $(_SUCCESS) Fresh parsing latency measured$(D)"
+
+bench-incremental:	## Measure incremental parsing latency (ITERATIONS, WARMUP, SEQUENCE, CATEGORY, OUTPUT overrides)
+	@echo "$(YEL)Measuring incremental parse latency...$(D)"
+	@$(NODE) scripts/bench_incremental.js --manifest $(BENCHMARK_MANIFEST) --catalog $(BENCH_CATALOG) --iterations $(BENCH_ITERATIONS) --warmup $(BENCH_WARMUP) $(if $(BENCH_SEQUENCE),--sequence $(BENCH_SEQUENCE),) $(if $(BENCH_CATEGORY),--category $(BENCH_CATEGORY),) $(if $(BENCH_OUTPUT),--output $(BENCH_OUTPUT),)
+	@echo "$(YEL)* $(_SUCCESS) Incremental parsing latency measured$(D)"
 
 ##@ Verification ✅
 
