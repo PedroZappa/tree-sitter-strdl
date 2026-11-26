@@ -80,7 +80,7 @@ Incremental/fresh comparisons: 21/21 sequences, 29 steps, 5 malformed steps
 Final-source comparisons: 21/21 passed
 ```
 
-A run fails if any step's tree comparison fails or if either parse produces no CST. The command exits nonzero on failure, so it is suitable as a CI gate once wired in.
+A run fails if any step's tree comparison fails or if either parse produces no CST. The command exits nonzero on failure and is wired into `make verify` and `make ci`, so it is a gating correctness check in local and CI runs.
 
 ## Current coverage
 
@@ -103,7 +103,7 @@ If a new sequence exposes a tree mismatch, treat it as a real incremental-parsin
 - It verifies equivalence, not recovery quality. Malformed intermediate steps are inputs whose trees must agree, not trees that are expected to be clean.
 - Sequences are hand-recorded representative edits, not fuzzed or generated inputs.
 - The harness does not measure fresh or incremental latency. Performance work belongs to the Phase 6 benchmarks.
-- `make test-incremental` is currently a local developer command; it is not yet part of `make ci`.
+- `make test-incremental` supports a local `INCREMENTAL_FILTER`; CI runs the complete catalog without a filter through `make ci`.
 
 ## Related documents
 

@@ -308,7 +308,7 @@ check-generated:	## Verify committed parser artifacts match grammar.js
 	}
 	@echo "$(YEL)* $(_SUCCESS) Generated artifacts are in sync$(D)"
 
-verify: check-generated test test-query test-regressions check-benchmark-fixtures check-benchmark-baseline check-benchmark-budgets	## Run the core CI gate (artifacts, corpus, queries, regressions, fixtures, baseline, budgets)
+verify: check-generated test test-incremental test-query test-regressions check-benchmark-fixtures check-benchmark-baseline check-benchmark-budgets	## Run the core CI gate (artifacts, corpus, incremental equivalence, queries, regressions, fixtures, baseline, budgets)
 
 verify-all: verify test-node test-package	## Run the core gate plus Node.js binding and package checks
 

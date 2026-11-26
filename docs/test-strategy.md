@@ -21,7 +21,7 @@ The tests cover syntax recognition and the public concrete syntax tree (CST). Th
 | Generated-artifact consistency | `make check-generated` | `grammar.js`, pinned Tree-sitter CLI, files under `src/` | Regeneration produces no differences from `HEAD` in committed parser artifacts, including staged changes. |
 | Corpus behavior | `make test` (`FILTER=regex` optional) | `test/corpus/*.txt` | All corpus cases produce their expected CSTs. The suite includes valid syntax, precedence, modules, templates, error recovery, and known-limitation regressions. |
 | Recovery subset | `make test-recovery` | `incomplete_*`, `malformed_*`, `missing_*`, `noncascading_*`, `recovery_*`, `unfinished_*`, and `valid_*` corpus files | Re-runs the recovery-focused corpus files as a dedicated subset. These cases also run under `make test`. |
-| Incremental equivalence | `make test-incremental` (`INCREMENTAL_FILTER=...` optional) | `test/fixtures/incremental_sequences.json`, `test.strdl`, `test-local.strdl` | Incremental parses equal fresh parses after every edit and at the final source; catalog IDs and fixture keys are validated, and final sources must be error-free. See [incremental equivalence](incremental-equivalence-procedure.md) and the [sequence catalog](incremental-editing-sequences.md). |
+| Incremental equivalence | `make test-incremental` (`INCREMENTAL_FILTER=...` optional) | `test/fixtures/incremental_sequences.json`, `test.strdl`, `test-local.strdl` | Incremental parses equal fresh parses after every edit and at the final source; catalog IDs and fixture keys are validated, and final sources must be error-free. Gated by `make ci`. See [incremental equivalence](incremental-equivalence-procedure.md) and the [sequence catalog](incremental-editing-sequences.md). |
 | Query compilation | `make test-query-compile` | `queries/*.scm` | Every official query compiles, and built-in negative controls reject invalid node and field names. |
 | Query execution | `make test-query-execution` | `test/query/*.scm`, representative fixtures | Probe-selected ranges assert every official highlight and locals capture name; a wrong-capture negative control is rejected. |
 | Query registration | `make test-query-registration` | `tree-sitter.json`, `package.json`, binding exports | Official queries are registered, packaged, and exported consistently. See [query audit](query-audit.md#registration-packaging-and-binding-exports). |
@@ -46,7 +46,7 @@ Fresh and incremental latency reports keep P50, P95, and P99 in separate modes; 
 | --- | --- |
 | `make test` | Full corpus suite. |
 | `make test-recovery` | Recovery-focused corpus subset. |
-| `make test-incremental` | Incremental/fresh equivalence harness; not yet in CI. |
+| `make test-incremental` | Incremental/fresh equivalence harness; gated by `make verify` and `make ci`. |
 | `make test-query-compile` | Query syntax, node types, and field names. |
 | `make test-query-execution` | Expected captures on grammar-derived roles. |
 | `make test-query-registration` | Metadata, packaging rules, and binding exports. |
@@ -65,7 +65,7 @@ Fresh and incremental latency reports keep P50, P95, and P99 in separate modes; 
 | `make build-benchmark-budgets` | Build observed-envelope budgets from a session manifest (`BENCH_BUDGET_INPUTS`). |
 | `make check-benchmark-budgets` | Validate budget provenance and observed maxima without a performance gate. |
 | `make check-generated` | Generated-file consistency against `HEAD`. |
-| `make verify` | Generated-file, benchmark-fixture, baseline-integrity, budget-integrity, corpus, query, and regression-inventory layers. |
+| `make verify` | Generated-file, benchmark-fixture, baseline-integrity, budget-integrity, corpus, incremental-equivalence, query, and regression-inventory layers. |
 | `make verify-all` | `verify` plus Node.js binding and package checks. |
 | `make ci` | `verify-all` plus the C library build. |
 
@@ -118,8 +118,8 @@ Do not weaken or delete an existing test to make a change pass without an explic
 
 ## Current coverage and gaps
 
-Covered by `make ci` today: generated-file, benchmark-fixture, benchmark-baseline, and benchmark-budget structural consistency; corpus behavior; all query layers; regression-inventory integrity; Node.js binding load/metadata/CST/recovery/query/incremental behavior; npm package integrity; and the C library build. Recovery cases run inside the full corpus suite; `make test-recovery` is the dedicated local subset.
+Covered by `make ci` today: generated-file, benchmark-fixture, benchmark-baseline, and benchmark-budget structural consistency; corpus behavior; CLI-level incremental/fresh equivalence; all query layers; regression-inventory integrity; Node.js binding load/metadata/CST/recovery/query/incremental behavior; npm package integrity; and the C library build. Recovery cases run inside the full corpus suite; `make test-recovery` is the dedicated local subset.
 
-Local-only: incremental/fresh equivalence, fresh/incremental latency and memory measurement, baseline regeneration, baseline comparison, and budget regeneration. CI validates the committed artifacts but does not compare current timings against either the baseline or the budgets.
+Local-only: filtered incremental-equivalence runs through `INCREMENTAL_FILTER`, fresh/incremental latency and memory measurement, baseline regeneration, baseline comparison, and budget regeneration. CI runs the complete equivalence catalog without a filter and validates the committed artifacts, but does not compare current timings against either the baseline or the budgets.
 
 Not yet implemented: hardware-variance-aware CI reporting, formatting/static checks, and non-Node binding validation. Baseline comparison is available as a local investigation tool but is not a CI gate; committed budgets are validated structurally but do not gate current timings. These are tracked in the [Phase 6](roadmap.md#phase-6--testing-and-performance) and [Phase 7](roadmap.md#phase-7--packaging-and-compatibility) checklists. CI gaps are also summarized in [CI](ci.md#not-yet-covered).
