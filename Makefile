@@ -97,7 +97,7 @@ D = $(shell tput sgr0 2>/dev/null)
 _SUCCESS = [$(GRN)SUCCESS$(D)]
 _INFO    = [$(BLU)INFO$(D)]
 
-.PHONY: all build generate test test-recovery test-incremental test-query-compile test-query-execution test-query-registration test-query test-node parse playground wasm \
+.PHONY: all build generate test test-recovery test-incremental test-query-compile test-query-execution test-query-registration test-query test-node test-package parse playground wasm \
 	local-install install uninstall clean check-generated verify verify-all ci \
 	docs docs-open help
 
@@ -214,6 +214,11 @@ test-node:	## Run Node.js binding tests (requires a matching native ABI)
 	@$(NPM) test
 	@echo "$(YEL)* $(_SUCCESS) Node.js binding tests completed$(D)"
 
+test-package:	## Verify npm package contents and metadata
+	@echo "$(YEL)Checking npm package integrity...$(D)"
+	@python3 scripts/check_package_integrity.py $(NPM)
+	@echo "$(YEL)* $(_SUCCESS) npm package integrity check completed$(D)"
+
 parse:	## Parse files with the current parser (FILES=..., PARSE_FLAGS=...)
 	@$(TS) parse $(PARSE_FLAGS) $(FILES)
 
@@ -230,7 +235,7 @@ check-generated:	## Verify committed parser artifacts match grammar.js
 
 verify: check-generated test test-query	## Run the core CI gate (artifacts, corpus, queries)
 
-verify-all: verify test-node	## Run the core gate plus Node.js binding tests
+verify-all: verify test-node test-package	## Run the core gate plus Node.js binding and package checks
 
 ci: verify-all build	## Run the complete CI gate locally (requires npm ci first)
 

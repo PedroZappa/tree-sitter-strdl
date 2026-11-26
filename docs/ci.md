@@ -20,7 +20,8 @@ Each matrix job installs the locked dependencies with `npm ci`, then runs `make 
 2. `make test` — runs all corpus cases, including incomplete-call, incomplete-argument-list, incomplete-expression, and missing-delimiter cases.
 3. `make test-query` — runs `make test-query-compile` to compile every query in `queries/` and reject negative controls with invalid node and field names, runs `make test-query-execution` to assert every official capture name on grammar-derived roles in the representative fixtures and reject a wrong-capture negative control, and runs `make test-query-registration` to verify metadata registration, packaged query rules, and Python/Rust query exports. It also executes each official query against the committed fixtures, checks that `highlights.scm` emits no duplicate captures for the same source range, and verifies that call identifiers and object keys selected by probe queries receive no locals definition capture.
 4. `make test-node` — runs the Node.js binding tests with the tree-sitter runtime resolved from `package-lock.json`, covering load, generated metadata, CST fields, error recovery, query execution, and incremental/fresh equivalence through the native addon.
-5. `make build` — builds the static and shared C libraries and the pkg-config metadata.
+5. `make test-package` — runs `npm pack --dry-run --json --ignore-scripts` and checks metadata consistency, required files, forbidden artifacts, and packed file sizes.
+6. `make build` — builds the static and shared C libraries and the pkg-config metadata.
 
 The pinned versions used by CI come from `package-lock.json`: Tree-sitter CLI `0.27.2` and tree-sitter Node runtime `0.25.1`.
 
@@ -41,5 +42,5 @@ The following checks are required by the project roadmap but are not yet part of
 
 - incremental-versus-fresh parse equivalence (Phase 4) — a local harness now exists as `make test-incremental`; see the [equivalence test procedure](incremental-equivalence-procedure.md);
 - benchmark fixtures, baselines, and performance-regression reporting (Phase 6);
-- non-Node binding builds and package-content checks (Phase 7);
+- non-Node binding builds and their package-content checks (Phase 7);
 - formatting and static checks beyond generated-artifact consistency (no formatter is configured yet).

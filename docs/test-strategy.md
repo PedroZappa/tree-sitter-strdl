@@ -26,6 +26,7 @@ The tests cover syntax recognition and the public concrete syntax tree (CST). Th
 | Query registration | `make test-query-registration` | `tree-sitter.json`, `package.json`, binding exports | Official queries are registered, packaged, and exported consistently. See [query audit](query-audit.md#registration-packaging-and-binding-exports). |
 | Query invariants | `make test-query` | `queries/`, `test.strdl`, `test-local.strdl`, `test/query/determinism.strdl` | Official queries execute; highlights are deterministic; call identifiers and object keys receive no locals definition captures. |
 | Node.js binding | `make test-node` | `bindings/node/*_test.js` | The native addon loads, exports generated metadata, exposes CST fields, recovers from incomplete input, executes a query, and matches a fresh parse after an incremental edit. |
+| Package integrity | `make test-package` | `package.json`, `tree-sitter.json`, `npm pack --dry-run --json --ignore-scripts` | Package metadata is consistent; required runtime files are present; forbidden build artifacts are absent; packed file sizes match local files. |
 | C library build | `make build` (included in `make ci`) | `bindings/c/`, generated sources | Static/shared libraries and pkg-config metadata build from generated artifacts. Build validation is distinct from behavioral testing. |
 
 ## Command map
@@ -39,9 +40,11 @@ The tests cover syntax recognition and the public concrete syntax tree (CST). Th
 | `make test-query-execution` | Expected captures on grammar-derived roles. |
 | `make test-query-registration` | Metadata, packaging rules, and binding exports. |
 | `make test-query` | All query layers plus execution and invariant checks. |
+| `make test-node` | Native Node.js binding behavior tests. |
+| `make test-package` | npm package contents, metadata, and file-size checks. |
 | `make check-generated` | Generated-file consistency against `HEAD`. |
 | `make verify` | Generated-file consistency, corpus, and query layers. |
-| `make verify-all` | `verify` plus Node.js binding tests. |
+| `make verify-all` | `verify` plus Node.js binding and package checks. |
 | `make ci` | `verify-all` plus the C library build. |
 
 Run `make help` for the authoritative target list and parameter names.
@@ -58,6 +61,7 @@ Run `make help` for the authoritative target list and parameter names.
 - `scripts/check_query_determinism.py`: rejects multiple highlight captures for one source range.
 - `scripts/check_locals_definitions_absent.py`: rejects locals definition captures on selected probe roles.
 - `scripts/check_query_registration.py`: checks official query registration, packaging, and binding exports.
+- `scripts/check_package_integrity.py`: checks packed metadata, required files, forbidden artifacts, and file sizes.
 - `scripts/test_incremental.py`: replays edits and compares incremental and fresh CSTs.
 
 Temporary negative controls used while developing the determinism, locals-definition, registration, and capture checks are recorded in the [roadmap verification log](roadmap.md#verification-log). The query compilation checker contains built-in negative controls, and `test-query-execution` includes a permanent wrong-capture negative control.
@@ -70,14 +74,15 @@ Temporary negative controls used while developing the determinism, locals-defini
 4. **Incremental parsing:** add a sequence to `test/fixtures/incremental_sequences.json`, run the filtered subset, then run the full harness.
 5. **Query inventory changes:** update `scripts/check_query_registration.py`, registration metadata, binding exports, and the query documentation in the same change.
 6. **Node.js binding behavior:** extend `bindings/node/binding_test.js` when native export shape, parser behavior, query execution, or incremental parsing through the primary binding needs coverage.
-7. **New test layer:** add a `make` target, include it in the appropriate aggregate target, link it here and from [CI](ci.md), and update the roadmap.
+7. **Package contents:** update `scripts/check_package_integrity.py` and the `package.json` `files` allowlist when the published surface changes; keep generated sources explicit rather than using broad `src/**` patterns.
+8. **New test layer:** add a `make` target, include it in the appropriate aggregate target, link it here and from [CI](ci.md), and update the roadmap.
 
 Do not weaken or delete an existing test to make a change pass without an explicit, sound rationale recorded in the roadmap.
 
 ## Current coverage and gaps
 
-Covered by `make ci` today: generated-file consistency, corpus behavior, all query layers, Node.js binding load/metadata/CST/recovery/query/incremental behavior, and the C library build. Recovery cases run inside the full corpus suite; `make test-recovery` is the dedicated local subset.
+Covered by `make ci` today: generated-file consistency, corpus behavior, all query layers, Node.js binding load/metadata/CST/recovery/query/incremental behavior, npm package integrity, and the C library build. Recovery cases run inside the full corpus suite; `make test-recovery` is the dedicated local subset.
 
 Local-only: incremental/fresh equivalence.
 
-Not yet implemented: reproducible benchmark fixtures and baselines, performance-regression reporting, formatting/static checks, package-content integrity checks, and non-Node binding validation. These are tracked in the [Phase 6](roadmap.md#phase-6--testing-and-performance) and [Phase 7](roadmap.md#phase-7--packaging-and-compatibility) checklists. CI gaps are also summarized in [CI](ci.md#not-yet-covered).
+Not yet implemented: reproducible benchmark fixtures and baselines, performance-regression reporting, formatting/static checks, and non-Node binding validation. These are tracked in the [Phase 6](roadmap.md#phase-6--testing-and-performance) and [Phase 7](roadmap.md#phase-7--packaging-and-compatibility) checklists. CI gaps are also summarized in [CI](ci.md#not-yet-covered).
