@@ -284,7 +284,7 @@ Phase 2 is complete and tagged `v1.3.0`. Phase 3 evidence collection, the source
 - [x] Add Node.js binding tests.
 - [x] Add generated-artifact consistency checks.
 - [x] Add package integrity checks.
-- [ ] Ensure every discovered bug produces a regression test.
+- [x] Ensure every discovered bug produces a regression test.
 
 ### Performance infrastructure
 
@@ -323,7 +323,7 @@ See [CI](ci.md) for the workflow, commands, and remaining gaps.
 - [ ] All required test layers run automatically.
 - [ ] Baselines are reproducible and committed.
 - [ ] Performance budgets, if any, are based on measured baselines.
-- [ ] No known correctness regression remains untracked.
+- [x] No known correctness regression remains untracked.
 
 ---
 
@@ -554,3 +554,4 @@ For checked items, add a short entry using this format:
 - Phase 6 — Node.js binding tests: expanded `bindings/node/binding_test.js` from two tests to seven. In addition to loading the addon and checking the precedence-sensitive tree, the suite now verifies that `nodeTypeInfo` equals the generated `src/node-types.json`, reads representative declaration/call/member fields through the public node API, preserves a string argument around an incomplete call with a synthesized `)`, executes a grammar-derived query, and compares an incrementally reparsed tree with a fresh parse after replacing a numeric literal. `make test-node` passes 7/7 tests. Updated the test-strategy index and CI description; no binding, query, or grammar change was required.
 - Phase 6 — Generated-artifact consistency: audited `make check-generated` and hardened it to compare regenerated `src/parser.c`, `src/grammar.json`, `src/node-types.json`, and `src/tree_sitter` against `HEAD` instead of only the index, so staged generated changes cannot pass silently. The clean gate passes. An isolated negative copy changed the `catch` grammar token to `catching`, regenerated artifacts, and failed with `exit=2` and `Generated artifacts are out of sync; run 'make generate'.` Updated `docs/ci.md` and `docs/test-strategy.md`; no grammar or generated artifact changed in the working tree.
 - Phase 6 — Package integrity: added `scripts/check_package_integrity.py` and `make test-package`, included in `verify-all` and therefore `make ci`. The checker runs `npm pack --dry-run --json --ignore-scripts`, verifies name/version/license consistency with `tree-sitter.json`, checks a 17-file required set, rejects 12 forbidden artifact patterns, and compares every packed file size against the local file. The baseline pack exposed `src/parser.o` from the broad `src/**` allowlist; `package.json` now lists generated sources explicitly and the packaged surface is 18 files. An isolated negative copy restoring `src/**` failed with `exit=1` and reported both the broad pattern and `src/parser.o`. Updated CI and test-strategy documentation. No grammar change was required.
+- Phase 6 — Regression coverage: audited discovered defects and added `test/fixtures/regression_inventory.json`, `scripts/check_regression_coverage.py`, and `make test-regressions` in `verify` and therefore `make ci`. The inventory records 14 bugs with 61 permanent regression assertions and 3 documented exclusions, covering parser, recovery, query, binding, incremental, build-gate, packaging, and test-tooling defects. The checker validates case and test names, artifact existence, required or absent text, and unique IDs across both sections. A temporary manifest negative control renamed one corpus case and failed with `exit=1`. Added `docs/regression-coverage.md` and linked it from the documentation indexes, test strategy, CI notes, and README. This satisfies the Phase 6 acceptance criterion that no known correctness regression remains untracked. No grammar change was required.

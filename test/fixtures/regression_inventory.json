@@ -1,0 +1,446 @@
+{
+  "version": 1,
+  "scope": "Correctness, query, binding, packaging, incremental, and build defects discovered during implementation, plus documented exclusions where no behavior changed. Every entry names a permanent artifact that is checked by scripts/check_regression_coverage.py.",
+  "entries": [
+    {
+      "id": "BUG-001",
+      "summary": "Assignment and function-call ambiguity produced incorrect statement shapes.",
+      "category": "parser",
+      "evidence": "commit e7f6fda",
+      "fixed_in": "e7f6fda",
+      "regressions": [
+        {
+          "kind": "corpus_case",
+          "path": "test/corpus/assignments.txt",
+          "name": "assignment expression"
+        },
+        {
+          "kind": "corpus_case",
+          "path": "test/corpus/function_call.txt",
+          "name": "function_call"
+        },
+        {
+          "kind": "corpus_case",
+          "path": "test/corpus/base_expressions.txt",
+          "name": "base expression forms"
+        }
+      ]
+    },
+    {
+      "id": "BUG-002",
+      "summary": "The representative fixture contained an unterminated phaser call.",
+      "category": "fixture",
+      "evidence": "commit ec4b6b2",
+      "fixed_in": "ec4b6b2",
+      "regressions": [
+        {
+          "kind": "path",
+          "path": "test.strdl"
+        },
+        {
+          "kind": "contains",
+          "path": "test.strdl",
+          "text": "setCps("
+        },
+        {
+          "kind": "contains",
+          "path": "Makefile",
+          "text": "FIXTURES := test.strdl test-local.strdl"
+        }
+      ]
+    },
+    {
+      "id": "BUG-003",
+      "summary": "A broken highlight rule used an unsupported local predicate.",
+      "category": "query",
+      "evidence": "commit 3db74b9 and docs/query-audit.md",
+      "fixed_in": "3db74b9",
+      "regressions": [
+        {
+          "kind": "absent",
+          "path": "queries/highlights.scm",
+          "text": "#is-not? local"
+        },
+        {
+          "kind": "contains",
+          "path": "Makefile",
+          "text": "function.method"
+        },
+        {
+          "kind": "contains",
+          "path": "Makefile",
+          "text": "local.reference"
+        }
+      ]
+    },
+    {
+      "id": "BUG-004",
+      "summary": "Named imports did not consume the required from keyword.",
+      "category": "parser",
+      "evidence": "docs/roadmap.md Phase 3 probe and fixture validation entry",
+      "fixed_in": "Phase 3 structured grammar refactor",
+      "regressions": [
+        {
+          "kind": "corpus_case",
+          "path": "test/corpus/modules.txt",
+          "name": "named import"
+        },
+        {
+          "kind": "corpus_case",
+          "path": "test/corpus/modern_javascript_constructs.txt",
+          "name": "named imports with aliases and trailing comma"
+        }
+      ]
+    },
+    {
+      "id": "BUG-005",
+      "summary": "Object property names were incorrectly emitted as local definitions.",
+      "category": "query",
+      "evidence": "commit c959c56 and docs/locals-audit.md",
+      "fixed_in": "c959c56",
+      "regressions": [
+        {
+          "kind": "absent",
+          "path": "queries/locals.scm",
+          "text": "(pair key: (identifier) @local.definition.property)"
+        },
+        {
+          "kind": "path",
+          "path": "test/query/object_keys.scm"
+        },
+        {
+          "kind": "contains",
+          "path": "Makefile",
+          "text": "test/query/object_keys.scm \"object key\""
+        }
+      ]
+    },
+    {
+      "id": "BUG-006",
+      "summary": "A wildcard template pattern overlapped the identifier capture inside substitutions.",
+      "category": "query",
+      "evidence": "docs/query-audit.md and docs/roadmap.md Phase 5 capture documentation entry",
+      "fixed_in": "template substitution pattern refinement",
+      "regressions": [
+        {
+          "kind": "path",
+          "path": "test/query/determinism.strdl"
+        },
+        {
+          "kind": "path",
+          "path": "test/query/template_substitution_identifiers.scm"
+        },
+        {
+          "kind": "contains",
+          "path": "Makefile",
+          "text": "scripts/check_query_determinism.py"
+        },
+        {
+          "kind": "contains",
+          "path": "Makefile",
+          "text": "substitution identifiers"
+        }
+      ]
+    },
+    {
+      "id": "BUG-007",
+      "summary": "Ascending named precedence inverted mixed-operator and ternary trees.",
+      "category": "parser",
+      "evidence": "commit ba45994 and docs/grammar-architecture.md",
+      "fixed_in": "ba45994",
+      "regressions": [
+        {
+          "kind": "corpus_case",
+          "path": "test/corpus/operators.txt",
+          "name": "comparison condition in ternary"
+        },
+        {
+          "kind": "corpus_case",
+          "path": "test/corpus/precedence.txt",
+          "name": "multiplication binds tighter than addition"
+        },
+        {
+          "kind": "corpus_case",
+          "path": "test/corpus/precedence.txt",
+          "name": "addition is left associative"
+        },
+        {
+          "kind": "corpus_case",
+          "path": "test/corpus/valid_syntax_expansions.txt",
+          "name": "ternary in template interpolation"
+        },
+        {
+          "kind": "node_test",
+          "path": "bindings/node/binding_test.js",
+          "name": "parses precedence from the current generated parser"
+        }
+      ]
+    },
+    {
+      "id": "BUG-008",
+      "summary": "Query compilation checks could enter the Tree-sitter CLI interactive mode.",
+      "category": "test tooling",
+      "evidence": "commit 05c4aed",
+      "fixed_in": "05c4aed",
+      "regressions": [
+        {
+          "kind": "contains",
+          "path": "scripts/check_query_compilation.py",
+          "text": "stdin=subprocess.DEVNULL"
+        },
+        {
+          "kind": "contains",
+          "path": "scripts/check_query_compilation.py",
+          "text": "empty.strdl"
+        },
+        {
+          "kind": "contains",
+          "path": "Makefile",
+          "text": "test-query-compile"
+        }
+      ]
+    },
+    {
+      "id": "BUG-009",
+      "summary": "The local Node binding was stale relative to regenerated parser artifacts.",
+      "category": "binding",
+      "evidence": "docs/roadmap.md Phase 6 nested expression and method chain entry",
+      "fixed_in": "Phase 6 addon rebuild",
+      "regressions": [
+        {
+          "kind": "node_test",
+          "path": "bindings/node/binding_test.js",
+          "name": "parses precedence from the current generated parser"
+        },
+        {
+          "kind": "contains",
+          "path": "Makefile",
+          "text": "git diff --exit-code HEAD --"
+        }
+      ]
+    },
+    {
+      "id": "BUG-010",
+      "summary": "Fifteen malformed inputs had weak or cascading recovery that needed permanent documentation.",
+      "category": "parser recovery",
+      "evidence": "docs/roadmap.md Phase 4 recovery limitation entry",
+      "fixed_in": "Phase 4 known-limitation corpus",
+      "regressions": [
+        {
+          "kind": "corpus_case",
+          "path": "test/corpus/recovery_limitations.txt",
+          "name": "known limitation: bare unary operator"
+        },
+        {
+          "kind": "corpus_case",
+          "path": "test/corpus/recovery_limitations.txt",
+          "name": "known limitation: function without body"
+        },
+        {
+          "kind": "corpus_case",
+          "path": "test/corpus/recovery_limitations.txt",
+          "name": "known limitation: import without source"
+        },
+        {
+          "kind": "corpus_case",
+          "path": "test/corpus/recovery_limitations.txt",
+          "name": "known limitation: unterminated double-quoted string"
+        },
+        {
+          "kind": "corpus_case",
+          "path": "test/corpus/recovery_limitations.txt",
+          "name": "known limitation: unterminated single-quoted string"
+        },
+        {
+          "kind": "corpus_case",
+          "path": "test/corpus/recovery_limitations.txt",
+          "name": "known limitation: unterminated string in call"
+        },
+        {
+          "kind": "corpus_case",
+          "path": "test/corpus/recovery_limitations.txt",
+          "name": "known limitation: untagged template at EOF"
+        },
+        {
+          "kind": "corpus_case",
+          "path": "test/corpus/recovery_limitations.txt",
+          "name": "known limitation: unfinished template substitution"
+        },
+        {
+          "kind": "corpus_case",
+          "path": "test/corpus/recovery_limitations.txt",
+          "name": "known limitation: object and call delimiters missing"
+        },
+        {
+          "kind": "corpus_case",
+          "path": "test/corpus/recovery_limitations.txt",
+          "name": "known limitation: nested object delimiters missing"
+        },
+        {
+          "kind": "corpus_case",
+          "path": "test/corpus/recovery_limitations.txt",
+          "name": "known limitation: nested call delimiters missing at EOF"
+        },
+        {
+          "kind": "corpus_case",
+          "path": "test/corpus/recovery_limitations.txt",
+          "name": "known limitation: unfinished call consumes next declaration keyword"
+        },
+        {
+          "kind": "corpus_case",
+          "path": "test/corpus/recovery_limitations.txt",
+          "name": "known limitation: missing initializer consumes next declaration keyword"
+        },
+        {
+          "kind": "corpus_case",
+          "path": "test/corpus/recovery_limitations.txt",
+          "name": "known limitation: incomplete arrow consumes next declaration keyword"
+        },
+        {
+          "kind": "corpus_case",
+          "path": "test/corpus/recovery_limitations.txt",
+          "name": "known limitation: unclosed string consumes rest of file"
+        }
+      ]
+    },
+    {
+      "id": "BUG-011",
+      "summary": "The incremental harness did not validate catalog identity, every step, and clean final sources.",
+      "category": "incremental tooling",
+      "evidence": "docs/roadmap.md Phase 6 incremental parsing entry",
+      "fixed_in": "a9849fc",
+      "regressions": [
+        {
+          "kind": "path",
+          "path": "test/fixtures/incremental_sequences.json"
+        },
+        {
+          "kind": "contains",
+          "path": "scripts/test_incremental.py",
+          "text": "duplicate sequence id"
+        },
+        {
+          "kind": "contains",
+          "path": "scripts/test_incremental.py",
+          "text": "final source contains ERROR or MISSING nodes"
+        },
+        {
+          "kind": "contains",
+          "path": "scripts/test_incremental.py",
+          "text": "source_file"
+        },
+        {
+          "kind": "contains",
+          "path": "Makefile",
+          "text": "test-incremental"
+        }
+      ]
+    },
+    {
+      "id": "BUG-012",
+      "summary": "Generated-artifact consistency compared the working tree with the index, allowing staged divergence.",
+      "category": "build gate",
+      "evidence": "docs/roadmap.md Phase 6 generated-artifact consistency entry",
+      "fixed_in": "35a1d21",
+      "regressions": [
+        {
+          "kind": "contains",
+          "path": "Makefile",
+          "text": "git diff --exit-code HEAD --"
+        },
+        {
+          "kind": "path",
+          "path": "src/parser.c"
+        },
+        {
+          "kind": "path",
+          "path": "src/grammar.json"
+        },
+        {
+          "kind": "path",
+          "path": "src/node-types.json"
+        },
+        {
+          "kind": "path",
+          "path": "src/tree_sitter/parser.h"
+        }
+      ]
+    },
+    {
+      "id": "BUG-013",
+      "summary": "The broad src allowlist published the ignored src/parser.o build artifact.",
+      "category": "package",
+      "evidence": "docs/roadmap.md Phase 6 package integrity entry",
+      "fixed_in": "5dcda8e",
+      "regressions": [
+        {
+          "kind": "absent",
+          "path": "package.json",
+          "text": "src/**"
+        },
+        {
+          "kind": "contains",
+          "path": "package.json",
+          "text": "src/tree_sitter/"
+        },
+        {
+          "kind": "contains",
+          "path": "scripts/check_package_integrity.py",
+          "text": "FORBIDDEN_PATTERNS"
+        },
+        {
+          "kind": "contains",
+          "path": "scripts/check_package_integrity.py",
+          "text": "*.o"
+        },
+        {
+          "kind": "path",
+          "path": "scripts/check_package_integrity.py"
+        }
+      ]
+    },
+    {
+      "id": "BUG-014",
+      "summary": "Query execution assertions had no permanent negative control for a wrong expected capture.",
+      "category": "test tooling",
+      "evidence": "docs/roadmap.md Phase 6 query compilation and capture tests entry",
+      "fixed_in": "6dc8080",
+      "regressions": [
+        {
+          "kind": "contains",
+          "path": "Makefile",
+          "text": "wrong-capture negative control was accepted"
+        },
+        {
+          "kind": "contains",
+          "path": "Makefile",
+          "text": "call identifiers"
+        },
+        {
+          "kind": "path",
+          "path": "test/query/call_identifiers.scm"
+        }
+      ]
+    }
+  ],
+  "exclusions": [
+    {
+      "id": "EXC-001",
+      "summary": "Cleanup of grammar.js LSP diagnostics changed tooling ergonomics only.",
+      "evidence": "commit b291b1f",
+      "rationale": "No parser, query, binding, or package behavior changed, so no behavioral regression test was required."
+    },
+    {
+      "id": "EXC-002",
+      "summary": "Call identifiers were audited for incorrect locals definitions.",
+      "evidence": "docs/locals-audit.md and commit 2e1a5b9",
+      "rationale": "The audit found no bug. A permanent absence check nevertheless guards the behavior under BUG-003 and make test-query."
+    },
+    {
+      "id": "EXC-003",
+      "summary": "Expansion of capture-name execution coverage was a coverage improvement, not a product defect.",
+      "evidence": "commit 6dc8080",
+      "rationale": "No capture behavior changed. The permanent wrong-capture negative control is recorded as BUG-014."
+    }
+  ]
+}

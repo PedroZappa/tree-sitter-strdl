@@ -50,6 +50,7 @@ QUERIES := $(wildcard $(QUERY_DIR)/*.scm)
 FIXTURES := test.strdl test-local.strdl
 QUERY_DETERMINISM_FIXTURES := test/query/determinism.strdl
 QUERY_EXECUTION_FIXTURES := $(FIXTURES) $(QUERY_DETERMINISM_FIXTURES)
+REGRESSION_INVENTORY := test/fixtures/regression_inventory.json
 RECOVERY_FILES := $(wildcard $(TEST_DIR)/incomplete_*.txt $(TEST_DIR)/malformed_*.txt $(TEST_DIR)/missing_*.txt $(TEST_DIR)/noncascading_*.txt $(TEST_DIR)/recovery_*.txt $(TEST_DIR)/unfinished_*.txt $(TEST_DIR)/valid_*.txt)
 
 # Test inputs (override on the command line)
@@ -97,7 +98,7 @@ D = $(shell tput sgr0 2>/dev/null)
 _SUCCESS = [$(GRN)SUCCESS$(D)]
 _INFO    = [$(BLU)INFO$(D)]
 
-.PHONY: all build generate test test-recovery test-incremental test-query-compile test-query-execution test-query-registration test-query test-node test-package parse playground wasm \
+.PHONY: all build generate test test-recovery test-incremental test-query-compile test-query-execution test-query-registration test-query test-node test-package test-regressions parse playground wasm \
 	local-install install uninstall clean check-generated verify verify-all ci \
 	docs docs-open help
 
@@ -219,6 +220,11 @@ test-package:	## Verify npm package contents and metadata
 	@python3 scripts/check_package_integrity.py $(NPM)
 	@echo "$(YEL)* $(_SUCCESS) npm package integrity check completed$(D)"
 
+test-regressions:	## Verify recorded bugs have permanent regression artifacts
+	@echo "$(YEL)Checking regression coverage...$(D)"
+	@python3 scripts/check_regression_coverage.py $(REGRESSION_INVENTORY)
+	@echo "$(YEL)* $(_SUCCESS) Regression coverage check completed$(D)"
+
 parse:	## Parse files with the current parser (FILES=..., PARSE_FLAGS=...)
 	@$(TS) parse $(PARSE_FLAGS) $(FILES)
 
@@ -233,7 +239,7 @@ check-generated:	## Verify committed parser artifacts match grammar.js
 	}
 	@echo "$(YEL)* $(_SUCCESS) Generated artifacts are in sync$(D)"
 
-verify: check-generated test test-query	## Run the core CI gate (artifacts, corpus, queries)
+verify: check-generated test test-query test-regressions	## Run the core CI gate (artifacts, corpus, queries, regressions)
 
 verify-all: verify test-node test-package	## Run the core gate plus Node.js binding and package checks
 

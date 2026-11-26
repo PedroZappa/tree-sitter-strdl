@@ -19,9 +19,10 @@ Each matrix job installs the locked dependencies with `npm ci`, then runs `make 
 1. `make check-generated` — regenerates with the pinned Tree-sitter CLI and checks that parser artifacts are unchanged from `HEAD`, including staged changes.
 2. `make test` — runs all corpus cases, including incomplete-call, incomplete-argument-list, incomplete-expression, and missing-delimiter cases.
 3. `make test-query` — runs `make test-query-compile` to compile every query in `queries/` and reject negative controls with invalid node and field names, runs `make test-query-execution` to assert every official capture name on grammar-derived roles in the representative fixtures and reject a wrong-capture negative control, and runs `make test-query-registration` to verify metadata registration, packaged query rules, and Python/Rust query exports. It also executes each official query against the committed fixtures, checks that `highlights.scm` emits no duplicate captures for the same source range, and verifies that call identifiers and object keys selected by probe queries receive no locals definition capture.
-4. `make test-node` — runs the Node.js binding tests with the tree-sitter runtime resolved from `package-lock.json`, covering load, generated metadata, CST fields, error recovery, query execution, and incremental/fresh equivalence through the native addon.
-5. `make test-package` — runs `npm pack --dry-run --json --ignore-scripts` and checks metadata consistency, required files, forbidden artifacts, and packed file sizes.
-6. `make build` — builds the static and shared C libraries and the pkg-config metadata.
+4. `make test-regressions` — validates the [regression inventory](regression-coverage.md), ensuring every recorded bug still has an existing, wired regression artifact.
+5. `make test-node` — runs the Node.js binding tests with the tree-sitter runtime resolved from `package-lock.json`, covering load, generated metadata, CST fields, error recovery, query execution, and incremental/fresh equivalence through the native addon.
+6. `make test-package` — runs `npm pack --dry-run --json --ignore-scripts` and checks metadata consistency, required files, forbidden artifacts, and packed file sizes.
+7. `make build` — builds the static and shared C libraries and the pkg-config metadata.
 
 The pinned versions used by CI come from `package-lock.json`: Tree-sitter CLI `0.27.2` and tree-sitter Node runtime `0.25.1`.
 
