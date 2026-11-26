@@ -1,0 +1,197 @@
+{
+  "mode": "fresh",
+  "generatedAt": "2026-11-26T09:17:08.119Z",
+  "environment": {
+    "node": "v26.13.1",
+    "treeSitterRuntime": "0.25.1",
+    "platform": "linux",
+    "arch": "x64",
+    "cpuModel": "12th Gen Intel(R) Core(TM) i9-12900KF",
+    "cpuCount": 24,
+    "totalMemoryBytes": 33437925376
+  },
+  "config": {
+    "manifest": "benchmarks/fixtures/manifest.json",
+    "iterations": 15,
+    "warmup": 2,
+    "fixtureFilter": null,
+    "fixtureCount": 5
+  },
+  "fixtures": [
+    {
+      "id": "representative-main",
+      "kind": "representative",
+      "role": "representative-composition",
+      "path": "test.strdl",
+      "bytes": 2854,
+      "expectedClean": true,
+      "rootChildChecksum": 240,
+      "samplesMs": [
+        0.336348,
+        0.332341,
+        0.330202,
+        0.370557,
+        0.325206,
+        0.323867,
+        0.35481,
+        0.339396,
+        0.330858,
+        0.355777,
+        0.32041,
+        0.365839,
+        0.322276,
+        0.317209,
+        0.322973
+      ],
+      "stats": {
+        "iterations": 15,
+        "minMs": 0.317209,
+        "meanMs": 0.336538,
+        "p50Ms": 0.330858,
+        "p95Ms": 0.367254,
+        "p99Ms": 0.369896,
+        "maxMs": 0.370557
+      }
+    },
+    {
+      "id": "representative-local",
+      "kind": "representative",
+      "role": "representative-composition",
+      "path": "test-local.strdl",
+      "bytes": 147,
+      "expectedClean": true,
+      "rootChildChecksum": 75,
+      "samplesMs": [
+        0.019893,
+        0.018841,
+        0.017485,
+        0.017365,
+        0.017318,
+        0.017118,
+        0.017393,
+        0.032442,
+        0.016982,
+        0.01689,
+        0.016941,
+        0.016917,
+        0.016934,
+        0.016912,
+        0.01701
+      ],
+      "stats": {
+        "iterations": 15,
+        "minMs": 0.01689,
+        "meanMs": 0.018429,
+        "p50Ms": 0.017118,
+        "p95Ms": 0.023658,
+        "p99Ms": 0.030685,
+        "maxMs": 0.032442
+      }
+    },
+    {
+      "id": "synthetic-large",
+      "kind": "synthetic-large",
+      "role": "synthetic-large-document",
+      "path": "benchmarks/fixtures/generated/synthetic-large.strdl",
+      "bytes": 95393,
+      "expectedClean": true,
+      "rootChildChecksum": 30045,
+      "samplesMs": [
+        10.252744,
+        10.286239,
+        10.408642,
+        10.261865,
+        11.083304,
+        10.246578,
+        10.032717,
+        10.27718,
+        10.436366,
+        10.306391,
+        10.267465,
+        10.181327,
+        10.405577,
+        10.141684,
+        10.247766
+      ],
+      "stats": {
+        "iterations": 15,
+        "minMs": 10.032717,
+        "meanMs": 10.32239,
+        "p50Ms": 10.267465,
+        "p95Ms": 10.630447,
+        "p99Ms": 10.992733,
+        "maxMs": 11.083304
+      }
+    },
+    {
+      "id": "deeply-nested",
+      "kind": "deeply-nested",
+      "role": "deeply-nested-expression",
+      "path": "benchmarks/fixtures/generated/deeply-nested.strdl",
+      "bytes": 1639,
+      "expectedClean": true,
+      "rootChildChecksum": 60,
+      "samplesMs": [
+        0.371266,
+        0.373994,
+        0.377387,
+        0.372827,
+        0.37112,
+        0.384343,
+        0.376365,
+        0.378021,
+        0.374704,
+        0.376367,
+        0.378596,
+        0.37148,
+        0.376248,
+        0.376401,
+        0.376416
+      ],
+      "stats": {
+        "iterations": 15,
+        "minMs": 0.37112,
+        "meanMs": 0.375702,
+        "p50Ms": 0.376365,
+        "p95Ms": 0.38032,
+        "p99Ms": 0.383538,
+        "maxMs": 0.384343
+      }
+    },
+    {
+      "id": "pathological",
+      "kind": "pathological",
+      "role": "pathological-input",
+      "path": "benchmarks/fixtures/generated/pathological.strdl",
+      "bytes": 7447,
+      "expectedClean": false,
+      "rootChildChecksum": 5295,
+      "samplesMs": [
+        2.002668,
+        2.227461,
+        2.121744,
+        2.036364,
+        2.017954,
+        2.074908,
+        2.000997,
+        2.201916,
+        2.087428,
+        2.096323,
+        2.044512,
+        2.04306,
+        2.023252,
+        2.033455,
+        2.01327
+      ],
+      "stats": {
+        "iterations": 15,
+        "minMs": 2.000997,
+        "meanMs": 2.068354,
+        "p50Ms": 2.04306,
+        "p95Ms": 2.20958,
+        "p99Ms": 2.223885,
+        "maxMs": 2.227461
+      }
+    }
+  ]
+}

@@ -148,9 +148,9 @@ The following values were recorded from one default run with 15 measured samples
 
 ## Baseline results
 
-The committed baseline is [baseline.json](../benchmarks/results/baseline.json). It stores one coherent measurement session from 2026-11-26 at repository commit `aae76dc`: 15 measured samples and 2 warmup samples per case, covering all five fixtures, all 21 incremental sequences, 29 edit steps, and fresh/incremental parse-tree memory. The raw latency sample arrays and full memory result objects are included so later comparisons can recompute statistics. Source report names and timestamps are provenance labels; the committed baseline is self-contained and contains no machine-specific paths.
+The committed baseline is [baseline.json](../benchmarks/results/baseline.json). It stores one coherent measurement session from 2026-11-26 at repository commit `aae76dc`: 15 measured samples and 2 warmup samples per case, covering all five fixtures, all 21 incremental sequences, 29 edit steps, and fresh/incremental parse-tree memory. The raw latency sample arrays and full memory result objects are included so later comparisons can recompute statistics. Source report names and timestamps are provenance labels; the committed baseline is self-contained and contains no machine-specific paths. The exact source reports are committed under [`benchmarks/results/baseline-sources/`](../benchmarks/results/baseline-sources/) so the artifact can be reproduced from a clean checkout.
 
-The artifact is version 1 and records `kind: baseline`, repository commit, purpose, environment, environment-record reference, configuration, source metadata, and results for fresh latency, incremental replay latency, and memory. `scripts/baseline_results.js build` derives it from three complete JSON reports; `scripts/baseline_results.js check` validates the version, schema, coverage against the committed manifest and edit catalog, sample/statistic agreement, source environment agreement, and memory invariants.
+The artifact is version 1 and records `kind: baseline`, repository commit, purpose, environment, environment-record reference, configuration, source metadata, and results for fresh latency, incremental replay latency, and memory. `scripts/baseline_results.js build` derives it from three complete JSON reports; `scripts/baseline_results.js check` validates the version, schema, coverage against the committed manifest and edit catalog, sample/statistic agreement, source environment agreement, and memory invariants. `scripts/baseline_results.js reproduce` rebuilds from the committed source reports and requires exact structural equality with the committed baseline, using the baseline's recorded commit and generation timestamp.
 
 Regenerate the baseline deliberately, not as part of ordinary CI:
 
@@ -166,6 +166,14 @@ make check-benchmark-baseline
 ```
 
 `make check-benchmark-baseline` is part of `make verify` and `make ci`. It is a structural integrity check only: no timing, memory, percentile, or pass-rate threshold is enforced against the baseline. The environment record above supplies the hardware and software context; the baseline does not normalize results across machines or define a performance budget.
+
+Verify reproducibility without rewriting the committed artifact:
+
+```sh
+make reproduce-benchmark-baseline
+```
+
+This target is also part of `make verify` and `make ci`. It fails if any committed source report is changed or if the baseline no longer matches a rebuild from those reports.
 
 ## Regression investigation
 

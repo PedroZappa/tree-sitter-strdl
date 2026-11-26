@@ -66,6 +66,10 @@ BENCH_SEQUENCE ?=
 BENCH_CATEGORY ?=
 BENCH_OUTPUT ?=
 BENCH_BASELINE := benchmarks/results/baseline.json
+BENCH_BASELINE_SOURCES := benchmarks/results/baseline-sources
+BENCH_BASELINE_FRESH := $(BENCH_BASELINE_SOURCES)/fresh.json
+BENCH_BASELINE_INCREMENTAL := $(BENCH_BASELINE_SOURCES)/incremental.json
+BENCH_BASELINE_MEMORY := $(BENCH_BASELINE_SOURCES)/memory.json
 BENCH_BUDGETS := benchmarks/results/budgets.json
 BENCH_FRESH_REPORT ?=
 BENCH_INCREMENTAL_REPORT ?=
@@ -122,7 +126,7 @@ D = $(shell tput sgr0 2>/dev/null)
 _SUCCESS = [$(GRN)SUCCESS$(D)]
 _INFO    = [$(BLU)INFO$(D)]
 
-.PHONY: all build generate test test-recovery test-incremental test-query-compile test-query-execution test-query-registration test-query test-node test-package test-regressions benchmark-fixtures check-benchmark-fixtures bench-fresh bench-incremental bench-memory build-benchmark-baseline check-benchmark-baseline compare-benchmark-baseline build-benchmark-budgets check-benchmark-budgets performance-report format check-format check-static parse playground wasm \
+.PHONY: all build generate test test-recovery test-incremental test-query-compile test-query-execution test-query-registration test-query test-node test-package test-regressions benchmark-fixtures check-benchmark-fixtures bench-fresh bench-incremental bench-memory build-benchmark-baseline check-benchmark-baseline reproduce-benchmark-baseline compare-benchmark-baseline build-benchmark-budgets check-benchmark-budgets performance-report format check-format check-static parse playground wasm \
 	local-install install-dev install uninstall clean check-generated verify verify-all ci \
 	docs docs-open help
 
@@ -289,6 +293,11 @@ check-benchmark-baseline:	## Validate committed benchmark baseline structure wit
 	@$(NODE) scripts/baseline_results.js check --baseline $(BENCH_BASELINE)
 	@echo "$(YEL)* $(_SUCCESS) Benchmark baseline is structurally valid$(D)"
 
+reproduce-benchmark-baseline:	## Verify the committed baseline rebuilds from its committed source reports
+	@echo "$(YEL)Reproducing benchmark baseline...$(D)"
+	@$(NODE) scripts/baseline_results.js reproduce --baseline $(BENCH_BASELINE) --fresh $(BENCH_BASELINE_FRESH) --incremental $(BENCH_BASELINE_INCREMENTAL) --memory $(BENCH_BASELINE_MEMORY)
+	@echo "$(YEL)* $(_SUCCESS) Benchmark baseline reproduced$(D)"
+
 compare-benchmark-baseline:	## Compare fresh/incremental/memory reports against the baseline without gating
 	@echo "$(YEL)Comparing benchmark reports with baseline...$(D)"
 	@$(NODE) scripts/baseline_results.js compare --baseline $(BENCH_BASELINE) --fresh $(BENCH_FRESH_REPORT) --incremental $(BENCH_INCREMENTAL_REPORT) --memory $(BENCH_MEMORY_REPORT) $(if $(BENCH_COMPARE_OUTPUT),--output $(BENCH_COMPARE_OUTPUT),)
@@ -344,7 +353,7 @@ check-generated:	## Verify committed parser artifacts match grammar.js
 	}
 	@echo "$(YEL)* $(_SUCCESS) Generated artifacts are in sync$(D)"
 
-verify: check-generated check-format check-static test test-incremental test-query test-regressions check-benchmark-fixtures check-benchmark-baseline check-benchmark-budgets	## Run the core CI gate (artifacts, formatting, static checks, corpus, incremental equivalence, queries, regressions, fixtures, baseline, budgets)
+verify: check-generated check-format check-static test test-incremental test-query test-regressions check-benchmark-fixtures check-benchmark-baseline reproduce-benchmark-baseline check-benchmark-budgets	## Run the core CI gate (artifacts, formatting, static checks, corpus, incremental equivalence, queries, regressions, fixtures, baseline reproduction, budgets)
 
 verify-all: verify test-node test-package	## Run the core gate plus Node.js binding and package checks
 

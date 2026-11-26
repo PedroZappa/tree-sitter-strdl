@@ -27,9 +27,9 @@ const DEFAULT_CATALOG_PATH = path.relative(ROOT, DEFAULT_CATALOG);
 
 function usage() {
   return [
-    "Usage: node scripts/baseline_results.js <build|check|compare> [options]",
+    "Usage: node scripts/baseline_results.js <build|check|reproduce|compare> [options]",
     "",
-    "Build, validate, or compare the committed performance baseline.",
+    "Build, validate, reproduce, or compare the committed performance baseline.",
     "",
     "Build options:",
     "  --fresh PATH        Fresh latency JSON report",
@@ -40,6 +40,12 @@ function usage() {
     "",
     "Check options:",
     "  --baseline PATH     Baseline to validate (default: benchmarks/results/baseline.json)",
+    "",
+    "Reproduce options:",
+    "  --baseline PATH     Baseline to reproduce (default: benchmarks/results/baseline.json)",
+    "  --fresh PATH        Fresh source report",
+    "  --incremental PATH  Incremental source report",
+    "  --memory PATH       Memory source report",
     "",
     "Compare options:",
     "  --fresh PATH        Fresh latency JSON report",
@@ -58,7 +64,7 @@ function parseArgs(argv) {
   }
 
   const command = argv[0];
-  if (!["build", "check", "compare"].includes(command)) {
+  if (!["build", "check", "reproduce", "compare"].includes(command)) {
     throw new Error(`unknown command: ${command}`);
   }
 
@@ -81,7 +87,15 @@ function parseArgs(argv) {
             baseline: DEFAULT_BASELINE,
             output: null,
           }
-        : { command, baseline: DEFAULT_BASELINE };
+        : command === "reproduce"
+          ? {
+              command,
+              fresh: null,
+              incremental: null,
+              memory: null,
+              baseline: DEFAULT_BASELINE,
+            }
+          : { command, baseline: DEFAULT_BASELINE };
 
   for (let index = 1; index < argv.length; index += 1) {
     const argument = argv[index];
@@ -122,7 +136,7 @@ function parseArgs(argv) {
         options.memory = path.resolve(value());
         break;
       case "--output":
-        if (command === "check")
+        if (command !== "build" && command !== "compare")
           throw new Error(`--output is invalid for ${command}`);
         options.output = path.resolve(value());
         break;
@@ -144,7 +158,7 @@ function parseArgs(argv) {
   if (options.help) {
     return options;
   }
-  if (command === "build" || command === "compare") {
+  if (command === "build" || command === "reproduce" || command === "compare") {
     for (const field of ["fresh", "incremental", "memory"]) {
       if (!options[field]) {
         throw new Error(`${command} requires --${field}`);
@@ -990,7 +1004,7 @@ function buildBaseline(reports, options) {
   const baseline = {
     version: BASELINE_VERSION,
     kind: "baseline",
-    generatedAt: new Date().toISOString(),
+    generatedAt: options.generatedAt || new Date().toISOString(),
     repositoryCommit: commit,
     purpose:
       "Observed performance baseline; not a performance budget or CI gate.",
@@ -1444,6 +1458,40 @@ function runCheck(options) {
   );
 }
 
+function runReproduce(options) {
+  const baseline = readJson(options.baseline, "baseline").data;
+  validateBaseline(baseline);
+
+  const reports = {
+    fresh: readJson(options.fresh, "fresh"),
+    incremental: readJson(options.incremental, "incremental"),
+    memory: readJson(options.memory, "memory"),
+  };
+  validateFreshReport(reports.fresh.data);
+  validateIncrementalReport(reports.incremental.data);
+  validateMemoryReport(reports.memory.data);
+  validateReportAgreement(
+    reports.fresh.data,
+    reports.incremental.data,
+    reports.memory.data,
+  );
+
+  const rebuilt = buildBaseline(reports, {
+    output: DEFAULT_BASELINE,
+    commit: baseline.repositoryCommit,
+    generatedAt: baseline.generatedAt,
+  });
+  check(
+    valuesEqual(rebuilt, baseline),
+    "baseline does not reproduce from the supplied source reports",
+  );
+  console.log(
+    `baseline reproduced: ${relative(options.baseline)} ` +
+      `(${baseline.config.fixtureCount} fixtures, ${baseline.config.sequenceCount} sequences, ` +
+      `commit ${baseline.repositoryCommit})`,
+  );
+}
+
 function runCompare(options) {
   const baseline = readJson(options.baseline, "baseline").data;
   validateBaseline(baseline);
@@ -1493,6 +1541,8 @@ function main() {
     runBuild(options);
   } else if (options.command === "check") {
     runCheck(options);
+  } else if (options.command === "reproduce") {
+    runReproduce(options);
   } else {
     runCompare(options);
   }
