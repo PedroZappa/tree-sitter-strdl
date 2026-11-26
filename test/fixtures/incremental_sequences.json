@@ -332,6 +332,26 @@
           "occurrence": 0
         }
       ]
+    },
+    {
+      "id": "array-bracket-repair",
+      "fixture": "representative",
+      "description": "Delete and restore a closing array bracket inside the arrange call.",
+      "categories": ["malformed-state", "repair", "array", "nested-edit"],
+      "edits": [
+        {
+          "op": "replace",
+          "old": "[2,stack(m1,dr)],",
+          "new": "[2,stack(m1,dr),",
+          "occurrence": 0
+        },
+        {
+          "op": "replace",
+          "old": "[2,stack(m1,dr),\n",
+          "new": "[2,stack(m1,dr)],\n",
+          "occurrence": 0
+        }
+      ]
     }
   ]
 }

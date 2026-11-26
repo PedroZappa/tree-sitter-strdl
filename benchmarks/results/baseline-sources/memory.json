@@ -1,0 +1,841 @@
+{
+  "mode": "memory",
+  "generatedAt": "2026-11-26T09:17:09.273Z",
+  "environment": {
+    "node": "v26.13.1",
+    "treeSitterRuntime": "0.25.1",
+    "platform": "linux",
+    "arch": "x64",
+    "cpuModel": "12th Gen Intel(R) Core(TM) i9-12900KF",
+    "cpuCount": 24,
+    "totalMemoryBytes": 33437925376,
+    "gcAvailable": true,
+    "nodeFlags": [
+      "--expose-gc"
+    ]
+  },
+  "config": {
+    "manifest": "benchmarks/fixtures/manifest.json",
+    "catalog": "test/fixtures/incremental_sequences.json",
+    "mode": "all",
+    "iterations": 15,
+    "warmup": 2,
+    "fixtureFilter": null,
+    "sequenceFilter": null,
+    "categoryFilter": null,
+    "fixtureCount": 5,
+    "sequenceCount": 21
+  },
+  "fresh": [
+    {
+      "mode": "fresh",
+      "id": "representative-main",
+      "kind": "representative",
+      "role": "representative-composition",
+      "path": "test.strdl",
+      "bytes": 2854,
+      "expectedClean": true,
+      "iterations": 15,
+      "rootChildChecksum": 240,
+      "retainedTrees": 15,
+      "retained": {
+        "heapUsedBytes": 12856,
+        "heapTotalBytes": -262144,
+        "externalBytes": 40,
+        "arrayBuffersBytes": 0,
+        "rssBytes": 1966080,
+        "heapUsedBytesPerTree": 857.066667,
+        "rssBytesPerTree": 131072
+      },
+      "sampledPeak": {
+        "heapDeltaBytes": 42136,
+        "rssDeltaBytes": 1769472
+      }
+    },
+    {
+      "mode": "fresh",
+      "id": "representative-local",
+      "kind": "representative",
+      "role": "representative-composition",
+      "path": "test-local.strdl",
+      "bytes": 147,
+      "expectedClean": true,
+      "iterations": 15,
+      "rootChildChecksum": 75,
+      "retainedTrees": 15,
+      "retained": {
+        "heapUsedBytes": 10248,
+        "heapTotalBytes": 0,
+        "externalBytes": 0,
+        "arrayBuffersBytes": 0,
+        "rssBytes": 0,
+        "heapUsedBytesPerTree": 683.2,
+        "rssBytesPerTree": 0
+      },
+      "sampledPeak": {
+        "heapDeltaBytes": 339496,
+        "rssDeltaBytes": 0
+      }
+    },
+    {
+      "mode": "fresh",
+      "id": "synthetic-large",
+      "kind": "synthetic-large",
+      "role": "synthetic-large-document",
+      "path": "benchmarks/fixtures/generated/synthetic-large.strdl",
+      "bytes": 95393,
+      "expectedClean": true,
+      "iterations": 15,
+      "rootChildChecksum": 30045,
+      "retainedTrees": 15,
+      "retained": {
+        "heapUsedBytes": 2976,
+        "heapTotalBytes": 0,
+        "externalBytes": 0,
+        "arrayBuffersBytes": 0,
+        "rssBytes": 61341696,
+        "heapUsedBytesPerTree": 198.4,
+        "rssBytesPerTree": 4089446.4
+      },
+      "sampledPeak": {
+        "heapDeltaBytes": 23832,
+        "rssDeltaBytes": 61341696
+      }
+    },
+    {
+      "mode": "fresh",
+      "id": "deeply-nested",
+      "kind": "deeply-nested",
+      "role": "deeply-nested-expression",
+      "path": "benchmarks/fixtures/generated/deeply-nested.strdl",
+      "bytes": 1639,
+      "expectedClean": true,
+      "iterations": 15,
+      "rootChildChecksum": 60,
+      "retainedTrees": 15,
+      "retained": {
+        "heapUsedBytes": 2840,
+        "heapTotalBytes": 0,
+        "externalBytes": 0,
+        "arrayBuffersBytes": 0,
+        "rssBytes": 2752512,
+        "heapUsedBytesPerTree": 189.333333,
+        "rssBytesPerTree": 183500.8
+      },
+      "sampledPeak": {
+        "heapDeltaBytes": 21880,
+        "rssDeltaBytes": 2752512
+      }
+    },
+    {
+      "mode": "fresh",
+      "id": "pathological",
+      "kind": "pathological",
+      "role": "pathological-input",
+      "path": "benchmarks/fixtures/generated/pathological.strdl",
+      "bytes": 7447,
+      "expectedClean": false,
+      "iterations": 15,
+      "rootChildChecksum": 5295,
+      "retainedTrees": 15,
+      "retained": {
+        "heapUsedBytes": 2752,
+        "heapTotalBytes": 0,
+        "externalBytes": 0,
+        "arrayBuffersBytes": 0,
+        "rssBytes": 3932160,
+        "heapUsedBytesPerTree": 183.466667,
+        "rssBytesPerTree": 262144
+      },
+      "sampledPeak": {
+        "heapDeltaBytes": 26832,
+        "rssDeltaBytes": 3932160
+      }
+    }
+  ],
+  "incremental": [
+    {
+      "mode": "incremental",
+      "id": "method-chain-insertion",
+      "description": null,
+      "fixture": "representative-main",
+      "fixturePath": "test.strdl",
+      "initialBytes": 2854,
+      "finalBytes": 2867,
+      "categories": [
+        "insertion",
+        "method-chain"
+      ],
+      "editCount": 1,
+      "treesPerReplay": 2,
+      "iterations": 15,
+      "freshComparisons": 15,
+      "rootChildChecksum": 480,
+      "retainedTrees": 30,
+      "retained": {
+        "heapUsedBytes": 64592,
+        "heapTotalBytes": 0,
+        "externalBytes": 0,
+        "arrayBuffersBytes": 0,
+        "rssBytes": 4128768,
+        "heapUsedBytesPerTree": 2153.066667,
+        "rssBytesPerTree": 137625.6
+      },
+      "sampledPeak": {
+        "heapDeltaBytes": 659760,
+        "rssDeltaBytes": 3932160
+      }
+    },
+    {
+      "mode": "incremental",
+      "id": "pattern-string-replacement",
+      "description": null,
+      "fixture": "representative-main",
+      "fixturePath": "test.strdl",
+      "initialBytes": 2854,
+      "finalBytes": 2844,
+      "categories": [
+        "replacement",
+        "pattern-string"
+      ],
+      "editCount": 2,
+      "treesPerReplay": 3,
+      "iterations": 15,
+      "freshComparisons": 30,
+      "rootChildChecksum": 720,
+      "retainedTrees": 45,
+      "retained": {
+        "heapUsedBytes": 96568,
+        "heapTotalBytes": 786432,
+        "externalBytes": 0,
+        "arrayBuffersBytes": 0,
+        "rssBytes": 7274496,
+        "heapUsedBytesPerTree": 2145.955556,
+        "rssBytesPerTree": 161655.466667
+      },
+      "sampledPeak": {
+        "heapDeltaBytes": 1291048,
+        "rssDeltaBytes": 7274496
+      }
+    },
+    {
+      "mode": "incremental",
+      "id": "declaration-deletion",
+      "description": null,
+      "fixture": "representative-main",
+      "fixturePath": "test.strdl",
+      "initialBytes": 2854,
+      "finalBytes": 2801,
+      "categories": [
+        "deletion",
+        "declaration"
+      ],
+      "editCount": 1,
+      "treesPerReplay": 2,
+      "iterations": 15,
+      "freshComparisons": 15,
+      "rootChildChecksum": 465,
+      "retainedTrees": 30,
+      "retained": {
+        "heapUsedBytes": 49648,
+        "heapTotalBytes": 0,
+        "externalBytes": 0,
+        "arrayBuffersBytes": 0,
+        "rssBytes": 3932160,
+        "heapUsedBytesPerTree": 1654.933333,
+        "rssBytesPerTree": 131072
+      },
+      "sampledPeak": {
+        "heapDeltaBytes": 731688,
+        "rssDeltaBytes": 3932160
+      }
+    },
+    {
+      "mode": "incremental",
+      "id": "nested-object-edits",
+      "description": null,
+      "fixture": "representative-main",
+      "fixturePath": "test.strdl",
+      "initialBytes": 2854,
+      "finalBytes": 2854,
+      "categories": [
+        "nested-edit",
+        "object-literal"
+      ],
+      "editCount": 2,
+      "treesPerReplay": 3,
+      "iterations": 15,
+      "freshComparisons": 30,
+      "rootChildChecksum": 720,
+      "retainedTrees": 45,
+      "retained": {
+        "heapUsedBytes": 97696,
+        "heapTotalBytes": 0,
+        "externalBytes": 0,
+        "arrayBuffersBytes": 0,
+        "rssBytes": 6094848,
+        "heapUsedBytesPerTree": 2171.022222,
+        "rssBytesPerTree": 135441.066667
+      },
+      "sampledPeak": {
+        "heapDeltaBytes": 1292104,
+        "rssDeltaBytes": 6094848
+      }
+    },
+    {
+      "mode": "incremental",
+      "id": "malformed-call-repair",
+      "description": null,
+      "fixture": "representative-main",
+      "fixturePath": "test.strdl",
+      "initialBytes": 2854,
+      "finalBytes": 2854,
+      "categories": [
+        "malformed-state",
+        "repair",
+        "call"
+      ],
+      "editCount": 2,
+      "treesPerReplay": 3,
+      "iterations": 15,
+      "freshComparisons": 30,
+      "rootChildChecksum": 705,
+      "retainedTrees": 45,
+      "retained": {
+        "heapUsedBytes": 98360,
+        "heapTotalBytes": 262144,
+        "externalBytes": 0,
+        "arrayBuffersBytes": 0,
+        "rssBytes": 6291456,
+        "heapUsedBytesPerTree": 2185.777778,
+        "rssBytesPerTree": 139810.133333
+      },
+      "sampledPeak": {
+        "heapDeltaBytes": 1230984,
+        "rssDeltaBytes": 6094848
+      }
+    },
+    {
+      "mode": "incremental",
+      "id": "declaration-insertion",
+      "description": null,
+      "fixture": "representative-main",
+      "fixturePath": "test.strdl",
+      "initialBytes": 2854,
+      "finalBytes": 2901,
+      "categories": [
+        "insertion",
+        "declaration"
+      ],
+      "editCount": 1,
+      "treesPerReplay": 2,
+      "iterations": 15,
+      "freshComparisons": 15,
+      "rootChildChecksum": 495,
+      "retainedTrees": 30,
+      "retained": {
+        "heapUsedBytes": 50352,
+        "heapTotalBytes": 0,
+        "externalBytes": 0,
+        "arrayBuffersBytes": 0,
+        "rssBytes": 4128768,
+        "heapUsedBytesPerTree": 1678.4,
+        "rssBytesPerTree": 137625.6
+      },
+      "sampledPeak": {
+        "heapDeltaBytes": 674464,
+        "rssDeltaBytes": 3932160
+      }
+    },
+    {
+      "mode": "incremental",
+      "id": "arrow-parameter-rename",
+      "description": null,
+      "fixture": "representative-main",
+      "fixturePath": "test.strdl",
+      "initialBytes": 2854,
+      "finalBytes": 2854,
+      "categories": [
+        "replacement",
+        "arrow-parameter"
+      ],
+      "editCount": 2,
+      "treesPerReplay": 3,
+      "iterations": 15,
+      "freshComparisons": 30,
+      "rootChildChecksum": 720,
+      "retainedTrees": 45,
+      "retained": {
+        "heapUsedBytes": 103288,
+        "heapTotalBytes": 0,
+        "externalBytes": 0,
+        "arrayBuffersBytes": 0,
+        "rssBytes": 6094848,
+        "heapUsedBytesPerTree": 2295.288889,
+        "rssBytesPerTree": 135441.066667
+      },
+      "sampledPeak": {
+        "heapDeltaBytes": 1299400,
+        "rssDeltaBytes": 6094848
+      }
+    },
+    {
+      "mode": "incremental",
+      "id": "method-deletion",
+      "description": null,
+      "fixture": "representative-main",
+      "fixturePath": "test.strdl",
+      "initialBytes": 2854,
+      "finalBytes": 2837,
+      "categories": [
+        "deletion",
+        "method-chain"
+      ],
+      "editCount": 1,
+      "treesPerReplay": 2,
+      "iterations": 15,
+      "freshComparisons": 15,
+      "rootChildChecksum": 480,
+      "retainedTrees": 30,
+      "retained": {
+        "heapUsedBytes": 49392,
+        "heapTotalBytes": 0,
+        "externalBytes": 0,
+        "arrayBuffersBytes": 0,
+        "rssBytes": 4128768,
+        "heapUsedBytesPerTree": 1646.4,
+        "rssBytesPerTree": 137625.6
+      },
+      "sampledPeak": {
+        "heapDeltaBytes": 642704,
+        "rssDeltaBytes": 4128768
+      }
+    },
+    {
+      "mode": "incremental",
+      "id": "call-statement-insertion",
+      "description": null,
+      "fixture": "representative-main",
+      "fixturePath": "test.strdl",
+      "initialBytes": 2854,
+      "finalBytes": 2872,
+      "categories": [
+        "insertion",
+        "call-statement"
+      ],
+      "editCount": 1,
+      "treesPerReplay": 2,
+      "iterations": 15,
+      "freshComparisons": 15,
+      "rootChildChecksum": 495,
+      "retainedTrees": 30,
+      "retained": {
+        "heapUsedBytes": 49872,
+        "heapTotalBytes": 0,
+        "externalBytes": 0,
+        "arrayBuffersBytes": 0,
+        "rssBytes": 4128768,
+        "heapUsedBytesPerTree": 1662.4,
+        "rssBytesPerTree": 137625.6
+      },
+      "sampledPeak": {
+        "heapDeltaBytes": 737816,
+        "rssDeltaBytes": 3932160
+      }
+    },
+    {
+      "mode": "incremental",
+      "id": "template-content-edit",
+      "description": null,
+      "fixture": "representative-main",
+      "fixturePath": "test.strdl",
+      "initialBytes": 2854,
+      "finalBytes": 2854,
+      "categories": [
+        "replacement",
+        "template-content"
+      ],
+      "editCount": 1,
+      "treesPerReplay": 2,
+      "iterations": 15,
+      "freshComparisons": 15,
+      "rootChildChecksum": 480,
+      "retainedTrees": 30,
+      "retained": {
+        "heapUsedBytes": 49632,
+        "heapTotalBytes": 0,
+        "externalBytes": 0,
+        "arrayBuffersBytes": 0,
+        "rssBytes": 3932160,
+        "heapUsedBytesPerTree": 1654.4,
+        "rssBytesPerTree": 131072
+      },
+      "sampledPeak": {
+        "heapDeltaBytes": 691600,
+        "rssDeltaBytes": 3932160
+      }
+    },
+    {
+      "mode": "incremental",
+      "id": "compact-set-cps",
+      "description": null,
+      "fixture": "representative-local",
+      "fixturePath": "test-local.strdl",
+      "initialBytes": 147,
+      "finalBytes": 147,
+      "categories": [
+        "replacement",
+        "compact-fixture"
+      ],
+      "editCount": 1,
+      "treesPerReplay": 2,
+      "iterations": 15,
+      "freshComparisons": 15,
+      "rootChildChecksum": 150,
+      "retainedTrees": 30,
+      "retained": {
+        "heapUsedBytes": 9072,
+        "heapTotalBytes": 0,
+        "externalBytes": 0,
+        "arrayBuffersBytes": 0,
+        "rssBytes": 196608,
+        "heapUsedBytesPerTree": 302.4,
+        "rssBytesPerTree": 6553.6
+      },
+      "sampledPeak": {
+        "heapDeltaBytes": 101080,
+        "rssDeltaBytes": 196608
+      }
+    },
+    {
+      "mode": "incremental",
+      "id": "compact-declaration-deletion",
+      "description": null,
+      "fixture": "representative-local",
+      "fixturePath": "test-local.strdl",
+      "initialBytes": 147,
+      "finalBytes": 105,
+      "categories": [
+        "deletion",
+        "compact-fixture"
+      ],
+      "editCount": 1,
+      "treesPerReplay": 2,
+      "iterations": 15,
+      "freshComparisons": 15,
+      "rootChildChecksum": 135,
+      "retainedTrees": 30,
+      "retained": {
+        "heapUsedBytes": 8472,
+        "heapTotalBytes": 0,
+        "externalBytes": 0,
+        "arrayBuffersBytes": 0,
+        "rssBytes": 196608,
+        "heapUsedBytesPerTree": 282.4,
+        "rssBytesPerTree": 6553.6
+      },
+      "sampledPeak": {
+        "heapDeltaBytes": 92200,
+        "rssDeltaBytes": 196608
+      }
+    },
+    {
+      "mode": "incremental",
+      "id": "compact-malformed-repair",
+      "description": null,
+      "fixture": "representative-local",
+      "fixturePath": "test-local.strdl",
+      "initialBytes": 147,
+      "finalBytes": 147,
+      "categories": [
+        "malformed-state",
+        "repair",
+        "compact-fixture"
+      ],
+      "editCount": 2,
+      "treesPerReplay": 3,
+      "iterations": 15,
+      "freshComparisons": 30,
+      "rootChildChecksum": 225,
+      "retainedTrees": 45,
+      "retained": {
+        "heapUsedBytes": 17936,
+        "heapTotalBytes": 0,
+        "externalBytes": 0,
+        "arrayBuffersBytes": 0,
+        "rssBytes": 393216,
+        "heapUsedBytesPerTree": 398.577778,
+        "rssBytesPerTree": 8738.133333
+      },
+      "sampledPeak": {
+        "heapDeltaBytes": 196168,
+        "rssDeltaBytes": 196608
+      }
+    },
+    {
+      "mode": "incremental",
+      "id": "argument-deletion",
+      "description": null,
+      "fixture": "representative-main",
+      "fixturePath": "test.strdl",
+      "initialBytes": 2854,
+      "finalBytes": 2852,
+      "categories": [
+        "deletion",
+        "argument",
+        "call"
+      ],
+      "editCount": 1,
+      "treesPerReplay": 2,
+      "iterations": 15,
+      "freshComparisons": 15,
+      "rootChildChecksum": 480,
+      "retainedTrees": 30,
+      "retained": {
+        "heapUsedBytes": 49632,
+        "heapTotalBytes": 0,
+        "externalBytes": 0,
+        "arrayBuffersBytes": 0,
+        "rssBytes": 4128768,
+        "heapUsedBytesPerTree": 1654.4,
+        "rssBytesPerTree": 137625.6
+      },
+      "sampledPeak": {
+        "heapDeltaBytes": 624616,
+        "rssDeltaBytes": 4128768
+      }
+    },
+    {
+      "mode": "incremental",
+      "id": "object-property-deletion",
+      "description": null,
+      "fixture": "representative-main",
+      "fixturePath": "test.strdl",
+      "initialBytes": 2854,
+      "finalBytes": 2842,
+      "categories": [
+        "deletion",
+        "nested-edit",
+        "object-literal"
+      ],
+      "editCount": 1,
+      "treesPerReplay": 2,
+      "iterations": 15,
+      "freshComparisons": 15,
+      "rootChildChecksum": 480,
+      "retainedTrees": 30,
+      "retained": {
+        "heapUsedBytes": 49512,
+        "heapTotalBytes": 0,
+        "externalBytes": 0,
+        "arrayBuffersBytes": 0,
+        "rssBytes": 3932160,
+        "heapUsedBytesPerTree": 1650.4,
+        "rssBytesPerTree": 131072
+      },
+      "sampledPeak": {
+        "heapDeltaBytes": 643328,
+        "rssDeltaBytes": 3932160
+      }
+    },
+    {
+      "mode": "incremental",
+      "id": "method-name-replacement",
+      "description": null,
+      "fixture": "representative-main",
+      "fixturePath": "test.strdl",
+      "initialBytes": 2854,
+      "finalBytes": 2854,
+      "categories": [
+        "replacement",
+        "member-expression",
+        "method-chain"
+      ],
+      "editCount": 1,
+      "treesPerReplay": 2,
+      "iterations": 15,
+      "freshComparisons": 15,
+      "rootChildChecksum": 480,
+      "retainedTrees": 30,
+      "retained": {
+        "heapUsedBytes": 49632,
+        "heapTotalBytes": 0,
+        "externalBytes": 0,
+        "arrayBuffersBytes": 0,
+        "rssBytes": 4128768,
+        "heapUsedBytesPerTree": 1654.4,
+        "rssBytesPerTree": 137625.6
+      },
+      "sampledPeak": {
+        "heapDeltaBytes": 642928,
+        "rssDeltaBytes": 4128768
+      }
+    },
+    {
+      "mode": "incremental",
+      "id": "nested-call-edit",
+      "description": null,
+      "fixture": "representative-main",
+      "fixturePath": "test.strdl",
+      "initialBytes": 2854,
+      "finalBytes": 2854,
+      "categories": [
+        "nested-edit",
+        "call",
+        "method-chain"
+      ],
+      "editCount": 1,
+      "treesPerReplay": 2,
+      "iterations": 15,
+      "freshComparisons": 15,
+      "rootChildChecksum": 480,
+      "retainedTrees": 30,
+      "retained": {
+        "heapUsedBytes": 49632,
+        "heapTotalBytes": 0,
+        "externalBytes": 0,
+        "arrayBuffersBytes": 0,
+        "rssBytes": 4128768,
+        "heapUsedBytesPerTree": 1654.4,
+        "rssBytesPerTree": 137625.6
+      },
+      "sampledPeak": {
+        "heapDeltaBytes": 696736,
+        "rssDeltaBytes": 3932160
+      }
+    },
+    {
+      "mode": "incremental",
+      "id": "nested-arrow-body-edit",
+      "description": null,
+      "fixture": "representative-main",
+      "fixturePath": "test.strdl",
+      "initialBytes": 2854,
+      "finalBytes": 2854,
+      "categories": [
+        "nested-edit",
+        "arrow-function"
+      ],
+      "editCount": 1,
+      "treesPerReplay": 2,
+      "iterations": 15,
+      "freshComparisons": 15,
+      "rootChildChecksum": 480,
+      "retainedTrees": 30,
+      "retained": {
+        "heapUsedBytes": 49632,
+        "heapTotalBytes": 0,
+        "externalBytes": 0,
+        "arrayBuffersBytes": 0,
+        "rssBytes": 4128768,
+        "heapUsedBytesPerTree": 1654.4,
+        "rssBytesPerTree": 137625.6
+      },
+      "sampledPeak": {
+        "heapDeltaBytes": 644848,
+        "rssDeltaBytes": 4128768
+      }
+    },
+    {
+      "mode": "incremental",
+      "id": "object-brace-repair",
+      "description": null,
+      "fixture": "representative-main",
+      "fixturePath": "test.strdl",
+      "initialBytes": 2854,
+      "finalBytes": 2854,
+      "categories": [
+        "malformed-state",
+        "repair",
+        "object-literal"
+      ],
+      "editCount": 2,
+      "treesPerReplay": 3,
+      "iterations": 15,
+      "freshComparisons": 30,
+      "rootChildChecksum": 720,
+      "retainedTrees": 45,
+      "retained": {
+        "heapUsedBytes": 96592,
+        "heapTotalBytes": 0,
+        "externalBytes": 0,
+        "arrayBuffersBytes": 0,
+        "rssBytes": 6291456,
+        "heapUsedBytesPerTree": 2146.488889,
+        "rssBytesPerTree": 139810.133333
+      },
+      "sampledPeak": {
+        "heapDeltaBytes": 1290504,
+        "rssDeltaBytes": 6094848
+      }
+    },
+    {
+      "mode": "incremental",
+      "id": "string-quote-repair",
+      "description": null,
+      "fixture": "representative-local",
+      "fixturePath": "test-local.strdl",
+      "initialBytes": 147,
+      "finalBytes": 147,
+      "categories": [
+        "malformed-state",
+        "repair",
+        "string",
+        "compact-fixture"
+      ],
+      "editCount": 2,
+      "treesPerReplay": 3,
+      "iterations": 15,
+      "freshComparisons": 30,
+      "rootChildChecksum": 285,
+      "retainedTrees": 45,
+      "retained": {
+        "heapUsedBytes": 14784,
+        "heapTotalBytes": 0,
+        "externalBytes": 0,
+        "arrayBuffersBytes": 0,
+        "rssBytes": 786432,
+        "heapUsedBytesPerTree": 328.533333,
+        "rssBytesPerTree": 17476.266667
+      },
+      "sampledPeak": {
+        "heapDeltaBytes": 168952,
+        "rssDeltaBytes": 786432
+      }
+    },
+    {
+      "mode": "incremental",
+      "id": "array-bracket-repair",
+      "description": null,
+      "fixture": "representative-main",
+      "fixturePath": "test.strdl",
+      "initialBytes": 2854,
+      "finalBytes": 2854,
+      "categories": [
+        "malformed-state",
+        "repair",
+        "array",
+        "nested-edit"
+      ],
+      "editCount": 2,
+      "treesPerReplay": 3,
+      "iterations": 15,
+      "freshComparisons": 30,
+      "rootChildChecksum": 720,
+      "retainedTrees": 45,
+      "retained": {
+        "heapUsedBytes": 95904,
+        "heapTotalBytes": 262144,
+        "externalBytes": 0,
+        "arrayBuffersBytes": 0,
+        "rssBytes": 6488064,
+        "heapUsedBytesPerTree": 2131.2,
+        "rssBytesPerTree": 144179.2
+      },
+      "sampledPeak": {
+        "heapDeltaBytes": 1472856,
+        "rssDeltaBytes": 6291456
+      }
+    }
+  ]
+}

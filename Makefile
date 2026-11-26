@@ -27,11 +27,16 @@ TEST_DIR := test/corpus
 DOCS_DIR := docs
 BUILD_DIR ?= build
 
-# Tools. Prefer the CLI pinned in devDependencies when it is installed; use
-# `make TS=tree-sitter ...` to select a system binary instead.
+# Tools. Prefer pinned local binaries when installed; use variable overrides
+# such as `make TS=tree-sitter ...` to select system binaries instead.
 TS_LOCAL := node_modules/.bin/tree-sitter
 TS ?= $(shell if [ -x '$(TS_LOCAL)' ]; then printf '%s' '$(TS_LOCAL)'; else printf 'tree-sitter'; fi)
+PRETTIER_LOCAL := node_modules/.bin/prettier
+PRETTIER ?= $(shell if [ -x '$(PRETTIER_LOCAL)' ]; then printf '%s' '$(PRETTIER_LOCAL)'; else printf 'prettier'; fi)
+RUFF_LOCAL := .venv/bin/ruff
+RUFF ?= $(shell if [ -x '$(RUFF_LOCAL)' ]; then printf '%s' '$(RUFF_LOCAL)'; else printf 'ruff'; fi)
 NPM ?= npm
+NODE ?= node
 HOST_OS := $(shell uname -s)
 BROWSER ?= $(if $(filter Darwin,$(HOST_OS)),open,xdg-open)
 
@@ -50,6 +55,30 @@ QUERIES := $(wildcard $(QUERY_DIR)/*.scm)
 FIXTURES := test.strdl test-local.strdl
 QUERY_DETERMINISM_FIXTURES := test/query/determinism.strdl
 QUERY_EXECUTION_FIXTURES := $(FIXTURES) $(QUERY_DETERMINISM_FIXTURES)
+REGRESSION_INVENTORY := test/fixtures/regression_inventory.json
+BENCHMARK_MANIFEST := benchmarks/fixtures/manifest.json
+BENCH_CATALOG := test/fixtures/incremental_sequences.json
+BENCH_MODE ?= all
+BENCH_ITERATIONS ?= 15
+BENCH_WARMUP ?= 2
+BENCH_FIXTURE ?=
+BENCH_SEQUENCE ?=
+BENCH_CATEGORY ?=
+BENCH_OUTPUT ?=
+BENCH_BASELINE := benchmarks/results/baseline.json
+BENCH_BASELINE_SOURCES := benchmarks/results/baseline-sources
+BENCH_BASELINE_FRESH := $(BENCH_BASELINE_SOURCES)/fresh.json
+BENCH_BASELINE_INCREMENTAL := $(BENCH_BASELINE_SOURCES)/incremental.json
+BENCH_BASELINE_MEMORY := $(BENCH_BASELINE_SOURCES)/memory.json
+BENCH_BUDGETS := benchmarks/results/budgets.json
+BENCH_FRESH_REPORT ?=
+BENCH_INCREMENTAL_REPORT ?=
+BENCH_MEMORY_REPORT ?=
+BENCH_COMPARE_OUTPUT ?=
+BENCH_BUDGET_INPUTS ?=
+PERF_REPORT_OUTPUT ?=
+PERF_REPORT_JSON_OUTPUT ?=
+PERF_REPORT_FORMAT ?= auto
 RECOVERY_FILES := $(wildcard $(TEST_DIR)/incomplete_*.txt $(TEST_DIR)/malformed_*.txt $(TEST_DIR)/missing_*.txt $(TEST_DIR)/noncascading_*.txt $(TEST_DIR)/recovery_*.txt $(TEST_DIR)/unfinished_*.txt $(TEST_DIR)/valid_*.txt)
 
 # Test inputs (override on the command line)
@@ -97,8 +126,8 @@ D = $(shell tput sgr0 2>/dev/null)
 _SUCCESS = [$(GRN)SUCCESS$(D)]
 _INFO    = [$(BLU)INFO$(D)]
 
-.PHONY: all build generate test test-recovery test-incremental test-query-compile test-query-execution test-query-registration test-query test-node parse playground wasm \
-	local-install install uninstall clean check-generated verify verify-all ci \
+.PHONY: all build generate test test-recovery test-incremental test-query-compile test-query-execution test-query-registration test-query test-node test-package test-regressions benchmark-fixtures check-benchmark-fixtures bench-fresh bench-incremental bench-memory build-benchmark-baseline check-benchmark-baseline reproduce-benchmark-baseline compare-benchmark-baseline build-benchmark-budgets check-benchmark-budgets performance-report format check-format check-static parse playground wasm \
+	local-install install-dev install uninstall clean check-generated verify verify-all ci \
 	docs docs-open help
 
 #==============================================================================#
@@ -174,6 +203,24 @@ test-query-execution:	## Assert query captures on representative compositions
 	@python3 scripts/check_query_captures.py $(TS) $(QUERY_DIR)/locals.scm test/query/declaration_names.scm local.definition.var "variable declarations" $(QUERY_EXECUTION_FIXTURES)
 	@python3 scripts/check_query_captures.py $(TS) $(QUERY_DIR)/locals.scm test/query/arrow_parameters.scm local.definition.parameter "arrow parameters" $(QUERY_EXECUTION_FIXTURES)
 	@python3 scripts/check_query_captures.py $(TS) $(QUERY_DIR)/locals.scm test/query/call_identifiers.scm local.reference "call identifiers" $(QUERY_EXECUTION_FIXTURES)
+	@python3 scripts/check_query_captures.py $(TS) $(QUERY_DIR)/highlights.scm test/query/keywords.scm keyword "keyword tokens" $(QUERY_EXECUTION_FIXTURES)
+	@python3 scripts/check_query_captures.py $(TS) $(QUERY_DIR)/highlights.scm test/query/punctuation_delimiters.scm punctuation.delimiter "punctuation delimiters" $(QUERY_EXECUTION_FIXTURES)
+	@python3 scripts/check_query_captures.py $(TS) $(QUERY_DIR)/highlights.scm test/query/punctuation_brackets.scm punctuation.bracket "punctuation brackets" $(QUERY_EXECUTION_FIXTURES)
+	@python3 scripts/check_query_captures.py $(TS) $(QUERY_DIR)/highlights.scm test/query/operators.scm operator "operators" $(QUERY_EXECUTION_FIXTURES)
+	@python3 scripts/check_query_captures.py $(TS) $(QUERY_DIR)/highlights.scm test/query/comments.scm comment "comments" $(QUERY_EXECUTION_FIXTURES)
+	@python3 scripts/check_query_captures.py $(TS) $(QUERY_DIR)/highlights.scm test/query/function_declaration_names.scm function.declaration "function declaration names" $(QUERY_EXECUTION_FIXTURES)
+	@python3 scripts/check_query_captures.py $(TS) $(QUERY_DIR)/highlights.scm test/query/member_properties.scm property "member properties" $(QUERY_EXECUTION_FIXTURES)
+	@python3 scripts/check_query_captures.py $(TS) $(QUERY_DIR)/highlights.scm test/query/expression_nodes.scm expression "expression nodes" $(QUERY_EXECUTION_FIXTURES)
+	@python3 scripts/check_query_captures.py $(TS) $(QUERY_DIR)/highlights.scm test/query/constructors.scm constructor "constructors" $(QUERY_EXECUTION_FIXTURES)
+	@python3 scripts/check_query_captures.py $(TS) $(QUERY_DIR)/locals.scm test/query/scopes.scm local.scope "scopes" $(QUERY_EXECUTION_FIXTURES)
+	@python3 scripts/check_query_captures.py $(TS) $(QUERY_DIR)/locals.scm test/query/function_declaration_names.scm local.definition.function "function declarations" $(QUERY_EXECUTION_FIXTURES)
+	@python3 scripts/check_query_captures.py $(TS) $(QUERY_DIR)/locals.scm test/query/assignment_definitions.scm local.definition.var "assignment definitions" $(QUERY_EXECUTION_FIXTURES)
+	@python3 scripts/check_query_captures.py $(TS) $(QUERY_DIR)/locals.scm test/query/catch_parameters.scm local.definition.parameter "catch parameters" $(QUERY_EXECUTION_FIXTURES)
+	@if python3 scripts/check_query_captures.py $(TS) $(QUERY_DIR)/highlights.scm test/query/call_identifiers.scm not.a.capture "wrong capture negative control" $(QUERY_EXECUTION_FIXTURES) >/dev/null 2>&1; then \
+		echo "query execution check failed: wrong-capture negative control was accepted"; exit 1; \
+	else \
+		echo "rejected: wrong-capture negative control"; \
+	fi
 	@echo "$(YEL)* $(_SUCCESS) Query execution tests completed$(D)"
 
 test-query-registration:	## Verify official queries are registered, packaged, and exported
@@ -196,25 +243,121 @@ test-node:	## Run Node.js binding tests (requires a matching native ABI)
 	@$(NPM) test
 	@echo "$(YEL)* $(_SUCCESS) Node.js binding tests completed$(D)"
 
+test-package:	## Verify npm package contents and metadata
+	@echo "$(YEL)Checking npm package integrity...$(D)"
+	@python3 scripts/check_package_integrity.py $(NPM)
+	@echo "$(YEL)* $(_SUCCESS) npm package integrity check completed$(D)"
+
+test-regressions:	## Verify recorded bugs have permanent regression artifacts
+	@echo "$(YEL)Checking regression coverage...$(D)"
+	@python3 scripts/check_regression_coverage.py $(REGRESSION_INVENTORY)
+	@echo "$(YEL)* $(_SUCCESS) Regression coverage check completed$(D)"
+
 parse:	## Parse files with the current parser (FILES=..., PARSE_FLAGS=...)
 	@$(TS) parse $(PARSE_FLAGS) $(FILES)
+
+##@ Benchmarking 📊
+
+benchmark-fixtures:	## Regenerate synthetic benchmark fixtures from the manifest
+	@echo "$(YEL)Generating benchmark fixtures...$(D)"
+	@python3 scripts/generate_benchmark_fixtures.py
+	@echo "$(YEL)* $(_SUCCESS) Benchmark fixtures generated$(D)"
+
+check-benchmark-fixtures:	## Verify benchmark fixtures match the manifest and regenerate exactly
+	@echo "$(YEL)Checking benchmark fixtures...$(D)"
+	@python3 scripts/generate_benchmark_fixtures.py --check $(BENCHMARK_MANIFEST)
+	@echo "$(YEL)* $(_SUCCESS) Benchmark fixtures are reproducible$(D)"
+
+bench-fresh:	## Measure fresh parsing latency (ITERATIONS, WARMUP, FIXTURE, OUTPUT overrides)
+	@echo "$(YEL)Measuring fresh parse latency...$(D)"
+	@$(NODE) scripts/bench_fresh.js --manifest $(BENCHMARK_MANIFEST) --iterations $(BENCH_ITERATIONS) --warmup $(BENCH_WARMUP) $(if $(BENCH_FIXTURE),--fixture $(BENCH_FIXTURE),) $(if $(BENCH_OUTPUT),--output $(BENCH_OUTPUT),)
+	@echo "$(YEL)* $(_SUCCESS) Fresh parsing latency measured$(D)"
+
+bench-incremental:	## Measure incremental parsing latency (ITERATIONS, WARMUP, SEQUENCE, CATEGORY, OUTPUT overrides)
+	@echo "$(YEL)Measuring incremental parse latency...$(D)"
+	@$(NODE) scripts/bench_incremental.js --manifest $(BENCHMARK_MANIFEST) --catalog $(BENCH_CATALOG) --iterations $(BENCH_ITERATIONS) --warmup $(BENCH_WARMUP) $(if $(BENCH_SEQUENCE),--sequence $(BENCH_SEQUENCE),) $(if $(BENCH_CATEGORY),--category $(BENCH_CATEGORY),) $(if $(BENCH_OUTPUT),--output $(BENCH_OUTPUT),)
+	@echo "$(YEL)* $(_SUCCESS) Incremental parsing latency measured$(D)"
+
+bench-memory:	## Measure parse-tree memory (MODE, ITERATIONS, WARMUP, FIXTURE, SEQUENCE, CATEGORY, OUTPUT overrides)
+	@echo "$(YEL)Measuring parse-tree memory...$(D)"
+	@$(NODE) --expose-gc scripts/bench_memory.js --manifest $(BENCHMARK_MANIFEST) --catalog $(BENCH_CATALOG) --mode $(BENCH_MODE) --iterations $(BENCH_ITERATIONS) --warmup $(BENCH_WARMUP) $(if $(BENCH_FIXTURE),--fixture $(BENCH_FIXTURE),) $(if $(BENCH_SEQUENCE),--sequence $(BENCH_SEQUENCE),) $(if $(BENCH_CATEGORY),--category $(BENCH_CATEGORY),) $(if $(BENCH_OUTPUT),--output $(BENCH_OUTPUT),)
+	@echo "$(YEL)* $(_SUCCESS) Parse-tree memory measured$(D)"
+
+build-benchmark-baseline:	## Build committed baseline from fresh/incremental/memory reports (FRESH_REPORT, INCREMENTAL_REPORT, MEMORY_REPORT overrides)
+	@echo "$(YEL)Building benchmark baseline...$(D)"
+	@$(NODE) scripts/baseline_results.js build --fresh $(BENCH_FRESH_REPORT) --incremental $(BENCH_INCREMENTAL_REPORT) --memory $(BENCH_MEMORY_REPORT) --output $(BENCH_BASELINE)
+	@echo "$(YEL)* $(_SUCCESS) Benchmark baseline built$(D)"
+
+check-benchmark-baseline:	## Validate committed benchmark baseline structure without performance gating
+	@echo "$(YEL)Checking benchmark baseline...$(D)"
+	@$(NODE) scripts/baseline_results.js check --baseline $(BENCH_BASELINE)
+	@echo "$(YEL)* $(_SUCCESS) Benchmark baseline is structurally valid$(D)"
+
+reproduce-benchmark-baseline:	## Verify the committed baseline rebuilds from its committed source reports
+	@echo "$(YEL)Reproducing benchmark baseline...$(D)"
+	@$(NODE) scripts/baseline_results.js reproduce --baseline $(BENCH_BASELINE) --fresh $(BENCH_BASELINE_FRESH) --incremental $(BENCH_BASELINE_INCREMENTAL) --memory $(BENCH_BASELINE_MEMORY)
+	@echo "$(YEL)* $(_SUCCESS) Benchmark baseline reproduced$(D)"
+
+compare-benchmark-baseline:	## Compare fresh/incremental/memory reports against the baseline without gating
+	@echo "$(YEL)Comparing benchmark reports with baseline...$(D)"
+	@$(NODE) scripts/baseline_results.js compare --baseline $(BENCH_BASELINE) --fresh $(BENCH_FRESH_REPORT) --incremental $(BENCH_INCREMENTAL_REPORT) --memory $(BENCH_MEMORY_REPORT) $(if $(BENCH_COMPARE_OUTPUT),--output $(BENCH_COMPARE_OUTPUT),)
+	@echo "$(YEL)* $(_SUCCESS) Benchmark comparison generated$(D)"
+
+build-benchmark-budgets:	## Build observed-envelope budgets from a session manifest (BENCH_BUDGET_INPUTS override)
+	@echo "$(YEL)Building benchmark budgets...$(D)"
+	@$(NODE) scripts/benchmark_budgets.js build --inputs $(BENCH_BUDGET_INPUTS) --output $(BENCH_BUDGETS)
+	@echo "$(YEL)* $(_SUCCESS) Benchmark budgets built$(D)"
+
+check-benchmark-budgets:	## Validate committed budget provenance and observed maxima without gating
+	@echo "$(YEL)Checking benchmark budgets...$(D)"
+	@$(NODE) scripts/benchmark_budgets.js check --budget $(BENCH_BUDGETS)
+	@echo "$(YEL)* $(_SUCCESS) Benchmark budgets are structurally valid$(D)"
+
+performance-report:	## Run performance checks and print a hardware-variance-aware report (non-gating)
+	@echo "$(YEL)Running performance checks...$(D)"
+	@set -e; dir=$$(mktemp -d); \
+	trap 'rm -rf "$$dir"' EXIT; \
+	$(MAKE) bench-fresh BENCH_OUTPUT="$$dir/fresh.json" >/dev/null; \
+	$(MAKE) bench-incremental BENCH_OUTPUT="$$dir/incremental.json" >/dev/null; \
+	$(MAKE) bench-memory BENCH_OUTPUT="$$dir/memory.json" >/dev/null; \
+	$(NODE) scripts/performance_report.js --baseline $(BENCH_BASELINE) --budgets $(BENCH_BUDGETS) --fresh "$$dir/fresh.json" --incremental "$$dir/incremental.json" --memory "$$dir/memory.json" --format $(PERF_REPORT_FORMAT) $(if $(PERF_REPORT_OUTPUT),--output $(PERF_REPORT_OUTPUT),) $(if $(PERF_REPORT_JSON_OUTPUT),--json-output $(PERF_REPORT_JSON_OUTPUT),)
+	@echo "$(YEL)* $(_SUCCESS) Performance report generated (informational only)$(D)"
+
+format:	## Apply Prettier and Ruff formatting plus safe Ruff fixes
+	@echo "$(YEL)Formatting source files...$(D)"
+	@$(PRETTIER) --write .
+	@$(RUFF) check --fix .
+	@$(RUFF) format .
+	@echo "$(YEL)* $(_SUCCESS) Source files formatted$(D)"
+
+check-format:	## Verify Prettier and Ruff formatting
+	@echo "$(YEL)Checking source formatting...$(D)"
+	@$(PRETTIER) --check .
+	@$(RUFF) format --check .
+	@echo "$(YEL)* $(_SUCCESS) Source formatting is clean$(D)"
+
+check-static:	## Run Ruff static analysis and shell syntax checks
+	@echo "$(YEL)Running static checks...$(D)"
+	@$(RUFF) check .
+	@sh -n scripts/local_install.sh
+	@echo "$(YEL)* $(_SUCCESS) Static checks completed$(D)"
 
 ##@ Verification ✅
 
 check-generated:	## Verify committed parser artifacts match grammar.js
 	@echo "$(YEL)Checking generated artifacts...$(D)"
 	@$(TS) generate
-	@git diff --exit-code -- $(PARSER) $(SRC_DIR)/grammar.json $(SRC_DIR)/node-types.json $(SRC_DIR)/tree_sitter || { \
+	@git diff --exit-code HEAD -- $(PARSER) $(SRC_DIR)/grammar.json $(SRC_DIR)/node-types.json $(SRC_DIR)/tree_sitter || { \
 		echo "$(RED)Generated artifacts are out of sync; run 'make generate'.$(D)"; \
 		exit 1; \
 	}
 	@echo "$(YEL)* $(_SUCCESS) Generated artifacts are in sync$(D)"
 
-verify: check-generated test test-query	## Run the core CI gate (artifacts, corpus, queries)
+verify: check-generated check-format check-static test test-incremental test-query test-regressions check-benchmark-fixtures check-benchmark-baseline reproduce-benchmark-baseline check-benchmark-budgets	## Run the core CI gate (artifacts, formatting, static checks, corpus, incremental equivalence, queries, regressions, fixtures, baseline reproduction, budgets)
 
-verify-all: verify test-node	## Run the core gate plus Node.js binding tests
+verify-all: verify test-node test-package	## Run the core gate plus Node.js binding and package checks
 
-ci: verify-all build	## Run the complete CI gate locally (requires npm ci first)
+ci: verify-all build	## Run the complete CI gate locally (requires make install-dev first)
 
 ##@ Utility Rules 🛠
 
@@ -226,6 +369,13 @@ wasm:	## Build the WebAssembly parser
 
 local-install:	## Install official queries into the local nvim-treesitter directory
 	@$(NPM) run local_install
+
+install-dev:	## Install pinned development tools used by formatting and static checks
+	@echo "$(YEL)Installing development tools...$(D)"
+	@$(NPM) ci
+	@python3 -m venv .venv
+	@.venv/bin/pip install -r requirements-dev.txt
+	@echo "$(YEL)* $(_SUCCESS) Development tools installed$(D)"
 
 install: all	## Install libraries, header, pkg-config file and queries
 	install -d '$(DESTDIR)$(DATADIR)'/tree-sitter/queries/strudel '$(DESTDIR)$(INCLUDEDIR)'/tree_sitter '$(DESTDIR)$(PCLIBDIR)' '$(DESTDIR)$(LIBDIR)'

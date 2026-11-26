@@ -1,0 +1,2065 @@
+{
+  "version": 1,
+  "kind": "budgets",
+  "generatedAt": "2026-11-26T09:34:51.287Z",
+  "baseline": {
+    "generatedAt": "2026-11-26T09:20:49.777Z",
+    "repositoryCommit": "aae76dc",
+    "config": {
+      "manifest": "benchmarks/fixtures/manifest.json",
+      "catalog": "test/fixtures/incremental_sequences.json",
+      "iterations": 15,
+      "warmup": 2,
+      "fixtureCount": 5,
+      "sequenceCount": 21,
+      "resultsPath": "benchmarks/results/baseline.json"
+    }
+  },
+  "environment": {
+    "node": "v26.13.1",
+    "treeSitterRuntime": "0.25.1",
+    "platform": "linux",
+    "arch": "x64",
+    "cpuModel": "12th Gen Intel(R) Core(TM) i9-12900KF",
+    "cpuCount": 24,
+    "totalMemoryBytes": 33437925376,
+    "gcAvailable": true,
+    "nodeFlags": [
+      "--expose-gc"
+    ]
+  },
+  "methodology": {
+    "rule": "observed-envelope",
+    "minimumSessions": 3,
+    "sessionCount": 3,
+    "percentileRule": "P50 and P95 use the highest session percentile; P99 uses the highest single observed sample.",
+    "normalization": "No hardware normalization, safety factor, or arbitrary multiplier is applied."
+  },
+  "sessions": [
+    {
+      "generatedAt": "2026-11-26T09:28:44.875Z",
+      "reports": {
+        "fresh": "fresh.json",
+        "incremental": "incremental.json",
+        "memory": "memory.json"
+      },
+      "environment": {
+        "node": "v26.13.1",
+        "treeSitterRuntime": "0.25.1",
+        "platform": "linux",
+        "arch": "x64",
+        "cpuModel": "12th Gen Intel(R) Core(TM) i9-12900KF",
+        "cpuCount": 24,
+        "totalMemoryBytes": 33437925376,
+        "gcAvailable": true,
+        "nodeFlags": [
+          "--expose-gc"
+        ]
+      },
+      "config": {
+        "manifest": "benchmarks/fixtures/manifest.json",
+        "catalog": "test/fixtures/incremental_sequences.json",
+        "iterations": 15,
+        "warmup": 2,
+        "fixtureCount": 5,
+        "sequenceCount": 21
+      }
+    },
+    {
+      "generatedAt": "2026-11-26T09:32:26.662Z",
+      "reports": {
+        "fresh": "fresh.json",
+        "incremental": "incremental.json",
+        "memory": "memory.json"
+      },
+      "environment": {
+        "node": "v26.13.1",
+        "treeSitterRuntime": "0.25.1",
+        "platform": "linux",
+        "arch": "x64",
+        "cpuModel": "12th Gen Intel(R) Core(TM) i9-12900KF",
+        "cpuCount": 24,
+        "totalMemoryBytes": 33437925376,
+        "gcAvailable": true,
+        "nodeFlags": [
+          "--expose-gc"
+        ]
+      },
+      "config": {
+        "manifest": "benchmarks/fixtures/manifest.json",
+        "catalog": "test/fixtures/incremental_sequences.json",
+        "iterations": 15,
+        "warmup": 2,
+        "fixtureCount": 5,
+        "sequenceCount": 21
+      }
+    }
+  ],
+  "budgets": {
+    "fresh": [
+      {
+        "kind": "representative",
+        "role": "representative-composition",
+        "id": "representative-main",
+        "metrics": {
+          "p50Ms": {
+            "budget": 0.332752,
+            "source": "session-2",
+            "observations": [
+              0.330858,
+              0.331729,
+              0.332752
+            ]
+          },
+          "p95Ms": {
+            "budget": 0.418792,
+            "source": "session-1",
+            "observations": [
+              0.367254,
+              0.418792,
+              0.360842
+            ]
+          },
+          "p99Ms": {
+            "budget": 0.426161,
+            "source": "session-1",
+            "observations": [
+              0.370557,
+              0.426161,
+              0.364394
+            ]
+          }
+        }
+      },
+      {
+        "kind": "representative",
+        "role": "representative-composition",
+        "id": "representative-local",
+        "metrics": {
+          "p50Ms": {
+            "budget": 0.018077,
+            "source": "session-2",
+            "observations": [
+              0.017118,
+              0.017629,
+              0.018077
+            ]
+          },
+          "p95Ms": {
+            "budget": 0.026365,
+            "source": "session-1",
+            "observations": [
+              0.023658,
+              0.026365,
+              0.024766
+            ]
+          },
+          "p99Ms": {
+            "budget": 0.035695,
+            "source": "session-1",
+            "observations": [
+              0.032442,
+              0.035695,
+              0.035347
+            ]
+          }
+        }
+      },
+      {
+        "kind": "synthetic-large",
+        "role": "synthetic-large-document",
+        "id": "synthetic-large",
+        "metrics": {
+          "p50Ms": {
+            "budget": 10.363456,
+            "source": "session-1",
+            "observations": [
+              10.267465,
+              10.363456,
+              10.354204
+            ]
+          },
+          "p95Ms": {
+            "budget": 10.686846,
+            "source": "session-1",
+            "observations": [
+              10.630447,
+              10.686846,
+              10.596997
+            ]
+          },
+          "p99Ms": {
+            "budget": 11.083304,
+            "source": "baseline",
+            "observations": [
+              11.083304,
+              10.85306,
+              10.610213
+            ]
+          }
+        }
+      },
+      {
+        "kind": "deeply-nested",
+        "role": "deeply-nested-expression",
+        "id": "deeply-nested",
+        "metrics": {
+          "p50Ms": {
+            "budget": 0.381706,
+            "source": "session-1",
+            "observations": [
+              0.376365,
+              0.381706,
+              0.37836
+            ]
+          },
+          "p95Ms": {
+            "budget": 0.419567,
+            "source": "session-1",
+            "observations": [
+              0.38032,
+              0.419567,
+              0.400434
+            ]
+          },
+          "p99Ms": {
+            "budget": 0.480931,
+            "source": "session-1",
+            "observations": [
+              0.384343,
+              0.480931,
+              0.405746
+            ]
+          }
+        }
+      },
+      {
+        "kind": "pathological",
+        "role": "pathological-input",
+        "id": "pathological",
+        "metrics": {
+          "p50Ms": {
+            "budget": 2.053733,
+            "source": "session-1",
+            "observations": [
+              2.04306,
+              2.053733,
+              1.997038
+            ]
+          },
+          "p95Ms": {
+            "budget": 2.20958,
+            "source": "baseline",
+            "observations": [
+              2.20958,
+              2.093031,
+              2.061515
+            ]
+          },
+          "p99Ms": {
+            "budget": 2.227461,
+            "source": "baseline",
+            "observations": [
+              2.227461,
+              2.131059,
+              2.068342
+            ]
+          }
+        }
+      }
+    ],
+    "incremental": [
+      {
+        "fixture": "representative-main",
+        "id": "method-chain-insertion",
+        "metrics": {
+          "p50Ms": {
+            "budget": 0.049781,
+            "source": "session-1",
+            "observations": [
+              0.046613,
+              0.049781,
+              0.049186
+            ]
+          },
+          "p95Ms": {
+            "budget": 0.067187,
+            "source": "session-1",
+            "observations": [
+              0.062177,
+              0.067187,
+              0.063544
+            ]
+          },
+          "p99Ms": {
+            "budget": 0.078517,
+            "source": "session-1",
+            "observations": [
+              0.062667,
+              0.078517,
+              0.064073
+            ]
+          }
+        }
+      },
+      {
+        "fixture": "representative-main",
+        "id": "pattern-string-replacement",
+        "metrics": {
+          "p50Ms": {
+            "budget": 0.105679,
+            "source": "session-2",
+            "observations": [
+              0.103072,
+              0.104533,
+              0.105679
+            ]
+          },
+          "p95Ms": {
+            "budget": 0.128592,
+            "source": "session-1",
+            "observations": [
+              0.112896,
+              0.128592,
+              0.116105
+            ]
+          },
+          "p99Ms": {
+            "budget": 0.158334,
+            "source": "session-1",
+            "observations": [
+              0.129616,
+              0.158334,
+              0.125166
+            ]
+          }
+        }
+      },
+      {
+        "fixture": "representative-main",
+        "id": "declaration-deletion",
+        "metrics": {
+          "p50Ms": {
+            "budget": 0.041844,
+            "source": "session-2",
+            "observations": [
+              0.038242,
+              0.037294,
+              0.041844
+            ]
+          },
+          "p95Ms": {
+            "budget": 0.064554,
+            "source": "session-2",
+            "observations": [
+              0.042495,
+              0.049107,
+              0.064554
+            ]
+          },
+          "p99Ms": {
+            "budget": 0.071271,
+            "source": "session-2",
+            "observations": [
+              0.046414,
+              0.05182,
+              0.071271
+            ]
+          }
+        }
+      },
+      {
+        "fixture": "representative-main",
+        "id": "nested-object-edits",
+        "metrics": {
+          "p50Ms": {
+            "budget": 0.070698,
+            "source": "baseline",
+            "observations": [
+              0.070698,
+              0.069601,
+              0.068898
+            ]
+          },
+          "p95Ms": {
+            "budget": 0.075344,
+            "source": "session-1",
+            "observations": [
+              0.074075,
+              0.075344,
+              0.075307
+            ]
+          },
+          "p99Ms": {
+            "budget": 0.084663,
+            "source": "session-1",
+            "observations": [
+              0.074101,
+              0.084663,
+              0.07682
+            ]
+          }
+        }
+      },
+      {
+        "fixture": "representative-main",
+        "id": "malformed-call-repair",
+        "metrics": {
+          "p50Ms": {
+            "budget": 0.074382,
+            "source": "session-1",
+            "observations": [
+              0.073008,
+              0.074382,
+              0.0726
+            ]
+          },
+          "p95Ms": {
+            "budget": 0.08559,
+            "source": "session-1",
+            "observations": [
+              0.077594,
+              0.08559,
+              0.077447
+            ]
+          },
+          "p99Ms": {
+            "budget": 0.095817,
+            "source": "session-1",
+            "observations": [
+              0.083248,
+              0.095817,
+              0.078097
+            ]
+          }
+        }
+      },
+      {
+        "fixture": "representative-main",
+        "id": "declaration-insertion",
+        "metrics": {
+          "p50Ms": {
+            "budget": 0.043432,
+            "source": "session-2",
+            "observations": [
+              0.042038,
+              0.042759,
+              0.043432
+            ]
+          },
+          "p95Ms": {
+            "budget": 0.064502,
+            "source": "session-1",
+            "observations": [
+              0.051845,
+              0.064502,
+              0.055332
+            ]
+          },
+          "p99Ms": {
+            "budget": 0.069715,
+            "source": "session-1",
+            "observations": [
+              0.055967,
+              0.069715,
+              0.066653
+            ]
+          }
+        }
+      },
+      {
+        "fixture": "representative-main",
+        "id": "arrow-parameter-rename",
+        "metrics": {
+          "p50Ms": {
+            "budget": 0.072474,
+            "source": "session-2",
+            "observations": [
+              0.070066,
+              0.070253,
+              0.072474
+            ]
+          },
+          "p95Ms": {
+            "budget": 0.097377,
+            "source": "session-1",
+            "observations": [
+              0.079943,
+              0.097377,
+              0.082714
+            ]
+          },
+          "p99Ms": {
+            "budget": 0.098847,
+            "source": "session-2",
+            "observations": [
+              0.095352,
+              0.097825,
+              0.098847
+            ]
+          }
+        }
+      },
+      {
+        "fixture": "representative-main",
+        "id": "method-deletion",
+        "metrics": {
+          "p50Ms": {
+            "budget": 0.043983,
+            "source": "baseline",
+            "observations": [
+              0.043983,
+              0.043727,
+              0.043936
+            ]
+          },
+          "p95Ms": {
+            "budget": 0.047918,
+            "source": "baseline",
+            "observations": [
+              0.047918,
+              0.04733,
+              0.045816
+            ]
+          },
+          "p99Ms": {
+            "budget": 0.049617,
+            "source": "baseline",
+            "observations": [
+              0.049617,
+              0.047573,
+              0.046253
+            ]
+          }
+        }
+      },
+      {
+        "fixture": "representative-main",
+        "id": "call-statement-insertion",
+        "metrics": {
+          "p50Ms": {
+            "budget": 0.041859,
+            "source": "session-2",
+            "observations": [
+              0.041134,
+              0.041134,
+              0.041859
+            ]
+          },
+          "p95Ms": {
+            "budget": 0.052501,
+            "source": "session-2",
+            "observations": [
+              0.045893,
+              0.043929,
+              0.052501
+            ]
+          },
+          "p99Ms": {
+            "budget": 0.06304,
+            "source": "session-2",
+            "observations": [
+              0.049331,
+              0.044161,
+              0.06304
+            ]
+          }
+        }
+      },
+      {
+        "fixture": "representative-main",
+        "id": "template-content-edit",
+        "metrics": {
+          "p50Ms": {
+            "budget": 0.042107,
+            "source": "baseline",
+            "observations": [
+              0.042107,
+              0.041547,
+              0.041276
+            ]
+          },
+          "p95Ms": {
+            "budget": 0.101411,
+            "source": "baseline",
+            "observations": [
+              0.101411,
+              0.046513,
+              0.047056
+            ]
+          },
+          "p99Ms": {
+            "budget": 0.230315,
+            "source": "baseline",
+            "observations": [
+              0.230315,
+              0.053506,
+              0.051582
+            ]
+          }
+        }
+      },
+      {
+        "fixture": "representative-local",
+        "id": "compact-set-cps",
+        "metrics": {
+          "p50Ms": {
+            "budget": 0.010719,
+            "source": "session-1",
+            "observations": [
+              0.010377,
+              0.010719,
+              0.010664
+            ]
+          },
+          "p95Ms": {
+            "budget": 0.017109,
+            "source": "session-1",
+            "observations": [
+              0.01056,
+              0.017109,
+              0.010925
+            ]
+          },
+          "p99Ms": {
+            "budget": 0.031055,
+            "source": "session-1",
+            "observations": [
+              0.010573,
+              0.031055,
+              0.011065
+            ]
+          }
+        }
+      },
+      {
+        "fixture": "representative-local",
+        "id": "compact-declaration-deletion",
+        "metrics": {
+          "p50Ms": {
+            "budget": 0.01138,
+            "source": "session-1",
+            "observations": [
+              0.010972,
+              0.01138,
+              0.011153
+            ]
+          },
+          "p95Ms": {
+            "budget": 0.03406,
+            "source": "session-2",
+            "observations": [
+              0.019266,
+              0.016858,
+              0.03406
+            ]
+          },
+          "p99Ms": {
+            "budget": 0.05275,
+            "source": "session-2",
+            "observations": [
+              0.027903,
+              0.027235,
+              0.05275
+            ]
+          }
+        }
+      },
+      {
+        "fixture": "representative-local",
+        "id": "compact-malformed-repair",
+        "metrics": {
+          "p50Ms": {
+            "budget": 0.027055,
+            "source": "session-1",
+            "observations": [
+              0.026909,
+              0.027055,
+              0.026815
+            ]
+          },
+          "p95Ms": {
+            "budget": 0.043177,
+            "source": "session-2",
+            "observations": [
+              0.039928,
+              0.042016,
+              0.043177
+            ]
+          },
+          "p99Ms": {
+            "budget": 0.044879,
+            "source": "session-2",
+            "observations": [
+              0.040251,
+              0.043192,
+              0.044879
+            ]
+          }
+        }
+      },
+      {
+        "fixture": "representative-main",
+        "id": "argument-deletion",
+        "metrics": {
+          "p50Ms": {
+            "budget": 0.032859,
+            "source": "session-1",
+            "observations": [
+              0.032517,
+              0.032859,
+              0.032796
+            ]
+          },
+          "p95Ms": {
+            "budget": 0.069159,
+            "source": "session-1",
+            "observations": [
+              0.036506,
+              0.069159,
+              0.035144
+            ]
+          },
+          "p99Ms": {
+            "budget": 0.095507,
+            "source": "session-1",
+            "observations": [
+              0.036981,
+              0.095507,
+              0.038347
+            ]
+          }
+        }
+      },
+      {
+        "fixture": "representative-main",
+        "id": "object-property-deletion",
+        "metrics": {
+          "p50Ms": {
+            "budget": 0.034395,
+            "source": "baseline",
+            "observations": [
+              0.034395,
+              0.033028,
+              0.031994
+            ]
+          },
+          "p95Ms": {
+            "budget": 0.03934,
+            "source": "baseline",
+            "observations": [
+              0.03934,
+              0.03853,
+              0.036443
+            ]
+          },
+          "p99Ms": {
+            "budget": 0.040781,
+            "source": "session-1",
+            "observations": [
+              0.040707,
+              0.040781,
+              0.036841
+            ]
+          }
+        }
+      },
+      {
+        "fixture": "representative-main",
+        "id": "method-name-replacement",
+        "metrics": {
+          "p50Ms": {
+            "budget": 0.038108,
+            "source": "baseline",
+            "observations": [
+              0.038108,
+              0.035895,
+              0.036267
+            ]
+          },
+          "p95Ms": {
+            "budget": 0.040494,
+            "source": "baseline",
+            "observations": [
+              0.040494,
+              0.037098,
+              0.038638
+            ]
+          },
+          "p99Ms": {
+            "budget": 0.041641,
+            "source": "baseline",
+            "observations": [
+              0.041641,
+              0.038212,
+              0.039141
+            ]
+          }
+        }
+      },
+      {
+        "fixture": "representative-main",
+        "id": "nested-call-edit",
+        "metrics": {
+          "p50Ms": {
+            "budget": 0.042966,
+            "source": "session-1",
+            "observations": [
+              0.042675,
+              0.042966,
+              0.042618
+            ]
+          },
+          "p95Ms": {
+            "budget": 0.047097,
+            "source": "baseline",
+            "observations": [
+              0.047097,
+              0.046865,
+              0.044052
+            ]
+          },
+          "p99Ms": {
+            "budget": 0.049836,
+            "source": "session-1",
+            "observations": [
+              0.047313,
+              0.049836,
+              0.044275
+            ]
+          }
+        }
+      },
+      {
+        "fixture": "representative-main",
+        "id": "nested-arrow-body-edit",
+        "metrics": {
+          "p50Ms": {
+            "budget": 0.038986,
+            "source": "baseline",
+            "observations": [
+              0.038986,
+              0.037812,
+              0.038297
+            ]
+          },
+          "p95Ms": {
+            "budget": 0.04702,
+            "source": "session-1",
+            "observations": [
+              0.041071,
+              0.04702,
+              0.039936
+            ]
+          },
+          "p99Ms": {
+            "budget": 0.057739,
+            "source": "session-1",
+            "observations": [
+              0.042256,
+              0.057739,
+              0.04032
+            ]
+          }
+        }
+      },
+      {
+        "fixture": "representative-main",
+        "id": "object-brace-repair",
+        "metrics": {
+          "p50Ms": {
+            "budget": 0.074057,
+            "source": "session-2",
+            "observations": [
+              0.074041,
+              0.071848,
+              0.074057
+            ]
+          },
+          "p95Ms": {
+            "budget": 0.094274,
+            "source": "session-2",
+            "observations": [
+              0.086713,
+              0.081757,
+              0.094274
+            ]
+          },
+          "p99Ms": {
+            "budget": 0.130526,
+            "source": "session-2",
+            "observations": [
+              0.097193,
+              0.098222,
+              0.130526
+            ]
+          }
+        }
+      },
+      {
+        "fixture": "representative-local",
+        "id": "string-quote-repair",
+        "metrics": {
+          "p50Ms": {
+            "budget": 0.0837,
+            "source": "session-1",
+            "observations": [
+              0.07927,
+              0.0837,
+              0.08273
+            ]
+          },
+          "p95Ms": {
+            "budget": 0.092531,
+            "source": "baseline",
+            "observations": [
+              0.092531,
+              0.087199,
+              0.086886
+            ]
+          },
+          "p99Ms": {
+            "budget": 0.106026,
+            "source": "baseline",
+            "observations": [
+              0.106026,
+              0.088996,
+              0.08947
+            ]
+          }
+        }
+      },
+      {
+        "fixture": "representative-main",
+        "id": "array-bracket-repair",
+        "metrics": {
+          "p50Ms": {
+            "budget": 0.109468,
+            "source": "session-2",
+            "observations": [
+              0.107616,
+              0.107191,
+              0.109468
+            ]
+          },
+          "p95Ms": {
+            "budget": 0.147556,
+            "source": "session-1",
+            "observations": [
+              0.112673,
+              0.147556,
+              0.139226
+            ]
+          },
+          "p99Ms": {
+            "budget": 0.199133,
+            "source": "session-1",
+            "observations": [
+              0.118352,
+              0.199133,
+              0.171509
+            ]
+          }
+        }
+      }
+    ],
+    "memory": {
+      "fresh": [
+        {
+          "mode": "fresh",
+          "id": "representative-main",
+          "metrics": {
+            "heapUsedBytesPerTree": {
+              "budget": 869.866667,
+              "source": "session-1",
+              "observations": [
+                857.066667,
+                869.866667,
+                857.066667
+              ]
+            },
+            "rssBytesPerTree": {
+              "budget": 131072,
+              "source": "baseline",
+              "observations": [
+                131072,
+                131072,
+                117964.8
+              ]
+            },
+            "heapDeltaBytes": {
+              "budget": 42200,
+              "source": "session-1",
+              "observations": [
+                42136,
+                42200,
+                41944
+              ]
+            },
+            "rssDeltaBytes": {
+              "budget": 1769472,
+              "source": "baseline",
+              "observations": [
+                1769472,
+                1769472,
+                1769472
+              ]
+            }
+          }
+        },
+        {
+          "mode": "fresh",
+          "id": "representative-local",
+          "metrics": {
+            "heapUsedBytesPerTree": {
+              "budget": 683.2,
+              "source": "baseline",
+              "observations": [
+                683.2,
+                683.2,
+                683.2
+              ]
+            },
+            "rssBytesPerTree": {
+              "budget": 0,
+              "source": "baseline",
+              "observations": [
+                0,
+                0,
+                0
+              ]
+            },
+            "heapDeltaBytes": {
+              "budget": 339496,
+              "source": "baseline",
+              "observations": [
+                339496,
+                337360,
+                338192
+              ]
+            },
+            "rssDeltaBytes": {
+              "budget": 0,
+              "source": "baseline",
+              "observations": [
+                0,
+                0,
+                0
+              ]
+            }
+          }
+        },
+        {
+          "mode": "fresh",
+          "id": "synthetic-large",
+          "metrics": {
+            "heapUsedBytesPerTree": {
+              "budget": 198.4,
+              "source": "baseline",
+              "observations": [
+                198.4,
+                198.4,
+                198.4
+              ]
+            },
+            "rssBytesPerTree": {
+              "budget": 4089446.4,
+              "source": "baseline",
+              "observations": [
+                4089446.4,
+                4076339.2,
+                4089446.4
+              ]
+            },
+            "heapDeltaBytes": {
+              "budget": 23832,
+              "source": "baseline",
+              "observations": [
+                23832,
+                23832,
+                23832
+              ]
+            },
+            "rssDeltaBytes": {
+              "budget": 61341696,
+              "source": "baseline",
+              "observations": [
+                61341696,
+                61145088,
+                61341696
+              ]
+            }
+          }
+        },
+        {
+          "mode": "fresh",
+          "id": "deeply-nested",
+          "metrics": {
+            "heapUsedBytesPerTree": {
+              "budget": 189.333333,
+              "source": "baseline",
+              "observations": [
+                189.333333,
+                189.333333,
+                189.333333
+              ]
+            },
+            "rssBytesPerTree": {
+              "budget": 183500.8,
+              "source": "baseline",
+              "observations": [
+                183500.8,
+                183500.8,
+                170393.6
+              ]
+            },
+            "heapDeltaBytes": {
+              "budget": 21880,
+              "source": "baseline",
+              "observations": [
+                21880,
+                21880,
+                21880
+              ]
+            },
+            "rssDeltaBytes": {
+              "budget": 2752512,
+              "source": "baseline",
+              "observations": [
+                2752512,
+                2555904,
+                2555904
+              ]
+            }
+          }
+        },
+        {
+          "mode": "fresh",
+          "id": "pathological",
+          "metrics": {
+            "heapUsedBytesPerTree": {
+              "budget": 183.466667,
+              "source": "baseline",
+              "observations": [
+                183.466667,
+                183.466667,
+                183.466667
+              ]
+            },
+            "rssBytesPerTree": {
+              "budget": 262144,
+              "source": "baseline",
+              "observations": [
+                262144,
+                262144,
+                262144
+              ]
+            },
+            "heapDeltaBytes": {
+              "budget": 26832,
+              "source": "baseline",
+              "observations": [
+                26832,
+                26832,
+                26832
+              ]
+            },
+            "rssDeltaBytes": {
+              "budget": 3932160,
+              "source": "baseline",
+              "observations": [
+                3932160,
+                3932160,
+                3932160
+              ]
+            }
+          }
+        }
+      ],
+      "incremental": [
+        {
+          "mode": "incremental",
+          "id": "method-chain-insertion",
+          "metrics": {
+            "heapUsedBytesPerTree": {
+              "budget": 2153.066667,
+              "source": "baseline",
+              "observations": [
+                2153.066667,
+                2153.066667,
+                2153.066667
+              ]
+            },
+            "rssBytesPerTree": {
+              "budget": 137625.6,
+              "source": "baseline",
+              "observations": [
+                137625.6,
+                137625.6,
+                131072
+              ]
+            },
+            "heapDeltaBytes": {
+              "budget": 660160,
+              "source": "session-1",
+              "observations": [
+                659760,
+                660160,
+                660160
+              ]
+            },
+            "rssDeltaBytes": {
+              "budget": 3932160,
+              "source": "baseline",
+              "observations": [
+                3932160,
+                3932160,
+                3932160
+              ]
+            }
+          }
+        },
+        {
+          "mode": "incremental",
+          "id": "pattern-string-replacement",
+          "metrics": {
+            "heapUsedBytesPerTree": {
+              "budget": 2145.955556,
+              "source": "baseline",
+              "observations": [
+                2145.955556,
+                2145.955556,
+                2145.955556
+              ]
+            },
+            "rssBytesPerTree": {
+              "budget": 161655.466667,
+              "source": "baseline",
+              "observations": [
+                161655.466667,
+                161655.466667,
+                157286.4
+              ]
+            },
+            "heapDeltaBytes": {
+              "budget": 1291048,
+              "source": "baseline",
+              "observations": [
+                1291048,
+                1291048,
+                1291048
+              ]
+            },
+            "rssDeltaBytes": {
+              "budget": 7274496,
+              "source": "baseline",
+              "observations": [
+                7274496,
+                7274496,
+                6881280
+              ]
+            }
+          }
+        },
+        {
+          "mode": "incremental",
+          "id": "declaration-deletion",
+          "metrics": {
+            "heapUsedBytesPerTree": {
+              "budget": 1654.933333,
+              "source": "baseline",
+              "observations": [
+                1654.933333,
+                1654.933333,
+                1654.933333
+              ]
+            },
+            "rssBytesPerTree": {
+              "budget": 131072,
+              "source": "baseline",
+              "observations": [
+                131072,
+                131072,
+                131072
+              ]
+            },
+            "heapDeltaBytes": {
+              "budget": 731688,
+              "source": "baseline",
+              "observations": [
+                731688,
+                731688,
+                731688
+              ]
+            },
+            "rssDeltaBytes": {
+              "budget": 3932160,
+              "source": "baseline",
+              "observations": [
+                3932160,
+                3932160,
+                3932160
+              ]
+            }
+          }
+        },
+        {
+          "mode": "incremental",
+          "id": "nested-object-edits",
+          "metrics": {
+            "heapUsedBytesPerTree": {
+              "budget": 2171.022222,
+              "source": "baseline",
+              "observations": [
+                2171.022222,
+                2171.022222,
+                2171.022222
+              ]
+            },
+            "rssBytesPerTree": {
+              "budget": 135441.066667,
+              "source": "baseline",
+              "observations": [
+                135441.066667,
+                135441.066667,
+                131072
+              ]
+            },
+            "heapDeltaBytes": {
+              "budget": 1292104,
+              "source": "baseline",
+              "observations": [
+                1292104,
+                1292104,
+                1292104
+              ]
+            },
+            "rssDeltaBytes": {
+              "budget": 6094848,
+              "source": "baseline",
+              "observations": [
+                6094848,
+                6094848,
+                5898240
+              ]
+            }
+          }
+        },
+        {
+          "mode": "incremental",
+          "id": "malformed-call-repair",
+          "metrics": {
+            "heapUsedBytesPerTree": {
+              "budget": 2185.777778,
+              "source": "baseline",
+              "observations": [
+                2185.777778,
+                2181.511111,
+                2181.511111
+              ]
+            },
+            "rssBytesPerTree": {
+              "budget": 139810.133333,
+              "source": "baseline",
+              "observations": [
+                139810.133333,
+                139810.133333,
+                139810.133333
+              ]
+            },
+            "heapDeltaBytes": {
+              "budget": 1230984,
+              "source": "baseline",
+              "observations": [
+                1230984,
+                1230984,
+                1230984
+              ]
+            },
+            "rssDeltaBytes": {
+              "budget": 6291456,
+              "source": "session-1",
+              "observations": [
+                6094848,
+                6291456,
+                6291456
+              ]
+            }
+          }
+        },
+        {
+          "mode": "incremental",
+          "id": "declaration-insertion",
+          "metrics": {
+            "heapUsedBytesPerTree": {
+              "budget": 1678.4,
+              "source": "baseline",
+              "observations": [
+                1678.4,
+                1678.4,
+                1678.4
+              ]
+            },
+            "rssBytesPerTree": {
+              "budget": 137625.6,
+              "source": "baseline",
+              "observations": [
+                137625.6,
+                137625.6,
+                137625.6
+              ]
+            },
+            "heapDeltaBytes": {
+              "budget": 674464,
+              "source": "baseline",
+              "observations": [
+                674464,
+                674464,
+                674464
+              ]
+            },
+            "rssDeltaBytes": {
+              "budget": 4128768,
+              "source": "session-1",
+              "observations": [
+                3932160,
+                4128768,
+                4128768
+              ]
+            }
+          }
+        },
+        {
+          "mode": "incremental",
+          "id": "arrow-parameter-rename",
+          "metrics": {
+            "heapUsedBytesPerTree": {
+              "budget": 2295.288889,
+              "source": "baseline",
+              "observations": [
+                2295.288889,
+                2291.022222,
+                2295.288889
+              ]
+            },
+            "rssBytesPerTree": {
+              "budget": 139810.133333,
+              "source": "session-1",
+              "observations": [
+                135441.066667,
+                139810.133333,
+                139810.133333
+              ]
+            },
+            "heapDeltaBytes": {
+              "budget": 1299400,
+              "source": "baseline",
+              "observations": [
+                1299400,
+                1299400,
+                1299400
+              ]
+            },
+            "rssDeltaBytes": {
+              "budget": 6291456,
+              "source": "session-1",
+              "observations": [
+                6094848,
+                6291456,
+                6291456
+              ]
+            }
+          }
+        },
+        {
+          "mode": "incremental",
+          "id": "method-deletion",
+          "metrics": {
+            "heapUsedBytesPerTree": {
+              "budget": 1646.4,
+              "source": "baseline",
+              "observations": [
+                1646.4,
+                1646.4,
+                1646.4
+              ]
+            },
+            "rssBytesPerTree": {
+              "budget": 137625.6,
+              "source": "baseline",
+              "observations": [
+                137625.6,
+                137625.6,
+                137625.6
+              ]
+            },
+            "heapDeltaBytes": {
+              "budget": 642704,
+              "source": "baseline",
+              "observations": [
+                642704,
+                642704,
+                642704
+              ]
+            },
+            "rssDeltaBytes": {
+              "budget": 4128768,
+              "source": "baseline",
+              "observations": [
+                4128768,
+                3932160,
+                3932160
+              ]
+            }
+          }
+        },
+        {
+          "mode": "incremental",
+          "id": "call-statement-insertion",
+          "metrics": {
+            "heapUsedBytesPerTree": {
+              "budget": 1662.4,
+              "source": "baseline",
+              "observations": [
+                1662.4,
+                1662.4,
+                1662.4
+              ]
+            },
+            "rssBytesPerTree": {
+              "budget": 137625.6,
+              "source": "baseline",
+              "observations": [
+                137625.6,
+                137625.6,
+                137625.6
+              ]
+            },
+            "heapDeltaBytes": {
+              "budget": 737816,
+              "source": "baseline",
+              "observations": [
+                737816,
+                737816,
+                737816
+              ]
+            },
+            "rssDeltaBytes": {
+              "budget": 4128768,
+              "source": "session-1",
+              "observations": [
+                3932160,
+                4128768,
+                3932160
+              ]
+            }
+          }
+        },
+        {
+          "mode": "incremental",
+          "id": "template-content-edit",
+          "metrics": {
+            "heapUsedBytesPerTree": {
+              "budget": 1654.4,
+              "source": "baseline",
+              "observations": [
+                1654.4,
+                1654.4,
+                1654.4
+              ]
+            },
+            "rssBytesPerTree": {
+              "budget": 137625.6,
+              "source": "session-1",
+              "observations": [
+                131072,
+                137625.6,
+                137625.6
+              ]
+            },
+            "heapDeltaBytes": {
+              "budget": 691600,
+              "source": "baseline",
+              "observations": [
+                691600,
+                691600,
+                691600
+              ]
+            },
+            "rssDeltaBytes": {
+              "budget": 4128768,
+              "source": "session-1",
+              "observations": [
+                3932160,
+                4128768,
+                4128768
+              ]
+            }
+          }
+        },
+        {
+          "mode": "incremental",
+          "id": "compact-set-cps",
+          "metrics": {
+            "heapUsedBytesPerTree": {
+              "budget": 302.4,
+              "source": "baseline",
+              "observations": [
+                302.4,
+                302.4,
+                302.4
+              ]
+            },
+            "rssBytesPerTree": {
+              "budget": 13107.2,
+              "source": "session-1",
+              "observations": [
+                6553.6,
+                13107.2,
+                6553.6
+              ]
+            },
+            "heapDeltaBytes": {
+              "budget": 101080,
+              "source": "baseline",
+              "observations": [
+                101080,
+                101080,
+                101080
+              ]
+            },
+            "rssDeltaBytes": {
+              "budget": 196608,
+              "source": "baseline",
+              "observations": [
+                196608,
+                196608,
+                0
+              ]
+            }
+          }
+        },
+        {
+          "mode": "incremental",
+          "id": "compact-declaration-deletion",
+          "metrics": {
+            "heapUsedBytesPerTree": {
+              "budget": 282.4,
+              "source": "baseline",
+              "observations": [
+                282.4,
+                282.4,
+                282.4
+              ]
+            },
+            "rssBytesPerTree": {
+              "budget": 6553.6,
+              "source": "baseline",
+              "observations": [
+                6553.6,
+                6553.6,
+                6553.6
+              ]
+            },
+            "heapDeltaBytes": {
+              "budget": 92200,
+              "source": "baseline",
+              "observations": [
+                92200,
+                92200,
+                92200
+              ]
+            },
+            "rssDeltaBytes": {
+              "budget": 196608,
+              "source": "baseline",
+              "observations": [
+                196608,
+                196608,
+                196608
+              ]
+            }
+          }
+        },
+        {
+          "mode": "incremental",
+          "id": "compact-malformed-repair",
+          "metrics": {
+            "heapUsedBytesPerTree": {
+              "budget": 398.577778,
+              "source": "baseline",
+              "observations": [
+                398.577778,
+                398.577778,
+                398.577778
+              ]
+            },
+            "rssBytesPerTree": {
+              "budget": 8738.133333,
+              "source": "baseline",
+              "observations": [
+                8738.133333,
+                8738.133333,
+                8738.133333
+              ]
+            },
+            "heapDeltaBytes": {
+              "budget": 196184,
+              "source": "session-2",
+              "observations": [
+                196168,
+                196168,
+                196184
+              ]
+            },
+            "rssDeltaBytes": {
+              "budget": 393216,
+              "source": "session-1",
+              "observations": [
+                196608,
+                393216,
+                393216
+              ]
+            }
+          }
+        },
+        {
+          "mode": "incremental",
+          "id": "argument-deletion",
+          "metrics": {
+            "heapUsedBytesPerTree": {
+              "budget": 1654.4,
+              "source": "baseline",
+              "observations": [
+                1654.4,
+                1654.4,
+                1654.4
+              ]
+            },
+            "rssBytesPerTree": {
+              "budget": 137625.6,
+              "source": "baseline",
+              "observations": [
+                137625.6,
+                137625.6,
+                137625.6
+              ]
+            },
+            "heapDeltaBytes": {
+              "budget": 624616,
+              "source": "baseline",
+              "observations": [
+                624616,
+                624616,
+                624616
+              ]
+            },
+            "rssDeltaBytes": {
+              "budget": 4128768,
+              "source": "baseline",
+              "observations": [
+                4128768,
+                3932160,
+                4128768
+              ]
+            }
+          }
+        },
+        {
+          "mode": "incremental",
+          "id": "object-property-deletion",
+          "metrics": {
+            "heapUsedBytesPerTree": {
+              "budget": 1650.4,
+              "source": "baseline",
+              "observations": [
+                1650.4,
+                1650.4,
+                1650.4
+              ]
+            },
+            "rssBytesPerTree": {
+              "budget": 137625.6,
+              "source": "session-1",
+              "observations": [
+                131072,
+                137625.6,
+                131072
+              ]
+            },
+            "heapDeltaBytes": {
+              "budget": 643328,
+              "source": "baseline",
+              "observations": [
+                643328,
+                643328,
+                643328
+              ]
+            },
+            "rssDeltaBytes": {
+              "budget": 4128768,
+              "source": "session-1",
+              "observations": [
+                3932160,
+                4128768,
+                3932160
+              ]
+            }
+          }
+        },
+        {
+          "mode": "incremental",
+          "id": "method-name-replacement",
+          "metrics": {
+            "heapUsedBytesPerTree": {
+              "budget": 1654.4,
+              "source": "baseline",
+              "observations": [
+                1654.4,
+                1654.4,
+                1654.4
+              ]
+            },
+            "rssBytesPerTree": {
+              "budget": 137625.6,
+              "source": "baseline",
+              "observations": [
+                137625.6,
+                137625.6,
+                137625.6
+              ]
+            },
+            "heapDeltaBytes": {
+              "budget": 642928,
+              "source": "baseline",
+              "observations": [
+                642928,
+                642928,
+                642928
+              ]
+            },
+            "rssDeltaBytes": {
+              "budget": 4128768,
+              "source": "baseline",
+              "observations": [
+                4128768,
+                3932160,
+                3932160
+              ]
+            }
+          }
+        },
+        {
+          "mode": "incremental",
+          "id": "nested-call-edit",
+          "metrics": {
+            "heapUsedBytesPerTree": {
+              "budget": 1654.4,
+              "source": "baseline",
+              "observations": [
+                1654.4,
+                1654.4,
+                1654.4
+              ]
+            },
+            "rssBytesPerTree": {
+              "budget": 137625.6,
+              "source": "baseline",
+              "observations": [
+                137625.6,
+                137625.6,
+                131072
+              ]
+            },
+            "heapDeltaBytes": {
+              "budget": 696736,
+              "source": "baseline",
+              "observations": [
+                696736,
+                696736,
+                696736
+              ]
+            },
+            "rssDeltaBytes": {
+              "budget": 4128768,
+              "source": "session-1",
+              "observations": [
+                3932160,
+                4128768,
+                3932160
+              ]
+            }
+          }
+        },
+        {
+          "mode": "incremental",
+          "id": "nested-arrow-body-edit",
+          "metrics": {
+            "heapUsedBytesPerTree": {
+              "budget": 1654.4,
+              "source": "baseline",
+              "observations": [
+                1654.4,
+                1654.4,
+                1654.4
+              ]
+            },
+            "rssBytesPerTree": {
+              "budget": 137625.6,
+              "source": "baseline",
+              "observations": [
+                137625.6,
+                137625.6,
+                137625.6
+              ]
+            },
+            "heapDeltaBytes": {
+              "budget": 644848,
+              "source": "baseline",
+              "observations": [
+                644848,
+                644848,
+                644848
+              ]
+            },
+            "rssDeltaBytes": {
+              "budget": 4128768,
+              "source": "baseline",
+              "observations": [
+                4128768,
+                4128768,
+                4128768
+              ]
+            }
+          }
+        },
+        {
+          "mode": "incremental",
+          "id": "object-brace-repair",
+          "metrics": {
+            "heapUsedBytesPerTree": {
+              "budget": 2146.488889,
+              "source": "baseline",
+              "observations": [
+                2146.488889,
+                2142.222222,
+                2146.488889
+              ]
+            },
+            "rssBytesPerTree": {
+              "budget": 139810.133333,
+              "source": "baseline",
+              "observations": [
+                139810.133333,
+                135441.066667,
+                139810.133333
+              ]
+            },
+            "heapDeltaBytes": {
+              "budget": 1290504,
+              "source": "baseline",
+              "observations": [
+                1290504,
+                1290504,
+                1290504
+              ]
+            },
+            "rssDeltaBytes": {
+              "budget": 6291456,
+              "source": "session-2",
+              "observations": [
+                6094848,
+                6094848,
+                6291456
+              ]
+            }
+          }
+        },
+        {
+          "mode": "incremental",
+          "id": "string-quote-repair",
+          "metrics": {
+            "heapUsedBytesPerTree": {
+              "budget": 328.533333,
+              "source": "baseline",
+              "observations": [
+                328.533333,
+                328.533333,
+                328.533333
+              ]
+            },
+            "rssBytesPerTree": {
+              "budget": 17476.266667,
+              "source": "baseline",
+              "observations": [
+                17476.266667,
+                13107.2,
+                13107.2
+              ]
+            },
+            "heapDeltaBytes": {
+              "budget": 168952,
+              "source": "baseline",
+              "observations": [
+                168952,
+                168952,
+                168952
+              ]
+            },
+            "rssDeltaBytes": {
+              "budget": 786432,
+              "source": "baseline",
+              "observations": [
+                786432,
+                589824,
+                589824
+              ]
+            }
+          }
+        },
+        {
+          "mode": "incremental",
+          "id": "array-bracket-repair",
+          "metrics": {
+            "heapUsedBytesPerTree": {
+              "budget": 2131.2,
+              "source": "baseline",
+              "observations": [
+                2131.2,
+                2126.933333,
+                2131.2
+              ]
+            },
+            "rssBytesPerTree": {
+              "budget": 144179.2,
+              "source": "baseline",
+              "observations": [
+                144179.2,
+                139810.133333,
+                139810.133333
+              ]
+            },
+            "heapDeltaBytes": {
+              "budget": 1472856,
+              "source": "baseline",
+              "observations": [
+                1472856,
+                1472856,
+                1472856
+              ]
+            },
+            "rssDeltaBytes": {
+              "budget": 6291456,
+              "source": "baseline",
+              "observations": [
+                6291456,
+                6291456,
+                6291456
+              ]
+            }
+          }
+        }
+      ]
+    }
+  }
+}

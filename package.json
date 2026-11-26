@@ -25,7 +25,10 @@
     "prebuilds/**",
     "bindings/node/*",
     "queries/*",
-    "src/**",
+    "src/grammar.json",
+    "src/node-types.json",
+    "src/parser.c",
+    "src/tree_sitter/",
     "*.wasm"
   ],
   "dependencies": {
@@ -34,6 +37,7 @@
   },
   "devDependencies": {
     "prebuildify": "^6.0.1",
+    "prettier": "3.10.1",
     "tree-sitter": "^0.25.0",
     "tree-sitter-cli": "0.27.2"
   },

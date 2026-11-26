@@ -1,0 +1,235 @@
+#!/usr/bin/env python3
+"""Check npm package contents against the committed package contract."""
+
+from __future__ import annotations
+
+import fnmatch
+import json
+import subprocess
+import sys
+from pathlib import Path
+from typing import Any
+
+from terminal_report import print_terminal_status
+
+ROOT = Path(__file__).resolve().parent.parent
+
+REQUIRED_FILES = {
+    "LICENSE",
+    "README.md",
+    "binding.gyp",
+    "bindings/node/binding.cc",
+    "bindings/node/index.d.ts",
+    "bindings/node/index.js",
+    "grammar.js",
+    "package.json",
+    "queries/highlights.scm",
+    "queries/locals.scm",
+    "src/grammar.json",
+    "src/node-types.json",
+    "src/parser.c",
+    "src/tree_sitter/alloc.h",
+    "src/tree_sitter/array.h",
+    "src/tree_sitter/parser.h",
+    "tree-sitter.json",
+}
+
+FORBIDDEN_PATTERNS = (
+    "*.a",
+    "*.dylib",
+    "*.log",
+    "*.o",
+    "*.pc",
+    "*.so",
+    "*.tgz",
+    "build/*",
+    "docs/*",
+    "node_modules/*",
+    "scripts/*",
+    "test/*",
+)
+
+EXPLICIT_SRC_FILES = (
+    "src/grammar.json",
+    "src/node-types.json",
+    "src/parser.c",
+    "src/tree_sitter/",
+)
+
+
+class Checker:
+    def __init__(self) -> None:
+        self.failures = 0
+
+    def require(self, condition: bool, message: str) -> None:
+        if condition:
+            return
+        print(f"package integrity check failed: {message}", file=sys.stderr)
+        self.failures += 1
+
+
+def read_json(path: str) -> dict[str, Any]:
+    value = json.loads((ROOT / path).read_text(encoding="utf-8"))
+    if not isinstance(value, dict):
+        raise TypeError(f"{path} must contain a JSON object")
+    return value
+
+
+def run_pack(npm: str) -> list[dict[str, Any]]:
+    result = subprocess.run(
+        [npm, "pack", "--dry-run", "--json", "--ignore-scripts"],
+        cwd=ROOT,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    if result.returncode != 0:
+        detail = result.stderr.strip() or result.stdout.strip() or "no output"
+        raise RuntimeError(f"npm pack failed with exit {result.returncode}: {detail}")
+    data = json.loads(result.stdout)
+    if not isinstance(data, list):
+        raise TypeError("npm pack output must be a JSON array")
+    return data
+
+
+def non_empty_string(value: object) -> bool:
+    return isinstance(value, str) and bool(value.strip())
+
+
+def check_metadata(
+    package: dict[str, Any],
+    tree_sitter: dict[str, Any],
+    entry: dict[str, Any],
+    check: Checker,
+) -> None:
+    for key in ("name", "version", "description", "license", "main", "types"):
+        check.require(non_empty_string(package.get(key)), f"package.json lacks {key}")
+
+    check.require(
+        entry.get("name") == package.get("name"),
+        f"packed name {entry.get('name')!r} does not match package.json",
+    )
+    check.require(
+        entry.get("version") == package.get("version"),
+        f"packed version {entry.get('version')!r} does not match package.json",
+    )
+
+    metadata = tree_sitter.get("metadata")
+    check.require(isinstance(metadata, dict), "tree-sitter.json lacks metadata")
+    if isinstance(metadata, dict):
+        check.require(
+            metadata.get("version") == package.get("version"),
+            "tree-sitter.json metadata version does not match package.json",
+        )
+        check.require(
+            metadata.get("license") == package.get("license"),
+            "tree-sitter.json metadata license does not match package.json",
+        )
+
+    files = package.get("files")
+    check.require(isinstance(files, list), "package.json lacks a files array")
+    if isinstance(files, list):
+        check.require(
+            "src/**" not in files,
+            "package.json uses src/**, which admits build artifacts",
+        )
+        for path in EXPLICIT_SRC_FILES:
+            check.require(path in files, f"package.json files lacks {path}")
+
+
+def check_files(entries: list[dict[str, Any]], check: Checker) -> list[str]:
+    check.require(len(entries) == 1, "npm pack did not produce exactly one package")
+    if not entries:
+        return []
+    entry = entries[0]
+    check.require(isinstance(entry, dict), "npm pack entry must be an object")
+    if not isinstance(entry, dict):
+        return []
+
+    files = entry.get("files")
+    check.require(isinstance(files, list), "npm pack entry lacks a files array")
+    if not isinstance(files, list):
+        return []
+
+    paths: list[str] = []
+    for item in files:
+        check.require(isinstance(item, dict), "npm pack file entry must be an object")
+        if not isinstance(item, dict):
+            continue
+        path = item.get("path")
+        check.require(non_empty_string(path), "npm pack file entry lacks a path")
+        if not isinstance(path, str):
+            continue
+        check.require(not path.startswith("/"), f"absolute package path: {path}")
+        check.require(".." not in Path(path).parts, f"traversing package path: {path}")
+        paths.append(path)
+
+        local = ROOT / path
+        check.require(local.is_file(), f"packed file is missing locally: {path}")
+        if local.is_file():
+            check.require(
+                local.stat().st_size == item.get("size"),
+                f"packed size differs from local file: {path}",
+            )
+
+    check.require(len(paths) == len(set(paths)), "npm pack listed duplicate paths")
+
+    packed = set(paths)
+    for path in sorted(REQUIRED_FILES - packed):
+        check.require(False, f"required file is absent from package: {path}")
+
+    for path in paths:
+        for pattern in FORBIDDEN_PATTERNS:
+            if fnmatch.fnmatchcase(path, pattern):
+                check.require(False, f"forbidden file in package: {path}")
+                break
+
+    return paths
+
+
+def main(argv: list[str]) -> int:
+    npm = argv[1] if len(argv) > 1 else "npm"
+    check = Checker()
+
+    try:
+        entries = run_pack(npm)
+    except (OSError, RuntimeError, TypeError, json.JSONDecodeError) as error:
+        print(f"package integrity check failed: {error}", file=sys.stderr)
+        print_terminal_status("package integrity", None, ["pack failure; see stderr"])
+        return 1
+
+    package = read_json("package.json")
+    tree_sitter = read_json("tree-sitter.json")
+    if entries and isinstance(entries[0], dict):
+        check_metadata(package, tree_sitter, entries[0], check)
+    else:
+        check.require(False, "npm pack produced no metadata entry")
+    paths = check_files(entries, check)
+
+    if check.failures:
+        print_terminal_status(
+            "package integrity",
+            False,
+            [f"{check.failures} failed assertion(s); see stderr diagnostics"],
+        )
+        return 1
+
+    print(
+        f"package integrity: {len(paths)} files verified; "
+        f"required {len(REQUIRED_FILES)}; "
+        f"forbidden patterns {len(FORBIDDEN_PATTERNS)}"
+    )
+    print_terminal_status(
+        "package integrity",
+        True,
+        [
+            f"{len(paths)} files",
+            f"{len(REQUIRED_FILES)} required",
+            f"{len(FORBIDDEN_PATTERNS)} forbidden patterns",
+        ],
+    )
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main(sys.argv))

@@ -35,5 +35,14 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Install Python development tools
+        run: |
+          python3 -m venv .venv
+          .venv/bin/pip install -r requirements-dev.txt
+
       - name: Run CI gate
         run: make ci
+
+      - name: Run hardware-variance-aware performance report
+        if: matrix.node-version == 24
+        run: make performance-report

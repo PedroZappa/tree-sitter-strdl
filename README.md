@@ -98,7 +98,7 @@ npm ci
 make ci
 ```
 
-`make ci` checks generated artifacts, runs corpus and query tests, builds the C libraries, and runs the Node.js binding tests. GitHub Actions runs the same gate on pull requests and pushes to `main`; see [CI](docs/ci.md).
+`make ci` checks generated artifacts and benchmark fixture reproducibility, runs corpus, query, regression-coverage, Node.js binding, and npm package integrity checks, and builds the C libraries. GitHub Actions runs the same gate on pull requests and pushes to `main`; see [CI](docs/ci.md).
 
 To regenerate artifacts or run a single layer directly:
 
@@ -123,6 +123,9 @@ See [query documentation](docs/queries.md) for the official inventory, capture c
 - [Syntax coverage matrix](docs/syntax-coverage-matrix.md)
 - [Compatibility](docs/compatibility.md)
 - [CI](docs/ci.md)
+- [Test strategy](docs/test-strategy.md)
+- [Regression coverage](docs/regression-coverage.md)
+- [Benchmarking](docs/benchmarking.md)
 - [Queries](docs/queries.md)
 - [Highlight captures](docs/highlight-captures.md)
 - [Locals captures](docs/locals-captures.md)

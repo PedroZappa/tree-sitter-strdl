@@ -1,9 +1,11 @@
 #!/usr/bin/env python3
 """Compile official queries and verify that invalid queries are rejected.
 
-Each query is compiled with `tree-sitter query` without source paths. This
-checks query syntax, node types, and field names without mixing in capture
-behavior. Negative controls confirm that compilation failures are detectable.
+Each query is compiled with `tree-sitter query` against an empty source file.
+This checks query syntax, node types, and field names without mixing in capture
+behavior, while avoiding the CLI's interactive mode (which waits for source
+text on stdin when no source path is given). Negative controls confirm that
+compilation failures are detectable.
 """
 
 from __future__ import annotations
@@ -13,6 +15,8 @@ import subprocess
 import sys
 import tempfile
 from pathlib import Path
+
+from terminal_report import print_terminal_status
 
 ANSI_RE = re.compile(r"\x1b\[[0-9;]*m")
 
@@ -32,11 +36,12 @@ def clean(text: str) -> str:
     return ANSI_RE.sub("", text).strip()
 
 
-def compile_query(tree_sitter: str, query: str) -> subprocess.CompletedProcess[str]:
+def compile_query(tree_sitter: str, query: str, source: str) -> subprocess.CompletedProcess[str]:
     return subprocess.run(
-        [tree_sitter, "query", "--quiet", "--grammar-path", ".", query],
+        [tree_sitter, "query", "--quiet", "--grammar-path", ".", query, source],
         capture_output=True,
         text=True,
+        stdin=subprocess.DEVNULL,
         check=False,
     )
 
@@ -59,19 +64,22 @@ def main(argv: list[str]) -> int:
     tree_sitter, *queries = argv
     failures = 0
 
-    for query in queries:
-        result = compile_query(tree_sitter, query)
-        if result.returncode != 0:
-            report_failure(f"could not compile {query}", result)
-            failures += 1
-        else:
-            print(f"compiled: {query}")
-
     with tempfile.TemporaryDirectory(prefix="tree-sitter-strdl-query-") as temp_dir:
+        source_path = Path(temp_dir) / "empty.strdl"
+        source_path.write_text("", encoding="utf-8")
+
+        for query in queries:
+            result = compile_query(tree_sitter, query, str(source_path))
+            if result.returncode != 0:
+                report_failure(f"could not compile {query}", result)
+                failures += 1
+            else:
+                print(f"compiled: {query}")
+
         for label, (source, expected_error) in NEGATIVE_CONTROLS.items():
             query_path = Path(temp_dir) / f"{label.replace(' ', '-')}.scm"
             query_path.write_text(source, encoding="utf-8")
-            result = compile_query(tree_sitter, str(query_path))
+            result = compile_query(tree_sitter, str(query_path), str(source_path))
             output = clean(result.stderr) or clean(result.stdout)
 
             if result.returncode == 0:
@@ -82,8 +90,7 @@ def main(argv: list[str]) -> int:
                 failures += 1
             elif expected_error not in output:
                 print(
-                    f"query compilation check failed: {label} failed for an "
-                    "unexpected reason",
+                    f"query compilation check failed: {label} failed for an unexpected reason",
                     file=sys.stderr,
                 )
                 if output:
@@ -93,11 +100,21 @@ def main(argv: list[str]) -> int:
                 print(f"rejected: {label}")
 
     if failures:
+        print_terminal_status(
+            "query compilation",
+            False,
+            [f"{failures} issue(s); see stderr diagnostics"],
+        )
         return 1
 
     print(
         f"query compilation: {len(queries)} official queries compiled; "
         f"{len(NEGATIVE_CONTROLS)} negative controls rejected"
+    )
+    print_terminal_status(
+        "query compilation",
+        True,
+        [f"{len(queries)} queries", f"{len(NEGATIVE_CONTROLS)} controls"],
     )
     return 0
 

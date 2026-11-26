@@ -8,28 +8,28 @@ Captured on 2026-11-25.
 
 ### Environment
 
-| Component | Version or state |
-| --- | --- |
-| Tree-sitter CLI | 0.27.2, installed at `/opt/homebrew/bin/tree-sitter` |
-| Node.js | 26.8.2 |
-| npm | 11.19.1 |
-| Local `node_modules/` | absent |
-| Local `tree-sitter-cli` binary | absent |
-| Parser directories config | not configured; CLI emitted a warning |
+| Component                      | Version or state                                     |
+| ------------------------------ | ---------------------------------------------------- |
+| Tree-sitter CLI                | 0.27.2, installed at `/opt/homebrew/bin/tree-sitter` |
+| Node.js                        | 26.8.2                                               |
+| npm                            | 11.19.1                                              |
+| Local `node_modules/`          | absent                                               |
+| Local `tree-sitter-cli` binary | absent                                               |
+| Parser directories config      | not configured; CLI emitted a warning                |
 
 The repository's `package.json` declares `tree-sitter-cli` `^0.25.8`, while the available CLI is 0.27.2. This version difference affected generated output.
 
 ### Results
 
-| Check | Command | Result |
-| --- | --- | --- |
-| Grammar generation | `tree-sitter generate` | Succeeded with no output |
-| Corpus tests | `tree-sitter test` | 7/7 tests passed; 0 failed; CLI reported 6,896 bytes/ms average parse speed |
-| Node.js binding test | `npm test` | Failed: `Cannot find module 'tree-sitter'` |
-| Highlight query | `tree-sitter query --quiet queries/highlights.scm test-local.strdl` | Command succeeded; parser-directory warning emitted |
-| Locals query | `tree-sitter query --quiet queries/locals.scm test-local.strdl` | Command succeeded; parser-directory warning emitted |
-| Highlight query with local grammar path | `tree-sitter query --quiet --grammar-path . queries/highlights.scm test-local.strdl` | Command succeeded; parser-directory warning emitted |
-| Locals query with local grammar path | `tree-sitter query --quiet --grammar-path . queries/locals.scm test-local.strdl` | Command succeeded; parser-directory warning emitted |
+| Check                                   | Command                                                                              | Result                                                                      |
+| --------------------------------------- | ------------------------------------------------------------------------------------ | --------------------------------------------------------------------------- |
+| Grammar generation                      | `tree-sitter generate`                                                               | Succeeded with no output                                                    |
+| Corpus tests                            | `tree-sitter test`                                                                   | 7/7 tests passed; 0 failed; CLI reported 6,896 bytes/ms average parse speed |
+| Node.js binding test                    | `npm test`                                                                           | Failed: `Cannot find module 'tree-sitter'`                                  |
+| Highlight query                         | `tree-sitter query --quiet queries/highlights.scm test-local.strdl`                  | Command succeeded; parser-directory warning emitted                         |
+| Locals query                            | `tree-sitter query --quiet queries/locals.scm test-local.strdl`                      | Command succeeded; parser-directory warning emitted                         |
+| Highlight query with local grammar path | `tree-sitter query --quiet --grammar-path . queries/highlights.scm test-local.strdl` | Command succeeded; parser-directory warning emitted                         |
+| Locals query with local grammar path    | `tree-sitter query --quiet --grammar-path . queries/locals.scm test-local.strdl`     | Command succeeded; parser-directory warning emitted                         |
 
 The query commands establish that both query files compile and execute against `test-local.strdl`. They do not verify capture correctness because `--quiet` suppresses match output.
 
@@ -70,31 +70,31 @@ Statuses:
 - **Missing**: no dedicated grammar support; probes failed or produced unrelated nodes.
 - **Opaque**: content is accepted as string payload with no internal syntax structure.
 
-| Required construct | Status | Grammar evidence | Corpus evidence | Notes |
-| --- | --- | --- | --- | --- |
-| Variable declarations (`var`, `let`, `const`) | Supported | `variable_declaration`, `lexical_declaration`, `variable_declarator` | `variable_var.txt`; `let` in `arrow_funcs.txt`; `const` probe only | All three keywords parse; `const` has no committed corpus case. |
-| Assignments and expressions | Partial | `assignment`, `_initializer`, `expression` | `$:` assignments in `array_literal.txt` and `objects_args.txt` | `$:` and custom `label:` pattern assignments parse. JavaScript-style `x = 1` fails; assignment is only available in declarator initializers. |
-| Function calls and nested calls | Supported | `function_call`, `commaSepTrailing` | `function_call.txt`, `number_args.txt`, `array_literal.txt`, `objects_args.txt` | Direct calls and nested calls parse as nested `function_call` nodes. |
-| Member expressions and method chaining | Partial | `method_call`, `chained_method` | `function_call_chained.txt`, `objects_args.txt`, `arrow_funcs.txt` | Only `.name(...)` method calls are supported. Plain `.foo` fails; `x["foo"]` parses as an identifier followed by an array, not member access. |
-| Arrow functions and callbacks | Partial | `arrow_function` | `arrow_funcs.txt` | Only one identifier parameter and an expression body are supported. |
-| Function parameters | Partial | `arrow_function.parameter` | `arrow_funcs.txt` | Zero, multiple, and rest parameters fail; no function-declaration parameter list exists. |
-| Arrays | Supported | `array` | `array_literal.txt` | Array elements are expressions. |
-| Objects | Supported | `object`, `pair` | `objects_args.txt` | Object literals parse with identifier, string, or number keys. |
-| Object properties and shorthand properties | Partial | `pair` | `objects_args.txt` | `key: value` pairs parse; shorthand `{ foo }` fails. |
-| Destructuring | Missing | None | None | Object and array destructuring probes failed. |
-| Spread and rest syntax | Missing | None | None | `s(...xs)` and `(...xs) => 1` failed. |
-| Arithmetic expressions | Partial | `binary_expression`, `additive_expression`, `multiplicative_expression` | `number_args.txt` covers division; additive probe only | `+`, `-`, `*`, and `/` parse. `%` and `**` failed. |
-| Logical and comparison expressions | Missing | None | None | `a && b` and `a === b` failed. |
-| Unary expressions | Missing | None | None | `-a` and `!a` failed. |
-| Conditional expressions | Missing | None | None | `a ? b : c` failed. |
-| Optional chaining | Missing | None | None | `a?.b` failed. |
-| Nullish coalescing | Missing | None | None | `a ?? b` failed. |
-| Template literals and interpolation | Partial | Backtick branch of `string` | None | Backtick strings parse as opaque `string` nodes; `${name}` is not parsed as an expression. |
-| Single-quoted and double-quoted strings | Supported | `string` | Double quotes in `function_call_chained.txt` and `objects_args.txt`; single-quote probe only | Both quote styles parse. |
-| Comments | Partial | `comment` in `extras` | None | `//` comments parse; `/* ... */` failed. |
-| Parenthesized expressions | Supported | Anonymous `seq('(', $.expression, ')')` in `_base_expression` | None | Probe parsed; parentheses produce no dedicated named node. |
-| Relevant import and export syntax | Missing | None | None | Probe parsed `import x from "y"` as separate identifiers and a string, and `export` as an identifier; no import/export nodes exist. |
-| Mini-notation | Opaque | `string` | `arrow_funcs.txt`, `objects_args.txt` | Mini-notation is ordinary string content with no grammar-specific nodes or semantics. |
+| Required construct                            | Status    | Grammar evidence                                                        | Corpus evidence                                                                              | Notes                                                                                                                                         |
+| --------------------------------------------- | --------- | ----------------------------------------------------------------------- | -------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
+| Variable declarations (`var`, `let`, `const`) | Supported | `variable_declaration`, `lexical_declaration`, `variable_declarator`    | `variable_var.txt`; `let` in `arrow_funcs.txt`; `const` probe only                           | All three keywords parse; `const` has no committed corpus case.                                                                               |
+| Assignments and expressions                   | Partial   | `assignment`, `_initializer`, `expression`                              | `$:` assignments in `array_literal.txt` and `objects_args.txt`                               | `$:` and custom `label:` pattern assignments parse. JavaScript-style `x = 1` fails; assignment is only available in declarator initializers.  |
+| Function calls and nested calls               | Supported | `function_call`, `commaSepTrailing`                                     | `function_call.txt`, `number_args.txt`, `array_literal.txt`, `objects_args.txt`              | Direct calls and nested calls parse as nested `function_call` nodes.                                                                          |
+| Member expressions and method chaining        | Partial   | `method_call`, `chained_method`                                         | `function_call_chained.txt`, `objects_args.txt`, `arrow_funcs.txt`                           | Only `.name(...)` method calls are supported. Plain `.foo` fails; `x["foo"]` parses as an identifier followed by an array, not member access. |
+| Arrow functions and callbacks                 | Partial   | `arrow_function`                                                        | `arrow_funcs.txt`                                                                            | Only one identifier parameter and an expression body are supported.                                                                           |
+| Function parameters                           | Partial   | `arrow_function.parameter`                                              | `arrow_funcs.txt`                                                                            | Zero, multiple, and rest parameters fail; no function-declaration parameter list exists.                                                      |
+| Arrays                                        | Supported | `array`                                                                 | `array_literal.txt`                                                                          | Array elements are expressions.                                                                                                               |
+| Objects                                       | Supported | `object`, `pair`                                                        | `objects_args.txt`                                                                           | Object literals parse with identifier, string, or number keys.                                                                                |
+| Object properties and shorthand properties    | Partial   | `pair`                                                                  | `objects_args.txt`                                                                           | `key: value` pairs parse; shorthand `{ foo }` fails.                                                                                          |
+| Destructuring                                 | Missing   | None                                                                    | None                                                                                         | Object and array destructuring probes failed.                                                                                                 |
+| Spread and rest syntax                        | Missing   | None                                                                    | None                                                                                         | `s(...xs)` and `(...xs) => 1` failed.                                                                                                         |
+| Arithmetic expressions                        | Partial   | `binary_expression`, `additive_expression`, `multiplicative_expression` | `number_args.txt` covers division; additive probe only                                       | `+`, `-`, `*`, and `/` parse. `%` and `**` failed.                                                                                            |
+| Logical and comparison expressions            | Missing   | None                                                                    | None                                                                                         | `a && b` and `a === b` failed.                                                                                                                |
+| Unary expressions                             | Missing   | None                                                                    | None                                                                                         | `-a` and `!a` failed.                                                                                                                         |
+| Conditional expressions                       | Missing   | None                                                                    | None                                                                                         | `a ? b : c` failed.                                                                                                                           |
+| Optional chaining                             | Missing   | None                                                                    | None                                                                                         | `a?.b` failed.                                                                                                                                |
+| Nullish coalescing                            | Missing   | None                                                                    | None                                                                                         | `a ?? b` failed.                                                                                                                              |
+| Template literals and interpolation           | Partial   | Backtick branch of `string`                                             | None                                                                                         | Backtick strings parse as opaque `string` nodes; `${name}` is not parsed as an expression.                                                    |
+| Single-quoted and double-quoted strings       | Supported | `string`                                                                | Double quotes in `function_call_chained.txt` and `objects_args.txt`; single-quote probe only | Both quote styles parse.                                                                                                                      |
+| Comments                                      | Partial   | `comment` in `extras`                                                   | None                                                                                         | `//` comments parse; `/* ... */` failed.                                                                                                      |
+| Parenthesized expressions                     | Supported | Anonymous `seq('(', $.expression, ')')` in `_base_expression`           | None                                                                                         | Probe parsed; parentheses produce no dedicated named node.                                                                                    |
+| Relevant import and export syntax             | Missing   | None                                                                    | None                                                                                         | Probe parsed `import x from "y"` as separate identifiers and a string, and `export` as an identifier; no import/export nodes exist.           |
+| Mini-notation                                 | Opaque    | `string`                                                                | `arrow_funcs.txt`, `objects_args.txt`                                                        | Mini-notation is ordinary string content with no grammar-specific nodes or semantics.                                                         |
 
 This table compares the implemented grammar against the required list in [AGENTS.md](../AGENTS.md). It is not yet evidence that every supported construct is relevant to real Strudel compositions; that evidence-gathering belongs in Phase 3. No grammar changes were made during this inventory, and the temporary probes should become committed corpus tests when their constructs are prioritized.
 
@@ -104,34 +104,34 @@ Captured on 2026-11-25 from `grammar.js`, `src/node-types.json`, and temporary `
 
 ### Rule map
 
-| Rule or helper | Kind | Role | Public named node |
-| --- | --- | --- | --- |
-| `source_file` | Rule | Root; a sequence of statements. | Yes, root |
-| `_statement` | Hidden rule | Structural choice among assignment, declaration, expression, and comment statements. | No |
-| `variable_declaration` | Rule | `var` declarations with one or more declarators. | Yes |
-| `lexical_declaration` | Rule | `let`/`const` declarations with one or more declarators. | Yes |
-| `variable_declarator` | Rule | A declared identifier with an optional initializer. | Yes |
-| `_initializer` | Hidden rule | `=` followed by an expression; supplies the `value` field. | No |
-| `assignment` | Rule | Strudel-style `$:` assignment or `identifier:` label assignment. | Yes |
-| `function_call` | Rule | Direct `identifier(...)` call with optional trailing comma. | Yes |
-| `method_call` | Rule | A `.identifier(...)` segment in a chain. | Yes |
-| `chained_method` | Rule | A base expression followed by one or more method calls. | Yes |
-| `binary_expression` | Rule | Wrapper selecting additive, multiplicative, or base expression. | Yes |
-| `additive_expression` | Rule | Left-associative `+`/`-` binary form. | Yes |
-| `multiplicative_expression` | Rule | Left-associative `*`/`/` binary form. | Yes |
-| `arrow_function` | Rule | Single identifier parameter, `=>`, expression body. | Yes |
-| `expression` | Rule | Wrapper selecting chained, binary, arrow, or base expression. | Yes |
-| `_base_expression` | Hidden rule | Calls, identifiers, literals, objects, arrays, or parenthesized expressions. | No |
-| `object` | Rule | Braced sequence of `pair` nodes. | Yes |
-| `pair` | Rule | `key: value` object property. | Yes |
-| `array` | Rule | Bracketed sequence of expressions. | Yes |
-| `string` | Rule | Opaque double-, single-, or backtick-quoted string. | Yes |
-| `number` | Rule | Integer or decimal numeric literal. | Yes |
-| `identifier` | Rule | JavaScript-like identifier token. | Yes |
-| `comment` | Rule/extra | Line comment; declared both as an extra and as a statement. | Yes |
-| `commaSep` | Helper | Optional comma-separated list. | No |
-| `commaSep1` | Helper | Required comma-separated list. | No |
-| `commaSepTrailing` | Helper | Optional comma-separated list allowing a trailing comma. | No |
+| Rule or helper              | Kind        | Role                                                                                 | Public named node |
+| --------------------------- | ----------- | ------------------------------------------------------------------------------------ | ----------------- |
+| `source_file`               | Rule        | Root; a sequence of statements.                                                      | Yes, root         |
+| `_statement`                | Hidden rule | Structural choice among assignment, declaration, expression, and comment statements. | No                |
+| `variable_declaration`      | Rule        | `var` declarations with one or more declarators.                                     | Yes               |
+| `lexical_declaration`       | Rule        | `let`/`const` declarations with one or more declarators.                             | Yes               |
+| `variable_declarator`       | Rule        | A declared identifier with an optional initializer.                                  | Yes               |
+| `_initializer`              | Hidden rule | `=` followed by an expression; supplies the `value` field.                           | No                |
+| `assignment`                | Rule        | Strudel-style `$:` assignment or `identifier:` label assignment.                     | Yes               |
+| `function_call`             | Rule        | Direct `identifier(...)` call with optional trailing comma.                          | Yes               |
+| `method_call`               | Rule        | A `.identifier(...)` segment in a chain.                                             | Yes               |
+| `chained_method`            | Rule        | A base expression followed by one or more method calls.                              | Yes               |
+| `binary_expression`         | Rule        | Wrapper selecting additive, multiplicative, or base expression.                      | Yes               |
+| `additive_expression`       | Rule        | Left-associative `+`/`-` binary form.                                                | Yes               |
+| `multiplicative_expression` | Rule        | Left-associative `*`/`/` binary form.                                                | Yes               |
+| `arrow_function`            | Rule        | Single identifier parameter, `=>`, expression body.                                  | Yes               |
+| `expression`                | Rule        | Wrapper selecting chained, binary, arrow, or base expression.                        | Yes               |
+| `_base_expression`          | Hidden rule | Calls, identifiers, literals, objects, arrays, or parenthesized expressions.         | No                |
+| `object`                    | Rule        | Braced sequence of `pair` nodes.                                                     | Yes               |
+| `pair`                      | Rule        | `key: value` object property.                                                        | Yes               |
+| `array`                     | Rule        | Bracketed sequence of expressions.                                                   | Yes               |
+| `string`                    | Rule        | Opaque double-, single-, or backtick-quoted string.                                  | Yes               |
+| `number`                    | Rule        | Integer or decimal numeric literal.                                                  | Yes               |
+| `identifier`                | Rule        | JavaScript-like identifier token.                                                    | Yes               |
+| `comment`                   | Rule/extra  | Line comment; declared both as an extra and as a statement.                          | Yes               |
+| `commaSep`                  | Helper      | Optional comma-separated list.                                                       | No                |
+| `commaSep1`                 | Helper      | Required comma-separated list.                                                       | No                |
+| `commaSepTrailing`          | Helper      | Optional comma-separated list allowing a trailing comma.                             | No                |
 
 There is no external scanner, no alias, no supertype, and no active `conflicts` declaration. The only `conflicts` entry is commented out in `grammar.js`.
 
@@ -139,25 +139,25 @@ There is no external scanner, no alias, no supertype, and no active `conflicts` 
 
 `src/node-types.json` contains 43 node types: 20 named and 23 anonymous. Only 7 field names exist, all `multiple: false`; `variable_declarator.value` is the sole optional field. The field API is:
 
-| Named node | Fields | Children / notes |
-| --- | --- | --- |
-| `source_file` | none | Optional repeated `assignment`, `comment`, `expression`, `lexical_declaration`, or `variable_declaration`. |
-| `assignment` | none | `identifier` and/or `expression` children; no field distinguishes the assignment target. |
-| `variable_declaration` | none | One or more `variable_declarator` children. |
-| `lexical_declaration` | `kind` (`let` or `const`, required) | One or more `variable_declarator` children. |
-| `variable_declarator` | `name` (required `identifier`), `value` (optional `expression`) | Direct call/declaration structure. |
-| `expression` | none | Exactly one child from the expression alternatives; `expression` can itself contain `expression` because of anonymous parentheses. |
-| `binary_expression` | none | Exactly one child from additive, multiplicative, or base alternatives. |
-| `additive_expression` | `operator` (`+` or `-`, required) | Two or more `binary_expression` children. |
-| `multiplicative_expression` | `operator` (`*` or `/`, required) | Two or more `binary_expression` children. |
-| `chained_method` | none | A base node followed by one or more `method_call` children. |
-| `function_call` | none | `identifier` followed by zero or more `expression` arguments. |
-| `method_call` | none | `identifier` followed by zero or more `expression` arguments; the leading `.` is anonymous. |
-| `arrow_function` | `parameter` (required `identifier`), `body` (required `expression`) | Expression body only. |
-| `object` | none | Optional repeated `pair`. |
-| `pair` | `key` (required identifier/string/number), `value` (required `expression`) | Object property. |
-| `array` | none | Optional repeated `expression`. |
-| `string`, `number`, `identifier`, `comment` | none | Leaf nodes; string content is opaque. |
+| Named node                                  | Fields                                                                     | Children / notes                                                                                                                   |
+| ------------------------------------------- | -------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
+| `source_file`                               | none                                                                       | Optional repeated `assignment`, `comment`, `expression`, `lexical_declaration`, or `variable_declaration`.                         |
+| `assignment`                                | none                                                                       | `identifier` and/or `expression` children; no field distinguishes the assignment target.                                           |
+| `variable_declaration`                      | none                                                                       | One or more `variable_declarator` children.                                                                                        |
+| `lexical_declaration`                       | `kind` (`let` or `const`, required)                                        | One or more `variable_declarator` children.                                                                                        |
+| `variable_declarator`                       | `name` (required `identifier`), `value` (optional `expression`)            | Direct call/declaration structure.                                                                                                 |
+| `expression`                                | none                                                                       | Exactly one child from the expression alternatives; `expression` can itself contain `expression` because of anonymous parentheses. |
+| `binary_expression`                         | none                                                                       | Exactly one child from additive, multiplicative, or base alternatives.                                                             |
+| `additive_expression`                       | `operator` (`+` or `-`, required)                                          | Two or more `binary_expression` children.                                                                                          |
+| `multiplicative_expression`                 | `operator` (`*` or `/`, required)                                          | Two or more `binary_expression` children.                                                                                          |
+| `chained_method`                            | none                                                                       | A base node followed by one or more `method_call` children.                                                                        |
+| `function_call`                             | none                                                                       | `identifier` followed by zero or more `expression` arguments.                                                                      |
+| `method_call`                               | none                                                                       | `identifier` followed by zero or more `expression` arguments; the leading `.` is anonymous.                                        |
+| `arrow_function`                            | `parameter` (required `identifier`), `body` (required `expression`)        | Expression body only.                                                                                                              |
+| `object`                                    | none                                                                       | Optional repeated `pair`.                                                                                                          |
+| `pair`                                      | `key` (required identifier/string/number), `value` (required `expression`) | Object property.                                                                                                                   |
+| `array`                                     | none                                                                       | Optional repeated `expression`.                                                                                                    |
+| `string`, `number`, `identifier`, `comment` | none                                                                       | Leaf nodes; string content is opaque.                                                                                              |
 
 The current `expression`, `binary_expression`, and `chained_method` wrappers are structural and carry no Strudel-specific semantics. Their public status is recorded here as observed behavior, not as an approved long-term API contract.
 
@@ -193,28 +193,28 @@ Captured on 2026-11-25. This is a Phase 1 baseline, not a performance budget. Ph
 
 ### Environment
 
-| Component | Version or state |
-| --- | --- |
-| CPU | 12th Gen Intel(R) Core(TM) i9-12900KF, 24 logical CPUs |
-| Memory | 31 GiB total |
-| OS/kernel | Linux 6.12.15-1-omarchy, x86_64 |
-| Compiler | GCC 16.2.1 |
-| Tree-sitter CLI used for benchmarking | 0.26.9, installed at `/usr/bin/tree-sitter` |
-| Node.js/npm | 26.13.1 / 11.20.0 |
-| Local `node_modules/` | absent; pinned CLI 0.27.2 was unavailable for this run |
+| Component                             | Version or state                                       |
+| ------------------------------------- | ------------------------------------------------------ |
+| CPU                                   | 12th Gen Intel(R) Core(TM) i9-12900KF, 24 logical CPUs |
+| Memory                                | 31 GiB total                                           |
+| OS/kernel                             | Linux 6.12.15-1-omarchy, x86_64                        |
+| Compiler                              | GCC 16.2.1                                             |
+| Tree-sitter CLI used for benchmarking | 0.26.9, installed at `/usr/bin/tree-sitter`            |
+| Node.js/npm                           | 26.13.1 / 11.20.0                                      |
+| Local `node_modules/`                 | absent; pinned CLI 0.27.2 was unavailable for this run |
 
 The benchmark loaded the committed `src/parser.c` directly as a shared library. The parser artifact under test is therefore the committed generated parser, but the CLI runtime is 0.26.9 rather than the pinned development CLI 0.27.2. Times are CLI-reported parse times, excluding process startup except where peak resident-set size (RSS) is reported separately.
 
 ### Fixtures
 
-| Fixture | Size | Description |
-| --- | --- | --- |
-| `representative.strdl` | 2,854 bytes | Copy of the tracked `test.strdl` composition. |
-| `large.strdl` | 76,780 bytes | 1,000 generated statements of the form `let pN = s("bd sd [hh hh] bd").gain(0.8).fast(2)` followed by `$:pN.lpf(800).gain(0.9)`. |
-| `deep.strdl` | 614 bytes | 200 nested `s(` calls ending in `note("c3")`. |
-| `malformed.strdl` | 2,430 bytes | One valid `$:s("bd")` statement followed by 400 unclosed `.gain(` fragments. |
-| `large_x10.strdl` | 767,800 bytes | `large.strdl` repeated 10 times. |
-| `large_x100.strdl` | 7,678,000 bytes | `large.strdl` repeated 100 times. |
+| Fixture                | Size            | Description                                                                                                                      |
+| ---------------------- | --------------- | -------------------------------------------------------------------------------------------------------------------------------- |
+| `representative.strdl` | 2,854 bytes     | Copy of the tracked `test.strdl` composition.                                                                                    |
+| `large.strdl`          | 76,780 bytes    | 1,000 generated statements of the form `let pN = s("bd sd [hh hh] bd").gain(0.8).fast(2)` followed by `$:pN.lpf(800).gain(0.9)`. |
+| `deep.strdl`           | 614 bytes       | 200 nested `s(` calls ending in `note("c3")`.                                                                                    |
+| `malformed.strdl`      | 2,430 bytes     | One valid `$:s("bd")` statement followed by 400 unclosed `.gain(` fragments.                                                     |
+| `large_x10.strdl`      | 767,800 bytes   | `large.strdl` repeated 10 times.                                                                                                 |
+| `large_x100.strdl`     | 7,678,000 bytes | `large.strdl` repeated 100 times.                                                                                                |
 
 These fixtures were generated under `/tmp/opencode/ts-strdl-baseline/` and are not committed. They are sufficient for a baseline but not yet a durable benchmark suite.
 
@@ -222,12 +222,12 @@ These fixtures were generated under `/tmp/opencode/ts-strdl-baseline/` and are n
 
 Twenty runs per fixture. P99 from 20 samples is indicative only.
 
-| Fixture | P50 | P95 | P99 | Min | Max | Mean |
-| --- | ---: | ---: | ---: | ---: | ---: | ---: |
-| Representative | 0.52 ms | 0.57 ms | 0.59 ms | 0.33 ms | 0.60 ms | 0.50 ms |
-| Large | 9.26 ms | 11.10 ms | 12.37 ms | 8.16 ms | 12.69 ms | 9.35 ms |
-| Deep | 0.18 ms | 0.20 ms | 0.20 ms | 0.11 ms | 0.20 ms | 0.17 ms |
-| Malformed | 2.80 ms | 3.60 ms | 3.62 ms | 2.14 ms | 3.62 ms | 2.84 ms |
+| Fixture        |     P50 |      P95 |      P99 |     Min |      Max |    Mean |
+| -------------- | ------: | -------: | -------: | ------: | -------: | ------: |
+| Representative | 0.52 ms |  0.57 ms |  0.59 ms | 0.33 ms |  0.60 ms | 0.50 ms |
+| Large          | 9.26 ms | 11.10 ms | 12.37 ms | 8.16 ms | 12.69 ms | 9.35 ms |
+| Deep           | 0.18 ms |  0.20 ms |  0.20 ms | 0.11 ms |  0.20 ms | 0.17 ms |
+| Malformed      | 2.80 ms |  3.60 ms |  3.62 ms | 2.14 ms |  3.62 ms | 2.84 ms |
 
 Single-run scaling checks were 84.70 ms for `large_x10.strdl` and 852.41 ms for `large_x100.strdl`, approximately 9 KB/ms in both cases.
 
@@ -235,10 +235,10 @@ Single-run scaling checks were 84.70 ms for `large_x10.strdl` and 852.41 ms for 
 
 The incremental case inserted `let x = 1` at byte offset 0 of `large.strdl` using the CLI's `--edits` option. The CLI reports an initial parse time and a separate edit/reparse time.
 
-| Measurement | P50 | P95 | P99 | Min | Max | Mean |
-| --- | ---: | ---: | ---: | ---: | ---: | ---: |
-| Initial parse, 20 runs | 8.51 ms | 8.88 ms | 9.19 ms | — | — | — |
-| Edit/reparse, 20 runs | 0.59 ms | 0.63 ms | 0.64 ms | 0.57 ms | 0.64 ms | 0.59 ms |
+| Measurement            |     P50 |     P95 |     P99 |     Min |     Max |    Mean |
+| ---------------------- | ------: | ------: | ------: | ------: | ------: | ------: |
+| Initial parse, 20 runs | 8.51 ms | 8.88 ms | 9.19 ms |       — |       — |       — |
+| Edit/reparse, 20 runs  | 0.59 ms | 0.63 ms | 0.64 ms | 0.57 ms | 0.64 ms | 0.59 ms |
 
 Single-run edit/reparse checks were 6.99 ms for `large_x10.strdl` and 85.22 ms for `large_x100.strdl`. A beginning-of-file insertion is a deliberately demanding edit because it shifts the whole document; these numbers are not evidence that all edit positions are equally expensive.
 
@@ -246,13 +246,13 @@ Single-run edit/reparse checks were 6.99 ms for `large_x10.strdl` and 85.22 ms f
 
 Peak RSS was measured for the CLI child process with Python's `resource.getrusage(resource.RUSAGE_CHILDREN).ru_maxrss`. This includes CLI process overhead and is not an isolated measurement of parser-library allocations.
 
-| Fixture | Observation |
-| --- | --- |
+| Fixture        | Observation                      |
+| -------------- | -------------------------------- |
 | Representative | 12,180–12,292 KiB across 5 runs. |
-| Large | 11,916–12,484 KiB across 5 runs. |
-| Malformed | 12,064–12,460 KiB across 5 runs. |
-| Large x10 | 44,656 KiB, single run. |
-| Large x100 | 391,928 KiB, single run. |
+| Large          | 11,916–12,484 KiB across 5 runs. |
+| Malformed      | 12,064–12,460 KiB across 5 runs. |
+| Large x10      | 44,656 KiB, single run.          |
+| Large x100     | 391,928 KiB, single run.         |
 
 For documents up to 76 KB, CLI process overhead dominated and RSS did not show a consistent fixture-dependent increase. At 0.77 MB and 7.68 MB, RSS increased substantially while parse throughput stayed near 9 KB/ms. No memory budget is established by this baseline.
 
@@ -320,42 +320,42 @@ Captured on 2026-11-25 by inspecting tracked files and current package metadata.
 
 ### Architecture and authoritative files
 
-| Area | Role | Status |
-| --- | --- | --- |
-| `grammar.js` | Authoritative grammar definition | Hand-maintained source of truth. |
-| `src/parser.c`, `src/grammar.json`, `src/node-types.json`, `src/tree_sitter/*` | Generated parser and public node types | Generated by Tree-sitter CLI; do not hand-edit. |
-| `queries/*.scm` | Official query source | Hand-maintained query files. |
-| `test/corpus/*` | Corpus tests | Hand-maintained explicit expected trees. |
-| `bindings/*`, `CMakeLists.txt`, `Makefile`, `binding.gyp`, package manifests | Binding implementations and build metadata | Marked `linguist-generated` in `.gitattributes`; currently includes manual ABI 15 changes. Regeneration could overwrite those edits. |
-| `docs/*`, `.github/workflows/publish.yml`, `scripts/local_install.sh` | Project documentation, release automation, editor helper | Hand-maintained. |
+| Area                                                                           | Role                                                     | Status                                                                                                                               |
+| ------------------------------------------------------------------------------ | -------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
+| `grammar.js`                                                                   | Authoritative grammar definition                         | Hand-maintained source of truth.                                                                                                     |
+| `src/parser.c`, `src/grammar.json`, `src/node-types.json`, `src/tree_sitter/*` | Generated parser and public node types                   | Generated by Tree-sitter CLI; do not hand-edit.                                                                                      |
+| `queries/*.scm`                                                                | Official query source                                    | Hand-maintained query files.                                                                                                         |
+| `test/corpus/*`                                                                | Corpus tests                                             | Hand-maintained explicit expected trees.                                                                                             |
+| `bindings/*`, `CMakeLists.txt`, `Makefile`, `binding.gyp`, package manifests   | Binding implementations and build metadata               | Marked `linguist-generated` in `.gitattributes`; currently includes manual ABI 15 changes. Regeneration could overwrite those edits. |
+| `docs/*`, `.github/workflows/publish.yml`, `scripts/local_install.sh`          | Project documentation, release automation, editor helper | Hand-maintained.                                                                                                                     |
 
 `tree-sitter.json` enables C, Go, Node.js, Python, Rust, and Swift bindings and disables Zig. Zig template markers remain in `.gitattributes` even though no Zig binding files exist.
 
 ### Bindings
 
-| Binding | Implementation and loading | Test coverage | Reachability and gaps |
-| --- | --- | --- | --- |
-| C | Header declares `tree_sitter_strudel()`; CMake/Make compile `src/parser.c` directly. | No dedicated C test; CMake/Make run `tree-sitter test`. | Build-reachable via CMake/Make; excluded from npm `files` and no dedicated publish job. |
-| Go | cgo binding includes `../../src/parser.c` and returns the C language pointer. | `binding_test.go` loads the grammar through `go-tree-sitter`. Enabled, but no `go.mod` or `go.sum`; the recorded test passed only in a temporary module. No Go publish job. |
-| Node.js | N-API binding plus `index.js`, TypeScript declarations, `binding.gyp`, and `node-gyp-build`. Attaches `src/node-types.json`. | `node --test bindings/node/*_test.js`; load/set-language smoke test. | Primary distribution target: `main`, `types`, npm `files`, install script, and publish job. `prebuilds/**` and `*.wasm` are packaged but absent, and no script invokes `prebuildify`. |
-| Python | C extension returns a `PyCapsule`; `setup.py` builds `binding.c` with `src/parser.c`. | `unittest` load test; `tree_sitter` is only in an optional extra, not a required test dependency. | PyPI metadata and publish job exist. Queries are copied into wheels, but Python query accessors are commented out. |
-| Rust | `build.rs` compiles `src/parser.c`; `lib.rs` exposes `tree_sitter_language::LanguageFn` and embeds `node-types.json`. | Inline load test. | Cargo package includes queries and `LICENSE`, but query constants are commented out. No tracked `Cargo.lock`; crates publish job has `generate: true` commented out. |
-| Swift | `Package.swift` compiles `src/parser.c` and copies `queries` as a resource. | XCTest load test exists but could not run in this environment; `swift build` passed. | Library product is declared, but `Package.resolved` is ignored and untracked, so dependency resolution is not reproducibly pinned. No Swift publish job. |
+| Binding | Implementation and loading                                                                                                   | Test coverage                                                                                                                                                               | Reachability and gaps                                                                                                                                                                 |
+| ------- | ---------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| C       | Header declares `tree_sitter_strudel()`; CMake/Make compile `src/parser.c` directly.                                         | No dedicated C test; CMake/Make run `tree-sitter test`.                                                                                                                     | Build-reachable via CMake/Make; excluded from npm `files` and no dedicated publish job.                                                                                               |
+| Go      | cgo binding includes `../../src/parser.c` and returns the C language pointer.                                                | `binding_test.go` loads the grammar through `go-tree-sitter`. Enabled, but no `go.mod` or `go.sum`; the recorded test passed only in a temporary module. No Go publish job. |
+| Node.js | N-API binding plus `index.js`, TypeScript declarations, `binding.gyp`, and `node-gyp-build`. Attaches `src/node-types.json`. | `node --test bindings/node/*_test.js`; load/set-language smoke test.                                                                                                        | Primary distribution target: `main`, `types`, npm `files`, install script, and publish job. `prebuilds/**` and `*.wasm` are packaged but absent, and no script invokes `prebuildify`. |
+| Python  | C extension returns a `PyCapsule`; `setup.py` builds `binding.c` with `src/parser.c`.                                        | `unittest` load test; `tree_sitter` is only in an optional extra, not a required test dependency.                                                                           | PyPI metadata and publish job exist. Queries are copied into wheels, but Python query accessors are commented out.                                                                    |
+| Rust    | `build.rs` compiles `src/parser.c`; `lib.rs` exposes `tree_sitter_language::LanguageFn` and embeds `node-types.json`.        | Inline load test.                                                                                                                                                           | Cargo package includes queries and `LICENSE`, but query constants are commented out. No tracked `Cargo.lock`; crates publish job has `generate: true` commented out.                  |
+| Swift   | `Package.swift` compiles `src/parser.c` and copies `queries` as a resource.                                                  | XCTest load test exists but could not run in this environment; `swift build` passed.                                                                                        | Library product is declared, but `Package.resolved` is ignored and untracked, so dependency resolution is not reproducibly pinned. No Swift publish job.                              |
 
 All binding tests are shallow load tests. None parse representative compositions, assert query captures, cover error recovery, or compare incremental and fresh parses.
 
 ### Dependencies
 
-| Ecosystem | Declared dependencies | Purpose |
-| --- | --- | --- |
-| Node.js runtime | `node-addon-api ^8.3.1`, `node-gyp-build ^4.8.4` | N-API headers and native binding loading. |
-| Node.js dev | `prebuildify ^6.0.1`, `tree-sitter ^0.25.0`, `tree-sitter-cli 0.27.2` | Prebuild tool, binding test runtime, pinned generator. `prebuildify` is declared but unused by npm scripts. |
-| Node.js peer | optional `tree-sitter ^0.25.0` | Consumer runtime floor for ABI 15. |
-| Python build | `setuptools>=62.4.0`, `wheel` | Build backend and wheel creation. |
-| Python optional core | `tree-sitter~=0.25.0` | ABI-15-compatible runtime (`>=0.25.0,<0.26.0`). |
-| Rust | `tree-sitter-language 0.1`, build `cc 1.2`, dev `tree-sitter 0.25.8` | Language wrapper, C compilation, load test. |
-| Swift | `SwiftTreeSitter from: "0.10.0"` | Test dependency and Swift runtime bridge. Local resolution pins SwiftTreeSitter 0.25.0 and tree-sitter 0.25.10, but the pin is not committed. |
-| Go/C | No module or runtime dependency manifest in the repository | Go test dependency exists only in test source; C has no Tree-sitter runtime dependency. |
+| Ecosystem            | Declared dependencies                                                 | Purpose                                                                                                                                       |
+| -------------------- | --------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
+| Node.js runtime      | `node-addon-api ^8.3.1`, `node-gyp-build ^4.8.4`                      | N-API headers and native binding loading.                                                                                                     |
+| Node.js dev          | `prebuildify ^6.0.1`, `tree-sitter ^0.25.0`, `tree-sitter-cli 0.27.2` | Prebuild tool, binding test runtime, pinned generator. `prebuildify` is declared but unused by npm scripts.                                   |
+| Node.js peer         | optional `tree-sitter ^0.25.0`                                        | Consumer runtime floor for ABI 15.                                                                                                            |
+| Python build         | `setuptools>=62.4.0`, `wheel`                                         | Build backend and wheel creation.                                                                                                             |
+| Python optional core | `tree-sitter~=0.25.0`                                                 | ABI-15-compatible runtime (`>=0.25.0,<0.26.0`).                                                                                               |
+| Rust                 | `tree-sitter-language 0.1`, build `cc 1.2`, dev `tree-sitter 0.25.8`  | Language wrapper, C compilation, load test.                                                                                                   |
+| Swift                | `SwiftTreeSitter from: "0.10.0"`                                      | Test dependency and Swift runtime bridge. Local resolution pins SwiftTreeSitter 0.25.0 and tree-sitter 0.25.10, but the pin is not committed. |
+| Go/C                 | No module or runtime dependency manifest in the repository            | Go test dependency exists only in test source; C has no Tree-sitter runtime dependency.                                                       |
 
 ABI-15 compatibility is encoded for Node.js, Python, Rust, and in the local Swift resolution. It is not encoded for Go, and Swift's tracked declaration is only a lower bound. `docs/repository-assessment.md:20` remains a historical baseline statement that `package.json` declared `^0.25.8`; the current manifest pins `0.27.2`. At the Phase 1 snapshot, all package versions remained `1.1.8` despite the breaking ABI change; the Phase 1 version-tag commit aligned tracked metadata to `1.2.0`. Published artifacts still use `1.1.8`.
 
@@ -372,15 +372,15 @@ Phase 5 update: both queries are now registered in `tree-sitter.json` and `packa
 
 ### Tests and fixtures
 
-| Corpus file | Coverage |
-| --- | --- |
-| `function_call.txt` | Simple numeric call. |
-| `function_call_chained.txt` | Method chain with string and numeric method arguments. |
-| `number_args.txt` | Numeric argument and division expression. |
-| `arrow_funcs.txt` | `let` declaration, mini-notation string, single-parameter arrow callbacks, chained methods. |
-| `objects_args.txt` | `$:` assignment, string method chaining, object literal with key/value pairs. |
-| `variable_var.txt` | `var` declaration with numeric initializer. |
-| `array_literal.txt` | `$:` assignment, array literal, nested call. |
+| Corpus file                 | Coverage                                                                                    |
+| --------------------------- | ------------------------------------------------------------------------------------------- |
+| `function_call.txt`         | Simple numeric call.                                                                        |
+| `function_call_chained.txt` | Method chain with string and numeric method arguments.                                      |
+| `number_args.txt`           | Numeric argument and division expression.                                                   |
+| `arrow_funcs.txt`           | `let` declaration, mini-notation string, single-parameter arrow callbacks, chained methods. |
+| `objects_args.txt`          | `$:` assignment, string method chaining, object literal with key/value pairs.               |
+| `variable_var.txt`          | `var` declaration with numeric initializer.                                                 |
+| `array_literal.txt`         | `$:` assignment, array literal, nested call.                                                |
 
 All seven expected trees are explicit. `test.strdl` is a larger representative composition but is not wired into an automated test. `test-local.strdl` is a small manual query probe. Missing test categories include malformed/incomplete input, error recovery, query captures, incremental equivalence, generated-file consistency, package integrity, and benchmarks.
 
@@ -396,17 +396,17 @@ All seven expected trees are explicit. `test.strdl` is a larger representative c
 
 Captured on 2026-11-25 from the tracked file list, `git status --short --ignored`, generated-file markers, and current build/package configuration. These are candidate cleanup or follow-up items, not removals already performed.
 
-| Candidate | Classification | Evidence | Priority and recommended phase |
-| --- | --- | --- | --- |
-| Root `tree-sitter-strudel.pc` | Obsolete/stale generated artifact | Tracked file is generated from `bindings/c/tree-sitter-strudel.pc.in` by `Makefile:61-67`, while CMake writes a fresh copy to its build directory (`CMakeLists.txt:49-56`). The Phase 1 snapshot recorded version `1.1.1`; the version-tag commit aligned it to `1.2.0`, but the description is still empty and the Makefile defines no `DESCRIPTION` variable. | High — Phase 7: either stop tracking generated output and ignore it, or define `DESCRIPTION` and regenerate it before release. Removal requires explicit approval. |
-| Go binding metadata | Unowned/incomplete binding | `tree-sitter.json` enables Go and source/test files are tracked, but `go.mod` and `go.sum` are absent even though `.gitattributes` marks them generated. The recorded test passed only in a temporary module, and no Go publish job exists. | High — Phase 7: add module metadata or disable/remove the binding after a compatibility decision. |
-| Swift dependency pin | Unowned reproducibility metadata | `Package.swift` declares `SwiftTreeSitter from: "0.10.0"`. The local `Package.resolved` pins SwiftTreeSitter `0.25.0` and tree-sitter `0.25.10`, but `.gitignore` ignores that file. | Medium — Phase 7: decide whether to commit the pin or enforce the runtime floor in tracked metadata. |
-| Node prebuild outputs and `prebuildify` | Unowned packaging configuration | `package.json` packages `prebuilds/**` and `*.wasm` and declares `prebuildify`, but no npm script invokes it, no `prebuilds/` directory is tracked, and `*.wasm` is ignored. | Medium — Phase 7: add generation scripts or remove packaging claims that are not exercised. |
-| Zig template residue | Obsolete template metadata | `tree-sitter.json` disables Zig and no Zig binding files exist, while `.gitattributes` still marks `build.zig` and `build.zig.zon` as generated. | Low — Phase 7/8: remove stale markers unless Zig support is deliberately revived. |
-| Duplicate C headers | Duplicated template output | `bindings/c/tree_sitter/tree-sitter-strudel.h` and `bindings/swift/TreeSitterStrudel/strudel.h` are byte-identical and declare the same C symbol. | Low — document as expected template duplication; consolidate only if a shared header is introduced. |
-| `locals.scm` registration/export gap | Unowned query surface | The query is packaged but not registered in `tree-sitter.json` or `package.json`; Python and Rust query constants remain commented out. | Resolved in Phase 5: registered and exported consistently; verified by `make test-query-registration`. |
-| `test.strdl` and `test-local.strdl` | Unwired fixtures | Neither file is referenced by test scripts; `test.strdl` is a representative composition and `test-local.strdl` is a manual query probe. | Medium — Phase 6: convert them into automated fixtures or document them as manual-only. |
-| Publish workflow | Unowned external behavior | The only workflow triggers on tag push and uses `tree-sitter/workflows` at the moving `@main` ref. No pull-request validation is defined in this repository. | High — Phase 8: add PR validation and pin reusable workflow refs. |
+| Candidate                               | Classification                    | Evidence                                                                                                                                                                                                                                                                                                                                                        | Priority and recommended phase                                                                                                                                     |
+| --------------------------------------- | --------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Root `tree-sitter-strudel.pc`           | Obsolete/stale generated artifact | Tracked file is generated from `bindings/c/tree-sitter-strudel.pc.in` by `Makefile:61-67`, while CMake writes a fresh copy to its build directory (`CMakeLists.txt:49-56`). The Phase 1 snapshot recorded version `1.1.1`; the version-tag commit aligned it to `1.2.0`, but the description is still empty and the Makefile defines no `DESCRIPTION` variable. | High — Phase 7: either stop tracking generated output and ignore it, or define `DESCRIPTION` and regenerate it before release. Removal requires explicit approval. |
+| Go binding metadata                     | Unowned/incomplete binding        | `tree-sitter.json` enables Go and source/test files are tracked, but `go.mod` and `go.sum` are absent even though `.gitattributes` marks them generated. The recorded test passed only in a temporary module, and no Go publish job exists.                                                                                                                     | High — Phase 7: add module metadata or disable/remove the binding after a compatibility decision.                                                                  |
+| Swift dependency pin                    | Unowned reproducibility metadata  | `Package.swift` declares `SwiftTreeSitter from: "0.10.0"`. The local `Package.resolved` pins SwiftTreeSitter `0.25.0` and tree-sitter `0.25.10`, but `.gitignore` ignores that file.                                                                                                                                                                            | Medium — Phase 7: decide whether to commit the pin or enforce the runtime floor in tracked metadata.                                                               |
+| Node prebuild outputs and `prebuildify` | Unowned packaging configuration   | `package.json` packages `prebuilds/**` and `*.wasm` and declares `prebuildify`, but no npm script invokes it, no `prebuilds/` directory is tracked, and `*.wasm` is ignored.                                                                                                                                                                                    | Medium — Phase 7: add generation scripts or remove packaging claims that are not exercised.                                                                        |
+| Zig template residue                    | Obsolete template metadata        | `tree-sitter.json` disables Zig and no Zig binding files exist, while `.gitattributes` still marks `build.zig` and `build.zig.zon` as generated.                                                                                                                                                                                                                | Low — Phase 7/8: remove stale markers unless Zig support is deliberately revived.                                                                                  |
+| Duplicate C headers                     | Duplicated template output        | `bindings/c/tree_sitter/tree-sitter-strudel.h` and `bindings/swift/TreeSitterStrudel/strudel.h` are byte-identical and declare the same C symbol.                                                                                                                                                                                                               | Low — document as expected template duplication; consolidate only if a shared header is introduced.                                                                |
+| `locals.scm` registration/export gap    | Unowned query surface             | The query is packaged but not registered in `tree-sitter.json` or `package.json`; Python and Rust query constants remain commented out.                                                                                                                                                                                                                         | Resolved in Phase 5: registered and exported consistently; verified by `make test-query-registration`.                                                             |
+| `test.strdl` and `test-local.strdl`     | Unwired fixtures                  | Neither file is referenced by test scripts; `test.strdl` is a representative composition and `test-local.strdl` is a manual query probe.                                                                                                                                                                                                                        | Medium — Phase 6: convert them into automated fixtures or document them as manual-only.                                                                            |
+| Publish workflow                        | Unowned external behavior         | The only workflow triggers on tag push and uses `tree-sitter/workflows` at the moving `@main` ref. No pull-request validation is defined in this repository.                                                                                                                                                                                                    | High — Phase 8: add PR validation and pin reusable workflow refs.                                                                                                  |
 
 ### Dependency and attribution audit
 
@@ -414,19 +414,19 @@ Captured on 2026-11-25 from tracked manifests, `package-lock.json`, generated he
 
 #### Dependency necessity and maintenance
 
-| Dependency | Classification | Evidence |
-| --- | --- | --- |
-| `node-addon-api` | Necessary | `binding.gyp` resolves its build targets and `bindings/node/binding.cc` includes `<napi.h>`. npm latest is 8.9.2; upstream repository is active. |
-| `node-gyp-build` | Necessary | The npm `install` script and `bindings/node/index.js` load the native addon through it. Latest npm version is still 4.8.4; repository is not archived but has a slow release cadence. Not demonstrably unmaintained. |
-| `prebuildify` | Unused template residue | No npm script invokes it, no `prebuilds/` directory is tracked, and `*.wasm` is ignored despite being packaged. Latest npm version is 6.0.1; repository is not archived but has a slow release cadence. Not demonstrably unmaintained. |
-| `tree-sitter` (Node.js dev/peer) | Necessary for tests and compatibility declaration | `bindings/node/binding_test.js` requires it; the optional peer dependency documents the ABI-15 runtime floor. npm latest is 0.25.1. |
-| `tree-sitter-cli` | Necessary and intentionally pinned | Required by the playground/WASM scripts and by committed generated artifacts; 0.27.2 is the current npm latest and is documented in [compatibility.md](compatibility.md). |
-| Python `setuptools` and `wheel` | Necessary | Declared as build requirements by `pyproject.toml` and imported by `setup.py`. |
-| Python `tree-sitter~=0.25.0` | Necessary ABI constraint | Used by the binding test; the constraint deliberately excludes later 0.x runtimes such as PyPI 0.27.0. |
-| Rust `tree-sitter-language`, `cc`, and dev `tree-sitter` | Necessary | Used by `lib.rs`, `build.rs`, and the inline load test. Rust test execution remains unverified because `cargo` was unavailable. |
-| Swift `SwiftTreeSitter` | Necessary for the Swift test target only | Declared for tests, not the library product. Upstream is active and BSD-3-Clause; `Package.resolved` is ignored, so resolution is not reproducibly pinned. |
-| Go runtime dependency | Unmanaged/incomplete | `bindings/go/binding_test.go` imports `github.com/tree-sitter/go-tree-sitter`, but no `go.mod` or `go.sum` is tracked. |
-| C | No separate runtime manifest | Uses the generated/vendored headers and compiles `src/parser.c` directly. |
+| Dependency                                               | Classification                                    | Evidence                                                                                                                                                                                                                               |
+| -------------------------------------------------------- | ------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `node-addon-api`                                         | Necessary                                         | `binding.gyp` resolves its build targets and `bindings/node/binding.cc` includes `<napi.h>`. npm latest is 8.9.2; upstream repository is active.                                                                                       |
+| `node-gyp-build`                                         | Necessary                                         | The npm `install` script and `bindings/node/index.js` load the native addon through it. Latest npm version is still 4.8.4; repository is not archived but has a slow release cadence. Not demonstrably unmaintained.                   |
+| `prebuildify`                                            | Unused template residue                           | No npm script invokes it, no `prebuilds/` directory is tracked, and `*.wasm` is ignored despite being packaged. Latest npm version is 6.0.1; repository is not archived but has a slow release cadence. Not demonstrably unmaintained. |
+| `tree-sitter` (Node.js dev/peer)                         | Necessary for tests and compatibility declaration | `bindings/node/binding_test.js` requires it; the optional peer dependency documents the ABI-15 runtime floor. npm latest is 0.25.1.                                                                                                    |
+| `tree-sitter-cli`                                        | Necessary and intentionally pinned                | Required by the playground/WASM scripts and by committed generated artifacts; 0.27.2 is the current npm latest and is documented in [compatibility.md](compatibility.md).                                                              |
+| Python `setuptools` and `wheel`                          | Necessary                                         | Declared as build requirements by `pyproject.toml` and imported by `setup.py`.                                                                                                                                                         |
+| Python `tree-sitter~=0.25.0`                             | Necessary ABI constraint                          | Used by the binding test; the constraint deliberately excludes later 0.x runtimes such as PyPI 0.27.0.                                                                                                                                 |
+| Rust `tree-sitter-language`, `cc`, and dev `tree-sitter` | Necessary                                         | Used by `lib.rs`, `build.rs`, and the inline load test. Rust test execution remains unverified because `cargo` was unavailable.                                                                                                        |
+| Swift `SwiftTreeSitter`                                  | Necessary for the Swift test target only          | Declared for tests, not the library product. Upstream is active and BSD-3-Clause; `Package.resolved` is ignored, so resolution is not reproducibly pinned.                                                                             |
+| Go runtime dependency                                    | Unmanaged/incomplete                              | `bindings/go/binding_test.go` imports `github.com/tree-sitter/go-tree-sitter`, but no `go.mod` or `go.sum` is tracked.                                                                                                                 |
+| C                                                        | No separate runtime manifest                      | Uses the generated/vendored headers and compiles `src/parser.c` directly.                                                                                                                                                              |
 
 **Conclusion:** no declared dependency is verified as abandoned. `prebuildify` is the only clearly unused declared dependency. `node-gyp-build` and `prebuildify` have slow release cadence but current versions and non-archived repositories.
 
@@ -464,17 +464,17 @@ This evidence established the conflict before the owner decision. The decision r
 
 Priority levels below describe implementation order, not a claim that every P1 item is low severity. Evidence is drawn from the sections above and the corresponding roadmap items in [roadmap.md](roadmap.md).
 
-| Priority | Gap | Evidence | Risk if deferred | Recommended phase |
-| --- | --- | --- | --- | --- |
-| P0 | The grammar foundation is undocumented and partly accidental. Four named precedence levels are declared but never applied; arithmetic uses mutually recursive wrapper rules; public nodes and fields have no design record. | `grammar.js` precedence/rule map and public CST audit below; Phase 1 probes. | Downstream tools couple to incidental `expression`/`binary_expression` wrappers; later cleanup becomes a breaking syntax-tree change. | Phase 2 |
-| P0 | Required syntax coverage is incomplete, including ordinary assignment, member access, multiple/rest parameters, destructuring, spread, logical/comparison operators, unary and conditional expressions, optional chaining, nullish coalescing, interpolation, block comments, and import/export. | Syntax coverage inventory above. | Real Strudel compositions fail to parse or lose structure; downstream intelligence sees incorrect trees. | Phase 3, after evidence collection |
-| P0 | Error recovery and incremental/fresh equivalence are not tested automatically; malformed input is slower than valid input. | Repository inventory and performance baseline above. | Editor parsing can degrade or diverge from fresh parses without detection. | Phase 4 |
-| P0 | Query scope and query API are undecided. `highlights.scm` contains API-name-specific semantic captures; `locals.scm` treats call identifiers as definitions; `locals.scm` is packaged but unregistered and unexported. | Queries section above. | Semantic analysis leaks into syntax queries; capture behavior becomes an accidental API. | Phase 5 |
-| P0 | No pull-request validation CI exists; generated-file consistency, corpus tests, query tests, binding tests, compatibility, and performance are not automatically checked. | CI and packaging section above. | Regressions can land unnoticed; release validation relies on manual work. | Phase 6 and Phase 8 |
-| P1 | Benchmark fixtures and the percentile driver are temporary; no committed harness or performance budgets exist. | Performance baseline above. | Baseline cannot be reproduced reliably or compared across machines. | Phase 6 |
-| P1 | Binding and packaging metadata are incomplete: stale `.pc` version, absent Go module metadata, unpinned Swift resolution, unused `prebuildify`, absent prebuild outputs, and no clean-consumer tarball test. | Obsolete infrastructure and bindings sections above. | Consumers receive inconsistent or non-reproducible packages. | Phase 7 |
-| P1 | Published artifacts still declare MIT despite the AGPL-3.0-only repository decision, third-party MIT notices are not preserved in the repository, and the publish workflow uses a moving reusable-workflow ref with tag-triggered publishing. | Dependency/attribution audit, licensing decision, and CI section above. | License metadata remains misleading, upstream notice obligations are not visibly satisfied, and release control is weaker than the project policy requires. | Phase 7 and Phase 8 |
-| P2 | Template residue and duplicated headers remain, and `test.strdl`/`test-local.strdl` are unwired fixtures. | Obsolete infrastructure section above. | Maintenance noise and manual-only validation remain. | Phase 6, Phase 7, or Phase 8 as appropriate |
+| Priority | Gap                                                                                                                                                                                                                                                                                              | Evidence                                                                     | Risk if deferred                                                                                                                                            | Recommended phase                           |
+| -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------- |
+| P0       | The grammar foundation is undocumented and partly accidental. Four named precedence levels are declared but never applied; arithmetic uses mutually recursive wrapper rules; public nodes and fields have no design record.                                                                      | `grammar.js` precedence/rule map and public CST audit below; Phase 1 probes. | Downstream tools couple to incidental `expression`/`binary_expression` wrappers; later cleanup becomes a breaking syntax-tree change.                       | Phase 2                                     |
+| P0       | Required syntax coverage is incomplete, including ordinary assignment, member access, multiple/rest parameters, destructuring, spread, logical/comparison operators, unary and conditional expressions, optional chaining, nullish coalescing, interpolation, block comments, and import/export. | Syntax coverage inventory above.                                             | Real Strudel compositions fail to parse or lose structure; downstream intelligence sees incorrect trees.                                                    | Phase 3, after evidence collection          |
+| P0       | Error recovery and incremental/fresh equivalence are not tested automatically; malformed input is slower than valid input.                                                                                                                                                                       | Repository inventory and performance baseline above.                         | Editor parsing can degrade or diverge from fresh parses without detection.                                                                                  | Phase 4                                     |
+| P0       | Query scope and query API are undecided. `highlights.scm` contains API-name-specific semantic captures; `locals.scm` treats call identifiers as definitions; `locals.scm` is packaged but unregistered and unexported.                                                                           | Queries section above.                                                       | Semantic analysis leaks into syntax queries; capture behavior becomes an accidental API.                                                                    | Phase 5                                     |
+| P0       | No pull-request validation CI exists; generated-file consistency, corpus tests, query tests, binding tests, compatibility, and performance are not automatically checked.                                                                                                                        | CI and packaging section above.                                              | Regressions can land unnoticed; release validation relies on manual work.                                                                                   | Phase 6 and Phase 8                         |
+| P1       | Benchmark fixtures and the percentile driver are temporary; no committed harness or performance budgets exist.                                                                                                                                                                                   | Performance baseline above.                                                  | Baseline cannot be reproduced reliably or compared across machines.                                                                                         | Phase 6                                     |
+| P1       | Binding and packaging metadata are incomplete: stale `.pc` version, absent Go module metadata, unpinned Swift resolution, unused `prebuildify`, absent prebuild outputs, and no clean-consumer tarball test.                                                                                     | Obsolete infrastructure and bindings sections above.                         | Consumers receive inconsistent or non-reproducible packages.                                                                                                | Phase 7                                     |
+| P1       | Published artifacts still declare MIT despite the AGPL-3.0-only repository decision, third-party MIT notices are not preserved in the repository, and the publish workflow uses a moving reusable-workflow ref with tag-triggered publishing.                                                    | Dependency/attribution audit, licensing decision, and CI section above.      | License metadata remains misleading, upstream notice obligations are not visibly satisfied, and release control is weaker than the project policy requires. | Phase 7 and Phase 8                         |
+| P2       | Template residue and duplicated headers remain, and `test.strdl`/`test-local.strdl` are unwired fixtures.                                                                                                                                                                                        | Obsolete infrastructure section above.                                       | Maintenance noise and manual-only validation remain.                                                                                                        | Phase 6, Phase 7, or Phase 8 as appropriate |
 
 ### Provisional implementation order
 

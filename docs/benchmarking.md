@@ -1,0 +1,319 @@
+# Benchmarking
+
+This document owns the Phase 6 benchmark fixture inventory and fresh/incremental latency and memory measurements. The authoritative fixture metadata is [manifest.json](../benchmarks/fixtures/manifest.json). Committed observations are stored in [baseline.json](../benchmarks/results/baseline.json); they are not performance budgets or CI gates.
+
+The measurement environment is recorded below. Individual JSON reports include a smaller runtime summary from `scripts/bench_common.js`; this section is the dedicated hardware and software record.
+
+## Benchmark environment
+
+This environment was recorded on 2026-11-26 (UTC) at repository commit `362d5fd`, after the Phase 6 measurement work. It applies to the latency and memory observations in this document; the grammar, generated parser, and package metadata were unchanged across those measurement commits. The observations were taken under normal desktop load with no CPU affinity, frequency-governor locking, or workload isolation. The load average at capture was `1.79 1.60 1.54`; it is informational, not a controlled benchmark condition.
+
+| Field                    | Recorded value                                                                            | Source                                     |
+| ------------------------ | ----------------------------------------------------------------------------------------- | ------------------------------------------ |
+| Operating system         | Omarchy 4.5.0 (`ID=omarchy`)                                                              | `/etc/os-release`                          |
+| Kernel                   | `Linux 7.2.15-1-omarchy`                                                                  | `uname -sr`                                |
+| Machine architecture     | `x86_64`                                                                                  | `uname -m`                                 |
+| CPU model                | `12th Gen Intel(R) Core(TM) i9-12900KF`                                                   | `lscpu`, `os.cpus()`                       |
+| CPU topology             | 1 socket, 16 cores per socket, 2 threads per core, 24 logical CPUs                        | `lscpu`, `os.cpus()`                       |
+| CPU maximum frequency    | 5,200.0000 MHz; not a guaranteed sustained frequency                                      | `lscpu`                                    |
+| Memory                   | 32,654,224 kB (`/proc/meminfo`); 33,437,925,376 bytes (`os.totalmem()`)                   | `/proc/meminfo`, benchmark reports         |
+| Node.js                  | `v26.13.1`; V8 `14.6.202.34-node.40`; OpenSSL `3.5.9`                                     | `node --version`, `process.versions`       |
+| npm                      | `11.20.0`                                                                                 | `npm --version`                            |
+| Tree-sitter CLI          | `0.27.2` via `node_modules/.bin/tree-sitter` selected by the Makefile; `0.26.9` on `PATH` | `$(TS) --version`, `tree-sitter --version` |
+| Tree-sitter Node runtime | `0.25.1`                                                                                  | `tree-sitter/package.json`                 |
+| Package version          | `1.5.0`                                                                                   | `package.json`                             |
+| Repository commit        | `362d5fd`                                                                                 | `git rev-parse --short HEAD`               |
+
+Reproduce the runtime subset from a generated report and the remaining values with these commands:
+
+```sh
+make bench-fresh BENCH_OUTPUT=/tmp/benchmark-environment.json
+node -e 'console.log(JSON.stringify(require("/tmp/benchmark-environment.json").environment, null, 2))'
+sed -n '/^PRETTY_NAME=/p;/^VERSION_ID=/p;/^ID=/p' /etc/os-release
+uname -sr
+uname -m
+lscpu | sed -n '/^Architecture:/p;/^CPU(s):/p;/^Model name:/p;/^Thread(s) per core:/p;/^Core(s) per socket:/p;/^Socket(s):/p;/^CPU max MHz:/p'
+awk '/^MemTotal:/ {print $0}' /proc/meminfo
+node --version
+node -p 'JSON.stringify(process.versions)'
+npm --version
+node -p 'require("tree-sitter/package.json").version'
+node_modules/.bin/tree-sitter --version
+tree-sitter --version
+git rev-parse --short HEAD
+```
+
+## Fixture inventory
+
+| ID                     | Role                               | Path                                                                              | Parameters           | Expected parse         |
+| ---------------------- | ---------------------------------- | --------------------------------------------------------------------------------- | -------------------- | ---------------------- |
+| `representative-main`  | Representative Strudel composition | [`test.strdl`](../test.strdl)                                                     | committed source     | clean                  |
+| `representative-local` | Representative Strudel composition | [`test-local.strdl`](../test-local.strdl)                                         | committed source     | clean                  |
+| `synthetic-large`      | Synthetic large document           | [`synthetic-large.strdl`](../benchmarks/fixtures/generated/synthetic-large.strdl) | 2,000 declarations   | clean                  |
+| `deeply-nested`        | Deeply nested expression           | [`deeply-nested.strdl`](../benchmarks/fixtures/generated/deeply-nested.strdl)     | call depth 512       | clean                  |
+| `pathological`         | Pathological stress input          | [`pathological.strdl`](../benchmarks/fixtures/generated/pathological.strdl)       | 300 malformed blocks | `ERROR` nodes expected |
+
+The two representative compositions are reused rather than duplicated. The manifest records their byte sizes and SHA-256 hashes so changes to those fixtures are explicit.
+
+## Reproduction
+
+```sh
+make benchmark-fixtures        # regenerate the three synthetic fixtures
+make check-benchmark-fixtures  # verify sizes, hashes, and exact regeneration
+```
+
+[`generate_benchmark_fixtures.py`](../scripts/generate_benchmark_fixtures.py) uses the manifest seed and parameters to render every generated fixture. `make check-benchmark-fixtures` is part of `make verify` and therefore `make ci`; representative files are hashed but never rewritten.
+
+## Fresh parsing latency
+
+`make bench-fresh` measures fresh parse latency through the Node.js binding. It validates every fixture's byte size and SHA-256 from the manifest, runs two unmeasured warmup parses and 15 measured parses by default, and times only `Parser.parse` with no tree supplied from a previous edit. Each result reports min, mean, P50, P95, P99, and max in milliseconds. A parse whose `rootNode.hasError` disagrees with the manifest's `expected_clean` value fails the run.
+
+```sh
+make bench-fresh
+make bench-fresh BENCH_ITERATIONS=30 BENCH_WARMUP=5
+make bench-fresh BENCH_FIXTURE=synthetic-large BENCH_OUTPUT=benchmarks/results/fresh.json
+```
+
+`scripts/bench_fresh.js --json` prints the same report as structured output. This is a measurement tool, not a committed baseline or CI gate; results vary by hardware and concurrent load.
+
+## Incremental parsing latency
+
+`make bench-incremental` measures incremental update latency through the Node.js binding. It reads the 21 edit sequences in [incremental_sequences.json](../test/fixtures/incremental_sequences.json), validates their fixtures against the benchmark manifest, and replays each sequence with two unmeasured warmup replays and 15 measured replays by default. Each timed step includes `tree.edit` and the subsequent `Parser.parse(updated, tree)` call. The initial fresh parse and the fresh comparison parse after each step are deliberately outside the measured interval.
+
+The harness compares every incremental tree with a fresh parse of the same intermediate source. A mismatch, an edit that cannot be applied, or a final tree whose `hasError` disagrees with the manifest fails the run. Results report min, mean, P50, P95, P99, and max in milliseconds both per edit step and per replay total.
+
+```sh
+make bench-incremental
+make bench-incremental BENCH_ITERATIONS=30 BENCH_WARMUP=5
+make bench-incremental BENCH_SEQUENCE=malformed-call-repair BENCH_OUTPUT=benchmarks/results/incremental.json
+make bench-incremental BENCH_CATEGORY=compact-fixture
+```
+
+`scripts/bench_incremental.js --json` prints the same report as structured output. Sequence totals are not directly comparable with fresh fixture totals because they replay different source sizes and edit counts; use the report's fixture path, edit count, and per-step values when interpreting results. This is a measurement tool, not a committed baseline or CI gate.
+
+## Memory consumption
+
+`make bench-memory` runs Node with `--expose-gc` and measures retained parse-tree memory for fresh and incremental workloads. It forces GC before each baseline and again after the measured trees are retained, then reports deltas for V8 `heapUsed`, `heapTotal`, `external`, `arrayBuffers`, and RSS. Each fresh iteration retains one parse tree; each incremental replay retains the initial tree plus one tree per edit and compares every step with a fresh parse. Warmup iterations are unretained.
+
+```sh
+make bench-memory
+make bench-memory BENCH_MODE=fresh BENCH_FIXTURE=synthetic-large
+make bench-memory BENCH_MODE=incremental BENCH_SEQUENCE=malformed-call-repair BENCH_OUTPUT=benchmarks/results/memory.json
+make bench-memory BENCH_CATEGORY=compact-fixture
+```
+
+`scripts/bench_memory.js --json` prints the same report as structured output. Heap values describe reachable JavaScript heap after GC; native tree memory may appear primarily in RSS. RSS is process-wide and allocator-granular, so per-tree values can be zero or jump in page-sized increments. Sampled peak deltas are observed after retaining each tree, not a continuous high-water trace. This is a measurement tool, not a committed baseline or CI gate.
+
+## Percentile reporting
+
+Fresh and incremental latency results are reported as separate reports, not as one pooled distribution. `scripts/bench_common.js` sorts each sample set and interpolates P50, P95, and P99 at ranks `(n - 1) * 0.50`, `(n - 1) * 0.95`, and `(n - 1) * 0.99`. Fresh samples are individual `Parser.parse` calls. Incremental samples are replay totals: the sum of the `tree.edit` plus incremental `Parser.parse` timings for every step in one replay. Per-step incremental percentiles are also present in the JSON report.
+
+The following values were recorded from one default run with 15 measured samples and 2 warmup samples per case. They are observations, not baselines.
+
+### Fresh parse latency percentiles
+
+| Fixture                |  P50 (ms) |  P95 (ms) |  P99 (ms) |
+| ---------------------- | --------: | --------: | --------: |
+| `representative-main`  |  0.324216 |  0.369064 |  0.401948 |
+| `representative-local` |  0.017270 |  0.023297 |  0.031866 |
+| `synthetic-large`      | 10.259487 | 10.546336 | 10.551806 |
+| `deeply-nested`        |  0.380255 |  0.396238 |  0.402565 |
+| `pathological`         |  2.018148 |  2.056487 |  2.075988 |
+
+### Incremental replay-total latency percentiles
+
+| Sequence                       | P50 (ms) | P95 (ms) | P99 (ms) |
+| ------------------------------ | -------: | -------: | -------: |
+| `method-chain-insertion`       | 0.050129 | 0.088407 | 0.089975 |
+| `pattern-string-replacement`   | 0.101519 | 0.111033 | 0.118090 |
+| `declaration-deletion`         | 0.037129 | 0.057602 | 0.069556 |
+| `nested-object-edits`          | 0.070891 | 0.086573 | 0.097651 |
+| `malformed-call-repair`        | 0.071524 | 0.074884 | 0.076636 |
+| `declaration-insertion`        | 0.042142 | 0.047449 | 0.047707 |
+| `arrow-parameter-rename`       | 0.069568 | 0.080019 | 0.085170 |
+| `method-deletion`              | 0.042669 | 0.047781 | 0.049059 |
+| `call-statement-insertion`     | 0.042367 | 0.043557 | 0.043971 |
+| `template-content-edit`        | 0.042356 | 0.044184 | 0.044375 |
+| `compact-set-cps`              | 0.010447 | 0.011305 | 0.012178 |
+| `compact-declaration-deletion` | 0.011136 | 0.028865 | 0.030224 |
+| `compact-malformed-repair`     | 0.026983 | 0.041677 | 0.043210 |
+| `argument-deletion`            | 0.033337 | 0.041979 | 0.055613 |
+| `object-property-deletion`     | 0.034633 | 0.036612 | 0.038690 |
+| `method-name-replacement`      | 0.037836 | 0.038668 | 0.038799 |
+| `nested-call-edit`             | 0.044240 | 0.053095 | 0.066321 |
+| `nested-arrow-body-edit`       | 0.038268 | 0.039654 | 0.040085 |
+| `object-brace-repair`          | 0.073640 | 0.075948 | 0.076225 |
+| `string-quote-repair`          | 0.081336 | 0.091253 | 0.100235 |
+| `array-bracket-repair`         | 0.107875 | 0.109792 | 0.110390 |
+
+## Baseline results
+
+The committed baseline is [baseline.json](../benchmarks/results/baseline.json). It stores one coherent measurement session from 2026-11-26 at repository commit `aae76dc`: 15 measured samples and 2 warmup samples per case, covering all five fixtures, all 21 incremental sequences, 29 edit steps, and fresh/incremental parse-tree memory. The raw latency sample arrays and full memory result objects are included so later comparisons can recompute statistics. Source report names and timestamps are provenance labels; the committed baseline is self-contained and contains no machine-specific paths. The exact source reports are committed under [`benchmarks/results/baseline-sources/`](../benchmarks/results/baseline-sources/) so the artifact can be reproduced from a clean checkout.
+
+The artifact is version 1 and records `kind: baseline`, repository commit, purpose, environment, environment-record reference, configuration, source metadata, and results for fresh latency, incremental replay latency, and memory. `scripts/baseline_results.js build` derives it from three complete JSON reports; `scripts/baseline_results.js check` validates the version, schema, coverage against the committed manifest and edit catalog, sample/statistic agreement, source environment agreement, and memory invariants. `scripts/baseline_results.js reproduce` rebuilds from the committed source reports and requires exact structural equality with the committed baseline, using the baseline's recorded commit and generation timestamp.
+
+Regenerate the baseline deliberately, not as part of ordinary CI:
+
+```sh
+make bench-fresh BENCH_OUTPUT=/tmp/fresh.json
+make bench-incremental BENCH_OUTPUT=/tmp/incremental.json
+make bench-memory BENCH_OUTPUT=/tmp/memory.json
+make build-benchmark-baseline \
+  BENCH_FRESH_REPORT=/tmp/fresh.json \
+  BENCH_INCREMENTAL_REPORT=/tmp/incremental.json \
+  BENCH_MEMORY_REPORT=/tmp/memory.json
+make check-benchmark-baseline
+```
+
+`make check-benchmark-baseline` is part of `make verify` and `make ci`. It is a structural integrity check only: no timing, memory, percentile, or pass-rate threshold is enforced against the baseline. The environment record above supplies the hardware and software context; the baseline does not normalize results across machines or define a performance budget.
+
+Verify reproducibility without rewriting the committed artifact:
+
+```sh
+make reproduce-benchmark-baseline
+```
+
+This target is also part of `make verify` and `make ci`. It fails if any committed source report is changed or if the baseline no longer matches a rebuild from those reports.
+
+## Regression investigation
+
+Use `make compare-benchmark-baseline` to compare a complete new measurement session with the committed baseline:
+
+```sh
+make bench-fresh BENCH_OUTPUT=/tmp/fresh-current.json
+make bench-incremental BENCH_OUTPUT=/tmp/incremental-current.json
+make bench-memory BENCH_OUTPUT=/tmp/memory-current.json
+make compare-benchmark-baseline \
+  BENCH_FRESH_REPORT=/tmp/fresh-current.json \
+  BENCH_INCREMENTAL_REPORT=/tmp/incremental-current.json \
+  BENCH_MEMORY_REPORT=/tmp/memory-current.json \
+  BENCH_COMPARE_OUTPUT=/tmp/comparison.json
+```
+
+`scripts/baseline_results.js compare` validates both the committed baseline and all three current reports before comparing them. The report records `environmentComparison` and `configComparison` first: a mismatch means the session is not directly comparable, so it must not be attributed to a code change. `observations` then stores paired baseline/current values, absolute deltas, and ratios for fresh P50/P95/P99, incremental replay-total P50/P95/P99, retained heap/RSS per tree, and sampled heap/RSS peaks. `increases` lists every positive delta, ordered by ratio then absolute delta, as investigation candidates rather than verdicts. No threshold or pass/fail status is produced.
+
+When an increase warrants attention:
+
+1. Confirm `environmentComparison.matches` and `configComparison.matches` are both `true`; otherwise repeat the measurement under the recorded environment and configuration.
+2. Run `make ci` to confirm correctness gates still pass. A timing difference is not a correctness failure.
+3. Re-run the full session, or use the existing `FIXTURE`, `SEQUENCE`, and `CATEGORY` filters to repeat only the affected cases. An isolated spike is not enough to attribute a regression.
+4. If the increase persists, inspect parser-relevant changes between `baseline.repositoryCommit` and the current revision: `grammar.js`, generated parser artifacts, bindings, and benchmark harnesses.
+5. Record the conclusion in the [roadmap verification log](roadmap.md#verification-log). A confirmed performance regression should be fixed or explicitly deferred; an accepted variance should say why it was not attributed to code.
+
+This target is local-only and is not part of `make ci`. It supports investigation; it does not establish performance budgets or CI gates.
+
+## Correctness failures versus performance warnings
+
+Comparison reports carry a `classification` object so consumers can tell hard failures from non-gating observations without inferring meaning from an exit code:
+
+| Category            | Examples                                                                                                                                                                                                       | Command behavior                                                                                                                              | CI behavior                                                             |
+| ------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------- |
+| Correctness failure | Invalid baseline/budget/current report structure; fixture hash or regeneration mismatch; `expected_clean` violation; fresh/incremental CST mismatch; invalid benchmark options such as a missing `--expose-gc` | The command exits nonzero and does not write a report                                                                                         | `make ci` fails where the check is wired; local harnesses fail directly |
+| Performance warning | Increased P50/P95/P99 or memory value; environment or configuration mismatch                                                                                                                                   | The command exits `0` for valid inputs; the warning is recorded in `classification.performance.warnings` and, for increases, in `increases[]` | Not part of `make ci`; no timing threshold gates a build                |
+
+`classification.correctness.gates` is `true` and `classification.performance.gates` is `false`. A correctness failure is never downgraded to a warning. An environment or configuration mismatch is a "not comparable" warning, not evidence of a regression, and an observed increase is an investigation candidate. Neither changes the exit status. When `--output` is used, the command prints the gating classification and the total non-gating warning count alongside the report path.
+
+## Performance budgets
+
+The committed budgets are in [budgets.json](../benchmarks/results/budgets.json). They are derived from three complete measurement sessions: the committed baseline plus two independent sessions with matching environment, configuration, fixtures, and edit catalog. The rule is an observed envelope, not an arbitrary multiplier:
+
+- P50 and P95 budgets use the highest session P50 and P95 respectively.
+- P99 budgets use the highest single observed sample (`maxMs`) across the sessions, giving tail headroom without a chosen factor.
+- Retained heap/RSS per tree and sampled heap/RSS peak budgets use the highest observed value across the sessions.
+- Every budget stores its observations and the source session that produced the maximum.
+
+No hardware normalization, safety factor, or invented threshold is applied. The artifact records the baseline commit, environment, configuration, methodology, session provenance, and budgets for all 52 cases.
+
+Regenerate the budgets deliberately with a session manifest that lists the two additional report triples; the committed baseline supplies the first session:
+
+```sh
+cat > /tmp/budget-sessions.json <<'JSON'
+{
+  "version": 1,
+  "sessions": [
+    {
+      "fresh": "/tmp/fresh-1.json",
+      "incremental": "/tmp/incremental-1.json",
+      "memory": "/tmp/memory-1.json"
+    },
+    {
+      "fresh": "/tmp/fresh-2.json",
+      "incremental": "/tmp/incremental-2.json",
+      "memory": "/tmp/memory-2.json"
+    }
+  ]
+}
+JSON
+make build-benchmark-budgets BENCH_BUDGET_INPUTS=/tmp/budget-sessions.json
+make check-benchmark-budgets
+```
+
+`make check-benchmark-budgets` is part of `make verify` and `make ci`. It validates provenance, environment/configuration agreement, fixture and catalog coverage, and recomputes every budget from its stored observations. It does not compare current timings against the budgets, so it remains a structural integrity check rather than a performance gate.
+
+## Hardware-variance-aware reporting
+
+`make performance-report` runs `bench-fresh`, `bench-incremental`, and `bench-memory` with the committed defaults, then renders a report from those reports, [baseline.json](../benchmarks/results/baseline.json), and [budgets.json](../benchmarks/results/budgets.json). GitHub Actions runs this target on the Node 24 matrix leg after the `make ci` gate. It is deliberately outside `make verify` and `make ci`: the report is informational and no timing observation can fail a build.
+
+Standard output uses `--format auto`: interactive terminals receive a compact terminal rendering, while redirected output and CI logs receive Markdown. `--format terminal`, `--format markdown`, and `--format json` force a specific stdout format. `NO_COLOR` disables terminal colors without changing the compact layout. The terminal rendering groups comparability and per-scope counts, then prints the ten largest increases as short two-line entries instead of wide Markdown tables.
+
+The stdlib-only helpers in `scripts/terminal_format.js` are shared with `bench-fresh`, `bench-incremental`, and `bench-memory`. Those harnesses print compact case summaries when stdout is a terminal; redirected output keeps the fixed-width tables used in logs, and `--json` output is unchanged. The custom Python checks use the analogous `scripts/terminal_report.py` helper and append compact status lines only on a terminal.
+
+The report separates two questions:
+
+- **Comparability:** the current environment and configuration are compared with both the baseline sessions and the budget sessions. A difference in CPU model, CPU count, memory, Node.js runtime, tree-sitter runtime, platform, architecture, iteration count, or warmup count makes the session non-comparable. All numeric verdicts then become informational; they are not evidence of a regression.
+- **Observed envelope:** for comparable sessions, each current P50, P95, and P99 latency and each retained/peak memory value is checked against the corresponding observed-envelope budget. A value at or below the recorded envelope is `within-observed-envelope`; a value above it is `above-observed-envelope` and is a warning for investigation. `meanMs` has no budget and is shown in the increases table without an envelope verdict.
+
+| Outcome                        | Meaning                                                                         | Exit status |
+| ------------------------------ | ------------------------------------------------------------------------------- | ----------- |
+| Comparable, within envelope    | No observed signal beyond the recorded sessions                                 | `0`         |
+| Comparable, above envelope     | Investigate on the reference environment; not a regression by itself            | `0`         |
+| Non-comparable session         | Hardware, runtime, or configuration differs; numeric verdicts are informational | `0`         |
+| Invalid input or guard failure | Malformed report/budget, fixture hash mismatch, or CST mismatch                 | nonzero     |
+
+The report also reuses the comparison tool's [classification](#correctness-failures-versus-performance-warnings): correctness guards remain gating wherever they run, while performance findings never do.
+
+```sh
+make performance-report
+make performance-report PERF_REPORT_FORMAT=markdown PERF_REPORT_OUTPUT=/tmp/performance.md
+make performance-report PERF_REPORT_FORMAT=terminal PERF_REPORT_JSON_OUTPUT=/tmp/performance.json
+```
+
+`PERF_REPORT_OUTPUT` always writes the Markdown report to a file, regardless of stdout format. `PERF_REPORT_JSON_OUTPUT` writes the structured evaluations, comparability metadata, and summary for downstream tooling. `PERF_REPORT_FORMAT` sets the stdout format (`auto`, `terminal`, `markdown`, or `json`) and defaults to `auto`.
+
+## Validation performed
+
+- All four `expected_clean: true` fixtures parse with `tree-sitter parse --quiet` and exit 0 using CLI 0.27.2.
+- The two representative compositions are the canonical fixtures already used by query execution (`Makefile` `FIXTURES`) and the incremental catalog (`test/fixtures/incremental_sequences.json`), so they are reused rather than duplicated.
+- A temporary manifest negative control that changed the `representative-main` SHA-256 failed with exit 1; the clean manifest passes.
+- The synthetic large fixture is 95,393 bytes, contains exactly 2,000 generated declarations, and parses cleanly with `tree-sitter parse --quiet`.
+- A temporary manifest negative control that changed the synthetic declaration count to 1,999 failed with exit 1 because the committed fixture no longer regenerated from the manifest parameters.
+- The deeply nested fixture is 1,639 bytes and contains a 512-level `s(` call chain around `note("c3")`; it parses cleanly with `tree-sitter parse --quiet`.
+- A temporary manifest negative control that changed the nested depth to 511 failed with exit 1 because the committed fixture no longer regenerated from the manifest parameters.
+- The pathological fixture is 7,447 bytes, contains exactly 300 malformed blocks, exits nonzero, and produces 498 `ERROR` nodes with no `MISSING` nodes, as intended for stress testing.
+- A temporary manifest negative control that changed the pathological block count to 299 failed with exit 1 because the committed fixture no longer regenerated from the manifest parameters.
+- A negative control appended a newline to `deeply-nested.strdl`; the checker failed with exit 1 on size, SHA-256, and regeneration mismatch, then passed after restoration.
+- The committed set contains five fixtures and 107,480 bytes in total.
+- `make bench-fresh` with 15 measured and 2 warmup parses ran on Node v26.13.1, tree-sitter runtime 0.25.1, linux/x64 with 24 logical CPUs. P50/P95/P99 in milliseconds were: representative-main 0.492108/0.534366/0.549940, representative-local 0.017792/0.026397/0.039735, synthetic-large 10.310601/10.421912/10.427943, deeply-nested 0.372424/0.406146/0.415580, and pathological 1.995324/2.033064/2.034242.
+- A temporary manifest negative control that changed `synthetic-large` SHA-256 failed with exit 1 before timing any fixture.
+- A temporary manifest negative control that marked the pathological fixture `expected_clean: true` failed with exit 1 because its parse still contained an `ERROR` node.
+- A filtered JSON-report control wrote a one-fixture report with `mode: fresh`, two samples, and finite P99; `node --check` passed.
+- `make bench-incremental` with 15 measured replays and 2 warmup replays ran on Node v26.13.1, tree-sitter runtime 0.25.1, linux/x64 with 24 logical CPUs. It covered all 21 sequences, 29 edit steps, and 435 fresh-comparison parses per measured pass. Observed replay-total P99 values in milliseconds were: method-chain-insertion 0.414387, pattern-string-replacement 0.124559, declaration-deletion 0.049974, nested-object-edits 0.091612, malformed-call-repair 0.078348, declaration-insertion 0.049517, arrow-parameter-rename 0.098679, method-deletion 0.064867, call-statement-insertion 0.043110, template-content-edit 0.062985, compact-set-cps 0.010771, compact-declaration-deletion 0.024841, compact-malformed-repair 0.042569, argument-deletion 0.033128, object-property-deletion 0.035529, method-name-replacement 0.037611, nested-call-edit 0.058675, nested-arrow-body-edit 0.094787, object-brace-repair 0.073458, string-quote-repair 0.087804, and array-bracket-repair 0.112255.
+- A temporary catalog negative control that changed the first edit's `occurrence` to 99 failed with exit 1 before producing a report.
+- A temporary manifest negative control that changed `representative-main` SHA-256 failed with exit 1 before replaying edits.
+- A filtered JSON-report control wrote a one-sequence report with `mode: incremental`, one step, two fresh comparisons, and finite P99; a `compact-fixture` category control selected four sequences; `node --check` passed for all three latency scripts.
+- `make bench-memory` with 15 retained iterations and 2 unretained warmups ran on Node v26.13.1, tree-sitter runtime 0.25.1, linux/x64 with 24 logical CPUs. It forced GC and covered all 5 fresh fixtures and 21 incremental sequences. Observed retained heap per tree was 870, 683, 198, 189, and 183 bytes for representative-main, representative-local, synthetic-large, deeply-nested, and pathological; incremental values ranged from 282 to 2,291 bytes per tree. Sampled peak RSS reached 61,341,696 bytes for synthetic-large and 7,274,496 bytes for pattern-string-replacement.
+- Negative controls failed with exit 1 when the memory script was run without `--expose-gc`, when a catalog edit used `occurrence: 99`, when `representative-main` SHA-256 was wrong, and when `--mode` was invalid.
+- A filtered JSON-report control wrote a one-fixture report with `mode: memory`, two retained trees, finite heap per tree, and `gcAvailable: true`; a `compact-fixture` category control selected four incremental sequences; `node --check` passed for all four benchmark scripts.
+- Separate JSON reports were generated with `BENCH_OUTPUT` and checked against distinct expected shapes: `mode: fresh` with five `fixtures` and no `sequences`, and `mode: incremental` with 21 `sequences` and no `fixtures`. All 26 reported stats objects had finite P50/P95/P99/max values ordered as `P50 <= P95 <= P99 <= max`. Temporary report copies with a deleted fresh `p95Ms` and a null incremental `p50Ms` failed validation with exit 1.
+- A generated `BENCH_OUTPUT` report reproduced the documented runtime subset exactly: Node `v26.13.1`, tree-sitter runtime `0.25.1`, `linux`/`x64`, 24 logical CPUs, CPU model `12th Gen Intel(R) Core(TM) i9-12900KF`, and `33,437,925,376` bytes of `os.totalmem()`. The remaining documented values were checked against `/etc/os-release`, `uname`, `lscpu`, `/proc/meminfo`, `node --version`, `process.versions`, `npm --version`, both CLI paths, and `git rev-parse`. A temporary report copy with `cpuCount` changed to 23 failed validation with exit 1.
+- Three full `BENCH_OUTPUT` reports were generated sequentially in one session and built into `benchmarks/results/baseline.json` with `make build-benchmark-baseline`. The 67,191-byte artifact records commit `aae76dc`, five fixtures, 21 sequences, and 15 measured with two warmup samples per case. `make check-benchmark-baseline` passed. Negative controls that changed `version`, nulled a fresh P50, removed a fixture, changed the baseline CPU count, invalidated a source timestamp, changed a memory result mode, and changed a source environment all failed with exit 1. The baseline contains no `/tmp/` paths.
+- A new full measurement session was compared with the committed baseline through `make compare-benchmark-baseline`. Environment and configuration matched; 80 positive deltas were reported, led by `incremental/compact-set-cps/p99Ms` at ratio 2.674172. `make ci` passed, and `git diff --name-only aae76dc..HEAD` was empty for `grammar.js`, `src/`, `bindings/`, `queries/`, and package metadata. Isolated reruns kept identical CST checksums and fixture bytes, with nearly unchanged minimum latencies but higher outlier maxima: `compact-set-cps` min/max moved from 0.010129/0.010573 ms to 0.010482/0.031055 ms, and `deeply-nested` from 0.371120/0.384343 ms to 0.372704/0.480931 ms. Retained per-tree memory stayed stable or moved by allocator-sized RSS steps. The increases were treated as run-to-run variance under normal desktop load, not a code regression. A three-report CPU-count mismatch produced `environmentComparison.matches: false` with exit 0, a three-report warmup mismatch produced `configComparison.matches: false` with exit 0, and a null fresh P50 or tampered baseline version failed with exit 1.
+- Two additional full measurement sessions were run on the same environment and configuration as the baseline and combined with it through `make build-benchmark-budgets BENCH_BUDGET_INPUTS=...`. The 51,511-byte version-1 `benchmarks/results/budgets.json` stores the observed envelope for 52 cases (5 fresh, 21 incremental, 5 fresh memory, 21 incremental memory) with per-metric observations and source session. For `incremental/compact-set-cps`, the P50/P95/P99 budgets are 0.010719/0.017109/0.031055 ms, each tracing to the session that produced the maximum. `make check-benchmark-budgets` passed; the artifact contains no `/tmp/` paths. Negative controls failed with exit 1 for a changed version, a budget that was not the observed maximum, a source that was not the maximum session, a removed case, shortened observations, a tampered top-level environment, and a tampered session environment. Build-time negative controls also failed with exit 1 for a session environment mismatch and a session configuration mismatch.
+- Comparison output was checked against the explicit classification policy. A report with 80 observed increases and matching environment/configuration exited `0` with `correctness.gates: true`, `performance.gates: false`, and `observedIncreases.count: 80`. A three-report CPU-count mismatch exited `0` with `environmentMismatch.present: true` and `fields: ["cpuCount"]`; a three-report warmup mismatch exited `0` with `configurationMismatch.present: true` and `fields: ["warmup"]`. A corrupted current report exited `1` and wrote no comparison, confirming that input validation remains a gating correctness failure. Benchmark guard controls also exited `1`: a temporary manifest with the `representative-main` SHA-256 changed failed before timing any fixture, and a temporary incremental catalog whose first edit used `occurrence: 99` failed before replaying edits.
+- `make performance-report` was run end to end with the committed baseline and budgets. A comparable session evaluated 182 metrics: 139 within the observed envelope and 43 above it, with exit `0`. Report copies with `cpuCount` changed from 24 to 23 and with `warmup` changed from 2 to 3 both exited `0`, listed the differing field, and marked all 182 verdicts non-comparable. A corrupted fresh `p50Ms` exited `1` and wrote no report; a budget copy missing one incremental case exited `1`. Markdown and JSON outputs were generated and checked. The GitHub Actions workflow adds the report as a Node 24 step after `make ci`; no timing result changes the build status.
+- The TTY-aware renderer was checked with explicit `terminal`, `markdown`, and `json` formats, all exiting `0` and producing their expected headings or JSON object. An invalid `--format` exited `1`. Under a pseudo-terminal, `--format auto` emitted the compact terminal layout with 30 ANSI style sequences; `NO_COLOR=1` retained that layout with zero ANSI sequences. `make performance-report PERF_REPORT_FORMAT=markdown` wrote Markdown to both stdout and `PERF_REPORT_OUTPUT`, while the structured `PERF_REPORT_JSON_OUTPUT` remained valid JSON.
+- The shared terminal helpers were applied to all three benchmark harnesses and verified with filtered runs. Redirected output retained the fixed-width `fixture`, `sequence`/`edits`, and memory headers. Pseudo-terminal output showed compact two-line summaries with singular labels for one case, the correct `edits` column for incremental replay, and integer memory values. Forcing `performance-report --format terminal` after the refactor still rendered the grouped report, and pseudo-terminal `--format auto` still produced the expected colored layout.
+
+## Remaining work
+
+Performance budgets are committed as observed observations and validated structurally, but current timings are not gated against them. Hardware-variance-aware reporting now runs on the Node 24 CI matrix leg and locally through `make performance-report`; it checks comparability and observed envelopes without changing the build status. The committed baseline stores observations, local comparison supports investigation, and the dedicated environment record above is not hardware-normalized. Future changes to CI reporting policy should be recorded here.

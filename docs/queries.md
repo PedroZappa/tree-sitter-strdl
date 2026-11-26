@@ -4,10 +4,10 @@ This document is the entry point for the official query surface of `tree-sitter-
 
 ## Official inventory
 
-| Query | Purpose | Registration key | Binding constant | Capture reference |
-| --- | --- | --- | --- | --- |
-| [`queries/highlights.scm`](../queries/highlights.scm) | Syntax highlighting | `highlights` | `HIGHLIGHTS_QUERY` | [Highlight captures](highlight-captures.md) |
-| [`queries/locals.scm`](../queries/locals.scm) | Lexical scopes, definitions, and references | `locals` | `LOCALS_QUERY` | [Locals captures](locals-captures.md) |
+| Query                                                 | Purpose                                     | Registration key | Binding constant   | Capture reference                           |
+| ----------------------------------------------------- | ------------------------------------------- | ---------------- | ------------------ | ------------------------------------------- |
+| [`queries/highlights.scm`](../queries/highlights.scm) | Syntax highlighting                         | `highlights`     | `HIGHLIGHTS_QUERY` | [Highlight captures](highlight-captures.md) |
+| [`queries/locals.scm`](../queries/locals.scm)         | Lexical scopes, definitions, and references | `locals`         | `LOCALS_QUERY`     | [Locals captures](locals-captures.md)       |
 
 There is no `queries/injections.scm` or `queries/tags.scm`. The `injection-regex: "^strudel$"` declaration in [`tree-sitter.json`](../tree-sitter.json) allows a host language to identify Strudel as an injected language; it does not imply that this grammar embeds another language. See [injection evaluation](injections-evaluation.md) for the evidence and decision.
 
@@ -42,12 +42,12 @@ Do not use the probe queries under `test/query/` as official captures. They exis
 
 `make test-query` runs every query layer:
 
-| Target | Responsibility |
-| --- | --- |
-| `make test-query-compile` | Compile official queries and reject invalid node and field names. |
-| `make test-query-execution` | Assert expected captures on grammar-derived roles in representative fixtures. |
-| `make test-query-registration` | Verify metadata, packaging rules, and binding exports. |
-| `make test-query` | Run the three targets above, then execute and check determinism and locals invariants. |
+| Target                         | Responsibility                                                                                                                      |
+| ------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------- |
+| `make test-query-compile`      | Compile official queries and reject invalid node and field names.                                                                   |
+| `make test-query-execution`    | Assert every official capture name on grammar-derived roles in representative fixtures and reject a wrong-capture negative control. |
+| `make test-query-registration` | Verify metadata, packaging rules, and binding exports.                                                                              |
+| `make test-query`              | Run the three targets above, then execute and check determinism and locals invariants.                                              |
 
 See [CI](ci.md) for where these targets run and [query audit](query-audit.md) for structural evidence. Known locals semantics gaps are recorded in [locals audit](locals-audit.md) and [locals captures](locals-captures.md).
 

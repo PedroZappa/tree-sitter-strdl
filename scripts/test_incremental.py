@@ -10,6 +10,8 @@ import sys
 import tempfile
 from pathlib import Path
 
+from terminal_report import print_terminal_status
+
 REPO_ROOT = Path(__file__).resolve().parent.parent
 TREE_SITTER = REPO_ROOT / "node_modules" / ".bin" / "tree-sitter"
 SEQUENCES_PATH = REPO_ROOT / "test" / "fixtures" / "incremental_sequences.json"
@@ -94,11 +96,24 @@ def selected_sequences(data: dict, filters: list[str]) -> list[dict]:
     return [
         sequence
         for sequence in sequences
-        if any(
-            term in sequence["id"] or term in sequence.get("categories", [])
-            for term in filters
-        )
+        if any(term in sequence["id"] or term in sequence.get("categories", []) for term in filters)
     ]
+
+
+def catalog_problems(data: dict, fixtures: dict[str, str]) -> list[str]:
+    """Check structural invariants that do not require parsing."""
+    problems: list[str] = []
+    seen_ids: set[str] = set()
+    for sequence in data["sequences"]:
+        sequence_id = sequence.get("id", "<missing id>")
+        if sequence_id in seen_ids:
+            problems.append(f"duplicate sequence id: {sequence_id}")
+        seen_ids.add(sequence_id)
+        if sequence.get("fixture") not in fixtures:
+            problems.append(f"{sequence_id}: unknown fixture {sequence.get('fixture')!r}")
+        if not sequence.get("edits"):
+            problems.append(f"{sequence_id}: no edits")
+    return problems
 
 
 def compare_sequence(
@@ -116,14 +131,11 @@ def compare_sequence(
     malformed_steps = 0
     final_step = len(sources)
     final_matched = False
-    for step, (step_source, step_edits) in enumerate(
-        zip(sources, cumulative_edits), start=1
-    ):
+    final_clean = False
+    for step, (step_source, step_edits) in enumerate(zip(sources, cumulative_edits), start=1):
         incremental_tree, incremental_stderr = run_parse(base_path, step_edits)
         if incremental_tree is None:
-            problems.append(
-                f"step {step}: incremental parse failed: {incremental_stderr.strip()}"
-            )
+            problems.append(f"step {step}: incremental parse failed: {incremental_stderr.strip()}")
             continue
 
         step_path = temp_dir / f"{sequence['id']}-step-{step}.strdl"
@@ -133,8 +145,11 @@ def compare_sequence(
             problems.append(f"step {step}: fresh parse failed: {fresh_stderr.strip()}")
             continue
 
-        if tree_has_errors(fresh_tree):
+        malformed = tree_has_errors(fresh_tree)
+        if malformed:
             malformed_steps += 1
+        if step == final_step:
+            final_clean = not malformed
 
         if incremental_tree == fresh_tree:
             if step == final_step:
@@ -151,6 +166,10 @@ def compare_sequence(
         problems.append(f"step {step}: incremental tree differs from fresh tree")
         problems.extend(diff)
 
+    if final_matched and not final_clean:
+        problems.append("final source contains ERROR or MISSING nodes")
+        final_matched = False
+
     return problems, len(sources), malformed_steps, final_matched
 
 
@@ -166,12 +185,14 @@ def main() -> int:
     data = json.loads(SEQUENCES_PATH.read_text(encoding="utf-8"))
     fixture_paths = data["fixtures"]
     fixtures = {
-        key: (REPO_ROOT / path).read_text(encoding="utf-8")
-        for key, path in fixture_paths.items()
+        key: (REPO_ROOT / path).read_text(encoding="utf-8") for key, path in fixture_paths.items()
     }
     selected = selected_sequences(data, args.filter)
 
-    failures = 0
+    structural_problems = catalog_problems(data, fixtures)
+    for problem in structural_problems:
+        print(f"CATALOG PROBLEM: {problem}")
+    failures = len(structural_problems)
     total_steps = 0
     malformed_steps = 0
     final_passed = 0
@@ -202,6 +223,15 @@ def main() -> int:
         f"{total_steps} steps, {malformed_steps} malformed steps"
     )
     print(f"Final-source comparisons: {final_passed}/{total} passed")
+    print_terminal_status(
+        "incremental equivalence",
+        failures == 0,
+        [
+            f"{total - failures}/{total} sequences",
+            f"{total_steps} steps",
+            f"{final_passed}/{total} final matches",
+        ],
+    )
     return 1 if failures else 0
 
 

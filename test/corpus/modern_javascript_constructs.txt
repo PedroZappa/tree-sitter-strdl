@@ -1,0 +1,360 @@
+==================
+try/catch without binding
+==================
+
+try { s("bd") } catch { note("c3") }
+
+---
+
+(source_file
+  (try_statement
+    (block
+      (expression_statement
+        (call_expression
+          (identifier)
+          (arguments
+            (string)))))
+    (block
+      (expression_statement
+        (call_expression
+          (identifier)
+          (arguments
+            (string)))))))
+
+==================
+return without value
+==================
+
+function f() { return; }
+
+---
+
+(source_file
+  (function_declaration
+    (identifier)
+    (formal_parameters)
+    (block
+      (return_statement))))
+
+==================
+array destructuring declaration
+==================
+
+const [a, b] = voices
+
+---
+
+(source_file
+  (variable_declaration
+    (variable_declarator
+      (array_pattern
+        (identifier)
+        (identifier))
+      (identifier))))
+
+==================
+nested array pattern with trailing comma
+==================
+
+const [a, [b, c],] = voices
+
+---
+
+(source_file
+  (variable_declaration
+    (variable_declarator
+      (array_pattern
+        (identifier)
+        (array_pattern
+          (identifier)
+          (identifier)))
+      (identifier))))
+
+==================
+function declaration with multiple parameters and trailing comma
+==================
+
+function play(a, b = 2,) { return a + b }
+
+---
+
+(source_file
+  (function_declaration
+    (identifier)
+    (formal_parameters
+      (identifier)
+      (assignment_pattern
+        (identifier)
+        (number)))
+    (block
+      (return_statement
+        (binary_expression
+          (identifier)
+          (identifier))))))
+
+==================
+assignment pattern with array binding
+==================
+
+function f([a, b] = notes) { return a }
+
+---
+
+(source_file
+  (function_declaration
+    (identifier)
+    (formal_parameters
+      (assignment_pattern
+        (array_pattern
+          (identifier)
+          (identifier))
+        (identifier)))
+    (block
+      (return_statement
+        (identifier)))))
+
+==================
+bare array-pattern arrow
+==================
+
+[a, b] => note(a).add(b)
+
+---
+
+(source_file
+  (expression_statement
+    (arrow_function
+      (array_pattern
+        (identifier)
+        (identifier))
+      (call_expression
+        (member_expression
+          (call_expression
+            (identifier)
+            (arguments
+              (identifier)))
+          (identifier))
+        (arguments
+          (identifier))))))
+
+==================
+named imports with aliases and trailing comma
+==================
+
+import { a, b as c, } from 'x';
+
+---
+
+(source_file
+  (import_declaration
+    (named_imports
+      (import_specifier
+        (identifier))
+      (import_specifier
+        (identifier)
+        (identifier)))
+    (string)))
+
+==================
+export function declaration
+==================
+
+export function f() { return 1 }
+
+---
+
+(source_file
+  (export_declaration
+    (function_declaration
+      (identifier)
+      (formal_parameters)
+      (block
+        (return_statement
+          (number))))))
+
+==================
+member and subscript assignment targets
+==================
+
+obj.x = 1
+arr[0] = 2
+
+---
+
+(source_file
+  (expression_statement
+    (assignment_expression
+      (member_expression
+        (identifier)
+        (identifier))
+      (number)))
+  (expression_statement
+    (assignment_expression
+      (subscript_expression
+        (identifier)
+        (number))
+      (number))))
+
+==================
+all comparison operators
+==================
+
+a < b
+a <= b
+a == b
+a === b
+a != b
+a !== b
+a > b
+a >= b
+
+---
+
+(source_file
+  (expression_statement
+    (binary_expression
+      (identifier)
+      (identifier)))
+  (expression_statement
+    (binary_expression
+      (identifier)
+      (identifier)))
+  (expression_statement
+    (binary_expression
+      (identifier)
+      (identifier)))
+  (expression_statement
+    (binary_expression
+      (identifier)
+      (identifier)))
+  (expression_statement
+    (binary_expression
+      (identifier)
+      (identifier)))
+  (expression_statement
+    (binary_expression
+      (identifier)
+      (identifier)))
+  (expression_statement
+    (binary_expression
+      (identifier)
+      (identifier)))
+  (expression_statement
+    (binary_expression
+      (identifier)
+      (identifier))))
+
+==================
+nested conditional expression
+==================
+
+const x = a ? b : c ? d : e
+
+---
+
+(source_file
+  (variable_declaration
+    (variable_declarator
+      (identifier)
+      (conditional_expression
+        (identifier)
+        (identifier)
+        (conditional_expression
+          (identifier)
+          (identifier)
+          (identifier))))))
+
+==================
+new expressions with member and subscript constructors
+==================
+
+const x = new Foo
+const y = new a.B[0]()
+
+---
+
+(source_file
+  (variable_declaration
+    (variable_declarator
+      (identifier)
+      (new_expression
+        (identifier))))
+  (variable_declaration
+    (variable_declarator
+      (identifier)
+      (new_expression
+        (subscript_expression
+          (member_expression
+            (identifier)
+            (identifier))
+          (number))
+        (arguments)))))
+
+==================
+empty and numeric-keyed objects
+==================
+
+const x = {}
+const y = {1: "a"}
+
+---
+
+(source_file
+  (variable_declaration
+    (variable_declarator
+      (identifier)
+      (object)))
+  (variable_declaration
+    (variable_declarator
+      (identifier)
+      (object
+        (pair
+          (number)
+          (string))))))
+
+==================
+empty array
+==================
+
+const x = []
+
+---
+
+(source_file
+  (variable_declaration
+    (variable_declarator
+      (identifier)
+      (array))))
+
+==================
+escaped quotes in strings
+==================
+
+const a = "x\"y"
+const b = 'x\'y'
+
+---
+
+(source_file
+  (variable_declaration
+    (variable_declarator
+      (identifier)
+      (string)))
+  (variable_declaration
+    (variable_declarator
+      (identifier)
+      (string))))
+
+==================
+escaped dollar in template literal
+==================
+
+const c = `x\${y}`
+
+---
+
+(source_file
+  (variable_declaration
+    (variable_declarator
+      (identifier)
+      (template_string))))

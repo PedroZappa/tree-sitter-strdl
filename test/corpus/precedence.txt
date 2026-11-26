@@ -12,10 +12,10 @@ setCps(1 + 2 * 3)
       (identifier)
       (arguments
         (binary_expression
+          (number)
           (binary_expression
             (number)
-            (number))
-          (number))))))
+            (number)))))))
 
 ==================
 addition is left associative

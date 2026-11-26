@@ -1,0 +1,321 @@
+==================
+missing closing bracket in chained subscript
+==================
+
+s("bd").gain[0
+
+---
+
+(source_file
+  (expression_statement
+    (subscript_expression
+      object: (member_expression
+        object: (call_expression
+          function: (identifier)
+          arguments: (arguments
+            argument: (string)))
+        property: (identifier))
+      index: (number)
+      (MISSING "]"))))
+
+==================
+missing closing bracket in optional subscript
+==================
+
+s("bd")?.[0
+
+---
+
+(source_file
+  (expression_statement
+    (subscript_expression
+      object: (call_expression
+        function: (identifier)
+        arguments: (arguments
+          argument: (string)))
+      index: (number)
+      (MISSING "]"))))
+
+==================
+missing formal parameter closing parenthesis
+==================
+
+const a = 1
+function f(x, y {}
+const b = 2
+
+---
+
+(source_file
+  (variable_declaration
+    declarator: (variable_declarator
+      name: (identifier)
+      value: (number)))
+  (function_declaration
+    name: (identifier)
+    parameters: (formal_parameters
+      parameter: (identifier)
+      parameter: (identifier)
+      (MISSING ")"))
+    body: (block))
+  (variable_declaration
+    declarator: (variable_declarator
+      name: (identifier)
+      value: (number))))
+
+==================
+doubled comma in formal parameters
+==================
+
+const a = 1
+function f(x, , y) {}
+const b = 2
+
+---
+
+(source_file
+  (variable_declaration
+    declarator: (variable_declarator
+      name: (identifier)
+      value: (number)))
+  (function_declaration
+    name: (identifier)
+    parameters: (formal_parameters
+      parameter: (identifier)
+      (ERROR)
+      parameter: (identifier))
+    body: (block))
+  (variable_declaration
+    declarator: (variable_declarator
+      name: (identifier)
+      value: (number))))
+
+==================
+doubled comma in arrow parameters
+==================
+
+const a = 1
+const f = (x, , y) => x
+const b = 2
+
+---
+
+(source_file
+  (variable_declaration
+    declarator: (variable_declarator
+      name: (identifier)
+      value: (number)))
+  (variable_declaration
+    declarator: (variable_declarator
+      name: (identifier)
+      value: (arrow_function
+        parameters: (formal_parameters
+          parameter: (identifier)
+          (ERROR)
+          parameter: (identifier))
+        body: (identifier))))
+  (variable_declaration
+    declarator: (variable_declarator
+      name: (identifier)
+      value: (number))))
+
+==================
+doubled comma in array literal
+==================
+
+const a = 1
+const x = [1,, 2]
+const b = 2
+
+---
+
+(source_file
+  (variable_declaration
+    declarator: (variable_declarator
+      name: (identifier)
+      value: (number)))
+  (variable_declaration
+    declarator: (variable_declarator
+      name: (identifier)
+      value: (array
+        element: (number)
+        (ERROR)
+        element: (number))))
+  (variable_declaration
+    declarator: (variable_declarator
+      name: (identifier)
+      value: (number))))
+
+==================
+missing comma between object pairs inside call
+==================
+
+const a = 1
+s("bd", {x: 1 y: 2})
+const b = 2
+
+---
+
+(source_file
+  (variable_declaration
+    declarator: (variable_declarator
+      name: (identifier)
+      value: (number)))
+  (expression_statement
+    (call_expression
+      function: (identifier)
+      arguments: (arguments
+        argument: (string)
+        argument: (object
+          (pair
+            key: (identifier)
+            value: (number))
+          (ERROR
+            (identifier)
+            (number))))))
+  (variable_declaration
+    declarator: (variable_declarator
+      name: (identifier)
+      value: (number))))
+
+==================
+missing object value inside call
+==================
+
+const a = 1
+s("bd", {x: , y: 2})
+const b = 2
+
+---
+
+(source_file
+  (variable_declaration
+    declarator: (variable_declarator
+      name: (identifier)
+      value: (number)))
+  (expression_statement
+    (call_expression
+      function: (identifier)
+      arguments: (arguments
+        argument: (string)
+        argument: (object
+          (pair
+            key: (identifier)
+            value: (MISSING number))
+          (pair
+            key: (identifier)
+            value: (number))))))
+  (variable_declaration
+    declarator: (variable_declarator
+      name: (identifier)
+      value: (number))))
+
+==================
+missing ternary consequence inside call
+==================
+
+const a = 1
+s(x ? : y)
+const b = 2
+
+---
+
+(source_file
+  (variable_declaration
+    declarator: (variable_declarator
+      name: (identifier)
+      value: (number)))
+  (expression_statement
+    (call_expression
+      function: (identifier)
+      arguments: (arguments
+        argument: (conditional_expression
+          condition: (identifier)
+          consequence: (MISSING identifier)
+          alternative: (identifier)))))
+  (variable_declaration
+    declarator: (variable_declarator
+      name: (identifier)
+      value: (number))))
+
+==================
+missing ternary colon inside call
+==================
+
+const a = 1
+s(x ? y)
+const b = 2
+
+---
+
+(source_file
+  (variable_declaration
+    declarator: (variable_declarator
+      name: (identifier)
+      value: (number)))
+  (expression_statement
+    (call_expression
+      function: (identifier)
+      arguments: (arguments
+        argument: (identifier)
+        (ERROR
+          (identifier)))))
+  (variable_declaration
+    declarator: (variable_declarator
+      name: (identifier)
+      value: (number))))
+
+==================
+missing parenthesized-expression closing parenthesis in declaration
+==================
+
+const a = 1
+const x = (1 + 2
+const b = 2
+
+---
+
+(source_file
+  (variable_declaration
+    declarator: (variable_declarator
+      name: (identifier)
+      value: (number)))
+  (variable_declaration
+    declarator: (variable_declarator
+      name: (identifier)
+      value: (parenthesized_expression
+        expression: (binary_expression
+          left: (number)
+          right: (number))
+        (MISSING ")"))))
+  (variable_declaration
+    declarator: (variable_declarator
+      name: (identifier)
+      value: (number))))
+
+==================
+missing comma in array binding pattern
+==================
+
+const a = 1
+const [x y] = notes
+const b = 2
+
+---
+
+(source_file
+  (variable_declaration
+    declarator: (variable_declarator
+      name: (identifier)
+      value: (number)))
+  (variable_declaration
+    declarator: (variable_declarator
+      name: (array_pattern
+        element: (identifier)
+        (ERROR
+          (UNEXPECTED 'y')))
+      value: (identifier)))
+  (variable_declaration
+    declarator: (variable_declarator
+      name: (identifier)
+      value: (number))))

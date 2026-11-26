@@ -6,13 +6,13 @@ The query describes lexical syntax only. It does not resolve symbols, infer type
 
 ## Capture names
 
-| Capture | Meaning | Captured nodes |
-| --- | --- | --- |
-| `@local.scope` | Node that introduces a lexical scope. | `(source_file)`, `(block)`, `(arrow_function)`, `(function_declaration)`. |
-| `@local.definition.var` | Identifier that binds a variable. | `name` of `(variable_declarator)`, `left` identifier of `(assignment_expression)`, and `name` of `(import_specifier)`. |
-| `@local.definition.function` | Name bound by a named function declaration. | `name` identifier of `(function_declaration)`. |
-| `@local.definition.parameter` | Identifier that binds a function, pattern, or catch parameter. | `parameter` of `(formal_parameters)`, direct `element` of `(array_pattern)`, `left` of `(assignment_pattern)`, `parameters` identifier of `(arrow_function)`, and `parameter` of `(try_statement)`. |
-| `@local.reference` | Identifier in a reference position under the current broad rule. | Every `(identifier)` node. |
+| Capture                       | Meaning                                                          | Captured nodes                                                                                                                                                                                      |
+| ----------------------------- | ---------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `@local.scope`                | Node that introduces a lexical scope.                            | `(source_file)`, `(block)`, `(arrow_function)`, `(function_declaration)`.                                                                                                                           |
+| `@local.definition.var`       | Identifier that binds a variable.                                | `name` of `(variable_declarator)`, `left` identifier of `(assignment_expression)`, and `name` of `(import_specifier)`.                                                                              |
+| `@local.definition.function`  | Name bound by a named function declaration.                      | `name` identifier of `(function_declaration)`.                                                                                                                                                      |
+| `@local.definition.parameter` | Identifier that binds a function, pattern, or catch parameter.   | `parameter` of `(formal_parameters)`, direct `element` of `(array_pattern)`, `left` of `(assignment_pattern)`, `parameters` identifier of `(arrow_function)`, and `parameter` of `(try_statement)`. |
+| `@local.reference`            | Identifier in a reference position under the current broad rule. | Every `(identifier)` node.                                                                                                                                                                          |
 
 The query currently has 11 top-level patterns. Every node type and field it references exists in the public CST documented by [`src/node-types.json`](../src/node-types.json).
 

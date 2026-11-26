@@ -37,3 +37,21 @@ a ? b : c
       (identifier)
       (identifier)
       (identifier))))
+
+==================
+comparison condition in ternary
+==================
+
+const label = a > b ? c : d
+---
+
+(source_file
+  (variable_declaration
+    (variable_declarator
+      (identifier)
+      (conditional_expression
+        (binary_expression
+          (identifier)
+          (identifier))
+        (identifier)
+        (identifier)))))

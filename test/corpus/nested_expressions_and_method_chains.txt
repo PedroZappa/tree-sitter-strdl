@@ -1,0 +1,266 @@
+==================
+parenthesized call receiver chain
+==================
+
+(s("bd")).gain(1).slow(2)
+
+---
+
+(source_file
+  (expression_statement
+    (call_expression
+      (member_expression
+        (call_expression
+          (member_expression
+            (parenthesized_expression
+              (call_expression
+                (identifier)
+                (arguments
+                  (string))))
+            (identifier))
+          (arguments
+            (number)))
+        (identifier))
+      (arguments
+        (number)))))
+
+==================
+subscript receiver chain
+==================
+
+voices[0].gain(1).slow(2)
+
+---
+
+(source_file
+  (expression_statement
+    (call_expression
+      (member_expression
+        (call_expression
+          (member_expression
+            (subscript_expression
+              (identifier)
+              (number))
+            (identifier))
+          (arguments
+            (number)))
+        (identifier))
+      (arguments
+        (number)))))
+
+==================
+optional method chain
+==================
+
+s("bd")?.gain(1).slow(2)
+
+---
+
+(source_file
+  (expression_statement
+    (call_expression
+      (member_expression
+        (call_expression
+          (member_expression
+            (call_expression
+              (identifier)
+              (arguments
+                (string)))
+            (identifier))
+          (arguments
+            (number)))
+        (identifier))
+      (arguments
+        (number)))))
+
+==================
+computed index with call argument chain
+==================
+
+stack[lead(1)].gain(2)
+
+---
+
+(source_file
+  (expression_statement
+    (call_expression
+      (member_expression
+        (subscript_expression
+          (identifier)
+          (call_expression
+            (identifier)
+            (arguments
+              (number))))
+        (identifier))
+      (arguments
+        (number)))))
+
+==================
+tagged template receiver chain
+==================
+
+s`bd`.gain(2)
+
+---
+
+(source_file
+  (expression_statement
+    (call_expression
+      (member_expression
+        (tagged_template_expression
+          (identifier)
+          (template_string))
+        (identifier))
+      (arguments
+        (number)))))
+
+==================
+await method chain
+==================
+
+await initHydra().set(1)
+
+---
+
+(source_file
+  (expression_statement
+    (await_expression
+      (call_expression
+        (member_expression
+          (call_expression
+            (identifier)
+            (arguments))
+          (identifier))
+        (arguments
+          (number))))))
+
+==================
+call on call result
+==================
+
+fast(2)(note("c3"))
+
+---
+
+(source_file
+  (expression_statement
+    (call_expression
+      (call_expression
+        (identifier)
+        (arguments
+          (number)))
+      (arguments
+        (call_expression
+          (identifier)
+          (arguments
+            (string)))))))
+
+==================
+nested arithmetic argument in chain
+==================
+
+s("bd").gain(1 + 2 * 3)
+
+---
+
+(source_file
+  (expression_statement
+    (call_expression
+      (member_expression
+        (call_expression
+          (identifier)
+          (arguments
+            (string)))
+        (identifier))
+      (arguments
+        (binary_expression
+          (number)
+          (binary_expression
+            (number)
+            (number)))))))
+
+==================
+nested conditional argument in chain
+==================
+
+s(flag ? note("bd") : note("hh")).gain(2)
+
+---
+
+(source_file
+  (expression_statement
+    (call_expression
+      (member_expression
+        (call_expression
+          (identifier)
+          (arguments
+            (conditional_expression
+              (identifier)
+              (call_expression
+                (identifier)
+                (arguments
+                  (string)))
+              (call_expression
+                (identifier)
+                (arguments
+                  (string))))))
+        (identifier))
+      (arguments
+        (number)))))
+
+==================
+nested object and array argument in chain
+==================
+
+note("c3").piano({voices: [1, 2], gain: 0.5})
+
+---
+
+(source_file
+  (expression_statement
+    (call_expression
+      (member_expression
+        (call_expression
+          (identifier)
+          (arguments
+            (string)))
+        (identifier))
+      (arguments
+        (object
+          (pair
+            (identifier)
+            (array
+              (number)
+              (number)))
+          (pair
+            (identifier)
+            (number)))))))
+
+==================
+deeply nested call arguments in chain
+==================
+
+s("bd", note("c3", stack(1, 2))).gain(3)
+
+---
+
+(source_file
+  (expression_statement
+    (call_expression
+      (member_expression
+        (call_expression
+          (identifier)
+          (arguments
+            (string)
+            (call_expression
+              (identifier)
+              (arguments
+                (string)
+                (call_expression
+                  (identifier)
+                  (arguments
+                    (number)
+                    (number)))))))
+        (identifier))
+      (arguments
+        (number)))))

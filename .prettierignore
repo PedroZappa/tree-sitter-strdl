@@ -1,0 +1,15 @@
+node_modules/
+.venv/
+AGENTS.md
+build/
+src/
+bindings/c/tree_sitter/
+bindings/python/tree_sitter_strudel/binding.c
+bindings/swift/TreeSitterStrudel/strudel.h
+benchmarks/fixtures/
+benchmarks/results/
+package-lock.json
+*.strdl
+*.a
+*.so
+*.wasm

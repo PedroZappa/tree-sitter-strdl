@@ -12,11 +12,13 @@ This is a compatibility-breaking change for consumers on pre-0.25 runtimes.
 
 ## Generator tooling
 
-| Tool | Requirement | Notes |
-| --- | --- | --- |
-| Tree-sitter CLI | `0.27.2`, pinned in `devDependencies` | Generate artifacts with this exact version. |
-| Parser ABI target | ABI 15 | CLI 0.27.2 generates ABI 15 by default. |
-| Generated artifacts | Committed under `src/` | Never hand-edit generated files. |
+| Tool                | Requirement                                | Notes                                                          |
+| ------------------- | ------------------------------------------ | -------------------------------------------------------------- |
+| Tree-sitter CLI     | `0.27.2`, pinned in `devDependencies`      | Generate artifacts with this exact version.                    |
+| Parser ABI target   | ABI 15                                     | CLI 0.27.2 generates ABI 15 by default.                        |
+| Generated artifacts | Committed under `src/`                     | Never hand-edit generated files.                               |
+| Prettier            | `3.10.1`, pinned in `devDependencies`      | Formatting gate for non-generated JS/JSON/YAML/Markdown files. |
+| Ruff                | `0.17.6`, pinned in `requirements-dev.txt` | Formatting and lint gate for Python sources.                   |
 
 Regenerate with:
 
@@ -26,14 +28,14 @@ tree-sitter generate
 
 ## Runtime support matrix
 
-| Binding | Declared requirement | Validation version | Result |
-| --- | --- | --- | --- |
-| Node.js | peer `tree-sitter: ^0.25.0` | `tree-sitter` 0.25.1, Node.js 26.8.2 | Passed `npm test` |
-| Python | optional extra `tree-sitter~=0.25.0` | `tree-sitter` 0.25.2, Python 3.15.2 | Passed `bindings/python/tests/test_binding.py` |
-| Rust | dev-dependency `tree-sitter = "0.25.8"` | Not run; cargo unavailable | Not verified in this environment |
-| Go | `github.com/tree-sitter/go-tree-sitter` v0.25.0 resolved by the temporary test module | Go 1.27.4 | Passed `go test` in a module-aware temporary copy |
-| Swift | `SwiftTreeSitter` `from: "0.10.0"` | Resolved SwiftTreeSitter 0.25.0 and tree-sitter 0.25.10 | `swift build` passed; `swift test` blocked by missing XCTest |
-| C | No Tree-sitter runtime dependency declared | Not separately built | ABI validation covered by CLI tests |
+| Binding | Declared requirement                                                                  | Validation version                                      | Result                                                       |
+| ------- | ------------------------------------------------------------------------------------- | ------------------------------------------------------- | ------------------------------------------------------------ |
+| Node.js | peer `tree-sitter: ^0.25.0`                                                           | `tree-sitter` 0.25.1, Node.js 26.8.2                    | Passed `npm test`                                            |
+| Python  | optional extra `tree-sitter~=0.25.0`                                                  | `tree-sitter` 0.25.2, Python 3.15.2                     | Passed `bindings/python/tests/test_binding.py`               |
+| Rust    | dev-dependency `tree-sitter = "0.25.8"`                                               | Not run; cargo unavailable                              | Not verified in this environment                             |
+| Go      | `github.com/tree-sitter/go-tree-sitter` v0.25.0 resolved by the temporary test module | Go 1.27.4                                               | Passed `go test` in a module-aware temporary copy            |
+| Swift   | `SwiftTreeSitter` `from: "0.10.0"`                                                    | Resolved SwiftTreeSitter 0.25.0 and tree-sitter 0.25.10 | `swift build` passed; `swift test` blocked by missing XCTest |
+| C       | No Tree-sitter runtime dependency declared                                            | Not separately built                                    | ABI validation covered by CLI tests                          |
 
 GitHub Actions validates the Node.js binding on Node.js 22 and 24 for pull requests and pushes to `main`; see [CI](ci.md).
 

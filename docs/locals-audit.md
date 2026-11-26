@@ -20,19 +20,19 @@ The audit covers structural validity, scope coverage, definition patterns, and r
 
 ## Pattern inventory
 
-| Index | Pattern | Capture |
-| ---: | --- | --- |
-| 0 | `source_file`, `block`, `arrow_function`, `function_declaration` | `@local.scope` |
-| 1 | `variable_declarator` `name` identifier | `@local.definition.var` |
-| 2 | `assignment_expression` `left` identifier | `@local.definition.var` |
-| 3 | `function_declaration` `name` identifier | `@local.definition.function` |
-| 4 | `formal_parameters` `parameter` identifier | `@local.definition.parameter` |
-| 5 | `array_pattern` `element` identifier | `@local.definition.parameter` |
-| 6 | `assignment_pattern` `left` identifier | `@local.definition.parameter` |
-| 7 | `arrow_function` `parameters` identifier | `@local.definition.parameter` |
-| 8 | `import_specifier` `name` identifier | `@local.definition.var` |
-| 9 | `try_statement` `parameter` identifier | `@local.definition.parameter` |
-| 10 | any `identifier` | `@local.reference` |
+| Index | Pattern                                                          | Capture                       |
+| ----: | ---------------------------------------------------------------- | ----------------------------- |
+|     0 | `source_file`, `block`, `arrow_function`, `function_declaration` | `@local.scope`                |
+|     1 | `variable_declarator` `name` identifier                          | `@local.definition.var`       |
+|     2 | `assignment_expression` `left` identifier                        | `@local.definition.var`       |
+|     3 | `function_declaration` `name` identifier                         | `@local.definition.function`  |
+|     4 | `formal_parameters` `parameter` identifier                       | `@local.definition.parameter` |
+|     5 | `array_pattern` `element` identifier                             | `@local.definition.parameter` |
+|     6 | `assignment_pattern` `left` identifier                           | `@local.definition.parameter` |
+|     7 | `arrow_function` `parameters` identifier                         | `@local.definition.parameter` |
+|     8 | `import_specifier` `name` identifier                             | `@local.definition.var`       |
+|     9 | `try_statement` `parameter` identifier                           | `@local.definition.parameter` |
+|    10 | any `identifier`                                                 | `@local.reference`            |
 
 All referenced node types and fields exist in the current CST. The query compiles and executes.
 
@@ -40,13 +40,13 @@ All referenced node types and fields exist in the current CST. The query compile
 
 Across `test.strdl`, `test-local.strdl`, and `test/query/determinism.strdl`, the query produced:
 
-| Capture | Matches |
-| --- | ---: |
-| `local.reference` | 258 |
-| `local.definition.var` | 24 |
-| `local.scope` | 10 |
-| `local.definition.parameter` | 7 |
-| `local.definition.function` | 1 |
+| Capture                      | Matches |
+| ---------------------------- | ------: |
+| `local.reference`            |     258 |
+| `local.definition.var`       |      24 |
+| `local.scope`                |      10 |
+| `local.definition.parameter` |       7 |
+| `local.definition.function`  |       1 |
 
 ## Findings
 
