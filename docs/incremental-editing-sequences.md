@@ -4,10 +4,10 @@ This document defines the editing sequences used for incremental-parsing equival
 
 ## Fixtures
 
-| Key              | File                                      | Role                                                                                                                                               |
-| ---------------- | ----------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `representative` | [`test.strdl`](../test.strdl)             | Full documented Strudel arrangement with declarations, method chains, arrows, objects, template literals, mini-notation strings, and nested calls. |
-| `compact`        | [`test-local.strdl`](../test-local.strdl) | Small composition probe used for short edit sequences.                                                                                             |
+| Key              | File                                                                  | Role                                                                                                                                               |
+| ---------------- | --------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `representative` | [`test/fixtures/test.strdl`](../test/fixtures/test.strdl)             | Full documented Strudel arrangement with declarations, method chains, arrows, objects, template literals, mini-notation strings, and nested calls. |
+| `compact`        | [`test/fixtures/test-local.strdl`](../test/fixtures/test-local.strdl) | Small composition probe used for short edit sequences.                                                                                             |
 
 ## Edit format
 

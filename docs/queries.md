@@ -32,8 +32,8 @@ Both official queries are registered in [`tree-sitter.json`](../tree-sitter.json
 From the repository root, the pinned CLI compiles and executes a query with:
 
 ```sh
-node_modules/.bin/tree-sitter query queries/highlights.scm test.strdl
-node_modules/.bin/tree-sitter query queries/locals.scm test.strdl
+node_modules/.bin/tree-sitter query queries/highlights.scm test/fixtures/test.strdl
+node_modules/.bin/tree-sitter query queries/locals.scm test/fixtures/test.strdl
 ```
 
 Do not use the probe queries under `test/query/` as official captures. They exist only to select syntactic roles for automated assertions.

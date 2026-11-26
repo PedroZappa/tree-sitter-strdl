@@ -7,7 +7,7 @@
       "kind": "representative",
       "role": "representative-composition",
       "description": "Committed representative Strudel composition used by query and incremental harnesses.",
-      "path": "test.strdl",
+      "path": "test/fixtures/test.strdl",
       "expected_clean": true,
       "bytes": 2854,
       "sha256": "2ecf5cc379a062280bcfcb30720f5bdd5e367fa4ab61e2f7acea229cd3b92f5d"
@@ -17,7 +17,7 @@
       "kind": "representative",
       "role": "representative-composition",
       "description": "Committed small local Strudel composition used by query and incremental harnesses.",
-      "path": "test-local.strdl",
+      "path": "test/fixtures/test-local.strdl",
       "expected_clean": true,
       "bytes": 147,
       "sha256": "959ac693b9bc4b6ab815769e04f3d7e68f12822257c8c698ae2e2774e1b48d3b"

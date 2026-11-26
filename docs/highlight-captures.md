@@ -52,5 +52,5 @@ The generic identifier fallback and broad parameter/container captures were also
 ## Verification
 
 - Capture inventory: `grep -oE '@[a-zA-Z0-9_.-]+' queries/highlights.scm | sort -u`; all 16 emitted names are listed above.
-- `make test-query` compiles and executes every official query, then checks duplicate captures against `test.strdl`, `test-local.strdl`, and `test/query/determinism.strdl`.
+- `make test-query` compiles and executes every official query, then checks duplicate captures against `test/fixtures/test.strdl`, `test/fixtures/test-local.strdl`, and `test/query/determinism.strdl`.
 - `tree-sitter parse test/query/determinism.strdl` reports no `ERROR` or `MISSING` nodes.

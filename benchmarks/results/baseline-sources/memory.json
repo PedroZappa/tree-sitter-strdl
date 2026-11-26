@@ -32,7 +32,7 @@
       "id": "representative-main",
       "kind": "representative",
       "role": "representative-composition",
-      "path": "test.strdl",
+      "path": "test/fixtures/test.strdl",
       "bytes": 2854,
       "expectedClean": true,
       "iterations": 15,
@@ -57,7 +57,7 @@
       "id": "representative-local",
       "kind": "representative",
       "role": "representative-composition",
-      "path": "test-local.strdl",
+      "path": "test/fixtures/test-local.strdl",
       "bytes": 147,
       "expectedClean": true,
       "iterations": 15,
@@ -159,7 +159,7 @@
       "id": "method-chain-insertion",
       "description": null,
       "fixture": "representative-main",
-      "fixturePath": "test.strdl",
+      "fixturePath": "test/fixtures/test.strdl",
       "initialBytes": 2854,
       "finalBytes": 2867,
       "categories": [
@@ -191,7 +191,7 @@
       "id": "pattern-string-replacement",
       "description": null,
       "fixture": "representative-main",
-      "fixturePath": "test.strdl",
+      "fixturePath": "test/fixtures/test.strdl",
       "initialBytes": 2854,
       "finalBytes": 2844,
       "categories": [
@@ -223,7 +223,7 @@
       "id": "declaration-deletion",
       "description": null,
       "fixture": "representative-main",
-      "fixturePath": "test.strdl",
+      "fixturePath": "test/fixtures/test.strdl",
       "initialBytes": 2854,
       "finalBytes": 2801,
       "categories": [
@@ -255,7 +255,7 @@
       "id": "nested-object-edits",
       "description": null,
       "fixture": "representative-main",
-      "fixturePath": "test.strdl",
+      "fixturePath": "test/fixtures/test.strdl",
       "initialBytes": 2854,
       "finalBytes": 2854,
       "categories": [
@@ -287,7 +287,7 @@
       "id": "malformed-call-repair",
       "description": null,
       "fixture": "representative-main",
-      "fixturePath": "test.strdl",
+      "fixturePath": "test/fixtures/test.strdl",
       "initialBytes": 2854,
       "finalBytes": 2854,
       "categories": [
@@ -320,7 +320,7 @@
       "id": "declaration-insertion",
       "description": null,
       "fixture": "representative-main",
-      "fixturePath": "test.strdl",
+      "fixturePath": "test/fixtures/test.strdl",
       "initialBytes": 2854,
       "finalBytes": 2901,
       "categories": [
@@ -352,7 +352,7 @@
       "id": "arrow-parameter-rename",
       "description": null,
       "fixture": "representative-main",
-      "fixturePath": "test.strdl",
+      "fixturePath": "test/fixtures/test.strdl",
       "initialBytes": 2854,
       "finalBytes": 2854,
       "categories": [
@@ -384,7 +384,7 @@
       "id": "method-deletion",
       "description": null,
       "fixture": "representative-main",
-      "fixturePath": "test.strdl",
+      "fixturePath": "test/fixtures/test.strdl",
       "initialBytes": 2854,
       "finalBytes": 2837,
       "categories": [
@@ -416,7 +416,7 @@
       "id": "call-statement-insertion",
       "description": null,
       "fixture": "representative-main",
-      "fixturePath": "test.strdl",
+      "fixturePath": "test/fixtures/test.strdl",
       "initialBytes": 2854,
       "finalBytes": 2872,
       "categories": [
@@ -448,7 +448,7 @@
       "id": "template-content-edit",
       "description": null,
       "fixture": "representative-main",
-      "fixturePath": "test.strdl",
+      "fixturePath": "test/fixtures/test.strdl",
       "initialBytes": 2854,
       "finalBytes": 2854,
       "categories": [
@@ -480,7 +480,7 @@
       "id": "compact-set-cps",
       "description": null,
       "fixture": "representative-local",
-      "fixturePath": "test-local.strdl",
+      "fixturePath": "test/fixtures/test-local.strdl",
       "initialBytes": 147,
       "finalBytes": 147,
       "categories": [
@@ -512,7 +512,7 @@
       "id": "compact-declaration-deletion",
       "description": null,
       "fixture": "representative-local",
-      "fixturePath": "test-local.strdl",
+      "fixturePath": "test/fixtures/test-local.strdl",
       "initialBytes": 147,
       "finalBytes": 105,
       "categories": [
@@ -544,7 +544,7 @@
       "id": "compact-malformed-repair",
       "description": null,
       "fixture": "representative-local",
-      "fixturePath": "test-local.strdl",
+      "fixturePath": "test/fixtures/test-local.strdl",
       "initialBytes": 147,
       "finalBytes": 147,
       "categories": [
@@ -577,7 +577,7 @@
       "id": "argument-deletion",
       "description": null,
       "fixture": "representative-main",
-      "fixturePath": "test.strdl",
+      "fixturePath": "test/fixtures/test.strdl",
       "initialBytes": 2854,
       "finalBytes": 2852,
       "categories": [
@@ -610,7 +610,7 @@
       "id": "object-property-deletion",
       "description": null,
       "fixture": "representative-main",
-      "fixturePath": "test.strdl",
+      "fixturePath": "test/fixtures/test.strdl",
       "initialBytes": 2854,
       "finalBytes": 2842,
       "categories": [
@@ -643,7 +643,7 @@
       "id": "method-name-replacement",
       "description": null,
       "fixture": "representative-main",
-      "fixturePath": "test.strdl",
+      "fixturePath": "test/fixtures/test.strdl",
       "initialBytes": 2854,
       "finalBytes": 2854,
       "categories": [
@@ -676,7 +676,7 @@
       "id": "nested-call-edit",
       "description": null,
       "fixture": "representative-main",
-      "fixturePath": "test.strdl",
+      "fixturePath": "test/fixtures/test.strdl",
       "initialBytes": 2854,
       "finalBytes": 2854,
       "categories": [
@@ -709,7 +709,7 @@
       "id": "nested-arrow-body-edit",
       "description": null,
       "fixture": "representative-main",
-      "fixturePath": "test.strdl",
+      "fixturePath": "test/fixtures/test.strdl",
       "initialBytes": 2854,
       "finalBytes": 2854,
       "categories": [
@@ -741,7 +741,7 @@
       "id": "object-brace-repair",
       "description": null,
       "fixture": "representative-main",
-      "fixturePath": "test.strdl",
+      "fixturePath": "test/fixtures/test.strdl",
       "initialBytes": 2854,
       "finalBytes": 2854,
       "categories": [
@@ -774,7 +774,7 @@
       "id": "string-quote-repair",
       "description": null,
       "fixture": "representative-local",
-      "fixturePath": "test-local.strdl",
+      "fixturePath": "test/fixtures/test-local.strdl",
       "initialBytes": 147,
       "finalBytes": 147,
       "categories": [
@@ -808,7 +808,7 @@
       "id": "array-bracket-repair",
       "description": null,
       "fixture": "representative-main",
-      "fixturePath": "test.strdl",
+      "fixturePath": "test/fixtures/test.strdl",
       "initialBytes": 2854,
       "finalBytes": 2854,
       "categories": [

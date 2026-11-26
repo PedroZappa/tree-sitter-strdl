@@ -29,12 +29,13 @@ Each matrix job installs the locked dependencies with `npm ci`, then runs `make 
 11. `make test-regressions` — validates the [regression inventory](regression-coverage.md), ensuring every recorded bug still has an existing, wired regression artifact.
 12. `make test-node` — runs the Node.js binding tests with the tree-sitter runtime resolved from `package-lock.json`, covering load, generated metadata, CST fields, error recovery, query execution, and incremental/fresh equivalence through the native addon.
 13. `make test-node-clean-build` — copies tracked sources to a temporary clean directory, runs `npm ci --offline`, requires the native addon to compile without parser regeneration, and runs `npm test` there.
-14. `make test-package` — runs `npm pack --dry-run --json --ignore-scripts` and checks metadata consistency, required files, forbidden artifacts, and packed file sizes.
-15. `make build` — builds the static and shared C libraries and the pkg-config metadata.
+14. `make test-generated-runtime` — copies only runtime sources and committed generated artifacts into a temporary directory without `grammar.js` or `tree-sitter-cli`, installs the pinned tree-sitter runtime offline, verifies the generated files remain byte-identical, and parses both representative fixtures through the compiled addon.
+15. `make test-package` — runs `npm pack --dry-run --json --ignore-scripts` and checks metadata consistency, required files, forbidden artifacts, and packed file sizes.
+16. `make build` — builds the static and shared C libraries and the pkg-config metadata.
 
 The pinned versions used by CI come from `package-lock.json` (Tree-sitter CLI `0.27.2`, tree-sitter Node runtime `0.25.1`, Prettier `3.10.1`) and `requirements-dev.txt` (Ruff `0.17.6`).
 
-All `make ci` checks above are correctness gates: a failure produces a nonzero exit status. These gates cover every required Phase 6 test layer and the clean Node.js binding build; remaining Phase 7 work, especially non-Node binding validation and tarball consumer checks, is listed in [Not yet covered](#not-yet-covered). Latency and memory observations are outside CI; comparison reports explicitly mark timing deltas and comparability mismatches as [non-gating performance warnings](benchmarking.md#correctness-failures-versus-performance-warnings). A correctness failure is never reported as a performance warning.
+All `make ci` checks above are correctness gates: a failure produces a nonzero exit status. These gates cover every required Phase 6 test layer, the clean Node.js binding build, and the generated parser runtime check; remaining Phase 7 work, especially non-Node binding validation and tarball consumer checks, is listed in [Not yet covered](#not-yet-covered). Latency and memory observations are outside CI; comparison reports explicitly mark timing deltas and comparability mismatches as [non-gating performance warnings](benchmarking.md#correctness-failures-versus-performance-warnings). A correctness failure is never reported as a performance warning.
 
 ## Performance reporting
 

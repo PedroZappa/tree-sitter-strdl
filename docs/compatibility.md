@@ -49,10 +49,12 @@ On 2026-11-25:
 - A second regeneration before the refactor produced byte-identical `src/parser.c`, `src/grammar.json`, `src/node-types.json`, and `src/tree_sitter/array.h`.
 - `tree-sitter test` passed all 42 current corpus cases with CLI 0.27.2.
 - `tree-sitter test` also compiled and executed both official query files successfully.
-- `tree-sitter parse test.strdl test-local.strdl` completed without `ERROR` or `MISSING` nodes after the refactor.
+- `tree-sitter parse test/fixtures/test.strdl test/fixtures/test-local.strdl` completed without `ERROR` or `MISSING` nodes after the refactor.
 - `npm test` passed with `tree-sitter` 0.25.1 on Node.js 26.8.2 and, after a clean tracked-source `npm ci --offline` rebuild, on Node.js 26.13.1 (ABI 147). The clean build verified that committed parser artifacts remained byte-identical.
 
 Query commands emitted a parser-directory warning but compiled and executed successfully.
+
+On 2026-11-26, a runtime-only copy containing committed generated artifacts but no `grammar.js`, scripts, tests, or Tree-sitter CLI installed the pinned `tree-sitter` 0.25.1 runtime offline, compiled the native addon, and parsed both representative fixtures without modifying the generated files. This check is wired into `make test-generated-runtime` and `make ci`.
 
 ## Known limitations
 

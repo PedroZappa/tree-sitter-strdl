@@ -52,7 +52,7 @@ PARSER := $(SRC_DIR)/parser.c
 EXTRAS := $(filter-out $(PARSER),$(wildcard $(SRC_DIR)/*.c))
 OBJS := $(patsubst %.c,%.o,$(PARSER) $(EXTRAS))
 QUERIES := $(wildcard $(QUERY_DIR)/*.scm)
-FIXTURES := test.strdl test-local.strdl
+FIXTURES := test/fixtures/test.strdl test/fixtures/test-local.strdl
 QUERY_DETERMINISM_FIXTURES := test/query/determinism.strdl
 QUERY_EXECUTION_FIXTURES := $(FIXTURES) $(QUERY_DETERMINISM_FIXTURES)
 REGRESSION_INVENTORY := test/fixtures/regression_inventory.json
@@ -126,7 +126,7 @@ D = $(shell tput sgr0 2>/dev/null)
 _SUCCESS = [$(GRN)SUCCESS$(D)]
 _INFO    = [$(BLU)INFO$(D)]
 
-.PHONY: all build generate test test-recovery test-incremental test-query-compile test-query-execution test-query-registration test-query test-node test-node-clean-build test-package test-regressions benchmark-fixtures check-benchmark-fixtures bench-fresh bench-incremental bench-memory build-benchmark-baseline check-benchmark-baseline reproduce-benchmark-baseline compare-benchmark-baseline build-benchmark-budgets check-benchmark-budgets performance-report format check-format check-static parse playground wasm \
+.PHONY: all build generate test test-recovery test-incremental test-query-compile test-query-execution test-query-registration test-query test-node test-node-clean-build test-generated-runtime test-package test-regressions benchmark-fixtures check-benchmark-fixtures bench-fresh bench-incremental bench-memory build-benchmark-baseline check-benchmark-baseline reproduce-benchmark-baseline compare-benchmark-baseline build-benchmark-budgets check-benchmark-budgets performance-report format check-format check-static parse playground wasm \
 	local-install install-dev install uninstall clean check-generated verify verify-all ci \
 	docs docs-open help
 
@@ -248,6 +248,11 @@ test-node-clean-build:	## Build and test the Node.js binding from clean tracked 
 	@python3 scripts/check_node_clean_build.py $(NPM)
 	@echo "$(YEL)* $(_SUCCESS) Node.js binding clean build completed$(D)"
 
+test-generated-runtime:	## Verify committed generated parser files work without regeneration
+	@echo "$(YEL)Verifying generated parser runtime...$(D)"
+	@python3 scripts/check_generated_runtime.py $(NPM) $(NODE)
+	@echo "$(YEL)* $(_SUCCESS) Generated parser runtime verified$(D)"
+
 test-package:	## Verify npm package contents and metadata
 	@echo "$(YEL)Checking npm package integrity...$(D)"
 	@python3 scripts/check_package_integrity.py $(NPM)
@@ -360,7 +365,7 @@ check-generated:	## Verify committed parser artifacts match grammar.js
 
 verify: check-generated check-format check-static test test-incremental test-query test-regressions check-benchmark-fixtures check-benchmark-baseline reproduce-benchmark-baseline check-benchmark-budgets	## Run the core CI gate (artifacts, formatting, static checks, corpus, incremental equivalence, queries, regressions, fixtures, baseline reproduction, budgets)
 
-verify-all: verify test-node test-node-clean-build test-package	## Run the core gate plus Node.js binding, clean-build, and package checks
+verify-all: verify test-node test-node-clean-build test-generated-runtime test-package	## Run the core gate plus Node.js binding, clean-build, generated-runtime, and package checks
 
 ci: verify-all build	## Run the complete CI gate locally (requires make install-dev first)
 
