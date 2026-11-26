@@ -76,15 +76,17 @@ PASS malformed-call-repair (2 steps, 1 malformed)
 Failures include the failing step number and a unified diff of the fresh and incremental trees. The summary reports three things separately:
 
 ```text
-Incremental/fresh comparisons: 20/20 sequences, 27 steps, 4 malformed steps
-Final-source comparisons: 20/20 passed
+Incremental/fresh comparisons: 21/21 sequences, 29 steps, 5 malformed steps
+Final-source comparisons: 21/21 passed
 ```
 
 A run fails if any step's tree comparison fails or if either parse produces no CST. The command exits nonzero on failure, so it is suitable as a CI gate once wired in.
 
 ## Current coverage
 
-The catalog currently contains 20 sequences totalling 27 compared steps, of which 4 steps are malformed intermediates. Coverage includes insertions, deletions, replacements, nested edits, and temporary malformed states through missing call parentheses, missing object braces, and unterminated strings. All 20 final-source comparisons pass.
+The catalog currently contains 21 sequences totalling 29 compared steps, of which 5 steps are malformed intermediates. Coverage includes insertions, deletions, replacements, nested edits, and temporary malformed states through missing call parentheses, missing object braces, unterminated strings, and missing array brackets. All 21 final-source comparisons pass, and the harness additionally rejects any final source whose fresh tree contains `ERROR` or `MISSING`.
+
+Before parsing, the harness also checks catalog invariants: sequence IDs are unique, each fixture key exists, and each sequence has at least one edit. A catalog violation is reported as `CATALOG PROBLEM` and makes the run fail even if every parse comparison passes.
 
 ## Adding a sequence
 

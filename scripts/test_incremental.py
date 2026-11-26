@@ -101,6 +101,24 @@ def selected_sequences(data: dict, filters: list[str]) -> list[dict]:
     ]
 
 
+def catalog_problems(data: dict, fixtures: dict[str, str]) -> list[str]:
+    """Check structural invariants that do not require parsing."""
+    problems: list[str] = []
+    seen_ids: set[str] = set()
+    for sequence in data["sequences"]:
+        sequence_id = sequence.get("id", "<missing id>")
+        if sequence_id in seen_ids:
+            problems.append(f"duplicate sequence id: {sequence_id}")
+        seen_ids.add(sequence_id)
+        if sequence.get("fixture") not in fixtures:
+            problems.append(
+                f"{sequence_id}: unknown fixture {sequence.get('fixture')!r}"
+            )
+        if not sequence.get("edits"):
+            problems.append(f"{sequence_id}: no edits")
+    return problems
+
+
 def compare_sequence(
     sequence: dict,
     fixtures: dict[str, str],
@@ -116,6 +134,7 @@ def compare_sequence(
     malformed_steps = 0
     final_step = len(sources)
     final_matched = False
+    final_clean = False
     for step, (step_source, step_edits) in enumerate(
         zip(sources, cumulative_edits), start=1
     ):
@@ -133,8 +152,11 @@ def compare_sequence(
             problems.append(f"step {step}: fresh parse failed: {fresh_stderr.strip()}")
             continue
 
-        if tree_has_errors(fresh_tree):
+        malformed = tree_has_errors(fresh_tree)
+        if malformed:
             malformed_steps += 1
+        if step == final_step:
+            final_clean = not malformed
 
         if incremental_tree == fresh_tree:
             if step == final_step:
@@ -150,6 +172,10 @@ def compare_sequence(
         )
         problems.append(f"step {step}: incremental tree differs from fresh tree")
         problems.extend(diff)
+
+    if final_matched and not final_clean:
+        problems.append("final source contains ERROR or MISSING nodes")
+        final_matched = False
 
     return problems, len(sources), malformed_steps, final_matched
 
@@ -171,7 +197,10 @@ def main() -> int:
     }
     selected = selected_sequences(data, args.filter)
 
-    failures = 0
+    structural_problems = catalog_problems(data, fixtures)
+    for problem in structural_problems:
+        print(f"CATALOG PROBLEM: {problem}")
+    failures = len(structural_problems)
     total_steps = 0
     malformed_steps = 0
     final_passed = 0

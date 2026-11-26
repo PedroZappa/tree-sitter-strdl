@@ -43,8 +43,9 @@ Using current-source matches rather than precomputed byte offsets keeps the sequ
 | `nested-arrow-body-edit` | representative | nested edit, arrow function | Edit an argument inside a `layer` arrow body. |
 | `object-brace-repair` | representative | malformed state, repair, object literal | Delete and restore the closing `}` of an object literal. |
 | `string-quote-repair` | compact | malformed state, repair, string, compact fixture | Delete and restore a closing `"` through an unterminated string. |
+| `array-bracket-repair` | representative | malformed state, repair, array, nested edit | Delete and restore a closing `]` inside the `arrange` call. |
 
-These 20 sequences cover insertion, deletion, replacement, nested edits, and temporary malformed states. Deletion coverage spans whole declarations, labeled statements, chain methods, call arguments, and nested object properties. Replacement coverage spans string contents, template contents, binding identifiers, member-expression method names, and numeric literals. Nested-edit coverage spans object literals, nested call arguments, and arrow-function bodies. Malformed-state coverage spans missing call parentheses, missing object braces, and unterminated strings. Each sequence ends in a complete source.
+These 21 sequences cover insertion, deletion, replacement, nested edits, and temporary malformed states. Deletion coverage spans whole declarations, labeled statements, chain methods, call arguments, and nested object properties. Replacement coverage spans string contents, template contents, binding identifiers, member-expression method names, and numeric literals. Nested-edit coverage spans object literals, nested call arguments, arrow-function bodies, and array elements inside `arrange`. Malformed-state coverage spans missing call parentheses, missing object braces, unterminated strings, and missing array brackets. Each sequence ends in a complete source, which the harness now enforces.
 
 ## Running comparisons
 
