@@ -65,6 +65,66 @@ The refactor replaces the Phase 2 wrapper-heavy hierarchy with composable, JavaS
 | `variable_declaration`       | `kind`, `declarator`                      |
 | `variable_declarator`        | `name`, `value?`                          |
 
+### Important node types
+
+The complete inventory is above. The entries below explain the nodes downstream consumers are most likely to use. This is a reading guide, not a second API definition: use the [field table](#fields) and [src/node-types.json](../src/node-types.json) for exact field and subtype sets.
+
+#### Root, statements, and declarations
+
+| Node type                             | Example                                    | Role                                                                                                                                                    |
+| ------------------------------------- | ------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `source_file`                         | An entire `.strdl` file                    | Root node. Its named children are statements and comments. Empty files are valid.                                                                       |
+| `expression_statement`                | `s("bd sd");`                              | Wraps an expression used as a statement. The optional semicolon is an anonymous token.                                                                  |
+| `variable_declaration`                | `const pattern = s("bd sd");`              | Declares one or more bindings. The `kind` field is the `var`, `let`, or `const` token and `declarator` repeats.                                         |
+| `variable_declarator`                 | `pattern = s("bd sd")`                     | One binding. `name` is an `identifier` or `array_pattern`; `value` is the optional initializer. Mini-notation appears here as an opaque `string` value. |
+| `function_declaration`                | `function kick(n) { return n; }`           | Named function with `name`, `parameters` (`formal_parameters`), and `body` (`block`) fields.                                                            |
+| `array_pattern`, `assignment_pattern` | `[a, b]`, `function f(p = s("bd")) {}`     | Array destructuring in declarations or parameters, and default parameter values. Object destructuring is not implemented.                               |
+| `import_declaration`, `named_imports` | `import { note as n } from "strudel";`     | Named imports only. `specifiers` is `named_imports` and `source` is a `string`; each `import_specifier` has `name` and optional `alias`.                |
+| `export_declaration`                  | `export const p = 1;`, `export default p;` | Exports a declaration through `declaration` or an expression through `value`. Exactly one of those fields is present for supported syntax.              |
+
+#### Calls, access, and operators
+
+| Node type                              | Example                         | Role                                                                                                                                                                                                              |
+| -------------------------------------- | ------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `call_expression`, `arguments`         | `s("bd sd")`                    | `function` is the callee expression and `arguments` is the parenthesized argument node. Individual arguments use repeated `argument` fields. The callee may be an identifier, member expression, or another call. |
+| `member_expression`                    | `s("bd").gain`, `pattern?.gain` | `object` is the receiver and `property` is an `identifier`. The `.` or `?.` token is anonymous. Method chains appear as nested `call_expression` and `member_expression` nodes.                                   |
+| `subscript_expression`                 | `items[0]`, `pattern?.["gain"]` | `object` is the receiver and `index` is an expression. Optional subscript access uses the anonymous `?.` token before `[`.                                                                                        |
+| `new_expression`                       | `new Synth(1)`                  | `constructor` is restricted to identifiers, member/subscript expressions, and nested `new_expression` nodes; `arguments` is optional.                                                                             |
+| `assignment_expression`                | `pattern = s("hh")`             | `left` may be an `identifier`, `member_expression`, or `subscript_expression`; `right` is any expression.                                                                                                         |
+| `binary_expression`                    | `a + b * 2`, `x === y`          | `left`, `operator`, and `right` fields expose arithmetic, comparison, and equality operators. Precedence and associativity are described in [Precedence and associativity](#precedence-and-associativity).        |
+| `unary_expression`, `await_expression` | `!ready`, `-1`, `await pattern` | `operator` applies to an `argument` for unary expressions; `await_expression` has only `argument`.                                                                                                                |
+| `conditional_expression`               | `enabled ? pattern : silence`   | Exposes `condition`, `consequence`, and `alternative` as expression fields.                                                                                                                                       |
+| `arrow_function`                       | `x => x * 2`, `(a, b) => a + b` | `parameters` may be an `identifier`, `formal_parameters`, or `array_pattern`; `body` is an expression or `block`.                                                                                                 |
+| `tagged_template_expression`           | `` tag`bd sd` ``                | `tag` is the tagged expression and `template` is a `template_string`. Backtick content remains opaque except for `${...}` substitutions.                                                                          |
+
+#### Values and containers
+
+| Node type                                  | Example                       | Role                                                                                                                                                                            |
+| ------------------------------------------ | ----------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `identifier`, `number`, `string`           | `pattern`, `42`, `"bd sd"`    | Leaf value nodes. `string` accepts single or double quotes and keeps mini-notation opaque; its content is never re-parsed as mini-notation.                                     |
+| `array`                                    | `[1, note("c3")]`             | Array literal with repeated `element` fields.                                                                                                                                   |
+| `object`, `pair`, `computed_property_name` | `{ kick: s("bd"), [key]: 1 }` | The `object` node contains `pair` and `spread_element` children. A `pair` has `key` and `value`; a computed key wraps its `expression`.                                         |
+| `spread_element`                           | `{ ...rest }`                 | An object-literal spread with a `value` field. Spread is supported in object literals, not array literals or call argument lists.                                               |
+| `parenthesized_expression`                 | `(a + b) * 2`                 | Preserves explicit grouping as an `expression` field instead of flattening it into the surrounding operator tree.                                                               |
+| `template_string`, `template_substitution` | `` `c${octave}` ``            | A template literal with only its `${...}` substitutions exposed as `template_substitution` nodes. Each substitution has an `expression` field; literal template text is opaque. |
+| `comment`                                  | `// loop`, `/* loop */`       | Named node emitted because comments are extras. Comments may appear between any tokens and do not change expression structure.                                                  |
+
+Some names overlap by design. `object` is the object-literal node, while `object` is also the receiver field on `member_expression` and `subscript_expression`. `arguments` is both the parenthesized argument-list node and the `call_expression.arguments` field. Query with the node type and field name together to avoid conflating them.
+
+A representative method chain illustrates the nesting consumers should expect:
+
+```text
+s("bd sd").gain(0.8)
+
+call_expression
+├── function: member_expression
+│   ├── object: call_expression
+│   │   ├── function: identifier
+│   │   └── arguments: arguments -> string
+│   └── property: identifier
+└── arguments: arguments -> number
+```
+
 ### API changes from the Phase 2 baseline
 
 | Phase 2                                            | Phase 3                                                               | Reason                                                               |
@@ -83,7 +143,7 @@ Consumers should treat this as a breaking CST API change and update queries or n
 
 ## Statement and expression hierarchy
 
-`source_file` contains zero or more statements. The hidden `_statement` rule is the union of:
+`source_file` contains zero or more statements; comments may also appear as named extra children. The hidden `_statement` rule is the union of:
 
 - declarations (`variable_declaration`, `function_declaration`, `import_declaration`, `export_declaration`);
 - `labeled_statement`;
