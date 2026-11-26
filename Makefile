@@ -61,6 +61,10 @@ BENCH_FIXTURE ?=
 BENCH_SEQUENCE ?=
 BENCH_CATEGORY ?=
 BENCH_OUTPUT ?=
+BENCH_BASELINE := benchmarks/results/baseline.json
+BENCH_FRESH_REPORT ?=
+BENCH_INCREMENTAL_REPORT ?=
+BENCH_MEMORY_REPORT ?=
 RECOVERY_FILES := $(wildcard $(TEST_DIR)/incomplete_*.txt $(TEST_DIR)/malformed_*.txt $(TEST_DIR)/missing_*.txt $(TEST_DIR)/noncascading_*.txt $(TEST_DIR)/recovery_*.txt $(TEST_DIR)/unfinished_*.txt $(TEST_DIR)/valid_*.txt)
 
 # Test inputs (override on the command line)
@@ -108,7 +112,7 @@ D = $(shell tput sgr0 2>/dev/null)
 _SUCCESS = [$(GRN)SUCCESS$(D)]
 _INFO    = [$(BLU)INFO$(D)]
 
-.PHONY: all build generate test test-recovery test-incremental test-query-compile test-query-execution test-query-registration test-query test-node test-package test-regressions benchmark-fixtures check-benchmark-fixtures bench-fresh bench-incremental bench-memory parse playground wasm \
+.PHONY: all build generate test test-recovery test-incremental test-query-compile test-query-execution test-query-registration test-query test-node test-package test-regressions benchmark-fixtures check-benchmark-fixtures bench-fresh bench-incremental bench-memory build-benchmark-baseline check-benchmark-baseline parse playground wasm \
 	local-install install uninstall clean check-generated verify verify-all ci \
 	docs docs-open help
 
@@ -265,6 +269,16 @@ bench-memory:	## Measure parse-tree memory (MODE, ITERATIONS, WARMUP, FIXTURE, S
 	@$(NODE) --expose-gc scripts/bench_memory.js --manifest $(BENCHMARK_MANIFEST) --catalog $(BENCH_CATALOG) --mode $(BENCH_MODE) --iterations $(BENCH_ITERATIONS) --warmup $(BENCH_WARMUP) $(if $(BENCH_FIXTURE),--fixture $(BENCH_FIXTURE),) $(if $(BENCH_SEQUENCE),--sequence $(BENCH_SEQUENCE),) $(if $(BENCH_CATEGORY),--category $(BENCH_CATEGORY),) $(if $(BENCH_OUTPUT),--output $(BENCH_OUTPUT),)
 	@echo "$(YEL)* $(_SUCCESS) Parse-tree memory measured$(D)"
 
+build-benchmark-baseline:	## Build committed baseline from fresh/incremental/memory reports (FRESH_REPORT, INCREMENTAL_REPORT, MEMORY_REPORT overrides)
+	@echo "$(YEL)Building benchmark baseline...$(D)"
+	@$(NODE) scripts/baseline_results.js build --fresh $(BENCH_FRESH_REPORT) --incremental $(BENCH_INCREMENTAL_REPORT) --memory $(BENCH_MEMORY_REPORT) --output $(BENCH_BASELINE)
+	@echo "$(YEL)* $(_SUCCESS) Benchmark baseline built$(D)"
+
+check-benchmark-baseline:	## Validate committed benchmark baseline structure without performance gating
+	@echo "$(YEL)Checking benchmark baseline...$(D)"
+	@$(NODE) scripts/baseline_results.js check --baseline $(BENCH_BASELINE)
+	@echo "$(YEL)* $(_SUCCESS) Benchmark baseline is structurally valid$(D)"
+
 ##@ Verification ✅
 
 check-generated:	## Verify committed parser artifacts match grammar.js
@@ -276,7 +290,7 @@ check-generated:	## Verify committed parser artifacts match grammar.js
 	}
 	@echo "$(YEL)* $(_SUCCESS) Generated artifacts are in sync$(D)"
 
-verify: check-generated test test-query test-regressions check-benchmark-fixtures	## Run the core CI gate (artifacts, corpus, queries, regressions, fixtures)
+verify: check-generated test test-query test-regressions check-benchmark-fixtures check-benchmark-baseline	## Run the core CI gate (artifacts, corpus, queries, regressions, fixtures, baseline)
 
 verify-all: verify test-node test-package	## Run the core gate plus Node.js binding and package checks
 

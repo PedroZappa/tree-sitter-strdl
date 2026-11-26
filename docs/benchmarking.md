@@ -1,6 +1,6 @@
 # Benchmarking
 
-This document owns the Phase 6 benchmark fixture inventory and fresh/incremental latency and memory measurements. The authoritative fixture metadata is [manifest.json](../benchmarks/fixtures/manifest.json); no committed baselines are recorded yet.
+This document owns the Phase 6 benchmark fixture inventory and fresh/incremental latency and memory measurements. The authoritative fixture metadata is [manifest.json](../benchmarks/fixtures/manifest.json). Committed observations are stored in [baseline.json](../benchmarks/results/baseline.json); they are not performance budgets or CI gates.
 
 The measurement environment is recorded below. Individual JSON reports include a smaller runtime summary from `scripts/bench_common.js`; this section is the dedicated hardware and software record.
 
@@ -146,6 +146,27 @@ The following values were recorded from one default run with 15 measured samples
 | `string-quote-repair` | 0.081336 | 0.091253 | 0.100235 |
 | `array-bracket-repair` | 0.107875 | 0.109792 | 0.110390 |
 
+## Baseline results
+
+The committed baseline is [baseline.json](../benchmarks/results/baseline.json). It stores one coherent measurement session from 2026-11-26 at repository commit `aae76dc`: 15 measured samples and 2 warmup samples per case, covering all five fixtures, all 21 incremental sequences, 29 edit steps, and fresh/incremental parse-tree memory. The raw latency sample arrays and full memory result objects are included so later comparisons can recompute statistics. Source report names and timestamps are provenance labels; the committed baseline is self-contained and contains no machine-specific paths.
+
+The artifact is version 1 and records `kind: baseline`, repository commit, purpose, environment, environment-record reference, configuration, source metadata, and results for fresh latency, incremental replay latency, and memory. `scripts/baseline_results.js build` derives it from three complete JSON reports; `scripts/baseline_results.js check` validates the version, schema, coverage against the committed manifest and edit catalog, sample/statistic agreement, source environment agreement, and memory invariants.
+
+Regenerate the baseline deliberately, not as part of ordinary CI:
+
+```sh
+make bench-fresh BENCH_OUTPUT=/tmp/fresh.json
+make bench-incremental BENCH_OUTPUT=/tmp/incremental.json
+make bench-memory BENCH_OUTPUT=/tmp/memory.json
+make build-benchmark-baseline \
+  BENCH_FRESH_REPORT=/tmp/fresh.json \
+  BENCH_INCREMENTAL_REPORT=/tmp/incremental.json \
+  BENCH_MEMORY_REPORT=/tmp/memory.json
+make check-benchmark-baseline
+```
+
+`make check-benchmark-baseline` is part of `make verify` and `make ci`. It is a structural integrity check only: no timing, memory, percentile, or pass-rate threshold is enforced against the baseline. The environment record above supplies the hardware and software context; the baseline does not normalize results across machines or define a performance budget.
+
 ## Validation performed
 
 - All four `expected_clean: true` fixtures parse with `tree-sitter parse --quiet` and exit 0 using CLI 0.27.2.
@@ -172,7 +193,8 @@ The following values were recorded from one default run with 15 measured samples
 - A filtered JSON-report control wrote a one-fixture report with `mode: memory`, two retained trees, finite heap per tree, and `gcAvailable: true`; a `compact-fixture` category control selected four incremental sequences; `node --check` passed for all four benchmark scripts.
 - Separate JSON reports were generated with `BENCH_OUTPUT` and checked against distinct expected shapes: `mode: fresh` with five `fixtures` and no `sequences`, and `mode: incremental` with 21 `sequences` and no `fixtures`. All 26 reported stats objects had finite P50/P95/P99/max values ordered as `P50 <= P95 <= P99 <= max`. Temporary report copies with a deleted fresh `p95Ms` and a null incremental `p50Ms` failed validation with exit 1.
 - A generated `BENCH_OUTPUT` report reproduced the documented runtime subset exactly: Node `v26.13.1`, tree-sitter runtime `0.25.1`, `linux`/`x64`, 24 logical CPUs, CPU model `12th Gen Intel(R) Core(TM) i9-12900KF`, and `33,437,925,376` bytes of `os.totalmem()`. The remaining documented values were checked against `/etc/os-release`, `uname`, `lscpu`, `/proc/meminfo`, `node --version`, `process.versions`, `npm --version`, both CLI paths, and `git rev-parse`. A temporary report copy with `cpuCount` changed to 23 failed validation with exit 1.
+- Three full `BENCH_OUTPUT` reports were generated sequentially in one session and built into `benchmarks/results/baseline.json` with `make build-benchmark-baseline`. The 67,191-byte artifact records commit `aae76dc`, five fixtures, 21 sequences, and 15 measured with two warmup samples per case. `make check-benchmark-baseline` passed. Negative controls that changed `version`, nulled a fresh P50, removed a fixture, changed the baseline CPU count, invalidated a source timestamp, changed a memory result mode, and changed a source environment all failed with exit 1. The baseline contains no `/tmp/` paths.
 
 ## Remaining work
 
-Committed fresh/incremental latency and memory baselines and performance budgets remain separate roadmap items. The reports include runtime metadata, and the dedicated environment record above is not hardware-normalized. This document will own those results as they are added.
+Performance budgets and performance-regression reporting remain separate roadmap items. The committed baseline stores observations, and the dedicated environment record above is not hardware-normalized. This document will own future comparison results as they are added.
