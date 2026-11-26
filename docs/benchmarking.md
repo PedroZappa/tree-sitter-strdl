@@ -2,6 +2,47 @@
 
 This document owns the Phase 6 benchmark fixture inventory and fresh/incremental latency and memory measurements. The authoritative fixture metadata is [manifest.json](../benchmarks/fixtures/manifest.json); no committed baselines are recorded yet.
 
+The measurement environment is recorded below. Individual JSON reports include a smaller runtime summary from `scripts/bench_common.js`; this section is the dedicated hardware and software record.
+
+## Benchmark environment
+
+This environment was recorded on 2026-11-26 (UTC) at repository commit `362d5fd`, after the Phase 6 measurement work. It applies to the latency and memory observations in this document; the grammar, generated parser, and package metadata were unchanged across those measurement commits. The observations were taken under normal desktop load with no CPU affinity, frequency-governor locking, or workload isolation. The load average at capture was `1.79 1.60 1.54`; it is informational, not a controlled benchmark condition.
+
+| Field | Recorded value | Source |
+| --- | --- | --- |
+| Operating system | Omarchy 4.5.0 (`ID=omarchy`) | `/etc/os-release` |
+| Kernel | `Linux 7.2.15-1-omarchy` | `uname -sr` |
+| Machine architecture | `x86_64` | `uname -m` |
+| CPU model | `12th Gen Intel(R) Core(TM) i9-12900KF` | `lscpu`, `os.cpus()` |
+| CPU topology | 1 socket, 16 cores per socket, 2 threads per core, 24 logical CPUs | `lscpu`, `os.cpus()` |
+| CPU maximum frequency | 5,200.0000 MHz; not a guaranteed sustained frequency | `lscpu` |
+| Memory | 32,654,224 kB (`/proc/meminfo`); 33,437,925,376 bytes (`os.totalmem()`) | `/proc/meminfo`, benchmark reports |
+| Node.js | `v26.13.1`; V8 `14.6.202.34-node.40`; OpenSSL `3.5.9` | `node --version`, `process.versions` |
+| npm | `11.20.0` | `npm --version` |
+| Tree-sitter CLI | `0.27.2` via `node_modules/.bin/tree-sitter` selected by the Makefile; `0.26.9` on `PATH` | `$(TS) --version`, `tree-sitter --version` |
+| Tree-sitter Node runtime | `0.25.1` | `tree-sitter/package.json` |
+| Package version | `1.5.0` | `package.json` |
+| Repository commit | `362d5fd` | `git rev-parse --short HEAD` |
+
+Reproduce the runtime subset from a generated report and the remaining values with these commands:
+
+```sh
+make bench-fresh BENCH_OUTPUT=/tmp/benchmark-environment.json
+node -e 'console.log(JSON.stringify(require("/tmp/benchmark-environment.json").environment, null, 2))'
+sed -n '/^PRETTY_NAME=/p;/^VERSION_ID=/p;/^ID=/p' /etc/os-release
+uname -sr
+uname -m
+lscpu | sed -n '/^Architecture:/p;/^CPU(s):/p;/^Model name:/p;/^Thread(s) per core:/p;/^Core(s) per socket:/p;/^Socket(s):/p;/^CPU max MHz:/p'
+awk '/^MemTotal:/ {print $0}' /proc/meminfo
+node --version
+node -p 'JSON.stringify(process.versions)'
+npm --version
+node -p 'require("tree-sitter/package.json").version'
+node_modules/.bin/tree-sitter --version
+tree-sitter --version
+git rev-parse --short HEAD
+```
+
 ## Fixture inventory
 
 | ID | Role | Path | Parameters | Expected parse |
@@ -130,7 +171,8 @@ The following values were recorded from one default run with 15 measured samples
 - Negative controls failed with exit 1 when the memory script was run without `--expose-gc`, when a catalog edit used `occurrence: 99`, when `representative-main` SHA-256 was wrong, and when `--mode` was invalid.
 - A filtered JSON-report control wrote a one-fixture report with `mode: memory`, two retained trees, finite heap per tree, and `gcAvailable: true`; a `compact-fixture` category control selected four incremental sequences; `node --check` passed for all four benchmark scripts.
 - Separate JSON reports were generated with `BENCH_OUTPUT` and checked against distinct expected shapes: `mode: fresh` with five `fixtures` and no `sequences`, and `mode: incremental` with 21 `sequences` and no `fixtures`. All 26 reported stats objects had finite P50/P95/P99/max values ordered as `P50 <= P95 <= P99 <= max`. Temporary report copies with a deleted fresh `p95Ms` and a null incremental `p50Ms` failed validation with exit 1.
+- A generated `BENCH_OUTPUT` report reproduced the documented runtime subset exactly: Node `v26.13.1`, tree-sitter runtime `0.25.1`, `linux`/`x64`, 24 logical CPUs, CPU model `12th Gen Intel(R) Core(TM) i9-12900KF`, and `33,437,925,376` bytes of `os.totalmem()`. The remaining documented values were checked against `/etc/os-release`, `uname`, `lscpu`, `/proc/meminfo`, `node --version`, `process.versions`, `npm --version`, both CLI paths, and `git rev-parse`. A temporary report copy with `cpuCount` changed to 23 failed validation with exit 1.
 
 ## Remaining work
 
-Committed fresh/incremental latency and memory baselines, dedicated hardware/software environment capture, and performance budgets remain separate roadmap items. The reports include basic runtime metadata but are not hardware-normalized. This document will own those results as they are added.
+Committed fresh/incremental latency and memory baselines and performance budgets remain separate roadmap items. The reports include runtime metadata, and the dedicated environment record above is not hardware-normalized. This document will own those results as they are added.
