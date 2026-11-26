@@ -131,7 +131,7 @@ D = $(shell tput sgr0 2>/dev/null)
 _SUCCESS = [$(GRN)SUCCESS$(D)]
 _INFO    = [$(BLU)INFO$(D)]
 
-.PHONY: all build generate test test-recovery test-incremental test-query-compile test-query-execution test-query-registration test-query test-node test-node-clean-build test-generated-runtime test-c test-python test-rust test-package test-regressions benchmark-fixtures check-benchmark-fixtures bench-fresh bench-incremental bench-memory build-benchmark-baseline check-benchmark-baseline reproduce-benchmark-baseline compare-benchmark-baseline build-benchmark-budgets check-benchmark-budgets performance-report format check-format check-static parse playground wasm \
+.PHONY: all build generate test test-recovery test-incremental test-query-compile test-query-execution test-query-registration test-query test-node test-node-clean-build test-generated-runtime test-c test-python test-rust test-swift test-package test-regressions benchmark-fixtures check-benchmark-fixtures bench-fresh bench-incremental bench-memory build-benchmark-baseline check-benchmark-baseline reproduce-benchmark-baseline compare-benchmark-baseline build-benchmark-budgets check-benchmark-budgets performance-report format check-format check-static parse playground wasm \
 	local-install install-dev install uninstall clean check-generated check-version verify verify-all ci \
 	docs docs-open help
 
@@ -273,6 +273,11 @@ test-rust:	## Verify Rust binding metadata, packaging, public API, and cargo tes
 	@python3 scripts/check_rust_binding.py
 	@echo "$(YEL)* $(_SUCCESS) Rust binding verified$(D)"
 
+test-swift:	## Verify Swift binding metadata, packaging, public API, and swift build/test
+	@echo "$(YEL)Verifying Swift binding...$(D)"
+	@python3 scripts/check_swift_binding.py
+	@echo "$(YEL)* $(_SUCCESS) Swift binding verified$(D)"
+
 test-package:	## Verify npm package contents and metadata
 	@echo "$(YEL)Checking npm package integrity...$(D)"
 	@python3 scripts/check_package_integrity.py $(NPM)
@@ -390,7 +395,7 @@ check-version:	## Verify version numbers are aligned across package metadata
 
 verify: check-generated check-format check-static test test-incremental test-query test-regressions check-benchmark-fixtures check-benchmark-baseline reproduce-benchmark-baseline check-benchmark-budgets	## Run the core CI gate (artifacts, formatting, static checks, corpus, incremental equivalence, queries, regressions, fixtures, baseline reproduction, budgets)
 
-verify-all: verify test-node test-node-clean-build test-generated-runtime test-c test-python test-rust check-version test-package	## Run the core gate plus Node.js, clean-build, generated-runtime, C/Python/Rust bindings, version, and package checks
+verify-all: verify test-node test-node-clean-build test-generated-runtime test-c test-python test-rust test-swift check-version test-package	## Run the core gate plus Node.js, clean-build, generated-runtime, C/Python/Rust/Swift bindings, version, and package checks
 
 ci: verify-all build	## Run the complete CI gate locally (requires make install-dev first)
 

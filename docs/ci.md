@@ -7,10 +7,10 @@ GitHub Actions validates the grammar in [`.github/workflows/ci.yml`](../.github/
 - **Triggers:** `pull_request` and `push` to `main`.
 - **Permissions:** `contents: read` only.
 - **Concurrency:** superseded runs on the same ref are cancelled.
-- **Matrix:** Node.js 22 and 24 on `ubuntu-latest`.
+- **Matrix:** Node.js 22 and 24 on pinned `ubuntu-24.04` runners.
 - **Actions:** pinned to commit SHAs with version comments.
 
-Each matrix job installs the locked dependencies with `npm ci`, then runs `make ci`.
+Each matrix job installs Swift.org's documented Ubuntu 24.04 system dependencies, selects Swift 6.2.1, installs the locked Node.js dependencies with `npm ci`, then runs `make ci`.
 
 ## What `make ci` runs
 
@@ -33,13 +33,14 @@ Each matrix job installs the locked dependencies with `npm ci`, then runs `make 
 15. `make test-c` — compiles the public C header and a test program against the generated parser, links the `tree_sitter_strudel()` symbol, and verifies that it returns a non-null language pointer.
 16. `make test-python` — builds the CPython extension in a temporary tree with unsupported `-Wl,-z,pack-relative-relocs` linker flags removed for `ld.gold` compatibility, verifies that `language()` returns a `tree_sitter.Language` capsule with a non-null pointer, and loads both official query exports from the built package.
 17. `make test-rust` — statically verifies the Rust manifest, dependency declarations, `Cargo.lock`, Cargo include coverage, build script, public API constants, npm exclusion, and crates publish configuration, then runs `cargo test --locked` in a temporary tracked-source copy with an isolated target directory. On Linux, the checker appends GNU `ld.bfd` flags to Cargo compiler and doc-test flags so an ambient `ld.lld` selection cannot break the gate.
-18. `make check-version` — verifies that all package metadata agrees on the release version, including npm, Tree-sitter, Cargo, Python, Makefile, CMake, and generated pkg-config metadata.
-19. `make test-package` — runs `npm pack --dry-run --json --ignore-scripts` and checks metadata consistency, required files, forbidden artifacts, and packed file sizes.
-20. `make build` — builds the static and shared C libraries and the pkg-config metadata.
+18. `make test-swift` — statically verifies the SwiftPM manifest, public C symbol, XCTest load wiring, `tree-sitter.json` enablement, and npm exclusion, then runs `swift build` and `swift test` in a clean tracked-source copy.
+19. `make check-version` — verifies that all package metadata agrees on the release version, including npm, Tree-sitter, Cargo, Python, Makefile, CMake, and generated pkg-config metadata.
+20. `make test-package` — runs `npm pack --dry-run --json --ignore-scripts` and checks metadata consistency, required files, forbidden artifacts, and packed file sizes.
+21. `make build` — builds the static and shared C libraries and the pkg-config metadata.
 
-The pinned versions used by CI come from `package-lock.json` (Tree-sitter CLI `0.27.2`, tree-sitter Node runtime `0.25.1`, Prettier `3.10.1`) and `requirements-dev.txt` (Ruff `0.17.6`).
+The pinned versions used by CI come from `package-lock.json` (Tree-sitter CLI `0.27.2`, tree-sitter Node runtime `0.25.1`, Prettier `3.10.1`), `requirements-dev.txt` (Ruff `0.17.6`), and the pinned `setup-swift` action (Swift `6.2.1`).
 
-All `make ci` checks above are correctness gates: a failure produces a nonzero exit status. These gates cover every required Phase 6 test layer, the clean Node.js binding build, the generated parser runtime check, the C binding symbol check, the Python binding capsule check, the Rust binding surface and `cargo test --locked` checks, and cross-file version consistency; remaining Phase 7 work, especially other non-Node binding validation and tarball consumer checks, is listed in [Not yet covered](#not-yet-covered). Latency and memory observations are outside CI; comparison reports explicitly mark timing deltas and comparability mismatches as [non-gating performance warnings](benchmarking.md#correctness-failures-versus-performance-warnings). A correctness failure is never reported as a performance warning.
+All `make ci` checks above are correctness gates: a failure produces a nonzero exit status. These gates cover every required Phase 6 test layer, the clean Node.js binding build, the generated parser runtime check, the C binding symbol check, the Python binding capsule check, the Rust binding surface and `cargo test --locked` checks, the Swift binding surface and `swift build`/`swift test` checks, and cross-file version consistency; remaining Phase 7 work, especially Go binding validation and tarball consumer checks, is listed in [Not yet covered](#not-yet-covered). Latency and memory observations are outside CI; comparison reports explicitly mark timing deltas and comparability mismatches as [non-gating performance warnings](benchmarking.md#correctness-failures-versus-performance-warnings). A correctness failure is never reported as a performance warning.
 
 ## Performance reporting
 
@@ -56,13 +57,13 @@ python3 -m venv .venv
 make ci
 ```
 
-Alternatively, `make install-dev` performs both dependency installs. `make ci` expects dependencies to be installed first: the Node binding test loads the native addon built by `npm ci`, the incremental equivalence harness uses the pinned Tree-sitter CLI installed there, and formatting/static checks use the pinned Prettier and Ruff binaries. `make format` is the local auto-fix command and is deliberately not part of CI.
+Alternatively, `make install-dev` performs both dependency installs. `make ci` expects dependencies to be installed first: the Node binding test loads the native addon built by `npm ci`, the incremental equivalence harness uses the pinned Tree-sitter CLI installed there, formatting/static checks use the pinned Prettier and Ruff binaries, and `make test-swift` needs a Swift toolchain and its system libraries on `PATH` (CI selects Swift 6.2.1 on Ubuntu 24.04). `make format` is the local auto-fix command and is deliberately not part of CI.
 
 ## Not yet covered
 
 The following checks are required by the project roadmap but are not yet part of `make ci`:
 
-- Go and Swift binding builds and their package-content checks (Phase 7).
+- Go binding build and package-content checks (Phase 7).
 - representative Rust parse, query, recovery, and incremental-equivalence tests; the existing gate validates structure and runs the shallow load/doc tests (Phase 7).
 - installing the packed npm tarball as a downstream consumer and parsing from that installation (Phase 7).
 

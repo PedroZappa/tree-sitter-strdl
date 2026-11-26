@@ -98,7 +98,7 @@ npm ci
 make ci
 ```
 
-`make ci` checks generated artifacts and benchmark fixture reproducibility, runs corpus, query, regression-coverage, Node.js binding, clean Node.js addon build, generated parser runtime, C binding symbol, Python binding, Rust binding structure and cargo tests, version consistency, and npm package integrity checks, and builds the C libraries. GitHub Actions runs the same gate on pull requests and pushes to `main`; see [CI](docs/ci.md).
+`make ci` expects a Swift toolchain on `PATH` (GitHub Actions selects Swift 6.2.1 on Ubuntu 24.04). It checks generated artifacts and benchmark fixture reproducibility, runs corpus, query, regression-coverage, Node.js binding, clean Node.js addon build, generated parser runtime, C binding symbol, Python binding, Rust binding structure and cargo tests, Swift binding structure and build/tests, version consistency, and npm package integrity checks, and builds the C libraries. GitHub Actions runs the same gate on pull requests and pushes to `main`; see [CI](docs/ci.md).
 
 To regenerate artifacts or run a single layer directly:
 

@@ -28,16 +28,16 @@ tree-sitter generate
 
 ## Runtime support matrix
 
-| Binding | Declared requirement                                                                  | Validation version                                         | Result                                                       |
-| ------- | ------------------------------------------------------------------------------------- | ---------------------------------------------------------- | ------------------------------------------------------------ |
-| Node.js | peer `tree-sitter: ^0.25.0`                                                           | `tree-sitter` 0.25.1, Node.js 26.8.2 and 26.13.1           | Passed `npm test` and a clean tracked-source build           |
-| Python  | optional extra `tree-sitter~=0.25.0`                                                  | `tree-sitter` 0.25.2 previously; Python 3.15.2 and 3.14.10 | Passed `test_binding.py` and `make test-python`              |
-| Rust    | dev-dependency `tree-sitter = "0.25.8"`                                               | `cargo`/`rustc` 1.100.0; `cargo test --locked`             | Passed load and doc tests; `Cargo.lock` pins dependencies    |
-| Go      | `github.com/tree-sitter/go-tree-sitter` v0.25.0 resolved by the temporary test module | Go 1.27.4                                                  | Passed `go test` in a temporary copy; retained source-only   |
-| Swift   | `SwiftTreeSitter` `from: "0.10.0"`                                                    | Resolved SwiftTreeSitter 0.25.0 and tree-sitter 0.25.10    | `swift build` passed; `swift test` blocked by missing XCTest |
-| C       | No Tree-sitter runtime dependency declared                                            | C11 with GCC 16.2.1; CMake 4.5.1                           | Passed `make build`, CMake build/install, and C symbol check |
+| Binding | Declared requirement                                                                  | Validation version                                                             | Result                                                            |
+| ------- | ------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------ | ----------------------------------------------------------------- |
+| Node.js | peer `tree-sitter: ^0.25.0`                                                           | `tree-sitter` 0.25.1, Node.js 26.8.2 and 26.13.1                               | Passed `npm test` and a clean tracked-source build                |
+| Python  | optional extra `tree-sitter~=0.25.0`                                                  | `tree-sitter` 0.25.2 previously; Python 3.15.2 and 3.14.10                     | Passed `test_binding.py` and `make test-python`                   |
+| Rust    | dev-dependency `tree-sitter = "0.25.8"`                                               | `cargo`/`rustc` 1.100.0; `cargo test --locked`                                 | Passed load and doc tests; `Cargo.lock` pins dependencies         |
+| Go      | `github.com/tree-sitter/go-tree-sitter` v0.25.0 resolved by the temporary test module | Go 1.27.4                                                                      | Passed `go test` in a temporary copy; retained source-only        |
+| Swift   | `SwiftTreeSitter` `from: "0.10.0"`                                                    | Swift 6.2.1 and 6.4.3; resolved SwiftTreeSitter 0.25.0 and tree-sitter 0.25.10 | Passed `swift build` and `swift test`; gated by `make test-swift` |
+| C       | No Tree-sitter runtime dependency declared                                            | C11 with GCC 16.2.1; CMake 4.5.1                                               | Passed `make build`, CMake build/install, and C symbol check      |
 
-GitHub Actions validates the Node.js binding on Node.js 22 and 24 for pull requests and pushes to `main`; see [CI](ci.md).
+GitHub Actions validates the Node.js binding on Node.js 22 and 24 and the Swift binding on Swift 6.2.1 on pinned Ubuntu 24.04 runners for pull requests and pushes to `main`; see [CI](ci.md).
 
 `~=0.25.0` is used for Python because plain `~=0.25` permits any 0.x release up to 1.0.
 
@@ -64,6 +64,8 @@ The Python binding was audited on 2026-11-26. `make test-python` built the exten
 
 The Rust binding was audited on 2026-11-26. After approval, crates were fetched, `Cargo.lock` was generated, and `cargo test --locked` passed with Cargo 1.100.0. `make test-rust` now combines structural checks with that locked runtime test; see the [Rust audit](binding-audit.md#rust-binding--audited-2026-11-26).
 
+The Swift binding was audited on 2026-11-26. After toolchain installation and local library compatibility setup, `swift build` and `swift test` passed in a clean tracked-source copy with both Swift 6.4.3 and the CI-pinned Swift 6.2.1. `make test-swift` now combines structural checks with those runtime commands; see the [Swift audit](binding-audit.md#swift-binding--audited-2026-11-26).
+
 Query gates now build the shared C library and pass it to the CLI with `--lib-path`, avoiding the stale global parser cache that caused an intermediate CI failure. Release metadata is aligned at `1.5.0`, and `make check-version` gates that alignment.
 
 The Python binding check removes `-Wl,-z,pack-relative-relocs` from the target interpreter's linker configuration because `ld.gold` rejects that flag; a forced `clang`/`ld.gold` reproduction now builds successfully. On Linux, the Rust gate appends GNU `ld.bfd` flags for Cargo compilation and doc tests; forced `ld.lld` configurations now pass.
@@ -72,7 +74,7 @@ The Python binding check removes `-Wl,-z,pack-relative-relocs` from the target i
 
 - npm 11 in this environment blocks dependency install scripts for `tree-sitter` and `tree-sitter-cli` by default; the project's own install script still compiled the addon, and the clean build's `npm test` run loaded the runtime successfully.
 - The Rust gate needs network access on the first uncached run to fetch crates.io dependencies; subsequent runs use the locked graph and local cache.
-- Swift tests were not run successfully because XCTest could not be resolved by the installed command-line tools.
+- `Package.resolved` is ignored and untracked, so SwiftPM dependency resolution is not reproducibly pinned even though CI pins the Swift toolchain.
 - `npm install` emitted script-allowlist warnings, but the pinned local CLI was executable and was used for the final regeneration check.
 
 ## Policy

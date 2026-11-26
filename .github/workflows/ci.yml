@@ -15,7 +15,7 @@ concurrency:
 jobs:
   validate:
     name: Validate (Node ${{ matrix.node-version }})
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 15
     strategy:
       fail-fast: false
@@ -31,6 +31,34 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
           cache: npm
+
+      - name: Install Swift system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            binutils \
+            git \
+            gnupg2 \
+            libc6-dev \
+            libcurl4-openssl-dev \
+            libedit2 \
+            libgcc-13-dev \
+            libncurses-dev \
+            libpython3-dev \
+            libsqlite3-0 \
+            libstdc++-13-dev \
+            libxml2-dev \
+            libz3-dev \
+            pkg-config \
+            tzdata \
+            unzip \
+            zip \
+            zlib1g-dev
+
+      - name: Set up Swift
+        uses: swift-actions/setup-swift@7ca6abe6b3b0e8b5421b88be48feee39cbf52c6a # v2.4.0
+        with:
+          swift-version: "6.2.1"
 
       - name: Install dependencies
         run: npm ci

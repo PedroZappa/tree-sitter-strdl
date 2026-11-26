@@ -25,7 +25,7 @@ This document accumulates the Phase 7 binding audits. It records implementation,
 
 ### Decision
 
-Retain the C binding. It is a small, source-level integration with a correct public symbol, two working build paths, and explicit installer rules. Removing it would break CMake/Make consumers and contradict the enabled `bindings.c` metadata without providing a distribution benefit, because npm does not publish the C binding anyway. This is a C-specific retention decision; the aggregate non-Node binding decision remains pending until the Swift audit is complete.
+Retain the C binding. It is a small, source-level integration with a correct public symbol, two working build paths, and explicit installer rules. Removing it would break CMake/Make consumers and contradict the enabled `bindings.c` metadata without providing a distribution benefit, because npm does not publish the C binding anyway. This is a C-specific retention decision; the aggregate non-Node binding decision remains a separate roadmap item.
 
 ### Known gaps and deferred work
 
@@ -57,7 +57,7 @@ Retain the C binding. It is a small, source-level integration with a correct pub
 
 ### Decision
 
-Retain the Go binding as a source-level, source-only integration. Its metadata explicitly enables it, its source and test are tracked, and a compatible runtime previously passed. Removing it would break source consumers and discard useful validation without solving the packaging gap. This audit does not promote Go to a first-class distributed binding: adding `go.mod`/`go.sum`, wiring a Go CI leg, or disabling the binding would materially change compatibility and requires explicit approval. The aggregate non-Node binding decision remains pending until the Swift audit is complete.
+Retain the Go binding as a source-level, source-only integration. Its metadata explicitly enables it, its source and test are tracked, and a compatible runtime previously passed. Removing it would break source consumers and discard useful validation without solving the packaging gap. This audit does not promote Go to a first-class distributed binding: adding `go.mod`/`go.sum`, wiring a Go CI leg, or disabling the binding would materially change compatibility and requires explicit approval. The aggregate non-Node binding decision remains a separate roadmap item.
 
 ### Known gaps and deferred work
 
@@ -133,6 +133,38 @@ Retain the Rust binding. It has a working manifest, a locked dependency graph, a
 - The inline Rust test is a nil-language load check only; no representative parse, query-execution, recovery, or incremental-equivalence test runs through Rust.
 - Rust releases are not published from ordinary commits; the crates job still triggers only on tags through the controlled publish workflow.
 
-## Other bindings
+## Swift binding — audited 2026-11-26
 
-The Swift audit is pending and tracked in the [roadmap](roadmap.md#phase-7--packaging-and-compatibility).
+### Implementation and build reachability
+
+| Area             | Evidence                                                                                                                                                                                                 | Assessment                                                                                                                                         |
+| ---------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Public API       | `bindings/swift/TreeSitterStrudel/strudel.h` declares `tree_sitter_strudel()` behind a C++ `extern "C"` guard.                                                                                           | Matches the generated parser symbol and is safe for C and C++ consumers.                                                                           |
+| Package manifest | `Package.swift` declares a `TreeSitterStrudel` library product, compiles `src/parser.c` with optional `src/scanner.c`, copies `queries/`, publishes `bindings/swift` headers, and sets the C11 standard. | Standard SwiftPM template shape; the library target depends on the committed generated parser rather than the grammar source.                      |
+| Test source      | `bindings/swift/TreeSitterStrudelTests/TreeSitterStrudelTests.swift` constructs `Parser()` and `Language(language: tree_sitter_strudel())`, then asserts that `setLanguage` does not throw.              | Shallow load test only; it does not parse, execute queries, cover recovery, or compare incremental and fresh parses.                               |
+| Test dependency  | `Package.swift` declares test-only `SwiftTreeSitter from: "0.10.0"`. A clean resolution selected SwiftTreeSitter `0.25.0` and tree-sitter `0.25.10`.                                                     | The declared range admits an ABI 15-compatible runtime, but `Package.resolved` is ignored and untracked, so resolution is not reproducibly pinned. |
+| Metadata         | `tree-sitter.json` declares `bindings.swift: true`.                                                                                                                                                      | Swift is intentionally enabled in the canonical parser configuration.                                                                              |
+| Distribution     | npm `files` excludes `Package.swift`, `bindings/swift/`, and Swift sources; there is no Swift publish job or tagged Swift package release path in this repository.                                       | Swift consumers use the source repository or SwiftPM directly; npm does not publish the Swift product.                                             |
+
+### Verification performed
+
+- Inspected `Package.swift`, the public C header, the XCTest source, `tree-sitter.json`, npm package rules, CI/publish workflows, and checker conventions.
+- Installed Swift 6.4.3 with `mise` and prepared local compatibility libraries for this host. In a clean copy of tracked sources, `swift build` completed and `swift test` passed its one load test.
+- Added `scripts/check_swift_binding.py` and `make test-swift`, wired into `verify-all` and `make ci`. The checker validates required files, manifest snippets, the public C symbol, XCTest load wiring, `tree-sitter.json` enablement, npm exclusion, and a clean tracked-source `swift build` plus `swift test`.
+- Pinned CI to Swift `6.2.1` through `swift-actions/setup-swift` at commit `7ca6abe6b3b0e8b5421b88be48feee39cbf52c6a` (`v2.4.0`). The same checker passed with both Swift 6.2.1 and 6.4.3.
+- Temporary negative controls that changed the `SwiftTreeSitter` lower bound, injected `XCTFail` into the load test, or set `bindings.swift` to `false` each failed with `exit=1`.
+
+### Decision
+
+Retain the Swift binding as a source-level SwiftPM integration with a CI-gated load test. Its manifest builds the committed parser, copies the official queries, exposes the correct C symbol, and resolves an ABI 15-compatible SwiftTreeSitter runtime. Removing it would contradict `bindings.swift: true` and discard a working source integration without solving an npm distribution gap that never applied to Swift. This audit does not promote Swift to a first-class published binding; committing `Package.resolved`, adding a Swift release path, or disabling the binding would materially change compatibility and requires explicit approval.
+
+### Known gaps and deferred work
+
+- The XCTest is a load check only; no representative parse, query-execution, recovery, or incremental-equivalence test runs through Swift.
+- `Package.resolved` is ignored and untracked. CI pins the Swift toolchain, but dependency resolution may still select a newer compatible SwiftTreeSitter release.
+- No Swift publish job exists, and npm packaging intentionally excludes Swift sources.
+- On this host, the installed Swift toolchains needed local compatibility symlinks for system libraries. CI pins Ubuntu 24.04, installs Swift.org's documented Ubuntu 24.04 dependencies, and selects Swift 6.2.1 instead.
+
+## Aggregate non-Node binding decision
+
+The individual audits now cover C, Go, Python, Rust, and Swift. A single retention or deprecation decision is still tracked in the [roadmap](roadmap.md#phase-7--packaging-and-compatibility). No existing integration has been removed.
