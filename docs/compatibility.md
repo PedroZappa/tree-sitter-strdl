@@ -56,6 +56,23 @@ The aggregate Phase 7 decision retains every existing non-Node binding and depre
 
 Promoting Go to a first-class binding requires explicit approval for module metadata, a Go CI leg, and a declared `go-tree-sitter` compatibility floor. Adding a Swift release path, committing `Package.resolved`, or removing any existing integration also requires explicit approval and a breaking-change entry.
 
+## Package compatibility expectations
+
+The npm package is the primary distribution artifact. Its file contract is the `files` allowlist in `package.json`, and `make test-package` checks the actual `npm pack --dry-run --json --ignore-scripts` output against that contract. At version `1.5.0`, the packed artifact contains 18 files: license and README, `binding.gyp`, Node binding sources and its test, `grammar.js`, `package.json`, both official queries, the committed generated parser artifacts and headers, and `tree-sitter.json`.
+
+Consumers can expect:
+
+- Committed generated parser artifacts are included, so normal installation does not require `tree-sitter-cli`, regenerating the parser, or hand-editing `src/`.
+- The package installs the Node.js native addon from source through its `install` script unless a compatible prebuilt binary is supplied. No `prebuilds/` directory or WASM artifact is tracked in this repository; therefore current releases do not promise a prebuilt addon or a WebAssembly parser.
+- The addon still requires a compatible Node.js ABI and a Tree-sitter runtime of `0.25` or newer. CI validates Node.js 22 and 24; local validation also covers Node.js 26.13.1. The runtime floor and ABI are part of the compatibility contract, not properties of the npm version alone.
+- `tree-sitter` is an optional peer dependency. Consumers that use the JavaScript API must provide it; the package does not bundle the runtime.
+- `package-lock.json` is not published. Published dependency ranges are resolved by the consumer's package manager; `node-addon-api` and `node-gyp-build` are runtime dependencies.
+- The npm package contains no C, Go, Python, Rust, or Swift binding. Those integrations are distributed or consumed through the channels defined in the [binding support policy](#binding-support-policy).
+- `grammar.js` and the two official query files are packaged for editor/tooling consumers. Their presence is intentional, but consumers should prefer the committed generated artifacts at runtime.
+- Version `1.5.0` is aligned across the npm and Tree-sitter metadata and checked by `make check-version`. A version alone does not imply a different runtime floor; ABI and runtime compatibility are defined at the top of this document.
+
+This section describes the expected package contract. Separate roadmap items cover end-to-end tarball installation, parsing from an installed package, and final publication-content validation; those checks are not implied by this documentation.
+
 ## Validation performed
 
 On 2026-11-25:

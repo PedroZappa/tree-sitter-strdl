@@ -15,6 +15,8 @@ Requirements:
 - Tree-sitter runtime 0.25 or newer (ABI 15 parser)
 - Tree-sitter CLI 0.27.2 when regenerating artifacts
 
+Package contents, native-addon installation behavior, and binding-specific distribution expectations are documented in the [compatibility policy](docs/compatibility.md#package-compatibility-expectations).
+
 ## Bindings
 
 | Binding | Status                        | Distribution                       |
